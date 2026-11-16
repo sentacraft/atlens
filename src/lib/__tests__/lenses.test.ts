@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { Lens } from "../types";
+import { resolveTranslations, type Lens } from "../types";
 import {
   isZoom,
   filterLenses,
@@ -148,6 +148,192 @@ describe("primaryApertureDisplay / secondaryApertureDisplay", () => {
 it("accepts a catalog entry without official product links", () => {
   const lens = makeLens({ focalLengthMin: 35, focalLengthMax: 35, officialLinks: undefined });
   expect(lensCatalogSchema.safeParse([lens]).success).toBe(true);
+});
+
+describe("lensSchema movement, firmware and colorways", () => {
+  it("accepts existing records without the optional fields", () => {
+    const parsed = lensSchema.parse(prime35);
+    for (const key of ["tiltRangeDeg", "shiftRangeMm", "firmwareUpdateMethod", "colorways"]) {
+      expect(parsed).not.toHaveProperty(key);
+    }
+  });
+
+  it("preserves all new fields in a catalog entry", () => {
+    const fields = {
+      opticalTraits: ["tilt", "shift"],
+      tiltRangeDeg: [-8.5, 8.5],
+      shiftRangeMm: [-15, 15],
+      firmwareUpdateMethod: "usb-c",
+      colorways: ["black", "silver", "black-silver"],
+    };
+    expect(lensCatalogSchema.parse([{ ...prime35, ...fields }])[0]).toMatchObject(fields);
+  });
+
+  for (const [field, trait] of [["tiltRangeDeg", "tilt"], ["shiftRangeMm", "shift"]] as const) {
+    it.each([
+      [-8.5, 8.5], [-8, 12], [0, 15], [-15, 0],
+    ])(`accepts ${field} from %s to %s`, (min, max) => {
+      expect(lensSchema.safeParse({
+        ...prime35, opticalTraits: [trait], [field]: [min, max],
+      }).success).toBe(true);
+    });
+
+    it.each([
+      { range: [0, 0] }, { range: [8, -8] }, { range: [1, 8] },
+      { range: [-8, -1] }, { range: [-8] }, { range: [-8, 0, 8] },
+      { range: [-Infinity, 8] }, { range: [-8, Infinity] },
+      { range: [NaN, 8] }, { range: ["-8", 8] }, { range: 8 },
+    ])(`rejects invalid ${field}: $range`, ({ range }) => {
+      const result = lensSchema.safeParse({
+        ...prime35, opticalTraits: [trait], [field]: range,
+      });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues.some(issue => issue.path[0] === field)).toBe(true);
+      }
+    });
+
+    it.each([undefined, [trait === "tilt" ? "shift" : "tilt"]])(
+      `rejects ${field} without its matching trait: %s`, (opticalTraits) => {
+        const result = lensSchema.safeParse({ ...prime35, opticalTraits, [field]: [-8, 8] });
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.issues.some(issue => issue.path[0] === field)).toBe(true);
+        }
+      },
+    );
+
+    it(`does not require ${field} for an existing ${trait} trait`, () => {
+      expect(lensSchema.safeParse({ ...prime35, opticalTraits: [trait] }).success).toBe(true);
+    });
+  }
+
+  it.each(["black", "silver", "black-silver"])("accepts a single %s colorway", (color) => {
+    expect(lensSchema.safeParse({ ...prime35, colorways: [color] }).success).toBe(true);
+  });
+
+  it.each([
+    { colorways: [] }, { colorways: ["black", "black"] },
+    { colorways: ["gold"] }, { colorways: "black" },
+  ])("rejects invalid colorways: $colorways", ({ colorways }) => {
+    expect(lensSchema.safeParse({ ...prime35, colorways }).success).toBe(false);
+  });
+
+  it.each(["usb", "camera-body", "", ["usb-c"]])("rejects unknown firmware methods: %s", (method) => {
+    expect(lensSchema.safeParse({ ...prime35, firmwareUpdateMethod: method }).success).toBe(false);
+  });
+});
+
+describe("lensSchema classified image assets", () => {
+  const mtf = {
+    id: "002",
+    role: "mtf",
+    focalLengthMm: 35,
+    spatialFrequency: { values: [10, 30], unit: "lp/mm" },
+    apertureFNumbers: [1.4, 8],
+    mtfMethod: "geometrical",
+    depictedMount: "E",
+    conditionsNote: "Source chart does not identify the mount.",
+  };
+
+  it("preserves typed assets and all source-backed conditions without inferring the lens mount", () => {
+    const images = [{ id: "001", role: "product" }, mtf, { id: "003", role: "optical-construction" }];
+    const parsed = lensSchema.parse({ ...prime35, images });
+    expect(parsed.images).toEqual(images);
+    expect(parsed.images?.[1].depictedMount).toBe("E");
+    expect(parsed).not.toHaveProperty("alternateImages");
+  });
+
+  it.each(["product", "usage", "sample", "mtf", "optical-construction", "dimensions", "spec-sheet", "feature", "accessory"])("accepts the public content role %s with unknown conditions omitted", (role) => {
+    const parsed = lensSchema.parse({ ...prime35, images: [{ id: "001", role }] });
+    expect(parsed.images).toEqual([{ id: "001", role }]);
+  });
+
+  it("preserves source frequency units and actual sample settings", () => {
+    const images = [
+      { ...mtf, spatialFrequency: { values: [10, 20, 40], unit: "lines/mm" } },
+      { id: "003", role: "sample", focalLengthMm: 42, apertureFNumbers: [5.2] },
+    ];
+    expect(lensSchema.parse({ ...prime35, images }).images).toEqual(images);
+  });
+
+  it.each([{ images: [] }, { images: [{ id: "001", role: "mtf" }, { id: "001", role: "product" }] }])("rejects empty lists and duplicate image IDs", ({ images }) => {
+    expect(lensSchema.safeParse({ ...prime35, images }).success).toBe(false);
+  });
+
+  it.each(["1", "../001", "001.webp", "/001", "001/002", "", "abc"])("rejects unsafe or noncanonical image ID %s", (id) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ id, role: "product" }] }).success).toBe(false);
+  });
+
+  it.each(["promotion", "legend", "web-ui", "blank", "unclassified", "unknown"])("keeps archive-only role %s out of the public contract", (role) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ id: "001", role }] }).success).toBe(false);
+  });
+
+  it.each([
+    { original: { path: "workspace/private.png" } }, { sha256: "a".repeat(64) },
+    { sourceAssetId: "img-001" }, { review: { disposition: "selected" } },
+    { preview: "private.webp" }, { title: "MTF" }, { crop: [0, 0, 10, 10] },
+    { provenance: { sourceUrl: "https://example.com/private-source.png" } },
+  ])("rejects private provenance and redundant fields: %j", (extra) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ id: "001", role: "mtf", ...extra }] }).success).toBe(false);
+  });
+
+  it.each([
+    { focalLengthMm: 0 }, { focalLengthMm: NaN }, { focalLengthMm: Infinity },
+    { apertureFNumbers: [] }, { apertureFNumbers: [1.4, 1.4] }, { apertureFNumbers: [-1] },
+    { spatialFrequency: { values: [], unit: "lp/mm" } },
+    { spatialFrequency: { values: [10, 10], unit: "lp/mm" } },
+    { spatialFrequency: { values: ["10"], unit: "lp/mm" } },
+    { spatialFrequency: { values: [10], unit: "cycles/pixel" } },
+    { spatialFrequency: { values: [10], unit: "lp/mm", colors: ["red"] } },
+    { mtfMethod: "measured" }, { depictedMount: "../X" }, { depictedMount: "" },
+    { conditionsNote: " " }, { conditionsNote: "x".repeat(1201) },
+  ])("rejects invalid image metadata: %j", (metadata) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ ...mtf, ...metadata }] }).success).toBe(false);
+  });
+
+  it.each([
+    ["sourceUrl", "https://example.com/private-source.png"],
+    ["conditionsSourceUrl", "https://example.com/private-conditions/"],
+    ["credit", "Private creator attribution"],
+    ["licenseUrl", "https://example.com/private-license/"],
+  ])("rejects pipeline-private %s even when its value is otherwise valid", (field, value) => {
+    const record = { ...prime35, images: [{ ...mtf, [field]: value }] };
+    const result = lensSchema.safeParse(record);
+    expect(result.success).toBe(false);
+    expect(lensCatalogSchema.safeParse([record]).success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(expect.objectContaining({
+        code: "unrecognized_keys", path: ["images", 0], keys: [field],
+      }));
+    }
+  });
+
+  it.each([{ spatialFrequency: { values: [10], unit: "lp/mm" } }, { mtfMethod: "diffraction" }])("rejects MTF-only conditions on a product image: %j", (metadata) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ id: "001", role: "product", ...metadata }] }).success).toBe(false);
+  });
+
+  it("retains the actual legacy catalog contract but rejects simultaneous duplicate representations", () => {
+    expect(lensSchema.parse({ ...prime35, alternateImages: ["001"] }).alternateImages).toEqual(["001"]);
+    expect(lensSchema.safeParse({ ...prime35, alternateImages: ["001"], images: [mtf] }).success).toBe(false);
+  });
+
+  it("resolves image notes by ID without changing numeric conditions or the original lens", () => {
+    const lens = lensSchema.parse({
+      ...prime35,
+      images: [mtf, { id: "003", role: "accessory", conditionsNote: "Hood only." }],
+      translations: { zh: { imageNotes: { "002": "源图未注明卡口。" } } },
+    });
+    const translated = resolveTranslations(lens, "zh");
+    expect(translated.images?.[0]).toEqual({ ...mtf, conditionsNote: "源图未注明卡口。" });
+    expect(translated.images?.[1].conditionsNote).toBe("Hood only.");
+    expect(lens.images?.[0].conditionsNote).toBe(mtf.conditionsNote);
+    expect(resolveTranslations(lens, "en")).toBe(lens);
+  });
+
+  it.each([{ "003": "Orphan note" }, { "002": " " }, {}])("rejects empty or orphan image translations: %j", (imageNotes) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [mtf], translations: { zh: { imageNotes } } }).success).toBe(false);
+  });
 });
 
 describe("lensSchema aperture business rules", () => {

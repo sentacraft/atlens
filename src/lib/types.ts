@@ -297,11 +297,40 @@ export interface LensPriceEntry {
 /** Purchase channels the frontend renders a buy button for. */
 export type PurchaseChannelType = "official" | "amazon" | "ebay" | "bhphoto" | "jd" | "taobao";
 
+export const LENS_IMAGE_ROLES = [
+  "product", "usage", "sample", "mtf", "optical-construction", "dimensions",
+  "spec-sheet", "feature", "accessory",
+] as const;
+
+export type LensImageRole = (typeof LENS_IMAGE_ROLES)[number];
+
+/** Public supplemental image content; private review and processing data stay in the pipeline. */
+export interface LensImageAsset {
+  /** Pipeline-assigned numeric ID, at least three digits, served as /lenses/<lens-id>/<id>.webp. */
+  id: string;
+  /** Content type, independent of placement, background, crop history, or approval status. */
+  role: LensImageRole;
+  /** Actual focal length explicitly identified by the chart or sample caption, in mm. */
+  focalLengthMm?: number;
+  /** Source-labelled MTF frequencies; preserve the stated unit without conversion. */
+  spatialFrequency?: { values: number[]; unit: "lines/mm" | "lp/mm" };
+  /** Explicit test or capture f-numbers, not the lens's maximum aperture. */
+  apertureFNumbers?: number[];
+  /** MTF calculation method only when explicitly identified by the source. */
+  mtfMethod?: "geometrical" | "diffraction";
+  /** Mount explicitly depicted or labelled, e.g. X, G, E, RF, M43; not an assertion about Lens.mount. */
+  depictedMount?: string;
+  /** English, user-facing conditions or applicability limits; never embed private source URLs, credits or license records. */
+  conditionsNote?: string;
+}
+
 /** Translated user-facing fields for a single locale. */
 interface LensLocaleTranslations {
   fieldNotes?: Partial<Record<FieldNoteKey, string>>;
   lensMaterial?: string;
   accessories?: string[];
+  /** Translations of image conditionsNote, keyed by an existing classified image ID. */
+  imageNotes?: Record<string, string>;
 }
 
 /** A lens search name per locale; `zh` falls back to `en`. */
@@ -458,6 +487,36 @@ export interface Lens {
    * @example ["macro", "probe"]
    */
   opticalTraits?: OpticalTrait[];
+
+  /**
+   * Tilt travel in degrees as [minimum, maximum], including zero.
+   * Populate only from an explicit range for this mount version; do not infer
+   * travel from the tilt trait. Requires opticalTraits to include "tilt".
+   * @example [-8.5, 8.5]
+   */
+  tiltRangeDeg?: [number, number];
+
+  /**
+   * Shift travel in millimeters as [minimum, maximum], including zero.
+   * Populate only from an explicit range for this mount version; do not infer
+   * travel from the shift trait. Requires opticalTraits to include "shift".
+   * @example [-15, 15]
+   */
+  shiftRangeMm?: [number, number];
+
+  /**
+   * Firmware update method explicitly documented for this mount version.
+   * A USB-C port or bundled cable alone is not evidence of firmware updates.
+   * Omit when unknown; "usb-c" means updating through the lens's USB-C port.
+   */
+  firmwareUpdateMethod?: "usb-c";
+
+  /**
+   * Documented exterior colorways for this mount version, not current stock.
+   * Use "black-silver" for a two-tone finish, not separate black and silver
+   * versions. Omit when unknown; do not store an empty or duplicate list.
+   */
+  colorways?: ("black" | "silver" | "black-silver")[];
 
   /**
    * Whether the lens supports autofocus.
@@ -805,8 +864,22 @@ export interface Lens {
   officialLinks?: LensOfficialLinks;
 
   /**
-   * Ordered supplemental product image IDs assigned by the image pipeline.
-   * The primary product image precedes these images in the gallery.
+   * Ordered, classified supplemental assets. The primary product image is separate.
+   * Populate only for content explicitly selected for import; omit unknown conditions.
+   * Do not copy private provenance URLs, credits, license records, dispositions, reasons,
+   * file paths, hashes, crop links or processing logs, including into conditionsNote.
+   * Notes are English; translations.zh.imageNotes supplies Chinese notes by image ID.
+   * Never dual-write these assets to alternateImages.
+   * @example [{ id: "001", role: "mtf", focalLengthMm: 35, spatialFrequency: { values: [10, 30], unit: "lp/mm" } }]
+   */
+  images?: LensImageAsset[];
+
+  /**
+   * Ordered supplemental product image IDs in the existing pipeline catalogs.
+   * LensImageGallery and the detail page still consume this legacy contract.
+   * Keep only until the pipeline migrates those records and these consumers to images;
+   * remove in the same migration release, with no dual-writing or automatic role inference.
+   * @deprecated New imports use images. Mutually exclusive with images.
    */
   alternateImages?: string[];
 
@@ -814,7 +887,7 @@ export interface Lens {
    * Localized translations of user-visible free-text fields.
    * Keys are language codes; currently only "zh" is produced.
    * English values live in the top-level fields (fieldNotes, lensMaterial,
-   * accessories) and serve as the fallback when a translation is absent.
+   * accessories, images[].conditionsNote) and serve as the fallback when a translation is absent.
    */
   translations?: { zh?: LensLocaleTranslations };
 
@@ -871,6 +944,11 @@ export function resolveTranslations(lens: Lens, locale: string): Lens {
     }),
     ...(zh.lensMaterial !== undefined && { lensMaterial: zh.lensMaterial }),
     ...(zh.accessories !== undefined && { accessories: zh.accessories }),
+    ...(zh.imageNotes && lens.images && {
+      images: lens.images.map((image) => zh.imageNotes?.[image.id] === undefined
+        ? image
+        : { ...image, conditionsNote: zh.imageNotes[image.id] }),
+    }),
   };
 }
 
