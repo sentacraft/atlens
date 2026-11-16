@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { Lens } from "../types";
+import { resolveTranslations, type Lens } from "../types";
 import {
   isZoom,
   filterLenses,
@@ -221,6 +221,110 @@ describe("lensSchema movement, firmware and colorways", () => {
 
   it.each(["usb", "camera-body", "", ["usb-c"]])("rejects unknown firmware methods: %s", (method) => {
     expect(lensSchema.safeParse({ ...prime35, firmwareUpdateMethod: method }).success).toBe(false);
+  });
+});
+
+describe("lensSchema classified image assets", () => {
+  const mtf = {
+    id: "002",
+    role: "mtf",
+    focalLengthMm: 35,
+    spatialFrequency: { values: [10, 30], unit: "lp/mm" },
+    apertureFNumbers: [1.4, 8],
+    mtfMethod: "geometrical",
+    depictedMount: "E",
+    conditionsNote: "Source chart does not identify the mount.",
+    sourceUrl: "https://example.com/mtf.png",
+    conditionsSourceUrl: "https://example.com/specifications/",
+    credit: "Example Photographer",
+    licenseUrl: "https://example.com/image-license/",
+  };
+
+  it("preserves typed assets and all source-backed conditions without inferring the lens mount", () => {
+    const images = [{ id: "001", role: "product" }, mtf, { id: "003", role: "optical-construction" }];
+    const parsed = lensSchema.parse({ ...prime35, images });
+    expect(parsed.images).toEqual(images);
+    expect(parsed.images?.[1].depictedMount).toBe("E");
+    expect(parsed).not.toHaveProperty("alternateImages");
+  });
+
+  it.each(["product", "usage", "sample", "mtf", "optical-construction", "dimensions", "spec-sheet", "feature", "accessory"])("accepts the public content role %s with unknown conditions omitted", (role) => {
+    const parsed = lensSchema.parse({ ...prime35, images: [{ id: "001", role }] });
+    expect(parsed.images).toEqual([{ id: "001", role }]);
+  });
+
+  it("preserves source frequency units and actual sample settings", () => {
+    const images = [
+      { ...mtf, spatialFrequency: { values: [10, 20, 40], unit: "lines/mm" } },
+      { id: "003", role: "sample", focalLengthMm: 42, apertureFNumbers: [5.2] },
+    ];
+    expect(lensSchema.parse({ ...prime35, images }).images).toEqual(images);
+  });
+
+  it.each([{ images: [] }, { images: [{ id: "001", role: "mtf" }, { id: "001", role: "product" }] }])("rejects empty lists and duplicate image IDs", ({ images }) => {
+    expect(lensSchema.safeParse({ ...prime35, images }).success).toBe(false);
+  });
+
+  it.each(["1", "../001", "001.webp", "/001", "001/002", "", "abc"])("rejects unsafe or noncanonical image ID %s", (id) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ id, role: "product" }] }).success).toBe(false);
+  });
+
+  it.each(["promotion", "legend", "web-ui", "blank", "unclassified", "unknown"])("keeps archive-only role %s out of the public contract", (role) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ id: "001", role }] }).success).toBe(false);
+  });
+
+  it.each([
+    { original: { path: "workspace/private.png" } }, { sha256: "a".repeat(64) },
+    { sourceAssetId: "img-001" }, { review: { disposition: "selected" } },
+    { preview: "private.webp" }, { title: "MTF" }, { crop: [0, 0, 10, 10] },
+  ])("rejects private provenance and redundant fields: %j", (extra) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ id: "001", role: "mtf", ...extra }] }).success).toBe(false);
+  });
+
+  it.each([
+    { focalLengthMm: 0 }, { focalLengthMm: NaN }, { focalLengthMm: Infinity },
+    { apertureFNumbers: [] }, { apertureFNumbers: [1.4, 1.4] }, { apertureFNumbers: [-1] },
+    { spatialFrequency: { values: [], unit: "lp/mm" } },
+    { spatialFrequency: { values: [10, 10], unit: "lp/mm" } },
+    { spatialFrequency: { values: ["10"], unit: "lp/mm" } },
+    { spatialFrequency: { values: [10], unit: "cycles/pixel" } },
+    { spatialFrequency: { values: [10], unit: "lp/mm", colors: ["red"] } },
+    { mtfMethod: "measured" }, { depictedMount: "../X" }, { depictedMount: "" },
+    { conditionsNote: " " }, { conditionsNote: "x".repeat(1201) }, { credit: " " },
+  ])("rejects invalid image metadata: %j", (metadata) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ ...mtf, ...metadata }] }).success).toBe(false);
+  });
+
+  it.each(["sourceUrl", "conditionsSourceUrl", "licenseUrl"])("requires safe HTTPS links for %s", (field) => {
+    for (const url of ["http://example.com/image", "javascript:alert(1)", "/local", "https://user:secret@example.com/image"]) {
+      expect(lensSchema.safeParse({ ...prime35, images: [{ ...mtf, [field]: url }] }).success).toBe(false);
+    }
+  });
+
+  it.each([{ spatialFrequency: { values: [10], unit: "lp/mm" } }, { mtfMethod: "diffraction" }])("rejects MTF-only conditions on a product image: %j", (metadata) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ id: "001", role: "product", ...metadata }] }).success).toBe(false);
+  });
+
+  it("retains the actual legacy catalog contract but rejects simultaneous duplicate representations", () => {
+    expect(lensSchema.parse({ ...prime35, alternateImages: ["001"] }).alternateImages).toEqual(["001"]);
+    expect(lensSchema.safeParse({ ...prime35, alternateImages: ["001"], images: [mtf] }).success).toBe(false);
+  });
+
+  it("resolves image notes by ID without translating conditions, source links or the original lens", () => {
+    const lens = lensSchema.parse({
+      ...prime35,
+      images: [mtf, { id: "003", role: "accessory", conditionsNote: "Hood only." }],
+      translations: { zh: { imageNotes: { "002": "源图未注明卡口。" } } },
+    });
+    const translated = resolveTranslations(lens, "zh");
+    expect(translated.images?.[0]).toEqual({ ...mtf, conditionsNote: "源图未注明卡口。" });
+    expect(translated.images?.[1].conditionsNote).toBe("Hood only.");
+    expect(lens.images?.[0].conditionsNote).toBe(mtf.conditionsNote);
+    expect(resolveTranslations(lens, "en")).toBe(lens);
+  });
+
+  it.each([{ "003": "Orphan note" }, { "002": " " }, {}])("rejects empty or orphan image translations: %j", (imageNotes) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [mtf], translations: { zh: { imageNotes } } }).success).toBe(false);
   });
 });
 

@@ -297,11 +297,48 @@ export interface LensPriceEntry {
 /** Purchase channels the frontend renders a buy button for. */
 export type PurchaseChannelType = "official" | "amazon" | "ebay" | "bhphoto" | "jd" | "taobao";
 
+export const LENS_IMAGE_ROLES = [
+  "product", "usage", "sample", "mtf", "optical-construction", "dimensions",
+  "spec-sheet", "feature", "accessory",
+] as const;
+
+export type LensImageRole = (typeof LENS_IMAGE_ROLES)[number];
+
+/** Public supplemental image content; private review and processing data stay in the pipeline. */
+export interface LensImageAsset {
+  /** Pipeline-assigned numeric ID, at least three digits, served as /lenses/<lens-id>/<id>.webp. */
+  id: string;
+  /** Content type, independent of placement, background, crop history, or approval status. */
+  role: LensImageRole;
+  /** Actual focal length explicitly identified by the chart or sample caption, in mm. */
+  focalLengthMm?: number;
+  /** Source-labelled MTF frequencies; preserve the stated unit without conversion. */
+  spatialFrequency?: { values: number[]; unit: "lines/mm" | "lp/mm" };
+  /** Explicit test or capture f-numbers, not the lens's maximum aperture. */
+  apertureFNumbers?: number[];
+  /** MTF calculation method only when explicitly identified by the source. */
+  mtfMethod?: "geometrical" | "diffraction";
+  /** Mount explicitly depicted or labelled, e.g. X, G, E, RF, M43; not an assertion about Lens.mount. */
+  depictedMount?: string;
+  /** Concise English, user-facing conditions, applicability limits, or source inconsistencies. */
+  conditionsNote?: string;
+  /** Verified HTTPS source image address, including an uncropped original; never a local or guessed download path. */
+  sourceUrl?: string;
+  /** Verified HTTPS page establishing conditions that may be outside the image. */
+  conditionsSourceUrl?: string;
+  /** Explicit creator attribution; never infer from a directory or adjacent image. */
+  credit?: string;
+  /** Explicit usage terms; omission or presence alone does not establish redistribution permission. */
+  licenseUrl?: string;
+}
+
 /** Translated user-facing fields for a single locale. */
 interface LensLocaleTranslations {
   fieldNotes?: Partial<Record<FieldNoteKey, string>>;
   lensMaterial?: string;
   accessories?: string[];
+  /** Translations of image conditionsNote, keyed by an existing classified image ID. */
+  imageNotes?: Record<string, string>;
 }
 
 /** A lens search name per locale; `zh` falls back to `en`. */
@@ -835,8 +872,21 @@ export interface Lens {
   officialLinks?: LensOfficialLinks;
 
   /**
-   * Ordered supplemental product image IDs assigned by the image pipeline.
-   * The primary product image precedes these images in the gallery.
+   * Ordered, classified supplemental assets. The primary product image is separate.
+   * Populate only for content explicitly selected for import; omit unknown conditions.
+   * Do not copy private dispositions, reasons, file paths, hashes, crop links or processing logs.
+   * Notes are English; translations.zh.imageNotes supplies Chinese notes by image ID.
+   * Never dual-write these assets to alternateImages.
+   * @example [{ id: "001", role: "mtf", focalLengthMm: 35, spatialFrequency: { values: [10, 30], unit: "lp/mm" } }]
+   */
+  images?: LensImageAsset[];
+
+  /**
+   * Ordered supplemental product image IDs in the existing pipeline catalogs.
+   * LensImageGallery and the detail page still consume this legacy contract.
+   * Keep only until the pipeline migrates those records and these consumers to images;
+   * remove in the same migration release, with no dual-writing or automatic role inference.
+   * @deprecated New imports use images. Mutually exclusive with images.
    */
   alternateImages?: string[];
 
@@ -844,7 +894,7 @@ export interface Lens {
    * Localized translations of user-visible free-text fields.
    * Keys are language codes; currently only "zh" is produced.
    * English values live in the top-level fields (fieldNotes, lensMaterial,
-   * accessories) and serve as the fallback when a translation is absent.
+   * accessories, images[].conditionsNote) and serve as the fallback when a translation is absent.
    */
   translations?: { zh?: LensLocaleTranslations };
 
@@ -901,6 +951,11 @@ export function resolveTranslations(lens: Lens, locale: string): Lens {
     }),
     ...(zh.lensMaterial !== undefined && { lensMaterial: zh.lensMaterial }),
     ...(zh.accessories !== undefined && { accessories: zh.accessories }),
+    ...(zh.imageNotes && lens.images && {
+      images: lens.images.map((image) => zh.imageNotes?.[image.id] === undefined
+        ? image
+        : { ...image, conditionsNote: zh.imageNotes[image.id] }),
+    }),
   };
 }
 

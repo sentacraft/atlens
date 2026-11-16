@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Relative .ts import: scripts/validate-lenses.mts runs under plain Node, which ignores tsconfig paths.
-import { FIELD_NOTE_KEYS, OPTICAL_TRAITS, SPEC_NA } from "../types.ts";
+import { FIELD_NOTE_KEYS, LENS_IMAGE_ROLES, OPTICAL_TRAITS, SPEC_NA } from "../types.ts";
 import type { ApertureValue, Lens } from "../types.ts";
 
 const positiveNumberSchema = z.number().positive();
@@ -238,10 +238,55 @@ type _AssertNoMissingInSchema = _AssertTrue<
   Exclude<_FieldNoteKeyConst, _FieldNotesSchemaKeys> extends never ? true : false
 >;
 
+const imageIdSchema = z.string().regex(/^[0-9]{3,}$/);
+const imageNoteSchema = nonEmptyStringSchema.max(1200);
+const imageSourceUrlSchema = z.url({ protocol: /^https$/ }).refine((value) => {
+  try {
+    const url = new URL(value);
+    return !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}, "Image source URLs must not contain credentials");
+const imageNumberListSchema = z.array(positiveNumberSchema).min(1).refine(
+  (values) => new Set(values).size === values.length,
+  "Image condition values must be unique",
+);
+const lensImageAssetSchema = z.strictObject({
+  id: imageIdSchema,
+  role: z.enum(LENS_IMAGE_ROLES),
+  focalLengthMm: positiveNumberSchema.optional(),
+  spatialFrequency: z.strictObject({
+    values: imageNumberListSchema,
+    unit: z.enum(["lines/mm", "lp/mm"]),
+  }).optional(),
+  apertureFNumbers: imageNumberListSchema.optional(),
+  mtfMethod: z.enum(["geometrical", "diffraction"]).optional(),
+  depictedMount: z.string().regex(/^[A-Z][A-Z0-9-]{0,15}$/).optional(),
+  conditionsNote: imageNoteSchema.optional(),
+  sourceUrl: imageSourceUrlSchema.optional(),
+  conditionsSourceUrl: imageSourceUrlSchema.optional(),
+  credit: nonEmptyStringSchema.optional(),
+  licenseUrl: imageSourceUrlSchema.optional(),
+}).superRefine((image, ctx) => {
+  if (image.role === "mtf") {
+    return;
+  }
+  for (const field of ["spatialFrequency", "mtfMethod"] as const) {
+    if (image[field] !== undefined) {
+      ctx.addIssue({ code: "custom", path: [field], message: `${field} is only valid for MTF images` });
+    }
+  }
+});
+
 const localeTranslationsSchema = z.strictObject({
   fieldNotes: fieldNotesSchema.optional(),
   lensMaterial: nonEmptyStringSchema.optional(),
   accessories: z.array(nonEmptyStringSchema).optional(),
+  imageNotes: z.record(imageIdSchema, imageNoteSchema).refine(
+    (notes) => Object.keys(notes).length > 0,
+    "Image translations must not be empty",
+  ).optional(),
 });
 
 const lensObjectSchema = z.strictObject({
@@ -250,7 +295,11 @@ const lensObjectSchema = z.strictObject({
   lensConfiguration: lensConfigurationSchema.optional(),
   fieldNotes: fieldNotesSchema.optional(),
   officialLinks: officialLinksSchema.optional(),
-  alternateImages: z.array(z.string().regex(/^[0-9]{3,}$/)).min(1)
+  images: z.array(lensImageAssetSchema).min(1).refine(
+    (images) => new Set(images.map((image) => image.id)).size === images.length,
+    "Image IDs must be unique",
+  ).optional(),
+  alternateImages: z.array(imageIdSchema).min(1)
     .refine((ids) => new Set(ids).size === ids.length, "Image IDs must be unique").optional(),
   translations: z.strictObject({ zh: localeTranslationsSchema.optional() }).optional(),
 });
@@ -365,6 +414,14 @@ function applyLensBusinessRules(
 
 export const lensSchema = lensObjectSchema.superRefine((value, ctx) => {
   applyLensBusinessRules(value, ctx);
+  if (value.images && value.alternateImages) {
+    ctx.addIssue({ code: "custom", path: ["images"], message: "Use images or alternateImages, not both" });
+  }
+  for (const id of Object.keys(value.translations?.zh?.imageNotes ?? {})) {
+    if (!value.images?.some((image) => image.id === id && image.conditionsNote !== undefined)) {
+      ctx.addIssue({ code: "custom", path: ["translations", "zh", "imageNotes", id], message: "Image translation requires an existing image with an English conditionsNote" });
+    }
+  }
   for (const [field, trait] of [["tiltRangeDeg", "tilt"], ["shiftRangeMm", "shift"]] as const) {
     if (value[field] !== undefined && !value.opticalTraits?.includes(trait)) {
       ctx.addIssue({
@@ -428,7 +485,7 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
 
 const SIMILARITY_EXCLUDE = new Set([
   "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations", "searchAliases", "pricing",
-  "createdAt", "updatedAt", "alternateImages",
+  "createdAt", "updatedAt", "alternateImages", "images",
 ]);
 
 // Calibrated: legitimate pairs score 0.895 and 0.870; the next unrelated pair 0.762.
