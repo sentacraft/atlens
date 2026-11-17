@@ -109,6 +109,31 @@ for (const width of [375, 1280]) {
       if (width >= 640) {await expect(zoom).toBeHidden();} else {await expect(zoom).toBeVisible();}
       await expect(dialog.getByRole("button", { name: "Close image viewer" })).toBeVisible();
       const image = dialog.getByRole("img", { name: /.+/ });
+      const previous = dialog.locator(".gallery-side-arrow-prev");
+      const next = dialog.locator(".gallery-side-arrow-next");
+      if (width >= 640) {
+        await expect(previous).toBeVisible();
+        await expect(previous).toBeDisabled();
+        await expect(next).toBeVisible();
+        const imageBox = (await image.boundingBox())!;
+        const previousBox = (await previous.boundingBox())!;
+        const nextBox = (await next.boundingBox())!;
+        expect(previousBox.width).toBe(44);
+        expect(previousBox.height).toBe(44);
+        expect(previousBox.x + previousBox.width).toBeLessThanOrEqual(imageBox.x);
+        expect(nextBox.x).toBeGreaterThanOrEqual(imageBox.x + imageBox.width);
+        await next.click();
+        await expectSlide(dialog, SECOND_IMAGE);
+        await expect.poll(async () => (await previous.boundingBox())!.x).toBe(previousBox.x);
+        await expect.poll(async () => (await next.boundingBox())!.x).toBe(nextBox.x);
+        await expect(next).toBeDisabled();
+        await expect(previous).toBeEnabled();
+        await previous.click();
+        await expectSlide(dialog, PRIMARY);
+      } else {
+        await expect(previous).toBeHidden();
+        await expect(next).toBeHidden();
+      }
       await image.click();
       await expect(dialog).toHaveClass(/pswp--zoomed-in/);
       await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");

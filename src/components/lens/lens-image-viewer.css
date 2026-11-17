@@ -49,6 +49,29 @@
   z-index: 10;
 }
 
+.gallery-side-arrow {
+  position: absolute;
+  top: calc(50% - 58px);
+  z-index: 10;
+}
+
+.gallery-side-arrow-prev {
+  left: calc(var(--gallery-x) + 8px);
+}
+
+.gallery-side-arrow-next {
+  right: calc(var(--gallery-x) + 8px);
+}
+
+.gallery-side-arrow-next svg {
+  transform: rotate(180deg);
+}
+
+.gallery-closing .gallery-side-arrow {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .gallery-controls {
   transition: opacity 160ms;
 }

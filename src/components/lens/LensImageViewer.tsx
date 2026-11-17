@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 import "photoswipe/style.css";
 import "./lens-image-viewer.css";
 
+const CHEVRON_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
+
 export type GalleryLabels = {
   images: string[];
   open: string;
@@ -44,6 +46,13 @@ export default function LensImageViewer(props: Props) {
   const titleId = useId();
 
   useEffect(() => {
+    for (const arrow of pswpRef.current?.element?.querySelectorAll<HTMLElement>(".gallery-side-arrow") ?? []) {
+      arrow.inert = !controls;
+      arrow.style.visibility = controls ? "" : "hidden";
+    }
+  }, [controls, chrome]);
+
+  useEffect(() => {
     let cancelled = false;
     let opening = true;
     const pending = new Set<number>();
@@ -70,8 +79,12 @@ export default function LensImageViewer(props: Props) {
         close: false,
         zoom: false,
         counter: false,
-        arrowPrev: false,
-        arrowNext: false,
+        arrowPrev: initial.images.length > 1,
+        arrowNext: initial.images.length > 1,
+        arrowPrevTitle: initial.labels.previous,
+        arrowNextTitle: initial.labels.next,
+        arrowPrevSVG: CHEVRON_SVG,
+        arrowNextSVG: CHEVRON_SVG,
         bgOpacity: 1,
         showHideAnimationType: reducedMotion || !size.width ? "fade" : "zoom",
         showAnimationDuration: reducedMotion ? 80 : 240,
@@ -106,6 +119,16 @@ export default function LensImageViewer(props: Props) {
         },
       });
       pswpRef.current = pswp;
+      pswp.on("uiElementCreate", ({ data }) => {
+        // Keep focused arrows from scrolling the sliding viewport.
+        if (data.name === "arrowPrev" || data.name === "arrowNext") {data.appendTo = "root";}
+      });
+      pswp.addFilter("uiElement", (element, data) => {
+        if (data.name === "arrowPrev" || data.name === "arrowNext") {
+          element.className = cn(IMAGE_CONTROL_CLS, "gallery-side-arrow hidden sm:inline-flex", data.name === "arrowPrev" ? "gallery-side-arrow-prev" : "gallery-side-arrow-next");
+        }
+        return element;
+      });
       pswp.addFilter("thumbEl", () => initial.trigger.current!.querySelector<HTMLImageElement>('[aria-hidden="false"] img') ?? initial.trigger.current!);
       pswp.addFilter("thumbBounds", (bounds, item) => {
         const image = initial.trigger.current?.querySelector<HTMLImageElement>('[aria-hidden="false"] img');
@@ -206,9 +229,9 @@ export default function LensImageViewer(props: Props) {
       <div className="gallery-footer">
         {multiple && <>
           <div className="flex items-center gap-3">
-            <button type="button" aria-label={initial.labels.previous} disabled={index === 0} onClick={() => pswpRef.current?.prev()} className={IMAGE_CONTROL_CLS}><ChevronLeft className="size-4" /></button>
+            <button type="button" aria-label={initial.labels.previous} disabled={index === 0} onClick={() => pswpRef.current?.prev()} className={cn(IMAGE_CONTROL_CLS, "sm:hidden")}><ChevronLeft className="size-4" /></button>
             <span aria-live="polite" className="text-xs tabular-nums text-zinc-500">{index + 1} / {initial.images.length}</span>
-            <button type="button" aria-label={initial.labels.next} disabled={index === initial.images.length - 1} onClick={() => pswpRef.current?.next()} className={IMAGE_CONTROL_CLS}><ChevronRight className="size-4" /></button>
+            <button type="button" aria-label={initial.labels.next} disabled={index === initial.images.length - 1} onClick={() => pswpRef.current?.next()} className={cn(IMAGE_CONTROL_CLS, "sm:hidden")}><ChevronRight className="size-4" /></button>
           </div>
           <GalleryThumbnails images={initial.images} index={index} onSelect={i => pswpRef.current?.goTo(i)} />
         </>}

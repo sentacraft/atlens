@@ -97,9 +97,29 @@ it("starts on the primary image and opens the selected supplemental image", asyn
   fireEvent.keyDown(document, { key: "ArrowRight" });
   expect(within(dialog).getByRole("img", { name: "Example" }).getAttribute("src"))
     .toContain("/r2-assets/example/001.webp");
-  expect((within(dialog).getByRole("button", { name: labels.next }) as HTMLButtonElement).disabled).toBe(true);
+  expect(within(dialog).getAllByRole("button", { name: labels.next }).every(button => (button as HTMLButtonElement).disabled)).toBe(true);
   fireEvent.click(within(dialog).getByRole("button", { name: labels.close }));
   expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/r2-assets/example/001.webp"));
+});
+
+it("uses native side arrows and disables them at the gallery boundaries", async () => {
+  render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }] }} labels={labels} />);
+  fireEvent.click(screen.getByRole("button", { name: labels.open }));
+  const dialog = await screen.findByRole("dialog", { name: "Example" });
+  const previous = dialog.querySelector<HTMLButtonElement>(".gallery-side-arrow-prev");
+  const next = dialog.querySelector<HTMLButtonElement>(".gallery-side-arrow-next");
+  expect(previous).toBeTruthy();
+  expect(next).toBeTruthy();
+  expect(next!.parentElement).toBe(dialog);
+  expect(previous!.disabled).toBe(true);
+  expect(next!.disabled).toBe(false);
+  fireEvent.click(next!);
+  await waitFor(() => expect(next!.disabled).toBe(true));
+  expect(previous!.disabled).toBe(false);
+  expect(within(dialog).getByText("2 / 2")).toBeTruthy();
+  fireEvent.click(previous!);
+  await waitFor(() => expect(previous!.disabled).toBe(true));
+  expect(within(dialog).getByText("1 / 2")).toBeTruthy();
 });
 
 it("switches images from the page arrows without opening the viewer", () => {
