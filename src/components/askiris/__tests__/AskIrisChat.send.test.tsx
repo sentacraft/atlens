@@ -11,15 +11,16 @@ import type { LensSummary } from "@/lib/lens/data";
 vi.mock("next-intl", () => {
   const t = Object.assign((key: string) => key, {
     raw: (key: string) => (key.endsWith("Suggestions") ? [`${key}-1`] : []),
-    rich: (key: string) => key,
+    rich: (key: string, values?: { retry: (text: string) => unknown }) => key === "errorRetry" ? values?.retry("Retry") : key,
     has: () => false,
   });
-  return { useTranslations: () => t, useLocale: () => "en" };
+  return { useTranslations: () => t, useLocale: () => "en", useFormatter: () => ({ dateTime: (date: Date) => date.toISOString() }) };
 });
 const openIris = vi.hoisted(() => vi.fn());
 vi.mock("@/context/IrisPanelProvider", () => ({ useIris: () => ({ openIris, closeIris: vi.fn(), irisShown: false }) }));
 const openSignIn = vi.hoisted(() => vi.fn());
 vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => openSignIn }));
+vi.mock("@/context/SupportDialogProvider", () => ({ useSupportDialog: () => vi.fn() }));
 const push = vi.hoisted(() => vi.fn());
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/i18n/navigation", () => ({ Link: (props: object) => <a {...props} /> }));
@@ -124,6 +125,98 @@ afterEach(() => {
 });
 
 describe("AskIrisChat send", () => {
+  it.each(["myGear", "myFavorites"] as const)("continues %s once after sign-in without another user message", async (toolName) => {
+    const reason = toolName === "myGear" ? "gear" : "favorites";
+    const bodies: Record<string, unknown>[] = [];
+    const stream = (parts: object[]) => new Response(parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n", {
+      headers: { "content-type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" },
+    });
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>(async (input, init) => {
+      if (!String(input).includes("/api/chat")) {return Response.json({ conversations: [] });}
+      bodies.push(JSON.parse(String(init?.body)));
+      return bodies.length === 1 ? stream([
+        { type: "start", messageId: "sign-in-response" },
+        { type: "start-step" },
+        { type: "tool-input-available", toolCallId: "sign-in-call", toolName, input: {} },
+        { type: "tool-approval-request", approvalId: "sign-in-approval", toolCallId: "sign-in-call" },
+        { type: "finish-step" },
+        { type: "finish", finishReason: "tool-calls" },
+      ]) : stream([
+        { type: "start", messageId: "gear-response" },
+        { type: "start-step" },
+        { type: "text-start", id: "answer" },
+        { type: "text-delta", id: "answer", delta: "Your saved lens is XF 27mm F2.8 R WR." },
+        { type: "text-end", id: "answer" },
+        { type: "finish-step" },
+        { type: "finish", finishReason: "stop" },
+      ]);
+    }));
+    const shell = { variant: "page", entry: {}, starterSeed: 1 } as const;
+    const { container, rerenderChat } = renderChat(shell);
+    submit(container, "Which lenses do I own?");
+    await screen.findByText(`leadIn.${reason}`);
+    fireEvent.click(screen.getByRole("button", { name: "signIn" }));
+    expect(openSignIn).toHaveBeenCalledWith(reason === "gear" ? "gear" : "iris_favorites", expect.objectContaining({ returnTo: expect.any(String) }));
+    auth.account = { id: "account-1" };
+    rerenderChat(shell);
+    await screen.findByText("Your saved lens is XF 27mm F2.8 R WR.");
+    rerenderChat(shell);
+    expect(bodies).toHaveLength(2);
+    expect(bodies[0].message).toMatchObject({ role: "user", parts: [{ type: "text", text: "Which lenses do I own?" }] });
+    expect(bodies[1].message).toMatchObject({ role: "assistant", parts: expect.arrayContaining([expect.objectContaining({ type: `tool-${toolName}`, state: "approval-responded", approval: { id: "sign-in-approval", approved: true } })]) });
+    expect(bodies[1]).toMatchObject({ mount: "X", locale: "en" });
+    expect(screen.queryByText(`leadIn.${reason}`)).toBeNull();
+  });
+
+  it.each([
+    ["myGear", false], ["myGear", true], ["myFavorites", false], ["myFavorites", true],
+  ] as const)("retries a failed %s continuation without discarding approval %s", async (toolName, approved) => {
+    const reason = toolName === "myGear" ? "gear" : "favorites";
+    const bodies: Record<string, unknown>[] = [];
+    const stream = (parts: object[]) => new Response(parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n", {
+      headers: { "content-type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" },
+    });
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>(async (input, init) => {
+      if (!String(input).includes("/api/chat")) {return Response.json({ conversations: [] });}
+      bodies.push(JSON.parse(String(init?.body)));
+      if (bodies.length === 2) {throw new Error("Network unavailable");}
+      return bodies.length === 1 ? stream([
+        { type: "start", messageId: "retry-sign-in" },
+        { type: "start-step" },
+        { type: "tool-input-available", toolCallId: "retry-sign-call", toolName, input: {} },
+        { type: "tool-approval-request", approvalId: "retry-sign-approval", toolCallId: "retry-sign-call" },
+        { type: "finish-step" },
+        { type: "finish", finishReason: "tool-calls" },
+      ]) : stream([
+        { type: "start", messageId: "retry-answer" },
+        { type: "start-step" },
+        { type: "text-start", id: "retry-text" },
+        { type: "text-delta", id: "retry-text", delta: "Continued after retry." },
+        { type: "text-end", id: "retry-text" },
+        { type: "finish-step" },
+        { type: "finish", finishReason: "stop" },
+      ]);
+    }));
+    const shell = { variant: "page", entry: {}, starterSeed: 1 } as const;
+    const { container, rerenderChat } = renderChat(shell);
+    submit(container, "Which lenses do I own?");
+    await screen.findByText(`leadIn.${reason}`);
+    if (!approved) {
+      fireEvent.click(screen.getByRole("button", { name: `notNow.${reason}` }));
+    } else {
+      auth.account = { id: "retry-account" };
+      rerenderChat(shell);
+    }
+    fireEvent.click(await screen.findByRole("button", { name: "Retry" }));
+    await screen.findByText("Continued after retry.");
+    expect(bodies).toHaveLength(3);
+    expect(bodies[2].message).toMatchObject({ role: "assistant", parts: expect.arrayContaining([expect.objectContaining({
+      type: `tool-${toolName}`, state: "approval-responded", approval: { id: "retry-sign-approval", approved },
+    })]) });
+    expect(bodies[2].message).toEqual(bodies[1].message);
+    expect(screen.queryByText(`leadIn.${reason}`)).toBeNull();
+  });
+
   it("signs a visitor in anonymously, then sends only the new message", async () => {
     let chatBody: Record<string, unknown> | undefined;
     vi.stubGlobal(

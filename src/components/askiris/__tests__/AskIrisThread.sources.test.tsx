@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import AskIrisThread from "../AskIrisThread";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 
@@ -12,7 +12,12 @@ vi.mock("@/components/askiris/Markdown", () => ({ default: ({ children }: { chil
 vi.mock("@/components/askiris/RecommendationDeck", () => ({ default: () => null }));
 vi.mock("@/components/askiris/LensTable", () => ({ default: () => null }));
 vi.mock("@/components/askiris/GearRequestCard", () => ({ default: () => null }));
-vi.mock("@/components/askiris/SignInCard", () => ({ SignInGate: () => null }));
+vi.mock("@/components/askiris/SignInCard", () => ({ SignInGate: ({ reason, answered, active, onAnswer }: { reason: string; answered?: boolean; active: boolean; onAnswer: (approved: boolean) => void }) => (
+  <div data-testid="sign-in-gate" data-reason={reason} data-active={active} data-answered={String(answered)}>
+    <button onClick={() => onAnswer(false)}>Cancel approval</button>
+    <button onClick={() => onAnswer(true)}>Approve</button>
+  </div>
+) }));
 
 afterEach(cleanup);
 
@@ -46,6 +51,53 @@ describe("stored spec-guide tool calls", () => {
     expect(screen.getByText("The saved answer.")).toBeTruthy();
     expect(Boolean(screen.queryByText(/skill · output-available/))).toBe(debug);
     expect(screen.queryByText("Original spec guide.")).toBeNull();
+  });
+});
+
+describe("native sign-in approvals", () => {
+  const cards = () => ({ lenses: [], answerGear: vi.fn(), answerChoices: vi.fn(), answerApproval: vi.fn(), signInReturnTo: () => "/en/askiris" });
+
+  it.each(["myGear", "myFavorites"] as const)("binds %s to the shared approval card", (toolName) => {
+    const binding = cards();
+    const history: AskIrisUIMessage[] = [{ id: `approval-${toolName}`, role: "assistant", parts: [{
+      type: `tool-${toolName}`, toolCallId: "tool-call", input: {}, state: "approval-requested", approval: { id: "approval-id" },
+    }] }];
+    render(<AskIrisThread messages={history} cards={binding} />);
+    const gate = screen.getByTestId("sign-in-gate");
+    expect(gate).toHaveAttribute("data-reason", toolName === "myGear" ? "gear" : "favorites");
+    expect(gate).toHaveAttribute("data-active", "true");
+    expect(gate).toHaveAttribute("data-answered", "undefined");
+    fireEvent.click(screen.getByRole("button", { name: "Cancel approval" }));
+    fireEvent.click(screen.getByRole("button", { name: "Approve" }));
+    expect(binding.answerApproval.mock.calls).toEqual([["approval-id", false], ["approval-id", true]]);
+  });
+
+  it.each([true, false])("renders the stored approval %s without changing myGear history", (approved) => {
+    const history: AskIrisUIMessage[] = [{ id: "stored-gear", role: "assistant", parts: [{
+      type: "tool-myGear", toolCallId: "saved-call", input: {}, state: "approval-responded", approval: { id: "saved-id", approved },
+    }, { type: "text", text: "Saved answer." }] }];
+    const original = structuredClone(history);
+    render(<AskIrisThread messages={history} cards={cards()} />);
+    expect(screen.getByTestId("sign-in-gate")).toHaveAttribute("data-answered", String(approved));
+    expect(screen.getByText("Saved answer.")).toBeInTheDocument();
+    expect(history).toEqual(original);
+  });
+
+  it("leaves automatic approvals to the server", () => {
+    const history: AskIrisUIMessage[] = [{ id: "automatic", role: "assistant", parts: [{
+      type: "tool-myFavorites", toolCallId: "auto-call", input: {}, state: "approval-requested", approval: { id: "auto-id", isAutomatic: true },
+    }] }];
+    render(<AskIrisThread messages={history} cards={cards()} />);
+    expect(screen.queryByTestId("sign-in-gate")).toBeNull();
+  });
+
+  it.each(["busy", "old"])("makes a %s approval inactive", (kind) => {
+    const history: AskIrisUIMessage[] = [{ id: "inactive", role: "assistant", parts: [{
+      type: "tool-myFavorites", toolCallId: "inactive-call", input: {}, state: "approval-requested", approval: { id: "inactive-id" },
+    }] }];
+    if (kind === "old") {history.push({ id: "new", role: "user", parts: [{ type: "text", text: "Next question." }] });}
+    render(<AskIrisThread messages={history} cards={cards()} busy={kind === "busy"} />);
+    expect(screen.getByTestId("sign-in-gate")).toHaveAttribute("data-active", "false");
   });
 });
 

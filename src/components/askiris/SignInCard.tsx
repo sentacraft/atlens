@@ -52,21 +52,10 @@ export default function SignInCard({
   );
 }
 
-/**
- * A gated tool call the turn paused on: the sign-in card while the user is a guest, and the
- * go-ahead once they sign in, whether in place or after the sign-in redirect reloads the page.
- */
-export function SignInGate({
-  reason,
-  answered,
-  active,
-  returnTo,
-  onAnswer,
-}: {
+/** The shared sign-in card for a server tool waiting for approval. */
+export function SignInGate({ reason, answered, active, returnTo, onAnswer }: {
   reason: SignInCardReason;
-  /** The user's answer, once given. */
   answered?: boolean;
-  /** False once the conversation has moved past this call. */
   active: boolean;
   returnTo: () => string;
   onAnswer: (approved: boolean) => void;
@@ -76,6 +65,11 @@ export function SignInGate({
   const signedIn = Boolean(accountUser(session));
   const waiting = answered === undefined && active;
   const sent = useRef(false);
+  function answer(approved: boolean) {
+    if (sent.current) {return;}
+    sent.current = true;
+    onAnswer(approved);
+  }
   useEffect(() => {
     if (waiting && signedIn && !sent.current) {
       sent.current = true;
@@ -83,14 +77,12 @@ export function SignInGate({
     }
   }, [waiting, signedIn, onAnswer]);
 
-  if (answered) {
+  if (answered === true) {
     return <AnsweredLine done>{t("signedIn")}</AnsweredLine>;
   }
   if (!waiting) {
     return <AnsweredLine done={false}>{t("declined")}</AnsweredLine>;
   }
-  if (signedIn) {
-    return null;
-  }
-  return <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => onAnswer(false)} />;
+  if (signedIn) {return null;}
+  return <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => answer(false)} />;
 }

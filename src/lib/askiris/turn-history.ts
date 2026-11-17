@@ -75,11 +75,11 @@ function resolveToolResult<MESSAGE extends UIMessage>(
   if (!response || response.role !== "assistant" || response.id !== incoming.id || !userMessage) {
     return { kind: "invalid" };
   }
-  const outputs = new Map<string, unknown>();
+  const outputs = new Map<string, { tool: string; output: unknown }>();
   const approvals = new Map<string, boolean>();
   for (const part of incoming.parts) {
     if (isToolUIPart(part) && part.state === "output-available") {
-      outputs.set(part.toolCallId, part.output);
+      outputs.set(part.toolCallId, { tool: getToolName(part), output: part.output });
     }
     if (isToolUIPart(part) && part.state === "approval-responded") {
       approvals.set(part.approval.id, part.approval.approved);
@@ -90,9 +90,10 @@ function resolveToolResult<MESSAGE extends UIMessage>(
     if (!isToolUIPart(part)) {
       return part;
     }
-    if (part.state === "input-available" && clientTools.includes(getToolName(part)) && outputs.has(part.toolCallId)) {
+    const output = outputs.get(part.toolCallId);
+    if (part.state === "input-available" && clientTools.includes(getToolName(part)) && output?.tool === getToolName(part)) {
       answered++;
-      return { ...part, state: "output-available", output: outputs.get(part.toolCallId) };
+      return { ...part, state: "output-available", output: output.output };
     }
     const approved = part.state === "approval-requested" ? approvals.get(part.approval.id) : undefined;
     if (approved !== undefined && approvalTools.includes(getToolName(part))) {

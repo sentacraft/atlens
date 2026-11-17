@@ -33,7 +33,7 @@ export interface GearLens {
   originalMount?: string;
 }
 
-/** The gear facts the prompt renders; language-free so all model-facing wording stays in system-prompt.ts. */
+/** The saved profile returned by the server reader, never injected into system instructions. */
 export type GearSummary =
   | { known: false; reason: "guest" | "empty" | "unavailable" }
   | { known: true; bodies: GearBody[]; lenses: GearLens[] };

@@ -73,7 +73,7 @@ export interface ChatCardBinding {
   lenses: LensSummary[];
   answerGear: (toolCallId: string, output: GearRequestOutput) => void;
   answerChoices: (toolCallId: string, output: ChoiceRequestOutput) => void;
-  answerSignIn: (approvalId: string, approved: boolean) => void;
+  answerApproval: (approvalId: string, approved: boolean) => void;
   /** Where a sign-in that leaves the page returns, reopening this conversation. */
   signInReturnTo: () => string;
 }
@@ -136,7 +136,7 @@ function ToolPart({
           answered={part.state === "approval-requested" ? undefined : part.approval.approved}
           active={latest}
           returnTo={cards.signInReturnTo}
-          onAnswer={(approved) => cards.answerSignIn(id, approved)}
+          onAnswer={(approved) => cards.answerApproval(id, approved)}
         />
       </div>
     );

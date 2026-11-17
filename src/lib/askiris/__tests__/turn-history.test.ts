@@ -98,6 +98,12 @@ describe("resolveTurn with a client tool's output", () => {
     expect(resolveTurn(history, answered({ outcome: "skipped" }), "u3", nothing).kind).toBe("invalid");
   });
 
+  it("rejects a different tool borrowing a pending call's id", () => {
+    const forged = answered({ outcome: "saved" });
+    forged.parts[1] = { ...forged.parts[1], type: "tool-myGear" } as UIMessage["parts"][number];
+    expect(resolveTurn(history, forged, "u3", answerable).kind).toBe("invalid");
+  });
+
   it("rejects an assistant message that is not the stored last response", () => {
     expect(resolveTurn(history, answered({ outcome: "saved" }, { id: "a2" }), "u3", answerable).kind).toBe("invalid");
   });

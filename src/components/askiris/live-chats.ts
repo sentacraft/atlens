@@ -3,9 +3,13 @@
 import { Chat } from "@ai-sdk/react";
 import {
   DefaultChatTransport,
+  getToolName,
+  isToolUIPart,
   lastAssistantMessageIsCompleteWithApprovalResponses,
   lastAssistantMessageIsCompleteWithToolCalls,
 } from "ai";
+import { ASK_FOR_GEAR } from "@/lib/ai/gear-request";
+import { ASK_CHOICES } from "@/lib/ai/choice-request";
 import { askIrisChatRequestBody } from "@/lib/askiris/chat-request";
 import { askIrisMessageMetadataSchema, type AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
@@ -46,6 +50,50 @@ export function replyingChat(id: string): Chat<AskIrisUIMessage> | undefined {
   return entry && isReplying(entry.chat) ? entry.chat : undefined;
 }
 
+function hasPendingCard(messages: AskIrisUIMessage[]) {
+  const last = messages.at(-1);
+  return last?.role === "assistant" && last.parts.some((part) => isToolUIPart(part) && (
+    (part.state === "approval-requested" && !part.approval.isAutomatic) ||
+    (part.state === "input-available" && [ASK_FOR_GEAR, ASK_CHOICES].includes(getToolName(part)))
+  ));
+}
+
+const answeredApprovals = new WeakMap<Chat<AskIrisUIMessage>, Set<string>>();
+
+function hasLocalApprovalAnswer(chat: Chat<AskIrisUIMessage>, seed: AskIrisUIMessage[]) {
+  const answered = answeredApprovals.get(chat);
+  if (!answered) {return false;}
+  return chat.messages.some((message) => message.parts.some((part) =>
+    isToolUIPart(part) && "approval" in part && part.approval && answered.has(part.approval.id) &&
+    !seed.find((item) => item.id === message.id)?.parts.some((saved) =>
+      isToolUIPart(saved) && saved.toolCallId === part.toolCallId &&
+      (saved.state === "approval-responded" || saved.state === "output-available" || saved.state === "output-error" || saved.state === "output-denied"),
+    ),
+  ));
+}
+
+/** A remounted approval card must not submit the same decision twice. */
+export function completeApproval(chat: Chat<AskIrisUIMessage>, approvalId: string, approved: boolean, body: Record<string, unknown>) {
+  const last = chat.messages.at(-1);
+  const pending = last?.role === "assistant" && last.parts.some((part) => isToolUIPart(part) &&
+    part.state === "approval-requested" && !part.approval.isAutomatic && part.approval.id === approvalId);
+  const answered = answeredApprovals.get(chat) ?? new Set<string>();
+  if (!pending || answered.has(approvalId)) {return;}
+  // The SDK queues state updates; another view can answer before that queue runs.
+  answered.add(approvalId);
+  answeredApprovals.set(chat, answered);
+  void chat.addToolApprovalResponse({ id: approvalId, approved, options: { body } });
+}
+
+export function retryChat(chat: Chat<AskIrisUIMessage>, body: Record<string, unknown>) {
+  const last = chat.messages.at(-1);
+  const hasApprovalAnswer = last?.role === "assistant" && last.parts.some((part) =>
+    isToolUIPart(part) && "approval" in part && part.approval?.approved !== undefined,
+  );
+  // Regeneration removes the assistant message, including the user's approval decision.
+  return hasApprovalAnswer ? chat.sendMessage(undefined, { body }) : chat.regenerate({ body });
+}
+
 let lastConversationId: string | undefined;
 
 /** Records the conversation last shown with messages in this tab, which Iris picks up on opening. */
@@ -84,12 +132,15 @@ export function openChat(id: string, seed: AskIrisUIMessage[]): Chat<AskIrisUIMe
     return createChat(id, seed);
   }
   const existing = entries.get(id);
-  if (existing && (existing.seed === seed || isReplying(existing.chat))) {
+  if (existing && (existing.seed === seed || isReplying(existing.chat) ||
+    (hasPendingCard(existing.chat.messages) && (seed.length === 0 ||
+      (hasPendingCard(seed) && existing.chat.messages.at(-1)?.id === seed.at(-1)?.id))) ||
+    hasLocalApprovalAnswer(existing.chat, seed))) {
     existing.seed = seed;
     return existing.chat;
   }
   for (const [key, entry] of entries) {
-    if (!isReplying(entry.chat)) {
+    if (!isReplying(entry.chat) && !hasPendingCard(entry.chat.messages) && !hasLocalApprovalAnswer(entry.chat, entry.seed)) {
       entries.delete(key);
     }
   }

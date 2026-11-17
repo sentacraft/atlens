@@ -1,3 +1,4 @@
+import { getToolName, isToolUIPart, type UIMessage } from "ai";
 import type { SignInCardReason } from "@/lib/sign-in-pitch";
 
 /**
@@ -6,8 +7,8 @@ import type { SignInCardReason } from "@/lib/sign-in-pitch";
  * client tool and shows the same card itself.
  */
 const SIGN_IN_GATED_TOOLS: Readonly<Record<string, SignInCardReason>> = {
-  myFavorites: "favorites",
   myGear: "gear",
+  myFavorites: "favorites",
 };
 
 export function signInGate(toolName: string): SignInCardReason | undefined {
@@ -15,6 +16,14 @@ export function signInGate(toolName: string): SignInCardReason | undefined {
 }
 
 export const SIGN_IN_GATED_TOOL_NAMES: readonly string[] = Object.keys(SIGN_IN_GATED_TOOLS);
+
+export function signInDeclined(messages: UIMessage[]): boolean {
+  const question = messages.slice(Math.max(0, messages.findLastIndex((message) => message.role === "user")));
+  return question.some((message) => message.parts.some((part) =>
+    isToolUIPart(part) && signInGate(getToolName(part)) &&
+    (part.state === "output-denied" || (part.state === "approval-responded" && !part.approval.approved)),
+  ));
+}
 
 /** What the model reads in place of the tool's result when the guest chose not to sign in. */
 export const SIGN_IN_DECLINED =
