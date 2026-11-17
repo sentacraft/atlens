@@ -14,11 +14,11 @@ type MockApi = {
 
 const mocks = vi.hoisted(() => ({ instances: [] as MockApi[] }));
 
-vi.mock("@/data/lens-images.generated", () => ({
-  LENS_IMAGE_HASHES: {},
-  LENS_SUPPLEMENTAL_IMAGES: {
-    "example/001": "/r2-assets/example/001.webp",
-    "example/003": "/r2-assets/example/003.webp",
+vi.mock("@/data/lens-images.generated", () => ({ LENS_IMAGE_HASHES: {} }));
+vi.mock("@/data/public-assets.generated", () => ({
+  PUBLIC_ASSET_URLS: {
+    "lens-images/example/001": "/r2-assets/example/001.webp",
+    "lens-images/example/003": "/r2-assets/example/003.webp",
   },
 }));
 

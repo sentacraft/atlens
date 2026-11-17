@@ -14,7 +14,7 @@ binding = "ASSETS"
 # overwriting anything added via the Dashboard. Non-secret config must
 # live here. Secrets (e.g. GITHUB_TOKEN) stay in the Dashboard.
 [vars]
-SUPPLEMENTAL_IMAGES_URL = "https://images.atlens.app"
+PUBLIC_ASSETS_URL = "https://images.atlens.app"
 SITE_URL = "https://atlens.app"
 GITHUB_FEEDBACK_REPO = "sentacraft/atlens-pipeline"
 GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"
@@ -121,7 +121,7 @@ simple = { limit = 120, period = 60 }
 # declared again here, pointing storage at preview copies. wrangler-config.test.ts checks
 # that every production binding and var has a preview entry.
 [previews.vars]
-SUPPLEMENTAL_IMAGES_URL = "https://images-preview.atlens.app"
+PUBLIC_ASSETS_URL = "https://images-preview.atlens.app"
 SITE_URL = "https://atlens.app"
 GITHUB_FEEDBACK_REPO = "sentacraft/atlens-pipeline"
 GITHUB_FEEDBACK_ASSIGNEES = "sentacraft"

@@ -1,4 +1,5 @@
-import { LENS_IMAGE_HASHES, LENS_SUPPLEMENTAL_IMAGES } from "@/data/lens-images.generated";
+import { LENS_IMAGE_HASHES } from "@/data/lens-images.generated";
+import { getPublicAssetUrl } from "@/lib/assets/url";
 import type { Lens } from "@/lib/types";
 
 export const lensImageStyle = {
@@ -7,11 +8,7 @@ export const lensImageStyle = {
 
 export function getLensImageUrl(id: string, imageId?: string): string {
   if (imageId !== undefined) {
-    const key = `${id}/${imageId}`;
-    if (!Object.hasOwn(LENS_SUPPLEMENTAL_IMAGES, key)) {
-      throw new Error(`Missing supplemental image resource: ${key}`);
-    }
-    return LENS_SUPPLEMENTAL_IMAGES[key];
+    return getPublicAssetUrl(`lens-images/${id}/${imageId}`);
   }
   const hash = Object.hasOwn(LENS_IMAGE_HASHES, id) ? LENS_IMAGE_HASHES[id] : undefined;
   return `/lenses/${id}.webp${hash ? `?v=${hash}` : ""}`;
