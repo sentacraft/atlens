@@ -36,13 +36,13 @@ describe("public asset URLs", () => {
   });
   it("generates image, PDF and font URLs without coupling IDs to storage keys", () => {
     const root = fixture({
-      "lens-images/example-x/001": { key: `supplemental/example-x/001.${sha}.webp`, sha256: sha },
+      "lens-images/example-x/001": { key: `lens-images/example-x/001.${sha}.webp`, sha256: sha },
       "manuals/example/en": { key: `documents/example-en.${sha}.pdf`, sha256: sha },
       "brand-assets/example/font": { key: `fonts/example.${sha}.woff2`, sha256: sha },
     });
     const result = build(root);
     expect(result).toContain(`https://assets.example.com/documents/example-en.${sha}.pdf`);
-    expect(result).toContain(`https://assets.example.com/supplemental/example-x/001.${sha}.webp`);
+    expect(result).toContain(`https://assets.example.com/lens-images/example-x/001.${sha}.webp`);
     expect(result).toContain(`https://assets.example.com/fonts/example.${sha}.woff2`);
     expect(build(root, "publish/test")).toContain("https://assets-preview.example.com/");
   });

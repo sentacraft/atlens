@@ -2,215 +2,215 @@
   "version": 1,
   "assets": {
     "lens-images/7artisans-18mm-f63-x/001": {
-      "key": "supplemental/7artisans-18mm-f63-x/001.65777c249bc859bce4141340c68f49ff4a16aaf884130b06a79c79d0384561bd.webp",
+      "key": "lens-images/7artisans-18mm-f63-x/001.65777c249bc859bce4141340c68f49ff4a16aaf884130b06a79c79d0384561bd.webp",
       "sha256": "65777c249bc859bce4141340c68f49ff4a16aaf884130b06a79c79d0384561bd"
     },
     "lens-images/7artisans-af-18mmf20-x/001": {
-      "key": "supplemental/7artisans-af-18mmf20-x/001.4757fdaa9a910972410902e8897e596d51340db81a6107215836de1f0ee9bba6.webp",
+      "key": "lens-images/7artisans-af-18mmf20-x/001.4757fdaa9a910972410902e8897e596d51340db81a6107215836de1f0ee9bba6.webp",
       "sha256": "4757fdaa9a910972410902e8897e596d51340db81a6107215836de1f0ee9bba6"
     },
     "lens-images/7artisans-af-18mmf20-x/002": {
-      "key": "supplemental/7artisans-af-18mmf20-x/002.ebf617b33442bf260cc9e7e8e2f0b8bcfc920c97e07abc25540d2e31b19f432d.webp",
+      "key": "lens-images/7artisans-af-18mmf20-x/002.ebf617b33442bf260cc9e7e8e2f0b8bcfc920c97e07abc25540d2e31b19f432d.webp",
       "sha256": "ebf617b33442bf260cc9e7e8e2f0b8bcfc920c97e07abc25540d2e31b19f432d"
     },
     "lens-images/brightinstar-mf-10mm-f56-pro-x/001": {
-      "key": "supplemental/brightinstar-mf-10mm-f56-pro-x/001.884b755f0e8f6d44575c0d3790c013c2c33515555b4d015e4cb7cc4d16179e38.webp",
+      "key": "lens-images/brightinstar-mf-10mm-f56-pro-x/001.884b755f0e8f6d44575c0d3790c013c2c33515555b4d015e4cb7cc4d16179e38.webp",
       "sha256": "884b755f0e8f6d44575c0d3790c013c2c33515555b4d015e4cb7cc4d16179e38"
     },
     "lens-images/brightinstar-mf-10mm-f56-pro-x/002": {
-      "key": "supplemental/brightinstar-mf-10mm-f56-pro-x/002.fe3bd30e94da9696cec0920624fd7ae7b2059480bdbe7295baa8ca881ea8f3f7.webp",
+      "key": "lens-images/brightinstar-mf-10mm-f56-pro-x/002.fe3bd30e94da9696cec0920624fd7ae7b2059480bdbe7295baa8ca881ea8f3f7.webp",
       "sha256": "fe3bd30e94da9696cec0920624fd7ae7b2059480bdbe7295baa8ca881ea8f3f7"
     },
     "lens-images/brightinstar-mf-10mm-f56-pro-x/003": {
-      "key": "supplemental/brightinstar-mf-10mm-f56-pro-x/003.b7035823ad7a7486a8c5e6f3df9824b9103411d6f490d7e06eb5f7de02d30db6.webp",
+      "key": "lens-images/brightinstar-mf-10mm-f56-pro-x/003.b7035823ad7a7486a8c5e6f3df9824b9103411d6f490d7e06eb5f7de02d30db6.webp",
       "sha256": "b7035823ad7a7486a8c5e6f3df9824b9103411d6f490d7e06eb5f7de02d30db6"
     },
     "lens-images/brightinstar-mf-10mm-f56-pro-x/004": {
-      "key": "supplemental/brightinstar-mf-10mm-f56-pro-x/004.a557f368aa83281f12a75cbc2ec30105b4c4c661c2690f447251f63067d2174d.webp",
+      "key": "lens-images/brightinstar-mf-10mm-f56-pro-x/004.a557f368aa83281f12a75cbc2ec30105b4c4c661c2690f447251f63067d2174d.webp",
       "sha256": "a557f368aa83281f12a75cbc2ec30105b4c4c661c2690f447251f63067d2174d"
     },
     "lens-images/fujifilm-gf-30mmf56-ts-g/001": {
-      "key": "supplemental/fujifilm-gf-30mmf56-ts-g/001.e70a83f22888b7a3ccd3e82d3bea7e8a4ec5e1175c6e39b20a614f2791e60bdf.webp",
+      "key": "lens-images/fujifilm-gf-30mmf56-ts-g/001.e70a83f22888b7a3ccd3e82d3bea7e8a4ec5e1175c6e39b20a614f2791e60bdf.webp",
       "sha256": "e70a83f22888b7a3ccd3e82d3bea7e8a4ec5e1175c6e39b20a614f2791e60bdf"
     },
     "lens-images/fujifilm-gf-30mmf56-ts-g/002": {
-      "key": "supplemental/fujifilm-gf-30mmf56-ts-g/002.94a168877e701a60300809eae1db6370aa2f6ba006c7ee8ce3a1070fe925f15a.webp",
+      "key": "lens-images/fujifilm-gf-30mmf56-ts-g/002.94a168877e701a60300809eae1db6370aa2f6ba006c7ee8ce3a1070fe925f15a.webp",
       "sha256": "94a168877e701a60300809eae1db6370aa2f6ba006c7ee8ce3a1070fe925f15a"
     },
     "lens-images/fujifilm-gf-30mmf56-ts-g/003": {
-      "key": "supplemental/fujifilm-gf-30mmf56-ts-g/003.ca56c892e57749e9fae022ab6bb03abbb1c5f086d6d53d17c51f7e8715b8441f.webp",
+      "key": "lens-images/fujifilm-gf-30mmf56-ts-g/003.ca56c892e57749e9fae022ab6bb03abbb1c5f086d6d53d17c51f7e8715b8441f.webp",
       "sha256": "ca56c892e57749e9fae022ab6bb03abbb1c5f086d6d53d17c51f7e8715b8441f"
     },
     "lens-images/fujifilm-gf-30mmf56-ts-g/004": {
-      "key": "supplemental/fujifilm-gf-30mmf56-ts-g/004.78e71e688f7924ded88c07685ba9ffc1f5c26f328876bd92f0fffc5b70c9e345.webp",
+      "key": "lens-images/fujifilm-gf-30mmf56-ts-g/004.78e71e688f7924ded88c07685ba9ffc1f5c26f328876bd92f0fffc5b70c9e345.webp",
       "sha256": "78e71e688f7924ded88c07685ba9ffc1f5c26f328876bd92f0fffc5b70c9e345"
     },
     "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/001": {
-      "key": "supplemental/fujifilm-gf-35-70mmf45-56-wr-g/001.81c89b60606bd8a6d6f9a4e896bdbf94f998606bc4ddbdf4c44c29825e04fffc.webp",
+      "key": "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/001.81c89b60606bd8a6d6f9a4e896bdbf94f998606bc4ddbdf4c44c29825e04fffc.webp",
       "sha256": "81c89b60606bd8a6d6f9a4e896bdbf94f998606bc4ddbdf4c44c29825e04fffc"
     },
     "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/002": {
-      "key": "supplemental/fujifilm-gf-35-70mmf45-56-wr-g/002.614850328ec0478a3c184551c984b9b64b8efbcf9bf4ad3abf31b60e7d949f86.webp",
+      "key": "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/002.614850328ec0478a3c184551c984b9b64b8efbcf9bf4ad3abf31b60e7d949f86.webp",
       "sha256": "614850328ec0478a3c184551c984b9b64b8efbcf9bf4ad3abf31b60e7d949f86"
     },
     "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/003": {
-      "key": "supplemental/fujifilm-gf-35-70mmf45-56-wr-g/003.651e00a0caabd9aeadd0700bad257998d3b1be45ff6f3c4c45f8e4c28ef316bb.webp",
+      "key": "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/003.651e00a0caabd9aeadd0700bad257998d3b1be45ff6f3c4c45f8e4c28ef316bb.webp",
       "sha256": "651e00a0caabd9aeadd0700bad257998d3b1be45ff6f3c4c45f8e4c28ef316bb"
     },
     "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/004": {
-      "key": "supplemental/fujifilm-gf-35-70mmf45-56-wr-g/004.76b04a0c82ddfdaed528241f66bbcada600d1fa7197f39f80126bf3cb00f4c9e.webp",
+      "key": "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/004.76b04a0c82ddfdaed528241f66bbcada600d1fa7197f39f80126bf3cb00f4c9e.webp",
       "sha256": "76b04a0c82ddfdaed528241f66bbcada600d1fa7197f39f80126bf3cb00f4c9e"
     },
     "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/005": {
-      "key": "supplemental/fujifilm-gf-35-70mmf45-56-wr-g/005.c0a7567dc825b3c11e58e829c9c9088b2668e47148777721bd2d91e54407c09e.webp",
+      "key": "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/005.c0a7567dc825b3c11e58e829c9c9088b2668e47148777721bd2d91e54407c09e.webp",
       "sha256": "c0a7567dc825b3c11e58e829c9c9088b2668e47148777721bd2d91e54407c09e"
     },
     "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/006": {
-      "key": "supplemental/fujifilm-gf-35-70mmf45-56-wr-g/006.e578872a7084fa75cd9edd10fdeecd816602180781275ba8f1232c4459c3e45c.webp",
+      "key": "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/006.e578872a7084fa75cd9edd10fdeecd816602180781275ba8f1232c4459c3e45c.webp",
       "sha256": "e578872a7084fa75cd9edd10fdeecd816602180781275ba8f1232c4459c3e45c"
     },
     "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/007": {
-      "key": "supplemental/fujifilm-gf-35-70mmf45-56-wr-g/007.138fc218fb8bfda6ce0354a37e72e77db627b81bfbfc5fbeef7e0ab4400392e2.webp",
+      "key": "lens-images/fujifilm-gf-35-70mmf45-56-wr-g/007.138fc218fb8bfda6ce0354a37e72e77db627b81bfbfc5fbeef7e0ab4400392e2.webp",
       "sha256": "138fc218fb8bfda6ce0354a37e72e77db627b81bfbfc5fbeef7e0ab4400392e2"
     },
     "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/001": {
-      "key": "supplemental/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/001.8fb36c84a25735c67ab9f5b61b471484215b403673a32fbb4b26c679a8da3a80.webp",
+      "key": "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/001.8fb36c84a25735c67ab9f5b61b471484215b403673a32fbb4b26c679a8da3a80.webp",
       "sha256": "8fb36c84a25735c67ab9f5b61b471484215b403673a32fbb4b26c679a8da3a80"
     },
     "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/002": {
-      "key": "supplemental/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/002.263db480cfaa45cd327d44ccc671ae4efa27fbf98c334f547dc1d69fa79874d8.webp",
+      "key": "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/002.263db480cfaa45cd327d44ccc671ae4efa27fbf98c334f547dc1d69fa79874d8.webp",
       "sha256": "263db480cfaa45cd327d44ccc671ae4efa27fbf98c334f547dc1d69fa79874d8"
     },
     "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/003": {
-      "key": "supplemental/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/003.41a68755e3536cd307332b837a4a6af9ddae2a448031cf642bdec1906fa698cf.webp",
+      "key": "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/003.41a68755e3536cd307332b837a4a6af9ddae2a448031cf642bdec1906fa698cf.webp",
       "sha256": "41a68755e3536cd307332b837a4a6af9ddae2a448031cf642bdec1906fa698cf"
     },
     "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/004": {
-      "key": "supplemental/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/004.0b3afb641aa1fb3c37b732a56ce628d80626f2f7202ad65b8046885907134793.webp",
+      "key": "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/004.0b3afb641aa1fb3c37b732a56ce628d80626f2f7202ad65b8046885907134793.webp",
       "sha256": "0b3afb641aa1fb3c37b732a56ce628d80626f2f7202ad65b8046885907134793"
     },
     "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/005": {
-      "key": "supplemental/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/005.d421c4de31616a8df02ba9a4470012df6e740c2f274cfc81c336c42f683260a0.webp",
+      "key": "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/005.d421c4de31616a8df02ba9a4470012df6e740c2f274cfc81c336c42f683260a0.webp",
       "sha256": "d421c4de31616a8df02ba9a4470012df6e740c2f274cfc81c336c42f683260a0"
     },
     "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/006": {
-      "key": "supplemental/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/006.83b7215abb20de5f28e43d3f7ceb234e3ea8f3fcbb278f7cb9b7f9f88f799b6e.webp",
+      "key": "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/006.83b7215abb20de5f28e43d3f7ceb234e3ea8f3fcbb278f7cb9b7f9f88f799b6e.webp",
       "sha256": "83b7215abb20de5f28e43d3f7ceb234e3ea8f3fcbb278f7cb9b7f9f88f799b6e"
     },
     "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/007": {
-      "key": "supplemental/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/007.87a871734c21672ea98afebeffe8e676010d6c3ccde81eaccc710becd488f34f.webp",
+      "key": "lens-images/fujifilm-gf-45-100mmf4-r-lm-ois-wr-g/007.87a871734c21672ea98afebeffe8e676010d6c3ccde81eaccc710becd488f34f.webp",
       "sha256": "87a871734c21672ea98afebeffe8e676010d6c3ccde81eaccc710becd488f34f"
     },
     "lens-images/sgimage-af-18mmf22-le-x/001": {
-      "key": "supplemental/sgimage-af-18mmf22-le-x/001.213aafbcde555a00ee6f8009d43729a3727bddae1e353dd7980f25ba3050f003.webp",
+      "key": "lens-images/sgimage-af-18mmf22-le-x/001.213aafbcde555a00ee6f8009d43729a3727bddae1e353dd7980f25ba3050f003.webp",
       "sha256": "213aafbcde555a00ee6f8009d43729a3727bddae1e353dd7980f25ba3050f003"
     },
     "lens-images/sgimage-af-18mmf22-le-x/002": {
-      "key": "supplemental/sgimage-af-18mmf22-le-x/002.cea35e005965349752d23e93df0b3a4ed89be1154786b64e1c673f956a17c011.webp",
+      "key": "lens-images/sgimage-af-18mmf22-le-x/002.cea35e005965349752d23e93df0b3a4ed89be1154786b64e1c673f956a17c011.webp",
       "sha256": "cea35e005965349752d23e93df0b3a4ed89be1154786b64e1c673f956a17c011"
     },
     "lens-images/sgimage-af-18mmf22-le-x/003": {
-      "key": "supplemental/sgimage-af-18mmf22-le-x/003.a66ac06797b26f2c71c3d5b93561503a16c62651db6c6c0c5c99ca5cbfac2794.webp",
+      "key": "lens-images/sgimage-af-18mmf22-le-x/003.a66ac06797b26f2c71c3d5b93561503a16c62651db6c6c0c5c99ca5cbfac2794.webp",
       "sha256": "a66ac06797b26f2c71c3d5b93561503a16c62651db6c6c0c5c99ca5cbfac2794"
     },
     "lens-images/sgimage-af-18mmf22-le-x/004": {
-      "key": "supplemental/sgimage-af-18mmf22-le-x/004.a6b07fb85f7e10c4e1bb86b5a83586c30d7bc32628218d54bbac159f206d343f.webp",
+      "key": "lens-images/sgimage-af-18mmf22-le-x/004.a6b07fb85f7e10c4e1bb86b5a83586c30d7bc32628218d54bbac159f206d343f.webp",
       "sha256": "a6b07fb85f7e10c4e1bb86b5a83586c30d7bc32628218d54bbac159f206d343f"
     },
     "lens-images/sgimage-af-35mmf14-x/001": {
-      "key": "supplemental/sgimage-af-35mmf14-x/001.e4da5bf95b22bf8d6c4a89ec5069789f7244830b04632eb6ebb7d2ec31276403.webp",
+      "key": "lens-images/sgimage-af-35mmf14-x/001.e4da5bf95b22bf8d6c4a89ec5069789f7244830b04632eb6ebb7d2ec31276403.webp",
       "sha256": "e4da5bf95b22bf8d6c4a89ec5069789f7244830b04632eb6ebb7d2ec31276403"
     },
     "lens-images/sgimage-af-35mmf14-x/002": {
-      "key": "supplemental/sgimage-af-35mmf14-x/002.43069c92b030b3bb8c3b66f7575eba740bc5fca5f19aa7b702f60e895d3f4a21.webp",
+      "key": "lens-images/sgimage-af-35mmf14-x/002.43069c92b030b3bb8c3b66f7575eba740bc5fca5f19aa7b702f60e895d3f4a21.webp",
       "sha256": "43069c92b030b3bb8c3b66f7575eba740bc5fca5f19aa7b702f60e895d3f4a21"
     },
     "lens-images/sgimage-af-35mmf14-x/003": {
-      "key": "supplemental/sgimage-af-35mmf14-x/003.0ae8a20cfbb60b2fcc419821a9eea82c673ecb0a736f344a657c6010db91be8e.webp",
+      "key": "lens-images/sgimage-af-35mmf14-x/003.0ae8a20cfbb60b2fcc419821a9eea82c673ecb0a736f344a657c6010db91be8e.webp",
       "sha256": "0ae8a20cfbb60b2fcc419821a9eea82c673ecb0a736f344a657c6010db91be8e"
     },
     "lens-images/sgimage-af-35mmf14-x/004": {
-      "key": "supplemental/sgimage-af-35mmf14-x/004.bbebab2a653e2736970b82cb47578bd97a28c99edae8f63cd1b729a27af3e741.webp",
+      "key": "lens-images/sgimage-af-35mmf14-x/004.bbebab2a653e2736970b82cb47578bd97a28c99edae8f63cd1b729a27af3e741.webp",
       "sha256": "bbebab2a653e2736970b82cb47578bd97a28c99edae8f63cd1b729a27af3e741"
     },
     "lens-images/sgimage-af-35mmf14-x/005": {
-      "key": "supplemental/sgimage-af-35mmf14-x/005.935b06974ea75a6446e6ecef1c85ce6823b3aed0f9138641110a623f94a069b6.webp",
+      "key": "lens-images/sgimage-af-35mmf14-x/005.935b06974ea75a6446e6ecef1c85ce6823b3aed0f9138641110a623f94a069b6.webp",
       "sha256": "935b06974ea75a6446e6ecef1c85ce6823b3aed0f9138641110a623f94a069b6"
     },
     "lens-images/sgimage-af-35mmf14-x/006": {
-      "key": "supplemental/sgimage-af-35mmf14-x/006.6e7e72402be91e7a299261f7f9298b95ef74eba196464668ff8b7b66a627e366.webp",
+      "key": "lens-images/sgimage-af-35mmf14-x/006.6e7e72402be91e7a299261f7f9298b95ef74eba196464668ff8b7b66a627e366.webp",
       "sha256": "6e7e72402be91e7a299261f7f9298b95ef74eba196464668ff8b7b66a627e366"
     },
     "lens-images/sgimage-af-35mmf14-x/007": {
-      "key": "supplemental/sgimage-af-35mmf14-x/007.c89cfa3263f8bdbc66aeff2a0a0194c6ed5b4072b6b554929e3a42e32be01a20.webp",
+      "key": "lens-images/sgimage-af-35mmf14-x/007.c89cfa3263f8bdbc66aeff2a0a0194c6ed5b4072b6b554929e3a42e32be01a20.webp",
       "sha256": "c89cfa3263f8bdbc66aeff2a0a0194c6ed5b4072b6b554929e3a42e32be01a20"
     },
     "lens-images/sgimage-af-35mmf14-x/008": {
-      "key": "supplemental/sgimage-af-35mmf14-x/008.38a2d787c2f2ce21e0e516002eda62811a0703359de04026a0092b24add866e3.webp",
+      "key": "lens-images/sgimage-af-35mmf14-x/008.38a2d787c2f2ce21e0e516002eda62811a0703359de04026a0092b24add866e3.webp",
       "sha256": "38a2d787c2f2ce21e0e516002eda62811a0703359de04026a0092b24add866e3"
     },
     "lens-images/sgimage-af-35mmf14-x/009": {
-      "key": "supplemental/sgimage-af-35mmf14-x/009.3084a38e7b7218b96f256e6fd8296c01fcaf69f13c8c5e73b28d0f9b05e63759.webp",
+      "key": "lens-images/sgimage-af-35mmf14-x/009.3084a38e7b7218b96f256e6fd8296c01fcaf69f13c8c5e73b28d0f9b05e63759.webp",
       "sha256": "3084a38e7b7218b96f256e6fd8296c01fcaf69f13c8c5e73b28d0f9b05e63759"
     },
     "lens-images/sgimage-mf-18mm-f63-aps-c-ultra-slim-pancake-lens-x/001": {
-      "key": "supplemental/sgimage-mf-18mm-f63-aps-c-ultra-slim-pancake-lens-x/001.2f22e91c41d5f61a67aecfe270906ec34f6da96319875c0421f9eb674b438227.webp",
+      "key": "lens-images/sgimage-mf-18mm-f63-aps-c-ultra-slim-pancake-lens-x/001.2f22e91c41d5f61a67aecfe270906ec34f6da96319875c0421f9eb674b438227.webp",
       "sha256": "2f22e91c41d5f61a67aecfe270906ec34f6da96319875c0421f9eb674b438227"
     },
     "lens-images/sgimage-mf-50mm-f18-full-frame-lens-with-shaped-aperture-x/001": {
-      "key": "supplemental/sgimage-mf-50mm-f18-full-frame-lens-with-shaped-aperture-x/001.ed64640c6b481b1226955ebd6a08f988d5f91b87e47dcd3e02a1e2555a0cb924.webp",
+      "key": "lens-images/sgimage-mf-50mm-f18-full-frame-lens-with-shaped-aperture-x/001.ed64640c6b481b1226955ebd6a08f988d5f91b87e47dcd3e02a1e2555a0cb924.webp",
       "sha256": "ed64640c6b481b1226955ebd6a08f988d5f91b87e47dcd3e02a1e2555a0cb924"
     },
     "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/001": {
-      "key": "supplemental/sigma-contemporary-50-120mmf28-dc-os-x/001.bb95ea720a6ba8065249461cc044c4b939f0d2e1ff2a8dbfa428d2966167b13b.webp",
+      "key": "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/001.bb95ea720a6ba8065249461cc044c4b939f0d2e1ff2a8dbfa428d2966167b13b.webp",
       "sha256": "bb95ea720a6ba8065249461cc044c4b939f0d2e1ff2a8dbfa428d2966167b13b"
     },
     "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/002": {
-      "key": "supplemental/sigma-contemporary-50-120mmf28-dc-os-x/002.e2e667d5f2ac9409beed2ecaf3784fef621ddccd840cfcb706502059345c9fa4.webp",
+      "key": "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/002.e2e667d5f2ac9409beed2ecaf3784fef621ddccd840cfcb706502059345c9fa4.webp",
       "sha256": "e2e667d5f2ac9409beed2ecaf3784fef621ddccd840cfcb706502059345c9fa4"
     },
     "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/003": {
-      "key": "supplemental/sigma-contemporary-50-120mmf28-dc-os-x/003.c9560c4dbc9525c8a9d674b6f844bf66575aa2f00b5215818cd75c88612bb44d.webp",
+      "key": "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/003.c9560c4dbc9525c8a9d674b6f844bf66575aa2f00b5215818cd75c88612bb44d.webp",
       "sha256": "c9560c4dbc9525c8a9d674b6f844bf66575aa2f00b5215818cd75c88612bb44d"
     },
     "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/004": {
-      "key": "supplemental/sigma-contemporary-50-120mmf28-dc-os-x/004.efacb92d7ef5f73e5e3f49042320cd121acf0ddc1f32f5a347a8309726dc1e15.webp",
+      "key": "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/004.efacb92d7ef5f73e5e3f49042320cd121acf0ddc1f32f5a347a8309726dc1e15.webp",
       "sha256": "efacb92d7ef5f73e5e3f49042320cd121acf0ddc1f32f5a347a8309726dc1e15"
     },
     "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/005": {
-      "key": "supplemental/sigma-contemporary-50-120mmf28-dc-os-x/005.1580f7a6e401b71150ec50bd9e594f3d59d7c6b84c2db63266e15d4eeca5ea4a.webp",
+      "key": "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/005.1580f7a6e401b71150ec50bd9e594f3d59d7c6b84c2db63266e15d4eeca5ea4a.webp",
       "sha256": "1580f7a6e401b71150ec50bd9e594f3d59d7c6b84c2db63266e15d4eeca5ea4a"
     },
     "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/006": {
-      "key": "supplemental/sigma-contemporary-50-120mmf28-dc-os-x/006.172c52bd7a56721382f97818320c1b5f2314f20c38c340b2fdb048d454d60498.webp",
+      "key": "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/006.172c52bd7a56721382f97818320c1b5f2314f20c38c340b2fdb048d454d60498.webp",
       "sha256": "172c52bd7a56721382f97818320c1b5f2314f20c38c340b2fdb048d454d60498"
     },
     "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/007": {
-      "key": "supplemental/sigma-contemporary-50-120mmf28-dc-os-x/007.50fc5a5c3195aa90e1f684ad643c297d66a2afbcf797d7de2a695684b699c709.webp",
+      "key": "lens-images/sigma-contemporary-50-120mmf28-dc-os-x/007.50fc5a5c3195aa90e1f684ad643c297d66a2afbcf797d7de2a695684b699c709.webp",
       "sha256": "50fc5a5c3195aa90e1f684ad643c297d66a2afbcf797d7de2a695684b699c709"
     },
     "lens-images/viltrox-af-28mm-f45-x/001": {
-      "key": "supplemental/viltrox-af-28mm-f45-x/001.10f38108de786bcc4cb55e0fd3de06b9c88dd37f88619efda2837d14ab9f2129.webp",
+      "key": "lens-images/viltrox-af-28mm-f45-x/001.10f38108de786bcc4cb55e0fd3de06b9c88dd37f88619efda2837d14ab9f2129.webp",
       "sha256": "10f38108de786bcc4cb55e0fd3de06b9c88dd37f88619efda2837d14ab9f2129"
     },
     "lens-images/viltrox-af-75mm-f18-evo-x/001": {
-      "key": "supplemental/viltrox-af-75mm-f18-evo-x/001.90689cd7914c339d6e282668d48c15eac6c701bbc80d4f5e137cc2adb06259f1.webp",
+      "key": "lens-images/viltrox-af-75mm-f18-evo-x/001.90689cd7914c339d6e282668d48c15eac6c701bbc80d4f5e137cc2adb06259f1.webp",
       "sha256": "90689cd7914c339d6e282668d48c15eac6c701bbc80d4f5e137cc2adb06259f1"
     },
     "lens-images/viltrox-af-75mm-f18-evo-x/002": {
-      "key": "supplemental/viltrox-af-75mm-f18-evo-x/002.470501abcfb2d83337a401567dcdd9324bae03003c91ec65e4306c5a4bac61ae.webp",
+      "key": "lens-images/viltrox-af-75mm-f18-evo-x/002.470501abcfb2d83337a401567dcdd9324bae03003c91ec65e4306c5a4bac61ae.webp",
       "sha256": "470501abcfb2d83337a401567dcdd9324bae03003c91ec65e4306c5a4bac61ae"
     },
     "lens-images/viltrox-af-75mm-f18-evo-x/003": {
-      "key": "supplemental/viltrox-af-75mm-f18-evo-x/003.65cedc4c1533631200cde4223397367a0650dc0edef68cc0df034456a3e6ee34.webp",
+      "key": "lens-images/viltrox-af-75mm-f18-evo-x/003.65cedc4c1533631200cde4223397367a0650dc0edef68cc0df034456a3e6ee34.webp",
       "sha256": "65cedc4c1533631200cde4223397367a0650dc0edef68cc0df034456a3e6ee34"
     },
     "lens-images/viltrox-af-75mm-f18-evo-x/004": {
-      "key": "supplemental/viltrox-af-75mm-f18-evo-x/004.3e62a624148292df77ee8d99818107eb77fa23f396e73bace977c8989c378987.webp",
+      "key": "lens-images/viltrox-af-75mm-f18-evo-x/004.3e62a624148292df77ee8d99818107eb77fa23f396e73bace977c8989c378987.webp",
       "sha256": "3e62a624148292df77ee8d99818107eb77fa23f396e73bace977c8989c378987"
     },
     "lens-images/viltrox-af-75mm-f18-evo-x/005": {
-      "key": "supplemental/viltrox-af-75mm-f18-evo-x/005.cd4433008067746a16486cd8078b2c10d5045f4532fb392d0038031103cf620c.webp",
+      "key": "lens-images/viltrox-af-75mm-f18-evo-x/005.cd4433008067746a16486cd8078b2c10d5045f4532fb392d0038031103cf620c.webp",
       "sha256": "cd4433008067746a16486cd8078b2c10d5045f4532fb392d0038031103cf620c"
     }
   }

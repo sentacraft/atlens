@@ -10,7 +10,7 @@ import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { mountHasCharts, mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { isOnCharts } from "@/lib/charts/catalog";
-import { getLensGalleryImageIds, getLensImageUrl } from "@/lib/lens/image";
+import { getLensGalleryImageIds } from "@/lib/lens/image";
 import { buildFeedbackFields } from "@/lib/feedback/prepare-feedback";
 import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups } from "@/lib/lens/spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";

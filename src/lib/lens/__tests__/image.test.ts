@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/data/lens-images.generated", () => ({ LENS_IMAGE_HASHES: { "example-x": "0123456789ab" } }));
 vi.mock("@/data/public-assets.generated", () => ({
-  PUBLIC_ASSET_URLS: { "lens-images/example-x/001": `https://images.example.com/supplemental/example-x/001.${"a".repeat(64)}.webp` },
+  PUBLIC_ASSET_URLS: { "lens-images/example-x/001": `https://images.example.com/lens-images/example-x/001.${"a".repeat(64)}.webp` },
 }));
 import { getLensGalleryImageIds, getLensImageUrl } from "../image";
 
@@ -32,7 +32,7 @@ describe("getLensImageUrl", () => {
     expect(getLensImageUrl("example-x")).toBe("/lenses/example-x.webp?v=0123456789ab");
   });
   it("resolves classified images through the public asset registry", () => {
-    expect(getLensImageUrl("example-x", "001")).toBe(`https://images.example.com/supplemental/example-x/001.${sha}.webp`);
+    expect(getLensImageUrl("example-x", "001")).toBe(`https://images.example.com/lens-images/example-x/001.${sha}.webp`);
   });
   it("rejects missing resources rather than falling back to Git", () => {
     expect(() => getLensImageUrl("example-x", "002")).toThrow(/Missing public asset/);
@@ -70,7 +70,7 @@ describe("lens image manifest generation", () => {
   });
   it("validates only its own namespace without rejecting other public resources", () => {
     const root = fixture({
-      "lens-images/one-x/001": { key: `supplemental/one-x/001.${sha}.webp`, sha256: sha },
+      "lens-images/one-x/001": { key: `lens-images/one-x/001.${sha}.webp`, sha256: sha },
       "manuals/one/en": { key: `manuals/one.${sha}.pdf`, sha256: sha },
     });
     writeFileSync(resolve(root, "src/data/lenses.json"), JSON.stringify([{ id: "one-x", images: [{ id: "001", role: "mtf" }] }]));
@@ -81,7 +81,7 @@ describe("lens image manifest generation", () => {
     writeFileSync(resolve(root, "src/data/lenses.json"), JSON.stringify([{ id: "one-x", images: [{ id: "001", role: "mtf" }] }]));
     expect(() => manifest(root)).toThrow(/pinned lens catalog/);
     writeFileSync(resolve(root, "src/data/lenses.json"), "[]");
-    writeFileSync(resolve(root, "src/data/public-assets.json"), JSON.stringify({ version: 1, assets: { "lens-images/one-x/001": { key: `supplemental/one-x/001.${sha}.webp`, sha256: sha } } }));
+    writeFileSync(resolve(root, "src/data/public-assets.json"), JSON.stringify({ version: 1, assets: { "lens-images/one-x/001": { key: `lens-images/one-x/001.${sha}.webp`, sha256: sha } } }));
     expect(() => manifest(root)).toThrow(/pinned lens catalog/);
   });
   it.each([{ alternateImages: [] }, { alternateImages: ["001"] }])("rejects removed image fields: %j", fields => {
