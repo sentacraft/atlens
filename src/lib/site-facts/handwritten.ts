@@ -190,7 +190,14 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "capabilities",
     topic: "askIris",
-    text: "What Iris can do: find and recommend lenses for a need, as cards with a reason for each; lay lenses side by side in a spec table; explain how lenses differ; look up any lens's specs; answer questions about Fujifilm camera bodies from the catalogue (stabilization, subject detection, video, viewfinder, screen, card slots, burst, flash, weather sealing, weight, size, release year), including discontinued ones, but not prices, firmware or reviews of bodies; for lenses Atlens has review findings on, sum up what published reviews say about image quality, focusing, handling and build, citing them; for signed-in users, take their saved gear into account and ask them to add it when missing, and read their favorites; answer questions about Atlens itself, linking to the pages that say more; link to collections; and give a link that opens the lenses it mentions side by side on the compare page.",
+    text: "What Iris can do: find and recommend lenses for a need, as cards with a reason for each; lay lenses side by side in a spec table; explain how lenses differ; look up any lens's specs; answer questions about Fujifilm camera bodies from the catalogue (stabilization, subject detection, video, viewfinder, screen, card slots, burst, flash, weather sealing, weight, size, release year), including discontinued ones, but not prices, firmware or reviews of bodies; for lenses Atlens has review findings on, sum up what published reviews say about image quality, focusing, handling and build, citing them; for signed-in users, take their saved gear into account and ask them to add it when missing, and read their favorites; answer questions about Atlens itself, linking to the pages that say more; link to collections; and give a link that opens the lenses it mentions side by side on the compare page; prepare editable feedback drafts for the user to review and submit.",
+  },
+  {
+    id: "feedback",
+    topic: "askIris",
+    text: "Feedback can be written in the site's form or prepared with Iris as an editable draft. Only pressing Submit sends it to the author as a GitHub issue; preparing a draft does not send it. Reply requests are optional and off by default, unless the user explicitly asks Iris for a reply. Signed-in users get their account email prefilled and may change it; guests can enter a contact without signing in. The account-email prefill happens in the app, not through the AI model. Submitted feedback contains the reviewed text, lens or search context when relevant, and the contact only if replies were selected, not the whole conversation. The app stores a random submission ID, payload hash and status to avoid duplicates, without storing the feedback text or contact in that submission record. A submission does not promise a reply or a fix.",
+    sources: ["src/lib/feedback/", "src/app/api/feedback/"],
+    links: ["action:feedback"],
   },
   {
     id: "model-provider",

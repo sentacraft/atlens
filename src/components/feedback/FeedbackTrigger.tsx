@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import FeedbackDialog, { type FeedbackField } from "@/components/feedback/FeedbackDialog";
+import FeedbackDialog from "@/components/feedback/FeedbackDialog";
+import { createFeedbackDraft, type FeedbackField } from "@/lib/feedback/feedback-draft";
+import { useFeedback } from "@/lib/feedback/use-feedback";
 import type { FeedbackContext, FeedbackType } from "@/lib/feedback/feedback-contract";
 import { track } from "@/lib/analytics/analytics";
 import { FEEDBACK_LINK_CLS } from "@/config/ui-tokens";
@@ -24,6 +26,8 @@ export default function FeedbackTrigger({
   stopPropagation = false,
 }: FeedbackTriggerProps) {
   const [open, setOpen] = useState(false);
+  const [seed, setSeed] = useState(() => createFeedbackDraft({ type, context, fields }));
+  const feedback = useFeedback(seed, open);
 
   return (
     <>
@@ -34,6 +38,7 @@ export default function FeedbackTrigger({
             e.stopPropagation();
           }
           track("feedback_open", { feedback_type: type });
+          setSeed(createFeedbackDraft({ type, context, fields }));
           setOpen(true);
         }}
         onPointerDown={(e) => {
@@ -48,9 +53,8 @@ export default function FeedbackTrigger({
       <FeedbackDialog
         open={open}
         onOpenChange={setOpen}
-        type={type}
-        context={context}
-        fields={fields}
+        feedback={feedback}
+        mode="create"
       />
     </>
   );

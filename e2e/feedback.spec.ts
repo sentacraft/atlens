@@ -13,12 +13,12 @@ test.beforeEach(({ page }, testInfo) => {
 // Fakes success so tests never file real GitHub issues.
 async function mockFeedbackApi(page: Page): Promise<{ getLastBody: () => Record<string, unknown> | null }> {
   let lastBody: Record<string, unknown> | null = null;
-  await page.route("**/api/feedback", async (route) => {
+  await page.route("**/api/feedback**", async (route) => {
     if (route.request().method() === "POST") {
       lastBody = (await route.request().postDataJSON()) as Record<string, unknown>;
-      await route.fulfill({ json: { ok: true } });
+      await route.fulfill({ json: { status: "sent" } });
     } else {
-      await route.continue();
+      await route.fulfill({ json: { status: null } });
     }
   });
   return { getLastBody: () => lastBody };
@@ -184,6 +184,25 @@ test.describe("FeedbackDialog — validation", () => {
     await expect(dialog.getByText(/thanks/i)).not.toBeVisible();
     expect(getLastBody()).toBeNull();
   });
+});
+
+test("keeps the feedback header and submit action visible on a short phone screen", async ({ page }) => {
+  await mockFeedbackApi(page);
+  await page.setViewportSize({ width: 375, height: 600 });
+  await page.goto(LENS_URL);
+  const reportIssue = page.getByRole("button", { name: "Report an issue", exact: true });
+  await expect(reportIssue).toBeVisible();
+  await reportIssue.click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("combobox").click();
+  await page.getByRole("option", { name: "Weight", exact: true }).click();
+  await dialog.getByRole("checkbox", { name: /want a reply/i }).check();
+  await expect(dialog.getByRole("button", { name: "Close", exact: true })).toBeInViewport();
+  await expect(dialog.getByRole("button", { name: "Submit", exact: true })).toBeInViewport();
+  const form = dialog.locator("form");
+  expect(await form.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
+  await dialog.getByRole("textbox", { name: /your email/i }).scrollIntoViewIfNeeded();
+  await expect(dialog.getByRole("textbox", { name: /your email/i })).toBeInViewport();
 });
 
 // Regression: the field picker portals to <body>; with z-indexed dialogs it either sat under the

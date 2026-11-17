@@ -55,8 +55,16 @@ describe("isRateLimited", () => {
       );
     }
 
-    expect(limit).toHaveBeenLastCalledWith({ key: "203.0.113.1" });
-    expect(counts.get("203.0.113.1")).toBe(3);
+    expect(limit).toHaveBeenLastCalledWith({ key: "feedback:203.0.113.1" });
+    expect(counts.get("feedback:203.0.113.1")).toBe(3);
+  });
+
+  it("does not consume the submission budget when reading feedback receipts", async () => {
+    const req = () => request({ "cf-connecting-ip": "203.0.113.1" });
+    expect(await isRateLimited(req(), "feedbackStatus")).toBe(false);
+    expect(await isRateLimited(req(), "feedbackStatus")).toBe(false);
+    expect(await isRateLimited(req(), "feedbackStatus")).toBe(true);
+    expect(await isRateLimited(req(), "feedback")).toBe(false);
   });
 
   it("skips requests that did not come through Cloudflare", async () => {

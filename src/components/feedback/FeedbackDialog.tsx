@@ -1,375 +1,91 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import FeedbackSuccessState from "@/components/feedback/FeedbackSuccessState";
+import FeedbackSuccessState from "./FeedbackSuccessState";
+import FeedbackReplyFields from "./FeedbackReplyFields";
+import FeedbackStatusNotice from "./FeedbackStatusNotice";
 import { ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS } from "@/config/ui-tokens";
-import {
-  Dialog,
-  DialogCancel,
-  DialogClose,
-  DialogPopup,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogCancel, DialogClose, DialogPopup, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { SITE } from "@/config/site";
-import { track } from "@/lib/analytics/analytics";
-import { submitFeedback } from "@/lib/feedback/feedback-client";
-import type {
-  FeedbackContext,
-  FeedbackSubmission,
-  FeedbackSubmissionContext,
-  FeedbackType,
-} from "@/lib/feedback/feedback-contract";
+import type { FeedbackController } from "@/lib/feedback/use-feedback";
 
-export interface FeedbackField {
-  label: string;
-  currentValue?: string;
-  group?: string;
-  hideCurrentValue?: boolean;
-}
-
-interface FeedbackDialogProps {
+export default function FeedbackDialog({ open, onOpenChange, feedback, mode }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  type: FeedbackType;
-  context?: FeedbackContext;
-  fields?: FeedbackField[];
-}
-
-function nonEmpty(value?: string): string | undefined {
-  const trimmed = value?.trim();
-  return trimmed || undefined;
-}
-
-export default function FeedbackDialog({
-  open,
-  onOpenChange,
-  type,
-  context,
-  fields,
-}: FeedbackDialogProps) {
+  feedback: FeedbackController;
+  mode: "create" | "edit";
+}) {
   const t = useTranslations("Feedback");
-  const [description, setDescription] = useState("");
-  const [selectedFieldLabel, setSelectedFieldLabel] = useState("");
-  const [suggestedCorrection, setSuggestedCorrection] = useState("");
-  const [replyContact, setReplyContact] = useState("");
-  const [wantsReply, setWantsReply] = useState(false);
-  const wantsReplyCheckboxId = useId();
-  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [edited, setEdited] = useState(feedback.draft);
   const textareaId = useId();
-  const correctionId = useId();
-  const contactId = useId();
+  useEffect(() => { if (open) {setEdited(feedback.draft);} }, [open, feedback.draft]);
+  const fields = edited.fields;
+  const groups = [...new Set(fields.map((field) => field.group ?? ""))];
+  const selected = fields.find((field) => field.label === edited.context?.field);
+  const context = edited.context;
+  const success = feedback.status === "sent";
+  const invalidContact = feedback.validation === "contactRequired" && edited.wantsReply && !feedback.contactFor(edited).trim();
 
-  const {
-    isPending,
-    isSuccess,
-    mutate,
-    reset: resetMutation,
-  } = useMutation({
-    mutationFn: submitFeedback,
-    onSuccess: (_, payload) => {
-      track("feedback_submit", { feedback_type: payload.type });
-    },
-    onError: (error) => {
-      console.error("[feedback] submission failed", {
-        errorType: error instanceof Error ? error.name : "unknown",
-      });
-      toast.error(`${t("error")} (${error instanceof Error ? error.message : "unknown"})`);
-    },
-  });
-
-  const showFieldPicker = type === "data_issue" && fields && fields.length > 0;
-
-  const otherField: FeedbackField = { label: t("fieldOther"), group: t("fieldGroupOther") };
-  const allFields = showFieldPicker ? [...fields, otherField] : [];
-
-  const selectedField = allFields.find((f) => f.label === selectedFieldLabel);
-
-  const groupedFields = showFieldPicker
-    ? (() => {
-        const groups: { label: string; fields: FeedbackField[] }[] = [];
-        const index = new Map<string, number>();
-        for (const f of allFields) {
-          const key = f.group ?? "";
-          if (!index.has(key)) {
-            index.set(key, groups.length);
-            groups.push({ label: key, fields: [f] });
-          } else {
-            groups[index.get(key)!].fields.push(f);
-          }
-        }
-        return groups;
-      })()
-    : [];
-
-  useEffect(() => {
-    if (open) {
-      setDescription("");
-      setSelectedFieldLabel("");
-      setSuggestedCorrection("");
-      setReplyContact("");
-      setWantsReply(false);
-      resetMutation();
-      setSubmitAttempted(false);
-    }
-  }, [open, resetMutation]);
-
-  const titleKey = type === "data_issue" ? "titleDataIssue" : "titleGeneral";
-
-  const lensHeader =
-    type === "data_issue" && context?.lensModel
-      ? { brand: context.lensBrand ?? "", model: context.lensModel }
-      : null;
-
-  function createSubmissionPayload(): FeedbackSubmission {
-    const contextPayload: FeedbackSubmissionContext = {
-      lensId: nonEmpty(context?.lensId),
-      lensModel: nonEmpty(context?.lensModel),
-      lensBrand: nonEmpty(context?.lensBrand),
-      searchQuery: nonEmpty(context?.searchQuery),
-      field: nonEmpty(selectedFieldLabel) ?? nonEmpty(context?.field),
-      currentValue: nonEmpty(selectedField?.currentValue),
-      suggestedCorrection: nonEmpty(suggestedCorrection),
-    };
-    const payload: FeedbackSubmission = {
-      type,
-      description: description.trim(),
-    };
-    const replyContactValue = nonEmpty(replyContact);
-
-    if (wantsReply && replyContactValue) {
-      payload.replyContact = replyContactValue;
-    }
-    if (Object.values(contextPayload).some((value) => value !== undefined)) {
-      payload.context = contextPayload;
-    }
-
-    return payload;
+  function setContext(patch: Partial<NonNullable<typeof context>>) {
+    setEdited((current) => ({ ...current, context: { ...current.context, ...patch } }));
   }
-
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (isPending) {
-      return;
-    }
-    if (!hasContent) {
-      setSubmitAttempted(true);
-      return;
-    }
-
-    mutate(createSubmissionPayload());
-  }
-
-  const hasContent =
-    description.trim().length > 0 || suggestedCorrection.trim().length > 0;
-  const canSubmit = !isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* max-h-none: the drawer grows upward so the footer stays put instead of being clipped. */}
-      <DialogPopup className="max-w-md max-h-none">
-        <DialogHeader className="flex-row items-start justify-between gap-3 pr-5">
-          <div className="flex min-w-0 flex-col gap-1.5">
-            <DialogTitle className={isSuccess ? "sr-only" : undefined}>
-              {t(titleKey)}
-            </DialogTitle>
-            {!isSuccess && (
-              <p className="text-xs text-zinc-400">
-                {t("emailLabel")}{" "}
-                <a
-                  href={`mailto:${SITE.contactEmail}`}
-                  className="underline underline-offset-2 hover:text-zinc-600 transition-colors"
-                >
-                  {SITE.contactEmail}
-                </a>
-              </p>
-            )}
-          </div>
-          <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "hidden h-9 w-9 shrink-0 sm:inline-flex")}>
-            <X className="h-4 w-4" />
-          </DialogClose>
+      <DialogPopup className="flex max-w-md flex-col sm:max-h-[calc(var(--visible-height)-4rem)]">
+        <DialogHeader className="shrink-0 flex-row items-start justify-between gap-3 pr-5">
+          <DialogTitle className={success ? "sr-only" : undefined}>
+            {t(mode === "edit" ? "editTitle" : edited.type === "data_issue" ? "titleDataIssue" : "titleGeneral")}
+          </DialogTitle>
+          <DialogClose className={cn(ICON_CLOSE_BTN_CLS, FROSTED_OVERLAY_CHROME_CLS, "size-11 shrink-0")} aria-label={t("close")}><X className="size-4" /></DialogClose>
         </DialogHeader>
-
-        {isSuccess ? (
-          <FeedbackSuccessState onClose={() => onOpenChange(false)} />
-        ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3 px-5 pb-4">
-            {lensHeader && (
-              <div className="flex flex-col gap-0.5 border-b border-zinc-200 pb-3">
-                <span className="text-[11px] font-medium uppercase tracking-wide text-zinc-400">
-                  {t("affectedLensLabel")}
-                </span>
-                <div className="flex items-baseline gap-1.5">
-                  {lensHeader.brand && (
-                    <span className="text-sm text-zinc-500">
-                      {lensHeader.brand}
-                    </span>
-                  )}
-                  <span className="text-sm font-semibold text-zinc-900">
-                    {lensHeader.model}
-                  </span>
-                </div>
+        {success ? <FeedbackSuccessState onClose={() => onOpenChange(false)} /> : (
+          <form onSubmit={(event) => { event.preventDefault(); void feedback.submit(edited); }} className="flex min-h-0 flex-col gap-4 overflow-y-auto px-5 pb-4 [&>*]:shrink-0">
+            {context?.lensModel && (
+              <div className="flex flex-col gap-1 border-b border-zinc-200 pb-3 text-sm">
+                <span className="text-xs text-zinc-500">{t("affectedLensLabel")}</span>
+                <span className="font-medium">{context.lensBrand} {context.lensModel}</span>
               </div>
             )}
-
-            {showFieldPicker && (
-              <div className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-zinc-600">
-                  {t("fieldPickerLabel")}
-                </span>
-                <Select
-                  value={selectedFieldLabel}
-                  onValueChange={(v) => {
-                    setSelectedFieldLabel(v ?? "");
-                    setSuggestedCorrection("");
-                  }}
-                  items={allFields.map((f) => ({ value: f.label, label: f.label }))}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("fieldPickerPlaceholder")} />
-                  </SelectTrigger>
+            {fields.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <span className="text-xs text-zinc-600">{t("fieldPickerLabel")}</span>
+                <Select disabled={feedback.locked} value={context?.field ?? ""} onValueChange={(value) => {
+                  const field = fields.find((entry) => entry.label === value);
+                  setContext({ field: value ?? undefined, currentValue: field?.currentValue, suggestedCorrection: "" });
+                }} items={[...fields.map((field) => ({ value: field.label, label: field.label })), { value: t("fieldOther"), label: t("fieldOther") }]}>
+                  <SelectTrigger className="min-h-11 w-full"><SelectValue placeholder={t("fieldPickerPlaceholder")} /></SelectTrigger>
                   <SelectContent>
-                    {groupedFields.map((group) => (
-                      <SelectGroup key={group.label}>
-                        {group.label && <SelectLabel>{group.label}</SelectLabel>}
-                        {group.fields.map((f) => (
-                          <SelectItem key={f.label} value={f.label}>
-                            {f.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    ))}
+                    {groups.map((group) => <SelectGroup key={group}>{group && <SelectLabel>{group}</SelectLabel>}{fields.filter((field) => (field.group ?? "") === group).map((field) => <SelectItem key={field.label} value={field.label}>{field.label}</SelectItem>)}</SelectGroup>)}
+                    <SelectItem value={t("fieldOther")}>{t("fieldOther")}</SelectItem>
                   </SelectContent>
                 </Select>
-
-                <div className={cn(
-                  "grid transition-[grid-template-rows] duration-200 ease-out",
-                  selectedField && selectedField !== otherField ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                )}>
-                  <div className="overflow-hidden min-h-0">
-                    <div className="flex flex-col gap-2 rounded-lg bg-zinc-50 border border-zinc-200 px-3 py-2.5 mt-1.5">
-                      {selectedField?.currentValue && !selectedField.hideCurrentValue && (
-                        <div className="flex items-baseline gap-2">
-                          <span className="shrink-0 text-xs text-zinc-400">
-                            {t("currentValueLabel")}
-                          </span>
-                          <span className="text-xs font-medium text-zinc-700">
-                            {selectedField.currentValue}
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex flex-col gap-1">
-                        <label
-                          htmlFor={correctionId}
-                          className="text-xs text-zinc-400"
-                        >
-                          {t("suggestedCorrectionLabel")}
-                        </label>
-                        <input
-                          id={correctionId}
-                          type="text"
-                          value={suggestedCorrection}
-                          onChange={(e) => setSuggestedCorrection(e.target.value)}
-                          placeholder={t("suggestedCorrectionPlaceholder")}
-                          maxLength={200}
-                          className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             )}
-
-            {showFieldPicker && (
-              <label
-                htmlFor={textareaId}
-                className="text-xs font-medium text-zinc-600"
-              >
-                {t("descriptionLabel")}
-                <span className="ml-1 font-normal text-zinc-400">
-                  ({t("descriptionOptional")})
-                </span>
-              </label>
+            {edited.type === "data_issue" && context?.field && (
+              <div className="flex flex-col gap-2 text-xs text-zinc-600">
+                {context.currentValue && !selected?.hideCurrentValue && <p>{t("currentValueLabel")} <span className="font-medium text-zinc-900">{context.currentValue}</span></p>}
+                <label className="flex flex-col gap-2">{t("suggestedCorrectionLabel")}
+                  <Textarea rows={1} disabled={feedback.locked} value={context.suggestedCorrection ?? ""} onChange={(event) => setContext({ suggestedCorrection: event.target.value })} maxLength={200} placeholder={t("suggestedCorrectionPlaceholder")} />
+                </label>
+              </div>
             )}
-            <Textarea
-              id={textareaId}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={t(showFieldPicker ? "descriptionPlaceholder" : "descriptionPlaceholderMain")}
-              rows={4}
-              maxLength={2000}
-            />
-            <div className="flex flex-col gap-2">
-              <label
-                htmlFor={wantsReplyCheckboxId}
-                className="flex items-center gap-2 text-xs font-medium text-zinc-600 cursor-pointer select-none"
-              >
-                <Checkbox
-                  id={wantsReplyCheckboxId}
-                  checked={wantsReply}
-                  onCheckedChange={(checked) => {
-                    const next = checked === true;
-                    setWantsReply(next);
-                    if (!next) {
-                      setReplyContact("");
-                    }
-                  }}
-                />
-                {t("replyContactToggle")}
-              </label>
-              <input
-                id={contactId}
-                type="text"
-                value={replyContact}
-                onChange={(e) => setReplyContact(e.target.value)}
-                placeholder={t("replyContactPlaceholder")}
-                aria-label={t("replyContactLabel")}
-                disabled={!wantsReply}
-                className="w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-base sm:text-sm text-zinc-900 placeholder:text-zinc-400 outline-none focus:border-zinc-400 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-400 disabled:placeholder:text-zinc-300"
-              />
-            </div>
-
-            {showFieldPicker && submitAttempted && !hasContent && (
-              <p className="text-xs text-amber-600">
-                {t("contentRequired")}
-              </p>
-            )}
+            <label htmlFor={textareaId} className="text-xs text-zinc-600">{t(fields.length ? "descriptionLabel" : "descriptionLabelMain")}</label>
+            <Textarea id={textareaId} value={edited.description} disabled={feedback.locked} onChange={(event) => setEdited((current) => ({ ...current, description: event.target.value }))} rows={4} maxLength={2000} placeholder={t(fields.length ? "descriptionPlaceholder" : "descriptionPlaceholderMain")} />
+            <FeedbackReplyFields draft={edited} contact={feedback.contactFor(edited)} onChange={(patch) => setEdited((current) => ({ ...current, ...patch }))} disabled={feedback.locked} invalid={invalidContact} />
+            <FeedbackStatusNotice feedback={feedback} />
           </form>
         )}
-
-        {!isSuccess ? (
-          <DialogFooter>
-            <>
-              <DialogCancel render={<Button type="button" variant="ghost" />}>{t("cancel")}</DialogCancel>
-              <Button
-                type="button"
-                onClick={handleSubmit}
-                disabled={!canSubmit}
-              >
-                {isPending ? t("submitting") : t("submit")}
-              </Button>
-            </>
-          </DialogFooter>
-        ) : null}
+        {!success && <DialogFooter className="shrink-0">
+          <DialogCancel render={<Button type="button" variant="ghost" className="min-h-11" />}>{t("cancel")}</DialogCancel>
+          {mode === "edit" && <Button type="button" variant="outline" className="min-h-11" disabled={feedback.locked} onClick={() => { feedback.update(edited); onOpenChange(false); }}>{t("saveChanges")}</Button>}
+          <Button type="button" className="min-h-11" disabled={feedback.locked || feedback.checking} onClick={() => void feedback.submit(edited)}>{t(feedback.status === "pending" ? "submitting" : "submit")}</Button>
+        </DialogFooter>}
       </DialogPopup>
     </Dialog>
   );

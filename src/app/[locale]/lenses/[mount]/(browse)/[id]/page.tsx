@@ -5,12 +5,13 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import SectionNav from "@/components/nav/SectionNav";
 import { cn } from "@/lib/utils";
 import { Flag } from "lucide-react";
+import { pickPriceEntry } from "@/lib/lens/pricing";
 import { getLensUrl } from "@/lib/lens/lens";
 import { getLensesByMount } from "@/lib/lens/data";
 import { mountHasCharts, mountHasCollections, urlSegmentToMount } from "@/lib/mount";
 import { isOnCharts } from "@/lib/charts/catalog";
-import { getLensImageUrl } from "@/lib/lens/image";
-import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText } from "@/lib/lens/spec-groups";
+import { buildFeedbackFields } from "@/lib/feedback/prepare-feedback";
+import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups } from "@/lib/lens/spec-groups";
 import type { ResolvedSpecRow, StructuredLine } from "@/lib/lens/spec-groups";
 import { Link } from "@/i18n/navigation";
 import { ExternalLink } from "@/components/ui/external-link";
@@ -36,7 +37,6 @@ import { BoolCell } from "@/components/ui/bool-cell";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
 import { SITE } from "@/config/site";
-import { pickPriceEntry, formatPriceForReport } from "@/lib/lens/pricing";
 import { lensDisplayName, brandLabel } from "@/lib/lens/format";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
@@ -174,7 +174,6 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   const t = await getTranslations("LensDetail");
   const tBrand = await getTranslations("Brands");
-  const tPricing = await getTranslations("Pricing");
   const tNav = await getTranslations("Nav");
   const url = getLensUrl(lens, locale);
 
@@ -206,21 +205,11 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   const resolvedGroups = resolveSpecGroups(specGroups, lens);
 
-  const mediaGroupLabel = t("fieldGroupMedia");
   const memberCollections = getMemberCollections(lens, locale);
   const previews = getCollectionPreviews(locale);
 
   const priceSelection = pickPriceEntry(lens.pricing, locale);
-  const reportableFields = [
-    ...resolvedGroups.flatMap((group) =>
-      group.rows.map((row) => ({ label: row.label, currentValue: rowPlainText(row, valueCellLabels), group: group.label }))
-    ),
-    ...(priceSelection
-      ? [{ label: tPricing("fieldLabel"), currentValue: formatPriceForReport(priceSelection, tPricing), group: tPricing("groupLabel") }]
-      : []),
-    ...(url ? [{ label: t("fieldOfficialLink"), currentValue: url, group: mediaGroupLabel }] : []),
-    { label: t("fieldLensImage"), currentValue: getLensImageUrl(lens.id), group: mediaGroupLabel, hideCurrentValue: true },
-  ];
+  const reportableFields = buildFeedbackFields(lens, locale);
 
   return (
     <>
@@ -240,7 +229,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             className={UTILITY_BTN_CLS}
           >
             <Flag className="size-4" />
-            <span className="hidden sm:inline">{t("reportIssue")}</span>
+            <span className="sr-only sm:not-sr-only">{t("reportIssue")}</span>
           </FeedbackTrigger>
         </div>
       </div>

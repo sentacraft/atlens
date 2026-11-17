@@ -41,7 +41,7 @@ Atlens is free, open source, and maintained by one person. If it helps you pick 
 - **Brand and series pages** — each brand's X-mount lineup, its series, and its release history
 - **Review summaries** — what published reviews agree on for a lens, condensed into highlights and caveats with the number of reviews behind each
 - **Side-by-side comparison** of up to 4 lenses, shareable as a link or a poster image — a single lens can be shared the same way
-- **Ask Iris** — a built-in AI assistant grounded in the catalog: describe what you shoot and it recommends and compares lenses with a reason for each, takes the gear you own into account when you're signed in, and answers questions about the site
+- **Ask Iris** — a built-in AI assistant grounded in the catalog: describe what you shoot and it recommends and compares lenses with a reason for each, takes the gear you own into account when you're signed in, and answers questions about the site; it can also prepare feedback drafts for you to review and submit
 - **Accounts** — sign in with Google, GitHub or an email code to save favorite lenses and the gear you own, read every review finding, and keep Ask Iris conversations across devices
 - **Normalized data** — specs from different manufacturers use inconsistent formats and terminology; Atlens maps everything to a consistent schema so comparisons are fair and objective
 - **Pipeline-backed accuracy** — specs come from official manufacturer sources and go through a staged pipeline, reviewed by the maintainer before publishing
