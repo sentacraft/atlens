@@ -1,11 +1,25 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { test, expect, type CDPSession, type Locator, type Page } from "@playwright/test";
+
+const supplementalImages = JSON.parse(readFileSync(
+  new URL("../src/data/lens-supplemental-images.json", import.meta.url), "utf8",
+)) as { images: Record<string, { key: string }> };
 
 const LENS_PATH = "/en/lenses/x/viltrox-af-28mm-f45-x";
 const PRIMARY = /viltrox-af-28mm-f45-x\.webp/;
-const ALTERNATE = /viltrox-af-28mm-f45-x\/001\.webp/;
+const alternateKey = supplementalImages.images["viltrox-af-28mm-f45-x/001"].key;
+const ALTERNATE = new RegExp(`^https://[^/]+/${alternateKey.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`);
+const IMAGE_FIXTURE = fileURLToPath(new URL("../public/lenses/viltrox-af-28mm-f45-x.webp", import.meta.url));
+
+test.beforeEach(async ({ page }) => {
+  await page.route(ALTERNATE, route => route.fulfill({ path: IMAGE_FIXTURE, contentType: "image/webp" }));
+});
 
 async function expectSlide(viewport: Locator, source: RegExp) {
-  await expect(viewport.getByRole("img", { name: /.+/ })).toHaveAttribute("src", source);
+  const image = viewport.getByRole("img", { name: /.+/ });
+  await expect(image).toHaveAttribute("src", source);
+  await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   const slide = viewport.locator('[data-slot="gallery-slide"][aria-hidden="false"]');
   await expect.poll(() => slide.evaluate(element => {
     const outer = element.closest('[data-slot="gallery-viewport"]')!;
