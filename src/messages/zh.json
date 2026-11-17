@@ -513,7 +513,12 @@
     "galleryZoom": "缩放图片",
     "galleryLoading": "正在加载图片…",
     "galleryError": "图片未能加载。",
-    "galleryHint": "左右滑动切图 · 下滑关闭 · 双击放大",
+    "galleryHint": {
+      "mouse": "← → 切图 · 单击放大／缩小 · Esc 关闭",
+      "mouseSingle": "单击放大／缩小 · Esc 关闭",
+      "touch": "左右滑动切图 · 下滑关闭 · 双击放大",
+      "touchSingle": "下滑关闭 · 双击放大"
+    },
     "seeOnWeightLadder": "在重量天梯里看 →",
     "sectionsLabel": "本页分节",
     "sectionSpecs": "规格参数",

@@ -249,7 +249,12 @@ export default async function LensDetailPage({ params }: { params: Params }) {
               zoom: t("galleryZoom"),
               loading: t("galleryLoading"),
               error: t("galleryError"),
-              hint: t("galleryHint"),
+              hint: {
+                mouse: t("galleryHint.mouse"),
+                touch: t("galleryHint.touch"),
+                mouseSingle: t("galleryHint.mouseSingle"),
+                touchSingle: t("galleryHint.touchSingle"),
+              },
             }}
           />
         </div>

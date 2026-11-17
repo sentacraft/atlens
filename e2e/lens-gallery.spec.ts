@@ -100,19 +100,18 @@ for (const width of [375, 1280]) {
       await expect(dialog).toHaveCount(0);
     });
 
-    test("single tap hides controls without closing and zoom is available", async ({ page }) => {
+    test("mouse clicks toggle image zoom without hiding controls", async ({ page }) => {
       await page.goto(LENS_PATH);
       await page.getByRole("button", { name: "Enlarge product image" }).click();
       const dialog = page.getByRole("dialog");
       await expectSlide(dialog, PRIMARY);
-      await dialog.getByRole("button", { name: "Zoom image" }).click();
+      const image = dialog.getByRole("img", { name: /.+/ });
+      await image.click();
       await expect(dialog).toHaveClass(/pswp--zoomed-in/);
-      await dialog.getByRole("button", { name: "Zoom image" }).click();
+      await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");
+      await expect(dialog.getByText("← → to browse · Click to zoom in/out · Esc to close", { exact: true })).toBeVisible();
+      await image.click();
       await expect(dialog).not.toHaveClass(/pswp--zoomed-in/);
-      await dialog.getByRole("img", { name: /.+/ }).click();
-      await expect(dialog.locator('[data-slot="gallery-controls"]')).toHaveAttribute("inert", "");
-      await expect(dialog).toBeVisible();
-      await dialog.getByRole("img", { name: /.+/ }).click();
       await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");
     });
 
@@ -130,6 +129,12 @@ for (const width of [375, 1280]) {
         const dialog = page.getByRole("dialog");
         await expectSlide(dialog, SECOND_IMAGE);
         const image = dialog.getByRole("img", { name: /.+/ });
+        await image.tap();
+        await expect(dialog.locator('[data-slot="gallery-controls"]')).toHaveAttribute("inert", "");
+        await expect(dialog).toBeVisible();
+        await image.tap();
+        await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");
+        await expect(dialog.getByText("Swipe to browse · Drag down to close · Double-tap to zoom", { exact: true })).toBeVisible();
         await touchSwipe(session, image, true);
         await expectSlide(dialog, PRIMARY);
         await touchSwipe(session, image, false, true);

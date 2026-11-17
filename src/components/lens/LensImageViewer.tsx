@@ -20,7 +20,7 @@ export type GalleryLabels = {
   zoom: string;
   loading: string;
   error: string;
-  hint: string;
+  hint: { mouse: string; touch: string; mouseSingle: string; touchSingle: string };
 };
 
 type Props = {
@@ -39,6 +39,7 @@ export default function LensImageViewer(props: Props) {
   const [chrome, setChrome] = useState<HTMLElement | null>(null);
   const [index, setIndex] = useState(initial.initialIndex);
   const [controls, setControls] = useState(true);
+  const [touch, setTouch] = useState(false);
   const pswpRef = useRef<PhotoSwipe | null>(null);
   const titleId = useId();
 
@@ -59,6 +60,7 @@ export default function LensImageViewer(props: Props) {
     void loads[initial.initialIndex].then(size => {
       if (cancelled) {return;}
       const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      setTouch(window.matchMedia("(pointer: coarse)").matches);
       const toggleControls = () => setControls(visible => !visible);
       const pswp = new PhotoSwipe({
         dataSource: data,
@@ -79,8 +81,8 @@ export default function LensImageViewer(props: Props) {
         initialZoomLevel: "fit",
         secondaryZoomLevel: level => level.fit * 2,
         maxZoomLevel: level => level.fit * 4,
-        imageClickAction: toggleControls,
-        bgClickAction: toggleControls,
+        imageClickAction: "zoom",
+        bgClickAction: false,
         tapAction: toggleControls,
         doubleTapAction: "zoom",
         closeOnVerticalDrag: true,
@@ -138,7 +140,12 @@ export default function LensImageViewer(props: Props) {
         pswp.element?.classList.remove("gallery-settled");
         pswp.element?.classList.add("gallery-closing");
       });
-      pswp.on("keydown", () => setControls(true));
+      pswp.on("pointerDown", ({ originalEvent }) => {
+        const isTouch = originalEvent.pointerType !== "mouse";
+        setTouch(isTouch);
+        if (!isTouch) {setControls(true);}
+      });
+      pswp.on("keydown", () => {setTouch(false);setControls(true);});
       pswp.on("destroy", () => {
         pswpRef.current = null;
         unlock?.();
@@ -166,11 +173,6 @@ export default function LensImageViewer(props: Props) {
       pswp.element?.setAttribute("aria-label", initial.title);
       pswp.element?.setAttribute("aria-labelledby", titleId);
       pswp.element?.setAttribute("aria-modal", "true");
-      pswp.element?.addEventListener("dblclick", event => {
-        if ((event.target as HTMLElement).closest(".pswp__img")) {
-          pswp.currSlide?.toggleZoom({ x: event.clientX, y: event.clientY });
-        }
-      });
       initial.onReady();
     });
 
@@ -189,6 +191,9 @@ export default function LensImageViewer(props: Props) {
 
   if (!chrome) {return <span role="status" className="sr-only">{initial.labels.loading}</span>;}
   const multiple = initial.images.length > 1;
+  const hint = touch
+    ? initial.labels.hint[multiple ? "touch" : "touchSingle"]
+    : initial.labels.hint[multiple ? "mouse" : "mouseSingle"];
   return createPortal(
     <div data-slot="gallery-controls" className={cn("gallery-controls", !controls && "gallery-controls-hidden")} inert={!controls}>
       <div className="gallery-header">
@@ -207,7 +212,7 @@ export default function LensImageViewer(props: Props) {
           </div>
           <GalleryThumbnails images={initial.images} index={index} onSelect={i => pswpRef.current?.goTo(i)} />
         </>}
-        <p className="text-center text-[11px] leading-4 text-zinc-500">{initial.labels.hint}</p>
+        <p className="text-center text-[11px] leading-4 text-zinc-500">{hint}</p>
       </div>
     </div>, chrome,
   );

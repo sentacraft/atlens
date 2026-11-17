@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import PhotoSwipe from "photoswipe";
 import LensImageGallery from "../LensImageGallery";
 import { loadGalleryImage } from "@/lib/lens/gallery-image";
 
@@ -81,7 +82,7 @@ const labels = {
   zoom: "Zoom",
   loading: "Loading",
   error: "Image unavailable",
-  hint: "Swipe to browse",
+  hint: { mouse: "Arrows to browse · Click to zoom in/out", touch: "Swipe to browse · Double-tap to zoom", mouseSingle: "Click to zoom in/out", touchSingle: "Double-tap to zoom" },
 };
 
 it("starts on the primary image and opens the selected supplemental image", async () => {
@@ -171,6 +172,32 @@ it("uses classified product assets without mixing technical figures into the pro
   expect(trigger.querySelectorAll('[data-slot="gallery-slide"]')).toHaveLength(2);
   fireEvent.click(screen.getAllByRole("button", { name: "Image 2" })[0]);
   expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/r2-assets/example/003.webp"));
+});
+
+it("uses native mouse click zoom and changes the hint with the input device", async () => {
+  const init = vi.spyOn(PhotoSwipe.prototype, "init");
+  render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }] }} labels={labels} />);
+  fireEvent.click(screen.getByRole("button", { name: labels.open }));
+  const dialog = await screen.findByRole("dialog", { name: "Example" });
+  const viewer = init.mock.contexts[0] as PhotoSwipe;
+  expect(viewer.options.imageClickAction).toBe("zoom");
+  expect(viewer.options.doubleTapAction).toBe("zoom");
+  expect(within(dialog).getByText(labels.hint.touch)).toBeTruthy();
+  act(() => viewer.dispatch("pointerDown", { originalEvent: { pointerType: "mouse" } as PointerEvent }));
+  expect(within(dialog).getByText(labels.hint.mouse)).toBeTruthy();
+  expect(dialog.querySelector('[data-slot="gallery-controls"]')?.hasAttribute("inert")).toBe(false);
+  act(() => viewer.dispatch("pointerDown", { originalEvent: { pointerType: "touch" } as PointerEvent }));
+  expect(within(dialog).getByText(labels.hint.touch)).toBeTruthy();
+});
+
+it("leaves browsing instructions out of single-image hints", async () => {
+  const init = vi.spyOn(PhotoSwipe.prototype, "init");
+  render(<LensImageGallery lens={{ id: "example", model: "Example" }} labels={labels} />);
+  fireEvent.click(screen.getByRole("button", { name: labels.open }));
+  const dialog = await screen.findByRole("dialog", { name: "Example" });
+  expect(within(dialog).getByText(labels.hint.touchSingle)).toBeTruthy();
+  act(() => (init.mock.contexts[0] as PhotoSwipe).dispatch("pointerDown", { originalEvent: { pointerType: "mouse" } as PointerEvent }));
+  expect(within(dialog).getByText(labels.hint.mouseSingle)).toBeTruthy();
 });
 
 it("shows a localized load error and still allows closing", async () => {
