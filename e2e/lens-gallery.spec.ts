@@ -105,6 +105,9 @@ for (const width of [375, 1280]) {
       await page.getByRole("button", { name: "Enlarge product image" }).click();
       const dialog = page.getByRole("dialog");
       await expectSlide(dialog, PRIMARY);
+      const zoom = dialog.getByRole("button", { name: "Zoom image" });
+      if (width >= 640) {await expect(zoom).toBeHidden();} else {await expect(zoom).toBeVisible();}
+      await expect(dialog.getByRole("button", { name: "Close image viewer" })).toBeVisible();
       const image = dialog.getByRole("img", { name: /.+/ });
       await image.click();
       await expect(dialog).toHaveClass(/pswp--zoomed-in/);

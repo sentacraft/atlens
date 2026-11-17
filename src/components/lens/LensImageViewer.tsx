@@ -199,7 +199,7 @@ export default function LensImageViewer(props: Props) {
       <div className="gallery-header">
         <h2 id={titleId} className="min-w-0 truncate text-sm font-medium text-zinc-700 max-sm:text-xs">{initial.title}</h2>
         <div className="flex shrink-0 items-center">
-          <button type="button" aria-label={initial.labels.zoom} onClick={() => pswpRef.current?.toggleZoom()} className={IMAGE_CONTROL_CLS}><ZoomIn className="size-4" /></button>
+          <button type="button" aria-label={initial.labels.zoom} onClick={() => pswpRef.current?.toggleZoom()} className={cn(IMAGE_CONTROL_CLS, "sm:hidden")}><ZoomIn className="size-4" /></button>
           <button type="button" aria-label={initial.labels.close} onClick={() => pswpRef.current?.close()} className={cn(ICON_CLOSE_BTN_CLS, "size-11 cursor-pointer")}><X className="size-5" /></button>
         </div>
       </div>
