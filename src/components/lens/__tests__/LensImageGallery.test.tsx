@@ -14,6 +14,14 @@ type MockApi = {
 
 const mocks = vi.hoisted(() => ({ instances: [] as MockApi[] }));
 
+vi.mock("@/data/lens-images.generated", () => ({ LENS_IMAGE_HASHES: {} }));
+vi.mock("@/data/public-assets.generated", () => ({
+  PUBLIC_ASSET_URLS: {
+    "lens-images/example/001": "/r2-assets/example/001.webp",
+    "lens-images/example/003": "/r2-assets/example/003.webp",
+  },
+}));
+
 vi.mock("embla-carousel-react", async () => {
   const { useCallback, useState } = await import("react");
   return {
@@ -64,24 +72,24 @@ const labels = {
 };
 
 it("starts on the primary image and opens the selected supplemental image", async () => {
-  render(<LensImageGallery lens={{ id: "example", model: "Example", alternateImages: ["003", "001"] }} labels={labels} />);
+  render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }, { id: "001", role: "product" }] }} labels={labels} />);
   const trigger = screen.getByRole("button", { name: labels.open });
   expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/lenses/example.webp"));
   fireEvent.click(screen.getAllByRole("button", { name: "Image 2" })[0]);
   fireEvent.click(trigger);
   const dialog = await screen.findByRole("dialog", { name: "Example" });
   expect(within(dialog).getByRole("img", { name: "Example" }).getAttribute("src"))
-    .toContain(encodeURIComponent("/lenses/example/003.webp"));
+    .toContain(encodeURIComponent("/r2-assets/example/003.webp"));
   fireEvent.keyDown(dialog, { key: "ArrowRight" });
   expect(within(dialog).getByRole("img", { name: "Example" }).getAttribute("src"))
-    .toContain(encodeURIComponent("/lenses/example/001.webp"));
+    .toContain(encodeURIComponent("/r2-assets/example/001.webp"));
   expect((within(dialog).getByRole("button", { name: labels.next }) as HTMLButtonElement).disabled).toBe(true);
   fireEvent.click(within(dialog).getByRole("button", { name: labels.close }));
-  expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/lenses/example/001.webp"));
+  expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/r2-assets/example/001.webp"));
 });
 
 it("switches images from the page arrows without opening the viewer", () => {
-  render(<LensImageGallery lens={{ id: "example", model: "Example", alternateImages: ["003"] }} labels={labels} />);
+  render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }] }} labels={labels} />);
   const trigger = screen.getByRole("button", { name: labels.open });
   const previous = screen.getByRole("button", { name: labels.previous }) as HTMLButtonElement;
   const next = screen.getByRole("button", { name: labels.next }) as HTMLButtonElement;
@@ -89,14 +97,14 @@ it("switches images from the page arrows without opening the viewer", () => {
   expect(trigger.querySelector("button")).toBeNull();
   fireEvent.click(next);
   expect(screen.queryByRole("dialog")).toBeNull();
-  expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/lenses/example/003.webp"));
+  expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/r2-assets/example/003.webp"));
   expect(next.disabled).toBe(true);
   fireEvent.click(previous);
   expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/lenses/example.webp"));
 });
 
 it("moves the shared active-dot style to the selected image", () => {
-  render(<LensImageGallery lens={{ id: "example", model: "Example", alternateImages: ["003"] }} labels={labels} />);
+  render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }] }} labels={labels} />);
   const main = screen.getAllByRole("button", { name: "Main" }).find(button => !button.querySelector("img"))!;
   const next = screen.getAllByRole("button", { name: "Image 2" }).find(button => !button.querySelector("img"))!;
   expect(main.firstElementChild!.classList.contains(ACTIVE_DOT_CLS)).toBe(true);
@@ -107,7 +115,7 @@ it("moves the shared active-dot style to the selected image", () => {
 });
 
 it("keeps both carousels synchronized and restores the selected image on reopening", async () => {
-  render(<LensImageGallery lens={{ id: "example", model: "Example", alternateImages: ["003", "001"] }} labels={labels} />);
+  render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }, { id: "001", role: "product" }] }} labels={labels} />);
   const trigger = screen.getByRole("button", { name: labels.open });
   const main = mocks.instances[0];
   act(() => main.scrollTo(1));
@@ -125,11 +133,11 @@ it("keeps both carousels synchronized and restores the selected image on reopeni
   dialog = await screen.findByRole("dialog", { name: "Example" });
   expect(mocks.instances[2].selectedScrollSnap()).toBe(2);
   expect(within(dialog).getByRole("img", { name: "Example" }).getAttribute("src"))
-    .toContain(encodeURIComponent("/lenses/example/001.webp"));
+    .toContain(encodeURIComponent("/r2-assets/example/001.webp"));
 });
 
 it("keeps the active carousel's motion intact when its selected index changes", () => {
-  render(<LensImageGallery lens={{ id: "example", model: "Example", alternateImages: ["003"] }} labels={labels} />);
+  render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }] }} labels={labels} />);
   const main = mocks.instances[0];
   act(() => main.scrollTo(1));
   expect(main.scrollTo).toHaveBeenCalledTimes(1);
@@ -137,18 +145,26 @@ it("keeps the active carousel's motion intact when its selected index changes", 
 });
 
 it("renders only the selected slide to assistive technology", () => {
-  render(<LensImageGallery lens={{ id: "example", model: "Example", alternateImages: ["003", "001"] }} labels={labels} />);
+  render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }, { id: "001", role: "product" }] }} labels={labels} />);
   const trigger = screen.getByRole("button", { name: labels.open });
   expect(within(trigger).getAllByRole("img", { hidden: true })).toHaveLength(3);
   expect(within(trigger).getAllByRole("img")).toHaveLength(1);
 });
 
 it("unsubscribes from carousel events on unmount", () => {
-  const { unmount } = render(<LensImageGallery lens={{ id: "example", model: "Example", alternateImages: ["003"] }} labels={labels} />);
+  const { unmount } = render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }] }} labels={labels} />);
   const main = mocks.instances[0];
   unmount();
   expect(main.off).toHaveBeenCalledWith("select", expect.any(Function));
   expect(main.off).toHaveBeenCalledWith("reInit", expect.any(Function));
+});
+
+it("uses classified product assets without mixing technical figures into the product carousel", () => {
+  render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "001", role: "mtf" }, { id: "003", role: "product" }] }} labels={labels} />);
+  const trigger = screen.getByRole("button", { name: labels.open });
+  expect(trigger.querySelectorAll('[data-slot="gallery-slide"]')).toHaveLength(2);
+  fireEvent.click(screen.getAllByRole("button", { name: "Image 2" })[0]);
+  expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/r2-assets/example/003.webp"));
 });
 
 it("opens a single primary image without paging controls", async () => {

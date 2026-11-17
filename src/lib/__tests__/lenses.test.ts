@@ -313,9 +313,18 @@ describe("lensSchema classified image assets", () => {
     expect(lensSchema.safeParse({ ...prime35, images: [{ id: "001", role: "product", ...metadata }] }).success).toBe(false);
   });
 
-  it("retains the actual legacy catalog contract but rejects simultaneous duplicate representations", () => {
-    expect(lensSchema.parse({ ...prime35, alternateImages: ["001"] }).alternateImages).toEqual(["001"]);
-    expect(lensSchema.safeParse({ ...prime35, alternateImages: ["001"], images: [mtf] }).success).toBe(false);
+  it.each([{ alternateImages: [] }, { alternateImages: ["001"] }])("rejects the removed image field: %j", ({ alternateImages }) => {
+    for (const extra of [{}, { images: [mtf] }]) {
+      const record = { ...prime35, ...extra, alternateImages };
+      const result = lensSchema.safeParse(record);
+      expect(result.success).toBe(false);
+      expect(lensCatalogSchema.safeParse([record]).success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues).toContainEqual(expect.objectContaining({
+          code: "unrecognized_keys", path: [], keys: ["alternateImages"],
+        }));
+      }
+    }
   });
 
   it("resolves image notes by ID without changing numeric conditions or the original lens", () => {

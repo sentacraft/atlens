@@ -1,11 +1,25 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { test, expect, type CDPSession, type Locator, type Page } from "@playwright/test";
+
+const publicAssets = JSON.parse(readFileSync(
+  new URL("../src/data/public-assets.json", import.meta.url), "utf8",
+)) as { assets: Record<string, { key: string }> };
 
 const LENS_PATH = "/en/lenses/x/viltrox-af-28mm-f45-x";
 const PRIMARY = /viltrox-af-28mm-f45-x\.webp/;
-const ALTERNATE = /viltrox-af-28mm-f45-x\/001\.webp/;
+const assetKey = publicAssets.assets["lens-images/viltrox-af-28mm-f45-x/001"].key;
+const SECOND_IMAGE = new RegExp(`^https://[^/]+/${assetKey.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`);
+const IMAGE_FIXTURE = fileURLToPath(new URL("../public/lenses/viltrox-af-28mm-f45-x.webp", import.meta.url));
+
+test.beforeEach(async ({ page }) => {
+  await page.route(SECOND_IMAGE, route => route.fulfill({ path: IMAGE_FIXTURE, contentType: "image/webp" }));
+});
 
 async function expectSlide(viewport: Locator, source: RegExp) {
-  await expect(viewport.getByRole("img", { name: /.+/ })).toHaveAttribute("src", source);
+  const image = viewport.getByRole("img", { name: /.+/ });
+  await expect(image).toHaveAttribute("src", source);
+  await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   const slide = viewport.locator('[data-slot="gallery-slide"][aria-hidden="false"]');
   await expect.poll(() => slide.evaluate(element => {
     const outer = element.closest('[data-slot="gallery-viewport"]')!;
@@ -75,7 +89,7 @@ for (const width of [375, 1280]) {
         await mouseDrag(page, trigger);
       }
 
-      await expectSlide(trigger, ALTERNATE);
+      await expectSlide(trigger, SECOND_IMAGE);
       await expect(page.getByRole("dialog")).toHaveCount(0);
     });
 
@@ -84,12 +98,12 @@ for (const width of [375, 1280]) {
       const trigger = page.getByRole("button", { name: "Enlarge product image" });
       await expectSlide(trigger, PRIMARY);
       await mouseDrag(page, trigger);
-      await expectSlide(trigger, ALTERNATE);
+      await expectSlide(trigger, SECOND_IMAGE);
       await expect(page.getByRole("dialog")).toHaveCount(0);
       await trigger.click();
       const dialog = page.getByRole("dialog");
       const viewer = dialog.locator('[data-slot="gallery-viewport"]');
-      await expectSlide(viewer, ALTERNATE);
+      await expectSlide(viewer, SECOND_IMAGE);
       await mouseDrag(page, viewer, true);
       await expectSlide(viewer, PRIMARY);
       await dialog.getByRole("button", { name: "Close image viewer" }).click();
@@ -109,12 +123,12 @@ for (const width of [375, 1280]) {
         const trigger = page.getByRole("button", { name: "Enlarge product image" });
         await expectSlide(trigger, PRIMARY);
         await touchSwipe(session, trigger);
-        await expectSlide(trigger, ALTERNATE);
+        await expectSlide(trigger, SECOND_IMAGE);
         await expect(page.getByRole("dialog")).toHaveCount(0);
         await trigger.tap();
         const dialog = page.getByRole("dialog");
         const viewer = dialog.locator('[data-slot="gallery-viewport"]');
-        await expectSlide(viewer, ALTERNATE);
+        await expectSlide(viewer, SECOND_IMAGE);
         await touchSwipe(session, viewer, true);
         await expectSlide(viewer, PRIMARY);
         await dialog.getByRole("button", { name: "Close image viewer" }).tap();

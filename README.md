@@ -276,6 +276,7 @@ Rules the agents cannot talk their way around live in code, not in prompts:
 - **One write path.** The `write` command limits each stage to its own fields, accepts only the fields an agent is allowed to derive, rejects empty placeholders for unknown values, checks that collected sources come from the brand's configured sites, re-validates the catalog schema before anything touches disk, and stamps which harness and model produced the data.
 - **Readiness gates.** A stage starts only when its inputs exist (Collect needs an index entry and a valid official page; Derive needs a complete collect with a real spec source). Lenses on hold are skipped by every queue and by publish.
 - **Tests in both directions.** The hooks have 24 regression cases: 11 tool calls they must block and 13 they must still allow.
+- **Public asset delivery.** Primary product images ship in this repository. Other lens images use dedicated R2 buckets with separate production and preview domains. The generated `public-assets.json` registry maps namespaced resource IDs to immutable keys and hashes; all public static resource types share one URL resolver. Lens data keeps image semantics, while publication owns file versions and verifies uploaded bytes before updating references. Original sources and review records stay private. Publicly displayed resources remain downloadable.
 
 ### Self-correction
 
