@@ -134,10 +134,10 @@ export default function SectionChipRow({
     <nav
       ref={navRef}
       aria-label={ariaLabel}
-      className={cn("sticky z-20 transition-[top] duration-300 ease-in-out", stuck && STUCK_CLS, className)}
+      className={cn("sticky z-20 py-2.5 transition-[top] duration-300 ease-in-out", stuck && STUCK_CLS, className)}
       style={{ top: navHidden ? 0 : "var(--nav-height)" }}
     >
-      <HorizontalScrollRail scrollRef={railRef} className="gap-1.5 py-2.5" fadeBg="from-white">
+      <HorizontalScrollRail scrollRef={railRef} className="gap-1.5" fadeBg="from-white">
         {allItem && chip(null, allItem.label, allItem.count)}
         {items.map((item) => chip(item.id, item.label, item.count))}
       </HorizontalScrollRail>

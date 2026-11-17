@@ -2,10 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { test, expect, type CDPSession, type Locator, type Page } from "@playwright/test";
 
-const publicAssets = JSON.parse(readFileSync(
-  new URL("../src/data/public-assets.json", import.meta.url), "utf8",
-)) as { assets: Record<string, { key: string }> };
-
+const publicAssets = JSON.parse(readFileSync(new URL("../src/data/public-assets.json", import.meta.url), "utf8")) as { assets: Record<string, { key: string }> };
 const LENS_PATH = "/en/lenses/x/viltrox-af-28mm-f45-x";
 const PRIMARY = /viltrox-af-28mm-f45-x\.webp/;
 const assetKey = publicAssets.assets["lens-images/viltrox-af-28mm-f45-x/001"].key;
@@ -17,14 +14,14 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function expectSlide(viewport: Locator, source: RegExp) {
+  if (await viewport.getAttribute("role") === "dialog") {await expect(viewport).toHaveClass(/gallery-settled/);}
   const image = viewport.getByRole("img", { name: /.+/ });
   await expect(image).toHaveAttribute("src", source);
   await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-  const slide = viewport.locator('[data-slot="gallery-slide"][aria-hidden="false"]');
-  await expect.poll(() => slide.evaluate(element => {
-    const outer = element.closest('[data-slot="gallery-viewport"]')!;
-    return Math.abs(element.getBoundingClientRect().left - outer.getBoundingClientRect().left);
-  })).toBeLessThan(2);
+  if (await viewport.getAttribute("data-slot") === "gallery-viewport") {
+    const slide = viewport.locator('[data-slot="gallery-slide"][aria-hidden="false"]');
+    await expect.poll(() => slide.evaluate(element => Math.abs(element.getBoundingClientRect().left - element.closest('[data-slot="gallery-viewport"]')!.getBoundingClientRect().left))).toBeLessThan(2);
+  }
 }
 
 async function mouseDrag(page: Page, viewport: Locator, reverse = false) {
@@ -39,18 +36,16 @@ async function mouseDrag(page: Page, viewport: Locator, reverse = false) {
   await page.mouse.up();
 }
 
-async function touchSwipe(session: CDPSession, viewport: Locator, reverse = false) {
-  await viewport.scrollIntoViewIfNeeded();
+async function touchSwipe(session: CDPSession, viewport: Locator, reverse = false, vertical = false) {
   const box = (await viewport.boundingBox())!;
-  const start = box.x + box.width * (reverse ? 0.2 : 0.8);
-  const end = box.x + box.width * (reverse ? 0.8 : 0.2);
+  const x = box.x + box.width / 2;
   const y = box.y + box.height / 2;
-  await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: start, y, id: 1 }] });
-  for (let step = 1; step <= 10; step++) {
-    await session.send("Input.dispatchTouchEvent", {
-      type: "touchMove",
-      touchPoints: [{ x: start + (end - start) * step / 10, y, id: 1 }],
-    });
+  const start = vertical ? y - 100 : box.x + box.width * (reverse ? 0.2 : 0.8);
+  const end = vertical ? y + 190 : box.x + box.width * (reverse ? 0.8 : 0.2);
+  const point = (value: number) => ({ x: vertical ? x : value, y: vertical ? value : y, id: 1 });
+  await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [point(start)] });
+  for (let step = 1; step <= 12; step++) {
+    await session.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [point(start + (end - start) * step / 12)] });
   }
   await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
 }
@@ -59,64 +54,98 @@ for (const width of [375, 1280]) {
   test.describe(`lens gallery at ${width}px`, () => {
     test.use({ viewport: { width, height: 900 }, isMobile: width < 640, hasTouch: width < 640 });
 
-    test("switches images before opening the viewer", async ({ page }) => {
+    test("switches images before opening and shows a compact phone counter", async ({ page }) => {
       await page.goto(LENS_PATH);
       const trigger = page.getByRole("button", { name: "Enlarge product image" });
       await expectSlide(trigger, PRIMARY);
       await expect(trigger.locator('[data-slot="gallery-slide"][aria-hidden="false"]')).toHaveCSS("padding", "32px");
-      const expand = trigger.locator('span[aria-hidden="true"]');
-      await expect(expand).toHaveCSS("cursor", "pointer");
-      const expandBox = (await expand.boundingBox())!;
-      expect(expandBox.width).toBe(44);
-      expect(await expand.evaluate(element => parseFloat(getComputedStyle(element).borderTopLeftRadius)))
-        .toBeGreaterThanOrEqual(expandBox.width / 2);
-
       if (width >= 640) {
-        const previous = page.getByRole("button", { name: "Previous image", exact: true });
         const next = page.getByRole("button", { name: "Next image", exact: true });
-        const nextBox = (await next.boundingBox())!;
-        expect(nextBox.width).toBe(44);
-        expect(nextBox.height).toBe(44);
-        expect(await next.evaluate(element => parseFloat(getComputedStyle(element).borderTopLeftRadius)))
-          .toBeGreaterThanOrEqual(nextBox.width / 2);
-        await expect(page.getByRole("button", { name: "Main product image", exact: true }).locator("img"))
-          .toHaveCSS("padding", "4px");
-        await previous.hover();
-        await expect(previous).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+        const box = (await next.boundingBox())!;
+        expect(box.width).toBe(44);
+        expect(box.height).toBe(44);
+        await expect(page.getByRole("button", { name: "Main product image", exact: true }).locator("img")).toHaveCSS("padding", "4px");
         await next.click();
-        await expect(next).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
       } else {
+        await expect(trigger.locator('[data-slot="gallery-count"]')).toHaveText("1 / 2");
+        await expect(page.getByRole("button", { name: "Product image 2", exact: true })).toHaveCount(0);
         await mouseDrag(page, trigger);
+        await expect(trigger.locator('[data-slot="gallery-count"]')).toHaveText("2 / 2");
       }
-
       await expectSlide(trigger, SECOND_IMAGE);
       await expect(page.getByRole("dialog")).toHaveCount(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     });
 
-    test("mouse dragging works in both views and keeps the selected image on reopening", async ({ page }) => {
+    test("keeps the selected image, scroll position, and focus after closing", async ({ page }) => {
       await page.goto(LENS_PATH);
       const trigger = page.getByRole("button", { name: "Enlarge product image" });
-      await expectSlide(trigger, PRIMARY);
       await mouseDrag(page, trigger);
       await expectSlide(trigger, SECOND_IMAGE);
-      await expect(page.getByRole("dialog")).toHaveCount(0);
+      const scrollY = await page.evaluate(() => window.scrollY);
       await trigger.click();
       const dialog = page.getByRole("dialog");
-      const viewer = dialog.locator('[data-slot="gallery-viewport"]');
-      await expectSlide(viewer, SECOND_IMAGE);
-      await mouseDrag(page, viewer, true);
-      await expectSlide(viewer, PRIMARY);
+      await expectSlide(dialog, SECOND_IMAGE);
+      await expect(page.locator("body")).toHaveCSS("overflow", "hidden");
+      await dialog.getByRole("button", { name: "Previous image" }).click();
+      await expectSlide(dialog, PRIMARY);
       await dialog.getByRole("button", { name: "Close image viewer" }).click();
       await expect(dialog).toHaveCount(0);
       await expectSlide(trigger, PRIMARY);
-      await trigger.focus();
+      await expect(trigger).toBeFocused();
+      expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
       await page.keyboard.press("Enter");
-      await expectSlide(viewer, PRIMARY);
+      await expectSlide(dialog, PRIMARY);
+      await page.keyboard.press("Escape");
+      await expect(dialog).toHaveCount(0);
+    });
+
+    test("mouse clicks toggle image zoom without hiding controls", async ({ page }) => {
+      await page.goto(LENS_PATH);
+      await page.getByRole("button", { name: "Enlarge product image" }).click();
+      const dialog = page.getByRole("dialog");
+      await expectSlide(dialog, PRIMARY);
+      const zoom = dialog.getByRole("button", { name: "Zoom image" });
+      if (width >= 640) {await expect(zoom).toBeHidden();} else {await expect(zoom).toBeVisible();}
+      await expect(dialog.getByRole("button", { name: "Close image viewer" })).toBeVisible();
+      const image = dialog.getByRole("img", { name: /.+/ });
+      const previous = dialog.locator(".gallery-side-arrow-prev");
+      const next = dialog.locator(".gallery-side-arrow-next");
+      if (width >= 640) {
+        await expect(previous).toBeVisible();
+        await expect(previous).toBeDisabled();
+        await expect(next).toBeVisible();
+        const imageBox = (await image.boundingBox())!;
+        const previousBox = (await previous.boundingBox())!;
+        const nextBox = (await next.boundingBox())!;
+        expect(previousBox.width).toBe(44);
+        expect(previousBox.height).toBe(44);
+        expect(previousBox.x + previousBox.width).toBeLessThanOrEqual(imageBox.x);
+        expect(nextBox.x).toBeGreaterThanOrEqual(imageBox.x + imageBox.width);
+        await next.click();
+        await expectSlide(dialog, SECOND_IMAGE);
+        await expect.poll(async () => (await previous.boundingBox())!.x).toBe(previousBox.x);
+        await expect.poll(async () => (await next.boundingBox())!.x).toBe(nextBox.x);
+        await expect(next).toBeDisabled();
+        await expect(previous).toBeEnabled();
+        await previous.click();
+        await expectSlide(dialog, PRIMARY);
+      } else {
+        await expect(previous).toBeHidden();
+        await expect(next).toBeHidden();
+      }
+      await image.click();
+      await expect(dialog).toHaveClass(/pswp--zoomed-in/);
+      await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");
+      await expect(dialog.getByText("← → to browse · Click to zoom in/out · Esc to close", { exact: true })).toBeVisible();
+      await image.click();
+      await expect(dialog).not.toHaveClass(/pswp--zoomed-in/);
+      await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");
     });
 
     test.describe("native touch input", () => {
       test.use({ hasTouch: true });
-      test("swipes both views at phone and desktop widths", async ({ page, browserName }) => {
+      test("swipes both views and drags down to close", async ({ page, browserName }) => {
         test.skip(browserName !== "chromium", "Native touch injection uses Chromium's input protocol");
         await page.goto(LENS_PATH);
         const session = await page.context().newCDPSession(page);
@@ -124,56 +153,78 @@ for (const width of [375, 1280]) {
         await expectSlide(trigger, PRIMARY);
         await touchSwipe(session, trigger);
         await expectSlide(trigger, SECOND_IMAGE);
-        await expect(page.getByRole("dialog")).toHaveCount(0);
         await trigger.tap();
         const dialog = page.getByRole("dialog");
-        const viewer = dialog.locator('[data-slot="gallery-viewport"]');
-        await expectSlide(viewer, SECOND_IMAGE);
-        await touchSwipe(session, viewer, true);
-        await expectSlide(viewer, PRIMARY);
-        await dialog.getByRole("button", { name: "Close image viewer" }).tap();
+        await expectSlide(dialog, SECOND_IMAGE);
+        const image = dialog.getByRole("img", { name: /.+/ });
+        await image.tap();
+        await expect(dialog.locator('[data-slot="gallery-controls"]')).toHaveAttribute("inert", "");
+        await expect(dialog).toBeVisible();
+        await image.tap();
+        await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");
+        await expect(dialog.getByText("Swipe to browse · Drag down to close · Double-tap to zoom", { exact: true })).toBeVisible();
+        await touchSwipe(session, image, true);
+        await expectSlide(dialog, PRIMARY);
+        await touchSwipe(session, image, false, true);
         await expect(dialog).toHaveCount(0);
         await expectSlide(trigger, PRIMARY);
         await session.detach();
       });
     });
 
-    for (const id of [
-      "sgimage-mf-18mm-f63-aps-c-ultra-slim-pancake-lens-x",
-      "fujifilm-xf-33mmf14-r-lm-wr-x",
-      "fujifilm-xf-150-600mmf56-8-r-lm-ois-wr-x",
-    ]) {
-      test(`${id}: image fits the white viewer with breathing room`, async ({ page }) => {
+    for (const id of ["sgimage-mf-18mm-f63-aps-c-ultra-slim-pancake-lens-x", "fujifilm-xf-33mmf14-r-lm-wr-x", "fujifilm-xf-150-600mmf56-8-r-lm-ois-wr-x"]) {
+      test(`${id}: image fits the viewer and controls`, async ({ page }) => {
         await page.goto(`/en/lenses/x/${id}`);
         await page.getByRole("button", { name: "Enlarge product image" }).click();
         const dialog = page.getByRole("dialog");
         const image = dialog.getByRole("img", { name: /.+/ });
         await expect(image).toBeVisible();
         await expect(image).toHaveCSS("object-fit", "contain");
-        const layout = await image.evaluate(element => {
-          const box = element.getBoundingClientRect();
-          const slide = element.closest('[data-slot="gallery-slide"]')!;
-          const viewport = element.closest('[data-slot="gallery-viewport"]')!;
-          const outer = slide.getBoundingClientRect();
-          const style = getComputedStyle(viewport);
-          return {
-            left: box.left - outer.left,
-            right: outer.right - box.right,
-            top: box.top - outer.top,
-            bottom: outer.bottom - box.bottom,
-            background: style.backgroundColor,
-            border: style.borderTopWidth,
-            touchAction: style.touchAction,
-          };
-        });
-        for (const gap of [layout.left, layout.right, layout.top, layout.bottom]) {
-          expect(gap).toBeGreaterThanOrEqual(32);
+        await expect.poll(async () => {
+          const box = (await image.boundingBox())!;
+          const header = (await dialog.locator(".gallery-header").boundingBox())!;
+          const footer = (await dialog.locator(".gallery-footer").boundingBox())!;
+          return box.y >= header.y + header.height && box.y + box.height <= footer.y + 1;
+        }).toBe(true);
+        if (width < 640) {
+          await expect(dialog).toHaveCSS("--pswp-bg", "white");
         }
-        expect(layout.background).toBe("rgba(0, 0, 0, 0)");
-        expect(layout.border).toBe("0px");
-        expect(layout.touchAction).toContain("pinch-zoom");
-        await expect(dialog).toHaveCSS("background-color", "rgb(255, 255, 255)");
       });
     }
   });
 }
+
+test("eight-image phone gallery stays in bounds and scrolls to the selected thumbnail", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/en/lenses/x/sgimage-af-35mmf14-x");
+  const trigger = page.getByRole("button", { name: "Enlarge product image" });
+  await expect(trigger.locator('[data-slot="gallery-count"]')).toHaveText("1 / 8");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await trigger.click();
+  const dialog = page.getByRole("dialog");
+  const last = dialog.getByRole("button", { name: "Product image 8", exact: true });
+  await expect(dialog).toHaveClass(/gallery-settled/);
+  for (let i = 2; i <= 8; i++) {
+    await dialog.getByRole("button", { name: "Next image", exact: true }).click();
+    await expect(dialog.getByText(`${i} / 8`, { exact: true })).toBeVisible();
+  }
+  await expect(last).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(() => last.evaluate(element => {
+    const rail = element.parentElement!.getBoundingClientRect();
+    const box = element.getBoundingClientRect();
+    return box.left >= rail.left && box.right <= rail.right;
+  })).toBe(true);
+  await expect(dialog.getByText("8 / 8", { exact: true })).toBeVisible();
+});
+
+test("reduced motion uses a short fade instead of thumbnail zoom", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(LENS_PATH);
+  await page.getByRole("button", { name: "Enlarge product image" }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveClass(/gallery-settled/);
+  await expect(dialog).toHaveCSS("--gallery-duration", "80ms");
+  await dialog.getByRole("button", { name: "Close image viewer" }).click();
+  await expect(dialog).toHaveCount(0);
+});

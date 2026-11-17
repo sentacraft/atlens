@@ -510,6 +510,15 @@
     "galleryNext": "Next image",
     "galleryPrimary": "Main product image",
     "galleryImage": "Product image {number}",
+    "galleryZoom": "Zoom image",
+    "galleryLoading": "Loading image…",
+    "galleryError": "The image could not be loaded.",
+    "galleryHint": {
+      "mouse": "← → to browse · Click to zoom in/out · Esc to close",
+      "mouseSingle": "Click to zoom in/out · Esc to close",
+      "touch": "Swipe to browse · Drag down to close · Double-tap to zoom",
+      "touchSingle": "Drag down to close · Double-tap to zoom"
+    },
     "seeOnWeightLadder": "See it on the weight ladder →",
     "sectionsLabel": "Sections on this page",
     "sectionSpecs": "Specifications",
@@ -684,7 +693,7 @@
       "discussion": "Community discussions"
     },
     "channel": {
-      "bilibili": "Bilibili",
+      "bilibili": "bilibili",
       "youtube": "YouTube",
       "bing": "Bing",
       "google": "Google",

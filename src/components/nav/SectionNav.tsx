@@ -188,7 +188,8 @@ export default function SectionNav({
         onSelect={select}
         allItem={allItem}
         ariaLabel={ariaLabel}
-        className={cn(cls.chips, fits === false && "!block", className)}
+        // Detail's 32px flex gap becomes 16px to each chip: 32 - 24 + 8.
+        className={cn(cls.chips, fits === false && "!block", width === "detail" && "-my-6 py-2", className)}
       />
     </>
   );

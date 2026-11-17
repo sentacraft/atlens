@@ -510,6 +510,15 @@
     "galleryNext": "下一张",
     "galleryPrimary": "产品主图",
     "galleryImage": "产品图 {number}",
+    "galleryZoom": "缩放图片",
+    "galleryLoading": "正在加载图片…",
+    "galleryError": "图片未能加载。",
+    "galleryHint": {
+      "mouse": "← → 切图 · 单击放大／缩小 · Esc 关闭",
+      "mouseSingle": "单击放大／缩小 · Esc 关闭",
+      "touch": "左右滑动切图 · 下滑关闭 · 双击放大",
+      "touchSingle": "下滑关闭 · 双击放大"
+    },
     "seeOnWeightLadder": "在重量天梯里看 →",
     "sectionsLabel": "本页分节",
     "sectionSpecs": "规格参数",
@@ -684,7 +693,7 @@
       "discussion": "社区讨论"
     },
     "channel": {
-      "bilibili": "B 站",
+      "bilibili": "bilibili",
       "youtube": "YouTube",
       "bing": "必应",
       "google": "Google",

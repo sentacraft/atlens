@@ -51,6 +51,20 @@ async function flush() {
 }
 
 describe("SectionNav", () => {
+  it.each(["detail", "reading", "wide", "none"] as const)(
+    "keeps compact chip spacing limited to the detail width (%s)",
+    async (width) => {
+      const { container } = render(page(["specs", "reviews"], <SectionNav ariaLabel="Sections" width={width} items={ITEMS} />));
+      await flush();
+
+      const chips = container.querySelector("nav.sticky")!;
+      expect(chips.classList.contains("-my-6")).toBe(width === "detail");
+      expect(chips.classList.contains("py-2")).toBe(width === "detail");
+      expect(chips.classList.contains("py-2.5")).toBe(width !== "detail");
+      expect(chips.classList.contains("sticky")).toBe(true);
+    },
+  );
+
   it("lists only the sections that are on the page", async () => {
     const { container } = render(
       page(["specs", "more"], <SectionNav ariaLabel="Sections" width="detail" items={ITEMS} />),
