@@ -1,12 +1,13 @@
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MockLanguageModelV4 } from "ai/test";
-import { simulateReadableStream } from "ai";
+import { simulateReadableStream, type UIMessage } from "ai";
 
 const mocks = vi.hoisted(() => ({
   getAgentModel: vi.fn(),
   writeAskIrisTrace: vi.fn(),
   appendAskIrisTurn: vi.fn(),
+  loadAskIrisTurnHistory: vi.fn(),
   waitUntil: vi.fn(),
   kv: new Map<string, string>(),
 }));
@@ -46,7 +47,7 @@ vi.mock("@/lib/auth", () => ({
 }));
 vi.mock("@/lib/askiris/conversation-repository", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/askiris/conversation-repository")>()),
-  loadAskIrisTurnHistory: async () => [],
+  loadAskIrisTurnHistory: mocks.loadAskIrisTurnHistory,
   appendAskIrisTurn: mocks.appendAskIrisTurn,
 }));
 vi.mock("@/lib/askiris/trace-repository", () => ({
@@ -77,13 +78,16 @@ function modelStep(parts: LanguageModelV4StreamPart[], finishReason: "tool-calls
   };
 }
 
-function chatRequest() {
+function chatRequest(
+  message: UIMessage = { id: "user-message-1", role: "user", parts: [{ type: "text", text: "Hi" }] },
+  previousMessageId: string | null = null,
+) {
   return new NextRequest("http://localhost/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      message: { id: "user-message-1", role: "user", parts: [{ type: "text", text: "Hi" }] },
-      previousMessageId: null,
+      message,
+      previousMessageId,
       mount: "X",
       locale: "en",
       id: crypto.randomUUID(),
@@ -99,6 +103,7 @@ async function settle(response: Response) {
 beforeEach(() => {
   mocks.writeAskIrisTrace.mockResolvedValue(undefined);
   mocks.appendAskIrisTurn.mockResolvedValue(undefined);
+  mocks.loadAskIrisTurnHistory.mockResolvedValue([]);
 });
 
 afterEach(() => {
@@ -116,6 +121,125 @@ function textReply() {
     "stop",
   );
 }
+
+describe("POST /api/chat stored spec-guide calls", () => {
+  const user: UIMessage = { id: "old-user", role: "user", parts: [{ type: "text", text: "Explain the spec fields." }] };
+  const guide: UIMessage = {
+    id: "old-assistant",
+    role: "assistant",
+    parts: [
+      {
+        type: "tool-skill", toolCallId: "old-guide-call", state: "output-available",
+        input: { name: "terms" }, output: { text: "Persisted guide with the original labels." },
+      },
+      { type: "text", text: "Stored answer." },
+    ],
+  };
+
+  function replyModel() {
+    const model = new MockLanguageModelV4({ doStream: textReply() });
+    mocks.getAgentModel.mockReturnValue(model);
+    return model;
+  }
+
+  it("replays a completed old call and its saved output without offering the old tool", async () => {
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, guide]);
+    const model = replyModel();
+
+    const response = await POST(chatRequest(undefined, guide.id));
+    expect(response.status).toBe(200);
+    await settle(response);
+
+    const { prompt, tools } = model.doStreamCalls[0];
+    expect(tools?.map((tool) => tool.name)).toContain("readSpecGuide");
+    expect(tools?.map((tool) => tool.name)).not.toContain("skill");
+    expect(prompt).toContainEqual(expect.objectContaining({
+      role: "assistant",
+      content: expect.arrayContaining([expect.objectContaining({
+        type: "tool-call", toolCallId: "old-guide-call", toolName: "skill", input: { name: "terms" },
+      })]),
+    }));
+    expect(prompt).toContainEqual(expect.objectContaining({
+      role: "tool",
+      content: expect.arrayContaining([expect.objectContaining({
+        type: "tool-result", toolCallId: "old-guide-call", toolName: "skill",
+        output: { type: "json", value: { text: "Persisted guide with the original labels." } },
+      })]),
+    }));
+    expect(JSON.stringify(prompt)).toContain("Stored answer.");
+  });
+
+  it.each(["input-streaming", "input-available"] as const)("drops an old %s call on a new user turn", async (state) => {
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, {
+      ...guide, parts: [{ type: "tool-skill", toolCallId: "old-guide-call", state, input: { name: "terms" } }],
+    }]);
+    const model = replyModel();
+
+    const response = await POST(chatRequest(undefined, guide.id));
+    expect(response.status).toBe(200);
+    await settle(response);
+
+    expect(JSON.stringify(model.doStreamCalls[0].prompt)).not.toContain("old-guide-call");
+    expect(model.doStreamCalls).toHaveLength(1);
+  });
+
+  it("keeps the server's old guide output when the client answers an adjacent card", async () => {
+    const card = { type: "tool-askForGear", toolCallId: "gear-call", state: "input-available", input: {} } as const;
+    const paused: UIMessage = { ...guide, parts: [...guide.parts, card] };
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, paused]);
+    const model = replyModel();
+    const incoming: UIMessage = {
+      ...paused,
+      parts: [
+        { ...guide.parts[0], input: { name: "forged" }, output: { text: "Forged guide." } } as UIMessage["parts"][number],
+        { type: "text", text: "Forged answer." },
+        { ...card, state: "output-available", output: { outcome: "skipped" } },
+      ],
+    };
+
+    const response = await POST(chatRequest(incoming, user.id));
+    expect(response.status).toBe(200);
+    await settle(response);
+
+    const prompt = JSON.stringify(model.doStreamCalls[0].prompt);
+    expect(prompt).toContain("Persisted guide with the original labels.");
+    expect(prompt).toContain("Stored answer.");
+    expect(prompt).not.toContain("Forged");
+    expect(prompt).not.toContain("forged");
+  });
+
+  it("does not accept an old server-tool output as a client continuation", async () => {
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, guide]);
+    const response = await POST(chatRequest(guide, user.id));
+    expect(response.status).toBe(400);
+    expect(mocks.getAgentModel).not.toHaveBeenCalled();
+  });
+
+  it("does not whitelist an unfinished removed tool to resume an adjacent card", async () => {
+    const pending = { type: "tool-skill", toolCallId: "old-guide-call", state: "input-available", input: { name: "terms" } } as const;
+    const card = { type: "tool-askForGear", toolCallId: "gear-call", state: "input-available", input: {} } as const;
+    const paused: UIMessage = { ...guide, parts: [pending, card] };
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, paused]);
+
+    const response = await POST(chatRequest({
+      ...paused, parts: [pending, { ...card, state: "output-available", output: { outcome: "skipped" } }],
+    }, user.id));
+
+    expect(response.status).toBe(400);
+    expect(mocks.getAgentModel).not.toHaveBeenCalled();
+  });
+
+  it("regenerates from the stored user message without replaying its old response", async () => {
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, guide]);
+    const model = replyModel();
+
+    const response = await POST(chatRequest(user));
+    expect(response.status).toBe(200);
+    await settle(response);
+
+    expect(JSON.stringify(model.doStreamCalls[0].prompt)).not.toContain("old-guide-call");
+  });
+});
 
 describe("POST /api/chat quota", () => {
   it("answers a guest's daily turns, then refuses and says when the quota resets", async () => {

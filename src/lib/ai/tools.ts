@@ -18,7 +18,8 @@ import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
-import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
+import { SPEC_GUIDE } from "@/lib/ai/spec-guide";
+import { fillUiStrings } from "@/lib/ui-strings";
 import { bodyQuerySchema, queryBodies } from "@/lib/body/query";
 import { favoritesOnMount } from "@/lib/ai/favorites";
 import type { GearSummary } from "@/lib/ai/gear-context";
@@ -505,12 +506,12 @@ export function buildLensTools(
       toModelOutput: () => ({ type: "text", value: "Displayed an editable feedback draft. Nothing has been submitted. The user may submit it or continue chatting." }),
     }),
 
-    skill: tool({
+    readSpecGuide: tool({
       description:
-        "Read a reference document by name. terms: how to read Atlens spec fields and lens model names; " +
+        "Read the guide to interpreting Atlens spec fields and lens model names; " +
         "read it before explaining what a spec value means or what a code in a lens name stands for.",
-      inputSchema: z.object({ name: z.enum(SKILL_NAMES) }),
-      execute: ({ name }) => ({ text: readSkill(name, locale) }),
+      inputSchema: z.object({}),
+      execute: () => ({ text: fillUiStrings(SPEC_GUIDE.text, locale) }),
     }),
 
     siteInfo: tool({
