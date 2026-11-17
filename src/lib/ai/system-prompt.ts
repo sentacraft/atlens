@@ -108,6 +108,8 @@ export function gearPrompt(gear: GearSummary, { declined, signInCancelled }: { d
   if (!gear.known) {
     const howToAsk = gear.reason === "guest" && signInCancelled
       ? "用户已取消登录，继续回答能回答的部分，不要再要求登录或打开器材卡，也不要编造账号器材。"
+      : gear.reason === "unavailable"
+        ? "读取器材时说明暂时无法读取，不要把读取失败当作没有保存器材，也不要要求用户重新填写。"
       : declined
       ? GEAR_NOTE_AFTER_CARD[declined]
       : gear.reason === "guest"

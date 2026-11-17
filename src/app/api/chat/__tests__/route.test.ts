@@ -218,6 +218,13 @@ describe("POST /api/chat gear sign-in", () => {
     expect(mocks.listUserGear).toHaveBeenCalledTimes(1);
   });
 
+  it.each([undefined, null, {}, { id: "old-approval", approved: "yes" }])("rejects a malformed legacy approval without throwing: %j", async (approval) => {
+    const part = { type: "tool-myGear", toolCallId: "sign-call", state: "approval-responded", input: {}, approval };
+    const response = await POST(chatRequest({ ...pending, parts: [part] } as unknown as UIMessage, user.id));
+    expect(response.status).toBe(400);
+    expect(mocks.getAgentModel).not.toHaveBeenCalled();
+  });
+
   it("preserves completed historical gear output without restoring its tool", async () => {
     const complete = { type: "tool-myGear", toolCallId: "old-gear", state: "output-available", input: {}, output: { bodies: [], lenses: [{ name: "Historic lens" }] } } as const;
     mocks.loadAskIrisTurnHistory.mockResolvedValue([user, { ...pending, parts: [complete] }]);

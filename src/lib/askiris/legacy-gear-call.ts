@@ -11,6 +11,10 @@ export function normalizeLegacyGearCalls<M extends UIMessage>(messages: M[], { i
         (part.state !== "input-available" && part.state !== "approval-requested" && part.state !== "approval-responded")) {
         return part;
       }
+      if ((part.state === "approval-requested" || part.state === "approval-responded") &&
+        (typeof part.approval?.id !== "string" || (part.state === "approval-responded" && typeof part.approval?.approved !== "boolean"))) {
+        return part;
+      }
       const base = { type: `tool-${ASK_TO_SIGN_IN}` as const, toolCallId: part.toolCallId, input: {} };
       if (part.state === "approval-responded" && (!part.approval.approved || incoming)) {
         return { ...base, state: "output-available" as const, output: { outcome: part.approval.approved ? "signed_in" : "cancelled" } };

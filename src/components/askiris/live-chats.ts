@@ -58,10 +58,14 @@ function hasPendingCard(messages: AskIrisUIMessage[]) {
 }
 
 function hasLocalSignInAnswer(chat: Chat<AskIrisUIMessage>, seed: AskIrisUIMessage[]) {
-  return normalizeLegacyGearCalls(seed).some((stored) => stored.parts.some((part) =>
-    isToolUIPart(part) && getToolName(part) === ASK_TO_SIGN_IN && part.state === "input-available" &&
-    chat.messages.find((message) => message.id === stored.id)?.parts.some((local) =>
-      isToolUIPart(local) && local.toolCallId === part.toolCallId && local.state === "output-available",
+  const answered = answeredSignIns.get(chat);
+  if (!answered) {return false;}
+  const stored = normalizeLegacyGearCalls(seed);
+  return chat.messages.some((message) => message.parts.some((part) =>
+    isToolUIPart(part) && getToolName(part) === ASK_TO_SIGN_IN && part.state === "output-available" && answered.has(part.toolCallId) &&
+    !stored.find((item) => item.id === message.id)?.parts.some((saved) =>
+      isToolUIPart(saved) && getToolName(saved) === ASK_TO_SIGN_IN && saved.toolCallId === part.toolCallId &&
+      (saved.state === "output-available" || saved.state === "output-error" || saved.state === "output-denied"),
     ),
   ));
 }
@@ -77,6 +81,15 @@ export function completeSignIn(chat: Chat<AskIrisUIMessage>, toolCallId: string,
   answered.add(toolCallId);
   answeredSignIns.set(chat, answered);
   void chat.addToolOutput({ tool: ASK_TO_SIGN_IN, toolCallId, output, options: { body } });
+}
+
+export function retryChat(chat: Chat<AskIrisUIMessage>, body: Record<string, unknown>) {
+  const last = chat.messages.at(-1);
+  const hasSignInAnswer = last?.role === "assistant" && last.parts.some((part) =>
+    isToolUIPart(part) && getToolName(part) === ASK_TO_SIGN_IN && part.state === "output-available",
+  );
+  // Regeneration removes the assistant message, including the user's sign-in decision.
+  return hasSignInAnswer ? chat.sendMessage(undefined, { body }) : chat.regenerate({ body });
 }
 
 let lastConversationId: string | undefined;

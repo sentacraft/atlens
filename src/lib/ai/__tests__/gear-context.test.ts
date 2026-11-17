@@ -24,6 +24,13 @@ describe("gearPrompt(describeGear(...))", () => {
     expect(gearContext({ kind: "account", gear: [] })).toContain("器材档案是空的");
   });
 
+  it("does not describe an unavailable profile as empty or ask the user to refill it", () => {
+    const prompt = gearContext({ kind: "unavailable" }, null);
+    expect(prompt).toContain("暂时读不到用户的器材档案");
+    expect(prompt).not.toContain("档案为空");
+    expect(prompt).not.toContain("先调用 askForGear");
+  });
+
   it("lists bodies with sensor and stabilisation, and lenses with refs and equivalent focal lengths", () => {
     const gear = evalGear(
       JSON.stringify({ bodies: ["fujifilm-x-t5"], lenses: ["fujifilm-xf-18-55mmf28-4-r-lm-ois-x"] }),

@@ -48,7 +48,7 @@ import AiTag from "@/components/iris/AiTag";
 import { ConversationHistoryPopover, ConversationHistoryView } from "@/components/askiris/ConversationHistory";
 import { useBreakpoint } from "@/hooks/useViewport";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
-import { completeSignIn, openChat, rememberConversation, rememberedConversationId, replyingConversationId, setModelPreset } from "@/components/askiris/live-chats";
+import { completeSignIn, openChat, rememberConversation, rememberedConversationId, replyingConversationId, retryChat, setModelPreset } from "@/components/askiris/live-chats";
 import { resolveOpening } from "@/lib/askiris/opening";
 
 type ConversationSwitch = { kind: "select"; id: string } | { kind: "new"; reason: "manual" | "reopen" };
@@ -153,7 +153,7 @@ export default function AskIrisChat({
     () => openChat(conversationId, conversation.initialMessages),
     [conversationId, conversation.initialMessages],
   );
-  const { messages, sendMessage, status, setMessages, stop, regenerate, error, addToolOutput, addToolApprovalResponse } =
+  const { messages, sendMessage, status, setMessages, stop, error, addToolOutput, addToolApprovalResponse } =
     useChat<AskIrisUIMessage>({
     chat,
     experimental_throttle: 50,
@@ -503,7 +503,7 @@ export default function AskIrisChat({
               }}
             />
             {chatError && (
-              <AskIrisError error={chatError} onRetry={() => regenerate({ body: turnBody() })} />
+              <AskIrisError error={chatError} onRetry={() => void retryChat(chat, turnBody())} />
             )}
           </div>
           <div

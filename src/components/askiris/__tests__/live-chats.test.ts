@@ -53,6 +53,33 @@ describe("live chats", () => {
     expect(openChat("conv-late", structuredClone(seed))).toBe(chat);
   });
 
+  it.each(["cancelled", "signed_in"] as const)("keeps a new chat's %s result after a failed continuation and an intervening empty chat", async (outcome) => {
+    let requests = 0;
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>(async () => {
+      if (++requests > 1) {throw new Error("Network unavailable");}
+      const parts = [
+        { type: "start", messageId: "new-sign-in" },
+        { type: "start-step" },
+        { type: "tool-input-available", toolCallId: "new-sign-call", toolName: "askToSignIn", input: {} },
+        { type: "finish-step" },
+        { type: "finish", finishReason: "tool-calls" },
+      ];
+      return new Response(parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n", {
+        headers: { "content-type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" },
+      });
+    }));
+    const id = `conv-new-${outcome}`;
+    const chat = openChat(id, []);
+    await chat.sendMessage({ text: "Which lenses do I own?" });
+    const pending = structuredClone(chat.messages);
+    completeSignIn(chat, "new-sign-call", { outcome }, { mount: "X", locale: "en" });
+    await vi.waitFor(() => expect(chat.status).toBe("error"));
+    openChat(`temporary-${outcome}`, []);
+    const restored = openChat(id, pending);
+    expect(restored).toBe(chat);
+    expect(restored.messages.at(-1)?.parts).toContainEqual(expect.objectContaining({ state: "output-available", output: { outcome } }));
+  });
+
   it("uses a server-completed interaction instead of retaining a stale pending card", () => {
     const pending = [message("u-server"), { id: "a-server", role: "assistant", parts: [{ type: "tool-askToSignIn", toolCallId: "server-call", input: {}, state: "input-available" }] }] as AskIrisUIMessage[];
     const original = openChat("conv-server", pending);

@@ -21,6 +21,12 @@ describe("retired gear call history", () => {
     expect(normalizeLegacyGearCalls(result)).toEqual(result);
   });
 
+  it.each([undefined, null, {}, { id: "approval", approved: "yes" }])("leaves malformed approvals for validation: %j", (approval) => {
+    const original = history("approval-responded");
+    Object.assign(original[0].parts[1], { approval });
+    expect(normalizeLegacyGearCalls(original, { incoming: true })[0].parts[1]).toBe(original[0].parts[1]);
+  });
+
   it("keeps a declined old approval terminal", () => {
     expect(normalizeLegacyGearCalls(history("approval-responded", false))[0].parts[1]).toMatchObject({ state: "output-available", output: { outcome: "cancelled" } });
   });
