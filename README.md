@@ -34,6 +34,7 @@ Atlens is free, open source, and maintained by one person. If it helps you pick 
 ## Features
 
 - **Growing lens database** — Fujifilm's first-party lineup plus a dozen third-party brands across X and G mount; which brands and lens types are covered is kept in one place and shown live on the [coverage table](https://atlens.app/en/about?src=github#coverage)
+- **Product photo gallery** — swipe between product photos, then open an animated lightbox with zoom, pan and thumbnails; full-screen on phones, centered on desktop
 - **Clean, focused UI** — distraction-free interface designed around the comparison workflow
 - **Filter and sort** — focal categories or a custom actual/full-frame-equivalent focal length with a 5% logarithmic tolerance, maximum-aperture and weight limits, plus brand, focus, features and specialty filters; selections survive shared links and browser history
 - **Curated collections** — hand-picked themes (compact primes, budget autofocus, and more), each defined by filter criteria rather than a hand-picked lens list, so the lineup stays current as the catalog grows — for when you don't know exactly what to search for

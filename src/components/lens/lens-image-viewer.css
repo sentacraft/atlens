@@ -1,0 +1,123 @@
+.lens-image-viewer {
+  --pswp-bg: rgb(9 9 11 / 55%);
+  --pswp-placeholder-bg: transparent;
+  --pswp-error-text-color: #52525b;
+  --pswp-root-z-index: 50;
+  --gallery-x: max(24px, calc((100vw - 748px) / 2));
+  --gallery-y: max(24px, calc((100dvh - 668px) / 2));
+  --gallery-duration: 240ms;
+  --gallery-image-x: calc(var(--gallery-x) + 52px);
+}
+
+.lens-image-viewer .pswp__scroll-wrap::before {
+  content: "";
+  position: absolute;
+  inset: var(--gallery-y) var(--gallery-x);
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 25%);
+  animation: gallery-surface-in var(--gallery-duration) ease-out both;
+}
+
+.lens-image-viewer.gallery-closing .pswp__scroll-wrap::before {
+  animation: gallery-surface-out var(--gallery-duration) ease-in both;
+}
+
+.lens-image-viewer.gallery-settled .pswp__item {
+  clip-path: inset(calc(var(--gallery-y) + 76px + var(--safe-inset-top)) var(--gallery-image-x) calc(var(--gallery-y) + 148px + var(--safe-inset-bottom)));
+}
+
+.lens-image-viewer .pswp__img {
+  object-fit: contain;
+}
+
+.lens-image-viewer .pswp__error-msg-container {
+  place-items: center;
+}
+
+.lens-image-viewer .pswp__error-msg {
+  width: min(24rem, calc(100vw - 4rem));
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.lens-image-viewer .pswp__gallery-chrome {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.gallery-controls {
+  transition: opacity 160ms;
+}
+
+.gallery-controls-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gallery-header,
+.gallery-footer {
+  position: absolute;
+  left: calc(var(--gallery-x) + 20px);
+  right: calc(var(--gallery-x) + 20px);
+  pointer-events: auto;
+}
+
+.gallery-header {
+  top: calc(var(--gallery-y) + max(16px, var(--safe-inset-top)));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.gallery-footer {
+  bottom: calc(var(--gallery-y) + max(20px, var(--safe-inset-bottom)));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.gallery-controls-hidden .gallery-header,
+.gallery-controls-hidden .gallery-footer {
+  pointer-events: none;
+}
+
+@keyframes gallery-surface-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes gallery-surface-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@media (width < 640px) {
+  .lens-image-viewer {
+    --pswp-bg: white;
+    --gallery-x: 0px;
+    --gallery-y: 0px;
+    --gallery-image-x: 16px;
+  }
+
+  .lens-image-viewer .pswp__scroll-wrap::before {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .gallery-header,
+  .gallery-footer {
+    left: 16px;
+    right: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lens-image-viewer { --gallery-duration: 80ms; }
+  .gallery-controls { transition: none; }
+}

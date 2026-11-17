@@ -129,6 +129,7 @@ function features(locale: string): string[] {
       named(m.Nav.feedback, "report a data problem or send an idea"),
       named(m.Nav.getApp, "install Atlens as a web app"),
     ])}.`,
+    "Lens pages show product photos in a swipeable gallery. Opening a photo shows a zoomable lightbox, full-screen on phones and centered on desktop, with thumbnails for multiple images. Close with the close button, Escape, or a vertical drag while not zoomed in.",
     `The site is available in ${list(routing.locales.map(languageName))}.`,
     withLinks(
       locale,

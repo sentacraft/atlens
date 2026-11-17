@@ -51,6 +51,43 @@ test.describe("Section navigation, lens detail", () => {
   });
 });
 
+for (const width of [375, 1100]) {
+  test.describe(`Section navigation spacing at ${width}px`, () => {
+    test.use({ viewport: { width, height: 900 } });
+
+    test("detail chips have 16px of space on either side and stay sticky", async ({ page }) => {
+      await page.goto(LENS_PATH);
+      const nav = sectionNav(page);
+      await expect(nav).toBeVisible();
+
+      await expect.poll(async () => nav.evaluate((element) => {
+        let previous = element.previousElementSibling;
+        while (previous) {
+          const style = getComputedStyle(previous);
+          if (style.display !== "none" && style.position !== "absolute") {
+            break;
+          }
+          previous = previous.previousElementSibling;
+        }
+        const chip = element.querySelector("a")!.getBoundingClientRect();
+        const before = previous!.getBoundingClientRect();
+        const after = document.getElementById("specs")!.getBoundingClientRect();
+        return {
+          before: Math.round(chip.top - before.bottom),
+          after: Math.round(after.top - chip.bottom),
+        };
+      })).toEqual({ before: 16, after: 16 });
+
+      await nav.evaluate((element) => window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top + 200));
+      await expect.poll(async () => nav.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return style.position === "sticky"
+          && Math.abs(element.getBoundingClientRect().top - Number.parseFloat(style.top)) < 1;
+      })).toBe(true);
+    });
+  });
+}
+
 test.describe("Section navigation, about page", () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 

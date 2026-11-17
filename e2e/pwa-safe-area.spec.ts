@@ -27,6 +27,25 @@ async function computedPx(page: Page, selector: string, property: string): Promi
   );
 }
 
+test.describe("Lens viewer safe area", () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
+  test("image controls and content clear the notch and home indicator", async ({ page }) => {
+    await page.goto("/en/lenses/x/fujifilm-xf-33mmf14-r-lm-wr-x");
+    await simulateNotch(page);
+    await page.getByRole("button", { name: "Enlarge product image" }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect.poll(async () => {
+      const close = (await dialog.getByRole("button", { name: "Close image viewer" }).boundingBox())!;
+      const footer = (await dialog.locator(".gallery-footer").boundingBox())!;
+      const image = (await dialog.getByRole("img", { name: /.+/ }).boundingBox())!;
+      return close.y >= NOTCH_TOP && footer.y + footer.height <= 812 - HOME_BAR
+        && image.y >= close.y + close.height && image.y + image.height <= footer.y;
+    }).toBe(true);
+  });
+});
+
 const LENS_A = "fujifilm-mkx-18-55mmt29-x";
 const LENS_B = "fujifilm-mkx-50-135mmt29-x";
 
