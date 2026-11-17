@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { useState } from "react";
 import { NextIntlClientProvider } from "next-intl";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { defaultFilters, type FilterState, type AvailableFilterOptions } from "@/lib/lens/lens";
 import messages from "@/messages/en.json";
@@ -28,76 +28,100 @@ function current(): FilterState {
   return JSON.parse(screen.getByTestId("filters").textContent ?? "{}");
 }
 
-async function selectMode(name: string) {
-  fireEvent.click(screen.getByRole("button", { name: "Focal filtering" }));
-  fireEvent.click(await screen.findByRole("menuitemradio", { name }));
+function focalGroup() {
+  return within(screen.getByRole("group", { name: "Focal length" }));
 }
 
-beforeEach(() => {
-  const values = new Map<string, string>();
-  vi.stubGlobal("localStorage", {
-    getItem: (key: string) => values.get(key) ?? null,
-    setItem: vi.fn((key: string, value: string) => { values.set(key, value); }),
-  });
-});
+function openCoverage() {
+  fireEvent.click(screen.getByRole("button", { name: "Cover a focal length" }));
+  return screen.getByRole("textbox", { name: "Custom focal length" });
+}
 
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+afterEach(cleanup);
 
-describe("LensFilters", () => {
-  it("makes focal presets and coverage mutually exclusive through one mode menu", async () => {
+describe("LensFilters inline coverage", () => {
+  it("opens an equivalent input in the same row without hiding the focal presets", () => {
     render(<Harness initial={{ ...defaultFilters, focalCategories: ["wide"] }} />);
-    await selectMode("Cover a focal length");
+    const input = openCoverage();
     expect(current().focalCategories).toEqual([]);
     expect(current().focalLength).toEqual({ value: null, reference: "equivalent" });
-    const input = screen.getByRole("textbox", { name: "Custom focal length" });
+    expect(document.activeElement).toBe(input);
+    expect(focalGroup().getByRole("button", { name: "Standard" })).toBeTruthy();
+    expect(focalGroup().getByRole("button", { name: "All" }).getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("keeps drafts local, then applies coverage and deselects All", () => {
+    render(<Harness />);
+    const input = openCoverage();
     fireEvent.change(input, { target: { value: "40" } });
+    expect(current().focalLength?.value).toBeNull();
     fireEvent.blur(input);
-    expect(current().focalLength?.value).toBe(40);
-    expect(screen.queryByRole("button", { name: "Standard" })).toBeNull();
-    await selectMode("By focal range");
+    expect(current().focalLength).toEqual({ value: 40, reference: "equivalent" });
+    expect(focalGroup().getByRole("button", { name: "All" }).getAttribute("aria-pressed")).toBe("false");
+    expect(focalGroup().getByRole("button", { name: "Standard" }).getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("uses All to exit coverage and discards the input draft", () => {
+    render(<Harness initial={{ ...defaultFilters, focalLength: { value: 40, reference: "equivalent" } }} />);
+    fireEvent.change(screen.getByRole("textbox", { name: "Custom focal length" }), { target: { value: "55" } });
+    fireEvent.click(focalGroup().getByRole("button", { name: "All" }));
     expect(current().focalLength).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Standard" }));
+    expect(current().focalCategories).toEqual([]);
+    expect(screen.queryByRole("textbox", { name: "Custom focal length" })).toBeNull();
+    const input = openCoverage();
+    expect((input as HTMLInputElement).value).toBe("");
+  });
+
+  it("uses a focal preset to exit coverage without a separate mode switch", () => {
+    render(<Harness initial={{ ...defaultFilters, focalLength: { value: 40, reference: "equivalent" } }} />);
+    fireEvent.click(focalGroup().getByRole("button", { name: "Standard" }));
+    expect(current().focalLength).toBeNull();
     expect(current().focalCategories).toEqual(["standard"]);
     expect(screen.queryByRole("textbox", { name: "Custom focal length" })).toBeNull();
   });
 
-  it("defaults to equivalent even when an old physical-reference preference exists", async () => {
-    window.localStorage.setItem("atlens_focal_reference_v1", "actual");
-    render(<Harness />);
-    await selectMode("Cover a focal length");
-    expect(current().focalLength).toEqual({ value: null, reference: "equivalent" });
-  });
-
-  it("preserves an explicit physical-reference filter until a new coverage selection", async () => {
+  it("preserves explicit URL references without opening the keyboard", () => {
     render(<Harness initial={{ ...defaultFilters, focalLength: { value: 40, reference: "actual" } }} />);
+    const input = screen.getByRole("textbox", { name: "Custom focal length" });
     expect(current().focalLength).toEqual({ value: 40, reference: "actual" });
-    await selectMode("By focal range");
-    await selectMode("Cover a focal length");
+    expect(document.activeElement).not.toBe(input);
+    fireEvent.click(focalGroup().getByRole("button", { name: "All" }));
+    openCoverage();
     expect(current().focalLength).toEqual({ value: null, reference: "equivalent" });
   });
 
-  it("converts the reference without persisting it", async () => {
+  it("keeps the convention menu and matching note inside the coverage control", async () => {
     render(<Harness initial={{ ...defaultFilters, focalLength: { value: 40, reference: "equivalent" } }} />);
-    fireEvent.click(screen.getByRole("button", { name: "Focal length convention" }));
+    const chip = within(screen.getByRole("group", { name: "Cover a focal length" }));
+    fireEvent.click(chip.getByRole("button", { name: "Focal length convention" }));
+    expect(await screen.findByText(messages.LensList.focalTolerance)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /clear|remove/i })).toBeNull();
+    expect(screen.queryByRole("menuitem", { name: /clear|remove/i })).toBeNull();
     fireEvent.click(await screen.findByRole("menuitemradio", { name: "Actual" }));
     expect(current().focalLength?.reference).toBe("actual");
     expect(current().focalLength?.value).toBeCloseTo(40 / 1.5);
-    expect(window.localStorage.setItem).not.toHaveBeenCalled();
+    fireEvent.blur(screen.getByRole("textbox", { name: "Custom focal length" }));
+    expect(current().focalLength?.value).toBe(40 / 1.5);
   });
 
-  it("places the coverage note beside the mode rather than the reference", () => {
+  it("rejects invalid drafts without changing the applied coverage", () => {
     render(<Harness initial={{ ...defaultFilters, focalLength: { value: 40, reference: "equivalent" } }} />);
-    const mode = screen.getByRole("button", { name: "Focal filtering" });
-    expect(within(mode.parentElement!).getByRole("button", { name: messages.Common.additionalInfo })).toBeTruthy();
-    expect(mode.parentElement!.contains(screen.getByRole("button", { name: "Focal length convention" }))).toBe(false);
+    const input = screen.getByRole("textbox", { name: "Custom focal length" });
+    fireEvent.change(input, { target: { value: "-2" } });
+    fireEvent.blur(input);
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    expect(current().focalLength?.value).toBe(40);
+    fireEvent.keyDown(input, { key: "Escape" });
+    fireEvent.blur(input);
+    expect((input as HTMLInputElement).value).toBe("40");
+    expect(current().focalLength?.value).toBe(40);
   });
 
-  it("discards an uncommitted focal draft on reset", async () => {
+  it("discards an uncommitted focal draft on reset", () => {
     render(<Harness initial={{ ...defaultFilters, focalLength: { value: 40, reference: "equivalent" } }} />);
     fireEvent.change(screen.getByRole("textbox", { name: "Custom focal length" }), { target: { value: "55" } });
     fireEvent.click(screen.getByRole("button", { name: "Reset" }));
     expect(current().focalLength).toBeNull();
-    await selectMode("Cover a focal length");
-    expect((screen.getByRole("textbox", { name: "Custom focal length" }) as HTMLInputElement).value).toBe("");
+    expect((openCoverage() as HTMLInputElement).value).toBe("");
   });
 });

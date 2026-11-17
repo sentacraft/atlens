@@ -7,7 +7,7 @@ afterEach(cleanup);
 
 function setup(value: number | null = null) {
   const onCommit = vi.fn();
-  render(<FilterNumberInput label="Focal length" value={value} unit="mm" placeholder="40" invalidLabel="Positive number required" onCommit={onCommit} />);
+  render(<FilterNumberInput label="Focal length" value={value} width="fixed" inputRef={undefined} placeholder="40" invalidLabel="Positive number required" onCommit={onCommit} />);
   return { input: screen.getByRole("textbox", { name: "Focal length" }), onCommit };
 }
 

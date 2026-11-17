@@ -117,7 +117,7 @@ function features(locale: string): string[] {
   const named = (label: string, what: string) => `"${label}": ${what}`;
   return [
     `Main features and their names on the site: ${list([
-      named(m.Nav.lenses, "browse the current mount by focal categories or a custom actual/full-frame-equivalent focal length (5% logarithmic tolerance), maximum aperture and weight limits, brand, focus and features; variable-aperture zooms use the wide-end aperture, and weight limits include the upper end of a weight range"),
+      named(m.Nav.lenses, "browse the current mount by focal categories or a custom actual/full-frame-equivalent focal length (5% logarithmic tolerance), maximum aperture and weight limits, brand, focus and features; variable-aperture zooms use the wide-end aperture, and weight limits include the upper end of a weight range. Custom focal coverage is entered inside a chip beside the focal categories; choosing All clears it, and choosing a category replaces it"),
       named(m.Nav.collections, "curated lens lists by theme"),
       named(m.Nav.charts, "release timeline, weight ladder and lineups, across brands"),
       named(m.Nav.compare, `compare up to ${MAX_COMPARE} lenses spec by spec`),

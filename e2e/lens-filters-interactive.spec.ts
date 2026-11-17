@@ -38,8 +38,7 @@ test.describe("Focal range filter", () => {
 
 test("custom equivalent focal lengths match nearby primes and survive history and reload", async ({ page }) => {
   await page.goto("/en/lenses/x/browse?filter-test=preserved");
-  await page.getByRole("button", { name: "Focal filtering", exact: true }).click();
-  await page.getByRole("menuitemradio", { name: "Cover a focal length", exact: true }).click();
+  await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
   const input = page.getByRole("textbox", { name: "Custom focal length" });
   await input.fill("40");
   await input.press("Enter");
@@ -53,14 +52,12 @@ test("custom equivalent focal lengths match nearby primes and survive history an
   await expect(page).toHaveURL(/fr=actual/);
   await expect(prime).toHaveCount(1);
   await page.goBack();
-  await expect(page.getByRole("button", { name: "Focal length convention" })).toHaveText("Equiv. (FF)");
+  await expect(page.getByRole("button", { name: "Focal length convention" })).toHaveText("Equiv.");
   await expect(input).toHaveValue("40");
   await page.reload();
   await expect(input).toHaveValue("40");
   await expect(prime).toHaveCount(1);
 
-  await page.getByRole("button", { name: "Focal filtering", exact: true }).click();
-  await page.getByRole("menuitemradio", { name: "By focal range", exact: true }).click();
   await page.getByRole("button", { name: "Standard", exact: true }).click();
   await expect(input).toHaveCount(0);
   await expect(page).toHaveURL(/fc=standard/);
@@ -68,41 +65,65 @@ test("custom equivalent focal lengths match nearby primes and survive history an
   expect(new URL(page.url()).searchParams.get("filter-test")).toBe("preserved");
 });
 
-test("focal mode stays beside its label and coverage defaults to equivalent", async ({ page }) => {
-  await page.addInitScript(() => window.localStorage.setItem("atlens_focal_reference_v1", "actual"));
+test("coverage is entered inline with a convention menu and no clear action", async ({ page }) => {
   await page.goto("/en/lenses/x/browse?b=fujifilm");
-  const mode = page.getByRole("button", { name: "Focal filtering", exact: true });
-  const label = mode.locator("../..").locator("span:visible").filter({ hasText: /^Focal length$/ });
-  const modeBox = await mode.boundingBox();
-  const labelBox = await label.boundingBox();
-  expect(modeBox).not.toBeNull();
-  expect(labelBox).not.toBeNull();
-  expect(modeBox!.x - labelBox!.x).toBeLessThan(160);
-  expect(Math.abs(modeBox!.y + modeBox!.height / 2 - labelBox!.y - labelBox!.height / 2)).toBeLessThanOrEqual(1);
-  await mode.click();
-  await page.getByRole("menuitemradio", { name: "Cover a focal length", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Focal length convention" })).toHaveText("Equiv. (FF)");
-  const note = mode.locator("..").getByRole("button").nth(1);
-  await note.click();
+  await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
+  const input = page.getByRole("textbox", { name: "Custom focal length" });
+  const focal = page.getByRole("group", { name: "Focal length", exact: true });
+  await expect(input).toBeFocused();
+  await expect(focal.getByRole("button", { name: "Standard", exact: true })).toBeVisible();
+  await input.fill("40");
+  await input.press("Enter");
+  await expect(input).not.toBeFocused();
+  await expect(focal.getByRole("button", { name: "All", exact: true })).toHaveAttribute("aria-pressed", "false");
+  const chip = page.getByRole("group", { name: "Cover a focal length", exact: true });
+  await chip.getByRole("button", { name: "Focal length convention" }).click();
+  await expect(page.getByRole("menuitemradio")).toHaveCount(2);
+  await expect(page.getByRole("menuitem", { name: /clear|remove/i })).toHaveCount(0);
   await expect(page.getByText("Primes and zooms within a 5% logarithmic window of this focal length match.", { exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(chip.getByRole("button", { name: "Focal length convention" })).toBeFocused();
+  await expect(chip.getByRole("button")).toHaveCount(1);
+  const geometry = await chip.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    const input = element.querySelector("input")!.getBoundingClientRect();
+    const trigger = element.querySelector("button")!.getBoundingClientRect();
+    const arrow = element.querySelector("svg")!.getBoundingClientRect();
+    return { height: bounds.height, radius: parseFloat(getComputedStyle(element).borderRadius), inputRight: input.right, triggerLeft: trigger.left, arrowInset: bounds.right - arrow.right, triggerBottom: trigger.bottom, bottom: bounds.bottom };
+  });
+  expect(geometry.height).toBe(36);
+  expect(geometry.radius).toBeGreaterThanOrEqual(18);
+  expect(geometry.triggerLeft).toBeGreaterThanOrEqual(geometry.inputRight);
+  expect(geometry.arrowInset).toBeGreaterThanOrEqual(14);
+  expect(geometry.triggerBottom).toBeLessThanOrEqual(geometry.bottom);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await focal.getByRole("button", { name: "All", exact: true }).click();
+  await expect(input).toHaveCount(0);
+  await expect(focal.getByRole("button", { name: "All", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page).toHaveURL(/\?b=fujifilm$/);
 });
 
-test("desktop focal presets and coverage inputs sit beside their mode", async ({ page }) => {
-  test.skip((page.viewportSize()?.width ?? 1280) < 1024, "Wide desktop layout only");
+test("coverage chip follows focal presets and stays one unbroken control", async ({ page }) => {
   for (const query of ["b=fujifilm", "b=fujifilm&fmm=40&fr=equivalent"]) {
     await page.goto(`/en/lenses/x/browse?${query}`);
-    const mode = page.getByRole("button", { name: "Focal filtering", exact: true });
+    const focal = page.getByRole("group", { name: "Focal length", exact: true });
     const control = query.includes("fmm=")
-      ? page.getByRole("textbox", { name: "Custom focal length" })
-      : page.getByRole("button", { name: "Standard", exact: true });
+      ? page.getByRole("group", { name: "Cover a focal length", exact: true })
+      : page.getByRole("button", { name: "Cover a focal length", exact: true });
     await expect(control).toBeVisible();
-    const modeBox = await mode.boundingBox();
-    const controlBox = await control.boundingBox();
-    expect(modeBox).not.toBeNull();
-    expect(controlBox).not.toBeNull();
-    expect(controlBox!.x).toBeGreaterThanOrEqual(modeBox!.x + modeBox!.width);
-    expect(Math.abs(controlBox!.y + controlBox!.height / 2 - modeBox!.y - modeBox!.height / 2)).toBeLessThanOrEqual(2);
+    await expect(focal.getByRole("button", { name: "Standard", exact: true })).toBeVisible();
+    const bounds = await control.boundingBox();
+    const groupBounds = await focal.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(groupBounds).not.toBeNull();
+    expect(bounds!.height).toBe(36);
+    expect(bounds!.x).toBeGreaterThanOrEqual(groupBounds!.x);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(groupBounds!.x + groupBounds!.width + 1);
+    if ((page.viewportSize()?.width ?? 1280) >= 1024) {
+      const last = await focal.getByRole("button", { name: "Super Tele", exact: true }).boundingBox();
+      expect(bounds!.x).toBeGreaterThanOrEqual(last!.x + last!.width);
+      expect(Math.abs(bounds!.y - last!.y)).toBeLessThanOrEqual(1);
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
 });
@@ -131,10 +152,9 @@ test("aperture and custom weight limits persist and reset together", async ({ pa
 
 test("filter menus share pill geometry and leave room after the chevron", async ({ page }) => {
   await page.goto("/en/lenses/x/browse");
-  await page.getByRole("button", { name: "Focal filtering", exact: true }).click();
-  await page.getByRole("menuitemradio", { name: "Cover a focal length", exact: true }).click();
+  await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
   await openSecondaryFilters(page);
-  for (const name of ["Focal length convention", "Max Aperture", "Weight limit"]) {
+  for (const name of ["Max Aperture", "Weight limit"]) {
     const trigger = page.getByRole("button", { name, exact: true });
     const dimensions = await trigger.evaluate((element) => {
       const styles = getComputedStyle(element);
