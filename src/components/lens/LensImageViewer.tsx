@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import PhotoSwipe, { type SlideData } from "photoswipe";
-import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import GalleryThumbnails, { type GalleryImage } from "./GalleryThumbnails";
 import { ICON_CLOSE_BTN_CLS, IMAGE_CONTROL_CLS } from "@/config/ui-tokens";
 import { loadGalleryImage } from "@/lib/lens/gallery-image";
@@ -19,7 +19,6 @@ export type GalleryLabels = {
   close: string;
   previous: string;
   next: string;
-  zoom: string;
   loading: string;
   error: string;
   hint: { mouse: string; touch: string; mouseSingle: string; touchSingle: string };
@@ -221,10 +220,7 @@ export default function LensImageViewer(props: Props) {
     <div data-slot="gallery-controls" className={cn("gallery-controls", !controls && "gallery-controls-hidden")} inert={!controls}>
       <div className="gallery-header">
         <h2 id={titleId} className="min-w-0 truncate text-sm font-medium text-zinc-700 max-sm:text-xs">{initial.title}</h2>
-        <div className="flex shrink-0 items-center">
-          <button type="button" aria-label={initial.labels.zoom} onClick={() => pswpRef.current?.toggleZoom()} className={cn(IMAGE_CONTROL_CLS, "sm:hidden")}><ZoomIn className="size-4" /></button>
-          <button type="button" aria-label={initial.labels.close} onClick={() => pswpRef.current?.close()} className={cn(ICON_CLOSE_BTN_CLS, "size-11 cursor-pointer")}><X className="size-5" /></button>
-        </div>
+        <button type="button" aria-label={initial.labels.close} onClick={() => pswpRef.current?.close()} className={cn(ICON_CLOSE_BTN_CLS, "size-11 shrink-0 cursor-pointer")}><X className="size-5" /></button>
       </div>
       <div className="gallery-footer">
         {multiple && <>

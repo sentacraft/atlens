@@ -510,7 +510,6 @@
     "galleryNext": "下一张",
     "galleryPrimary": "产品主图",
     "galleryImage": "产品图 {number}",
-    "galleryZoom": "缩放图片",
     "galleryLoading": "正在加载图片…",
     "galleryError": "图片未能加载。",
     "galleryHint": {

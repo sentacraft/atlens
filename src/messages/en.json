@@ -510,7 +510,6 @@
     "galleryNext": "Next image",
     "galleryPrimary": "Main product image",
     "galleryImage": "Product image {number}",
-    "galleryZoom": "Zoom image",
     "galleryLoading": "Loading image…",
     "galleryError": "The image could not be loaded.",
     "galleryHint": {

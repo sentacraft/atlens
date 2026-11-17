@@ -79,7 +79,6 @@ const labels = {
   close: "Close",
   previous: "Previous",
   next: "Next",
-  zoom: "Zoom",
   loading: "Loading",
   error: "Image unavailable",
   hint: { mouse: "Arrows to browse · Click to zoom in/out", touch: "Swipe to browse · Double-tap to zoom", mouseSingle: "Click to zoom in/out", touchSingle: "Double-tap to zoom" },
@@ -247,6 +246,6 @@ it("opens a single primary image without paging controls", async () => {
   expect(screen.getAllByRole("button").map(button => button.getAttribute("aria-label"))).toEqual([labels.open]);
   fireEvent.click(screen.getByRole("button", { name: labels.open }));
   const dialog = await screen.findByRole("dialog", { name: "Example" });
-  expect(within(dialog).getAllByRole("button").map(button => button.getAttribute("aria-label"))).toEqual([labels.zoom, labels.close]);
+  expect(within(dialog).getAllByRole("button").map(button => button.getAttribute("aria-label"))).toEqual([labels.close]);
   expect(within(dialog).getByRole("img", { name: "Example" })).toBeTruthy();
 });
