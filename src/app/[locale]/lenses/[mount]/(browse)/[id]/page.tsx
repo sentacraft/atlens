@@ -229,7 +229,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
             className={UTILITY_BTN_CLS}
           >
             <Flag className="size-4" />
-            <span className="hidden sm:inline">{t("reportIssue")}</span>
+            <span className="sr-only sm:not-sr-only">{t("reportIssue")}</span>
           </FeedbackTrigger>
         </div>
       </div>

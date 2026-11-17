@@ -190,7 +190,9 @@ test("keeps the feedback header and submit action visible on a short phone scree
   await mockFeedbackApi(page);
   await page.setViewportSize({ width: 375, height: 600 });
   await page.goto(LENS_URL);
-  await page.getByRole("button", { name: /report an issue/i }).first().click();
+  const reportIssue = page.getByRole("button", { name: "Report an issue", exact: true });
+  await expect(reportIssue).toBeVisible();
+  await reportIssue.click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("combobox").click();
   await page.getByRole("option", { name: "Weight", exact: true }).click();
