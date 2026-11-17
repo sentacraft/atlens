@@ -24,6 +24,8 @@ import { EVAL_FAVORITES_HEADER, evalFavorites } from "@/lib/ai/favorites";
 import { listUserFavorites } from "@/lib/me/favorites-repository";
 import { ASK_CHOICES } from "@/lib/ai/choice-request";
 import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
+import { ASK_TO_SIGN_IN, signInCancelled } from "@/lib/ai/sign-in-request";
+import { normalizeLegacyGearCalls } from "@/lib/askiris/legacy-gear-call";
 import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
 import { buildLensTools, seedRecalledRefs } from "@/lib/ai/tools";
@@ -170,7 +172,7 @@ export async function POST(req: NextRequest) {
       tools,
     });
 
-  const incoming = await validate([message]);
+  const incoming = await validate(normalizeLegacyGearCalls([message as unknown as AskIrisUIMessage], { incoming: true }));
   if (!incoming.success) {
     console.warn("[askiris] invalid message", incoming.error.message.slice(0, 500));
     return chatErrorResponse("unavailable", 400);
@@ -178,7 +180,7 @@ export async function POST(req: NextRequest) {
 
   let stored: AskIrisUIMessage[];
   try {
-    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId })) as AskIrisUIMessage[];
+    stored = normalizeLegacyGearCalls((await loadAskIrisTurnHistory(appDb, { conversationId, userId })) as AskIrisUIMessage[]);
     // validateUIMessages rejects an empty list, which a new conversation has.
     const checked = stored.length > 0 ? await validate(stored) : undefined;
     // Stored turns that no longer match the tool schemas are still replayed: dropping
@@ -197,7 +199,7 @@ export async function POST(req: NextRequest) {
     return chatErrorResponse("unavailable", 500);
   }
   const turn = resolveTurn(stored, incoming.data[0], previousMessageId, {
-    clientTools: [ASK_FOR_GEAR, ASK_CHOICES],
+    clientTools: [ASK_FOR_GEAR, ASK_CHOICES, ASK_TO_SIGN_IN],
     approvalTools: SIGN_IN_GATED_TOOL_NAMES,
     deniedReason: SIGN_IN_DECLINED,
   });
@@ -219,7 +221,12 @@ export async function POST(req: NextRequest) {
   const { history, userMessage, historyChanged } = turn;
   seedRecalledRefs(recalledRefs, history);
   const gearDeclined = gearCardDecline(history);
-  const offerGearCard = !(gearStatus.kind === "account" && gearStatus.gear.length > 0) && !gearDeclined;
+  const cancelledSignIn = signInCancelled(history);
+  const offerSignIn = gearStatus.kind === "guest" && !cancelledSignIn;
+  const activeTools = Object.keys(tools).filter((name) =>
+    (name !== ASK_FOR_GEAR || (!(gearStatus.kind === "account" && gearStatus.gear.length > 0) && !gearDeclined && !(gearStatus.kind === "guest" && cancelledSignIn))) &&
+    (name !== ASK_TO_SIGN_IN || offerSignIn),
+  ) as Array<keyof typeof tools>;
   const messageContext = traceMessageContext(history);
   const analyticsConversationId = await anonymizeId(
     conversationId,
@@ -281,12 +288,12 @@ export async function POST(req: NextRequest) {
       { role: "system", content: systemPrompt(mount, locale) },
       {
         role: "system",
-        content: gearPrompt(gearSummary, { declined: gearDeclined }),
+        content: gearPrompt(gearSummary, { declined: gearDeclined, signInCancelled: cancelledSignIn }),
       },
     ],
     messages: modelMessages,
     tools,
-    activeTools: offerGearCard ? undefined : toolNamesWithout(tools, ASK_FOR_GEAR),
+    activeTools,
     toolApproval: signInApproval(gearStatus.kind === "account" || testFavorites !== undefined),
     stopWhen: stepCountIs(STEP_BUDGET),
     // req.signal only fires on Workers with the enable_request_signal compatibility flag.
@@ -442,8 +449,4 @@ async function loadFavorites(
     return null;
   }
   return (await listUserFavorites(appDb, userId)).map((favorite) => favorite.lensId);
-}
-
-function toolNamesWithout<TOOLS extends Record<string, unknown>>(tools: TOOLS, excluded: string): Array<keyof TOOLS & string> {
-  return (Object.keys(tools) as Array<keyof TOOLS & string>).filter((name) => name !== excluded);
 }

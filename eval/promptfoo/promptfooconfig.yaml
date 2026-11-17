@@ -921,7 +921,7 @@ tests:
         metric: gear
         value: "!context.metadata.gearCardShown"
 
-  # Gear: what a user owns is account data, read through a tool, so a guest gets the sign-in card.
+  # Gear: a guest reads saved gear through sign-in, not a duplicate account-data tool.
   - description: gear-own-guest
     metadata:
       area: gear
@@ -953,7 +953,7 @@ tests:
     assert:
       - type: javascript
         metric: gear
-        value: "context.metadata.toolsCalled.includes('myGear') || context.metadata.gearCardShown"
+        value: "!context.metadata.toolsCalled.includes('myGear') && !context.metadata.signInCardShown && (context.metadata.gearCardShown || /空|没有.*(?:保存|记录)|未.*(?:保存|记录)/.test(output.split('[Iris]').pop()))"
 
   # Gear: an account with gear saved hears what it holds.
   - description: gear-own-account

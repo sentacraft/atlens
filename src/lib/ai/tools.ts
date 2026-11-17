@@ -23,6 +23,7 @@ import { fillUiStrings } from "@/lib/ui-strings";
 import { bodyQuerySchema, queryBodies } from "@/lib/body/query";
 import { favoritesOnMount } from "@/lib/ai/favorites";
 import type { GearSummary } from "@/lib/ai/gear-context";
+import { ASK_TO_SIGN_IN, signInInputSchema, signInOutputSchema } from "@/lib/ai/sign-in-request";
 import { REVIEW_ASPECTS } from "@/lib/lens/reviews";
 import { prepareFeedback, prepareFeedbackInputSchema } from "@/lib/feedback/prepare-feedback";
 import type { LensReviews } from "@/lib/lens/reviews-repository";
@@ -140,6 +141,7 @@ const RECALL_OUTPUT_REFS: Record<string, (output: never) => unknown[]> = {
     ]),
   searchLensByName: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
   myFavorites: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
+  // Old completed myGear outputs remain trusted server history until those conversations are deleted.
   myGear: (output: { lenses?: RefList }) => (output.lenses ?? []).map((lens) => lens.ref),
 };
 
@@ -230,12 +232,18 @@ export function buildLensTools(
   data: ToolData,
   recalledRefs: Set<string>,
 ) {
+  const contextRefs = buildRefIndex(getLensesByMount(mount, locale));
+  if (data.gear.known) {
+    for (const lens of data.gear.lenses) {
+      if (!lens.manual && lens.ref && contextRefs.has(lens.ref)) {recalledRefs.add(lens.ref);}
+    }
+  }
   const recalledLenses = (refs: string[]) => {
-    const byRef = buildRefIndex(getLensesByMount(mount, locale));
+    const byRef = contextRefs;
     return refs.map((ref) => {
       if (!recalledRefs.has(ref)) {
         throw new Error(
-          `Lens ref "${ref}" was not returned by any queryLenses/searchLensByName/myFavorites call ` +
+          `Lens ref "${ref}" was not returned by a recall tool or the user-gear note ` +
             `in this conversation. Look it up first, and pass the ref exactly as it appears.`,
         );
       }
@@ -322,24 +330,13 @@ export function buildLensTools(
       },
     }),
 
-    myGear: tool({
+    [ASK_TO_SIGN_IN]: tool({
       description:
-        "The camera bodies and lenses the user saved to their gear. Call it when the user asks what they own. " +
-        "Lens refs work with every other tool.",
-      inputSchema: z.object({}),
-      execute: async () => {
-        const { gear } = data;
-        if (!gear.known && gear.reason !== "empty") {
-          throw new Error(gear.reason === "guest" ? "The user is not signed in." : "The user's gear could not be read.");
-        }
-        const { bodies, lenses } = gear.known ? gear : { bodies: [], lenses: [] };
-        for (const lens of lenses) {
-          if (lens.ref) {
-            recalledRefs.add(lens.ref);
-          }
-        }
-        return { bodies, lenses };
-      },
+        "Show the existing sign-in card when a guest asks to read their saved gear. " +
+        "Not for editing gear, signed-in users, or a user who cancelled this question's sign-in. After the result, answer from the " +
+        "updated user-gear note; signed_in is only an interaction signal, not proof of an account.",
+      inputSchema: signInInputSchema,
+      outputSchema: signInOutputSchema,
     }),
 
     lensDetails: tool({
@@ -354,7 +351,7 @@ export function buildLensTools(
           .array(z.string())
           .min(1)
           .describe(
-            `Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result. At most ${MAX_DETAIL_REFS} are returned per call.`,
+            `Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result or the user-gear note. At most ${MAX_DETAIL_REFS} are returned per call.`,
           ),
       }),
       execute: ({ refs }) => {
@@ -384,7 +381,7 @@ export function buildLensTools(
           .array(z.string())
           .min(1)
           .describe(
-            `Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result. At most ${MAX_REVIEW_REFS} are returned per call.`,
+            `Lens refs, each from a prior queryLenses/searchLensByName/myFavorites result or the user-gear note. At most ${MAX_REVIEW_REFS} are returned per call.`,
           ),
         aspects: z
           .array(z.enum(REVIEW_ASPECTS))
@@ -432,7 +429,7 @@ export function buildLensTools(
     recommendLenses: tool({
       description:
         "Present picks as a grid of recommendation cards (up to 6, ordered best-first). Pass each " +
-        "lens's ref from a prior queryLenses/searchLensByName/myFavorites result and its reason, which is " +
+        "lens's ref from a prior queryLenses/searchLensByName/myFavorites result or the user-gear note and its reason, which is " +
         "shown on the lens's card. Call it once per group.",
       inputSchema: z.object({
         picks: z
@@ -465,7 +462,7 @@ export function buildLensTools(
     listLenses: tool({
       description:
         "Lay out already-recalled lenses as a spec table; their names link to each lens's " +
-        "page. Pass refs from a prior queryLenses/searchLensByName/myFavorites result.",
+        "page. Pass refs from a prior queryLenses/searchLensByName/myFavorites result or the user-gear note.",
       inputSchema: z.object({
         refs: z
           .array(z.string())

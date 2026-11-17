@@ -7,7 +7,7 @@ import type { GearCardDecline } from "../gear-request";
 
 const brandName = (slug: string) => (slug === "fujifilm" ? "富士" : slug);
 const gearContext = (status: GearStatus, declined: GearCardDecline | null = "skipped") =>
-  gearPrompt(describeGear(status, brandName), { declined });
+  gearPrompt(describeGear(status, brandName), { declined, signInCancelled: false });
 
 describe("gearPrompt(describeGear(...))", () => {
   it("tells Iris a guest's gear is unknown, and how to ask for it", () => {
@@ -33,6 +33,7 @@ describe("gearPrompt(describeGear(...))", () => {
       [
         "【用户器材】",
         "用户已登录，器材档案里有：",
+        "直接依据档案回答器材问题，不重复读取或要求登录。",
         "机身：",
         "- 富士 X-T5（APS-C，40.2 百万像素，有机身防抖）",
         "镜头：",

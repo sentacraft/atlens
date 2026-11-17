@@ -245,8 +245,8 @@ describe("refs recalled earlier in the conversation", () => {
   });
 });
 
-describe("myGear", () => {
-  it("returns the saved gear and opens the gate for its lens refs", async () => {
+describe("gear context refs", () => {
+  it("accepts catalog gear refs without a duplicate read tool", async () => {
     const [lens] = getLensesByMount("X", "zh");
     const ref = lensRef(lens.id);
     const tools = buildLensTools("X", "zh", (brand) => brand, {
@@ -254,16 +254,18 @@ describe("myGear", () => {
       gear: { known: true, bodies: [{ name: "Fujifilm X-T5" }], lenses: [{ name: lens.model, ref, manual: false, adapted: false }] },
     }, new Set());
 
-    const out = await run(tools.myGear, {});
-
-    expect(out.bodies).toEqual([{ name: "Fujifilm X-T5" }]);
+    expect(tools).not.toHaveProperty("myGear");
     expect((await run(tools.lensDetails, { refs: [ref] })).lenses).toHaveLength(1);
   });
 
-  it("reads an empty profile as nothing saved, and refuses to run for a guest", async () => {
-    const empty = buildLensTools("X", "zh", (brand) => brand, { ...GUEST, gear: { known: false, reason: "empty" } }, new Set());
-    expect(await run(empty.myGear, {})).toEqual({ bodies: [], lenses: [] });
-    await expect(run(tools.myGear, {})).rejects.toThrow(/not signed in/);
+  it("does not trust invented or other-mount gear refs", () => {
+    const other = getLensesByMount("G", "en")[0];
+    const refs = new Set<string>();
+    buildLensTools("X", "en", (brand) => brand, { ...GUEST, gear: { known: true, bodies: [], lenses: [
+      { name: "Invented", ref: "fake1", manual: true, adapted: false },
+      { name: other.model, ref: lensRef(other.id), manual: false, adapted: false },
+    ] } }, refs);
+    expect(refs.size).toBe(0);
   });
 });
 

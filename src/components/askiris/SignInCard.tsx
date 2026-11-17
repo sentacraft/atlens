@@ -9,6 +9,7 @@ import FreeNote from "@/components/auth/FreeNote";
 import { ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHAT_CARD_CLS, IRIS_PROSE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
+import type { SignInOutput } from "@/lib/ai/sign-in-request";
 import AnsweredLine from "@/components/askiris/AnsweredLine";
 
 /** The in-chat card Iris shows a guest when what they asked for needs an account, led by a line saying why. */
@@ -52,45 +53,37 @@ export default function SignInCard({
   );
 }
 
-/**
- * A gated tool call the turn paused on: the sign-in card while the user is a guest, and the
- * go-ahead once they sign in, whether in place or after the sign-in redirect reloads the page.
- */
-export function SignInGate({
-  reason,
-  answered,
-  active,
-  returnTo,
-  onAnswer,
-}: {
+/** The shared sign-in interaction for account tools and server approvals. */
+export function SignInInteraction({ reason, outcome, active, returnTo, onAnswer }: {
   reason: SignInCardReason;
-  /** The user's answer, once given. */
-  answered?: boolean;
-  /** False once the conversation has moved past this call. */
+  outcome: SignInOutput["outcome"] | null;
   active: boolean;
   returnTo: () => string;
-  onAnswer: (approved: boolean) => void;
+  onAnswer: (output: SignInOutput) => void;
 }) {
   const t = useTranslations("AskIris.signInCard");
   const { data: session } = authClient.useSession();
   const signedIn = Boolean(accountUser(session));
-  const waiting = answered === undefined && active;
+  const waiting = outcome === null && active;
   const sent = useRef(false);
+  function answer(output: SignInOutput) {
+    if (sent.current) {return;}
+    sent.current = true;
+    onAnswer(output);
+  }
   useEffect(() => {
     if (waiting && signedIn && !sent.current) {
       sent.current = true;
-      onAnswer(true);
+      onAnswer({ outcome: "signed_in" });
     }
   }, [waiting, signedIn, onAnswer]);
 
-  if (answered) {
+  if (outcome === "signed_in") {
     return <AnsweredLine done>{t("signedIn")}</AnsweredLine>;
   }
   if (!waiting) {
     return <AnsweredLine done={false}>{t("declined")}</AnsweredLine>;
   }
-  if (signedIn) {
-    return null;
-  }
-  return <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => onAnswer(false)} />;
+  if (signedIn) {return null;}
+  return <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => answer({ outcome: "cancelled" })} />;
 }

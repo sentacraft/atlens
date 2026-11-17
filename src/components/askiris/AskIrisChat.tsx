@@ -48,7 +48,7 @@ import AiTag from "@/components/iris/AiTag";
 import { ConversationHistoryPopover, ConversationHistoryView } from "@/components/askiris/ConversationHistory";
 import { useBreakpoint } from "@/hooks/useViewport";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
-import { openChat, rememberConversation, rememberedConversationId, replyingConversationId, setModelPreset } from "@/components/askiris/live-chats";
+import { completeSignIn, openChat, rememberConversation, rememberedConversationId, replyingConversationId, setModelPreset } from "@/components/askiris/live-chats";
 import { resolveOpening } from "@/lib/askiris/opening";
 
 type ConversationSwitch = { kind: "select"; id: string } | { kind: "new"; reason: "manual" | "reopen" };
@@ -495,7 +495,8 @@ export default function AskIrisChat({
                   void addToolOutput({ tool: ASK_FOR_GEAR, toolCallId, output, options: { body: turnBody() } }),
                 answerChoices: (toolCallId, output) =>
                   void addToolOutput({ tool: ASK_CHOICES, toolCallId, output, options: { body: turnBody() } }),
-                answerSignIn: (id, approved) =>
+                answerSignIn: (toolCallId, output) => completeSignIn(chat, toolCallId, output, turnBody()),
+                answerApproval: (id, approved) =>
                   void addToolApprovalResponse({ id, approved, options: { body: turnBody() } }),
                 signInReturnTo: () =>
                   shell.variant === "page" ? window.location.href : panelReturnUrl(conversationId),

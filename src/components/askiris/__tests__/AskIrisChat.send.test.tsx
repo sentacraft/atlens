@@ -14,7 +14,7 @@ vi.mock("next-intl", () => {
     rich: (key: string) => key,
     has: () => false,
   });
-  return { useTranslations: () => t, useLocale: () => "en" };
+  return { useTranslations: () => t, useLocale: () => "en", useFormatter: () => ({ dateTime: (date: Date) => date.toISOString() }) };
 });
 const openIris = vi.hoisted(() => vi.fn());
 vi.mock("@/context/IrisPanelProvider", () => ({ useIris: () => ({ openIris, closeIris: vi.fn(), irisShown: false }) }));
@@ -124,6 +124,46 @@ afterEach(() => {
 });
 
 describe("AskIrisChat send", () => {
+  it("continues the same question once after sign-in without another user message", async () => {
+    const bodies: Record<string, unknown>[] = [];
+    const stream = (parts: object[]) => new Response(parts.map((part) => `data: ${JSON.stringify(part)}\n\n`).join("") + "data: [DONE]\n\n", {
+      headers: { "content-type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" },
+    });
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>(async (input, init) => {
+      if (!String(input).includes("/api/chat")) {return Response.json({ conversations: [] });}
+      bodies.push(JSON.parse(String(init?.body)));
+      return bodies.length === 1 ? stream([
+        { type: "start", messageId: "sign-in-response" },
+        { type: "start-step" },
+        { type: "tool-input-available", toolCallId: "sign-in-call", toolName: "askToSignIn", input: {} },
+        { type: "finish-step" },
+        { type: "finish", finishReason: "tool-calls" },
+      ]) : stream([
+        { type: "start", messageId: "gear-response" },
+        { type: "start-step" },
+        { type: "text-start", id: "answer" },
+        { type: "text-delta", id: "answer", delta: "Your saved lens is XF 27mm F2.8 R WR." },
+        { type: "text-end", id: "answer" },
+        { type: "finish-step" },
+        { type: "finish", finishReason: "stop" },
+      ]);
+    }));
+    const shell = { variant: "page", entry: {}, starterSeed: 1 } as const;
+    const { container, rerenderChat } = renderChat(shell);
+    submit(container, "Which lenses do I own?");
+    await screen.findByText("leadIn.gear");
+    fireEvent.click(screen.getByRole("button", { name: "signIn" }));
+    expect(openSignIn).toHaveBeenCalledWith("gear", expect.objectContaining({ returnTo: expect.any(String) }));
+    auth.account = { id: "account-1" };
+    rerenderChat(shell);
+    await screen.findByText("Your saved lens is XF 27mm F2.8 R WR.");
+    rerenderChat(shell);
+    expect(bodies).toHaveLength(2);
+    expect(bodies[0].message).toMatchObject({ role: "user", parts: [{ type: "text", text: "Which lenses do I own?" }] });
+    expect(bodies[1].message).toMatchObject({ role: "assistant", parts: expect.arrayContaining([expect.objectContaining({ type: "tool-askToSignIn", output: { outcome: "signed_in" } })]) });
+    expect(screen.queryByText("leadIn.gear")).toBeNull();
+  });
+
   it("signs a visitor in anonymously, then sends only the new message", async () => {
     let chatBody: Record<string, unknown> | undefined;
     vi.stubGlobal(

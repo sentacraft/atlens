@@ -7,7 +7,6 @@ import type { SignInCardReason } from "@/lib/sign-in-pitch";
  */
 const SIGN_IN_GATED_TOOLS: Readonly<Record<string, SignInCardReason>> = {
   myFavorites: "favorites",
-  myGear: "gear",
 };
 
 export function signInGate(toolName: string): SignInCardReason | undefined {

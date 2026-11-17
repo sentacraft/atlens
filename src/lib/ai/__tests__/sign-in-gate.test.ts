@@ -4,7 +4,8 @@ import { signInApproval, signInGate } from "../sign-in-gate";
 describe("the sign-in gate", () => {
   it("pauses a guest's call to a tool that reads their account", () => {
     expect(signInApproval(false)({ toolCall: { toolName: "myFavorites" } })).toBe("user-approval");
-    expect(signInApproval(false)({ toolCall: { toolName: "myGear" } })).toBe("user-approval");
+    expect(signInApproval(false)({ toolCall: { toolName: "myGear" } })).toBeUndefined();
+    expect(signInApproval(false)({ toolCall: { toolName: "askToSignIn" } })).toBeUndefined();
   });
 
   it("lets a signed-in user's call run, and never gates a tool that needs no account", () => {

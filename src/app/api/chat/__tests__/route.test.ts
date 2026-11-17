@@ -5,6 +5,9 @@ import { simulateReadableStream, type UIMessage } from "ai";
 
 const mocks = vi.hoisted(() => ({
   getAgentModel: vi.fn(),
+  getSession: vi.fn(),
+  listUserGear: vi.fn(),
+  listUserFavorites: vi.fn(),
   writeAskIrisTrace: vi.fn(),
   appendAskIrisTurn: vi.fn(),
   loadAskIrisTurnHistory: vi.fn(),
@@ -42,9 +45,11 @@ vi.mock("@/lib/rate-limit", () => ({
 }));
 vi.mock("@/lib/auth", () => ({
   createAuth: () => ({
-    api: { getSession: async () => ({ user: { id: "user-1", isAnonymous: true } }) },
+    api: { getSession: mocks.getSession },
   }),
 }));
+vi.mock("@/lib/me/gear-repository", () => ({ listUserGear: mocks.listUserGear }));
+vi.mock("@/lib/me/favorites-repository", () => ({ listUserFavorites: mocks.listUserFavorites }));
 vi.mock("@/lib/askiris/conversation-repository", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/askiris/conversation-repository")>()),
   loadAskIrisTurnHistory: mocks.loadAskIrisTurnHistory,
@@ -101,6 +106,9 @@ async function settle(response: Response) {
 }
 
 beforeEach(() => {
+  mocks.getSession.mockResolvedValue({ user: { id: "user-1", isAnonymous: true } });
+  mocks.listUserGear.mockResolvedValue([]);
+  mocks.listUserFavorites.mockResolvedValue([]);
   mocks.writeAskIrisTrace.mockResolvedValue(undefined);
   mocks.appendAskIrisTurn.mockResolvedValue(undefined);
   mocks.loadAskIrisTurnHistory.mockResolvedValue([]);
@@ -121,6 +129,117 @@ function textReply() {
     "stop",
   );
 }
+
+describe("POST /api/chat gear sign-in", () => {
+  const user: UIMessage = { id: "gear-user", role: "user", parts: [{ type: "text", text: "Which lenses do I own?" }] };
+  const pending: UIMessage = { id: "gear-assistant", role: "assistant", parts: [{ type: "tool-askToSignIn", toolCallId: "sign-call", state: "input-available", input: {} }] };
+  const profile = [{ id: "gear-1", kind: "lens", catalogId: "fujifilm-xf-27mmf28-r-wr-x", name: "XF 27mm F2.8 R WR", brand: "fujifilm", mount: "X", createdAt: 1 }];
+  function model() {
+    const result = new MockLanguageModelV4({ doStream: textReply() });
+    mocks.getAgentModel.mockReturnValue(result);
+    return result;
+  }
+  function answer(outcome: "signed_in" | "cancelled"): UIMessage {
+    return { ...pending, parts: [{ type: "tool-askToSignIn", toolCallId: "sign-call", state: "output-available", input: {}, output: { outcome } }] };
+  }
+
+  it("resumes the original question with gear read once from the real account", async () => {
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, pending]);
+    mocks.getSession.mockResolvedValue({ user: { id: "account-1", isAnonymous: false } });
+    mocks.listUserGear.mockResolvedValue(profile);
+    const reply = model();
+    const response = await POST(chatRequest(answer("signed_in"), user.id));
+    expect(response.status).toBe(200);
+    await settle(response);
+    expect(mocks.listUserGear).toHaveBeenCalledExactlyOnceWith(expect.anything(), "account-1");
+    const prompt = JSON.stringify(reply.doStreamCalls[0].prompt);
+    expect(prompt).toContain("Which lenses do I own?");
+    expect(prompt).toContain("XF 27mm F2.8 R WR");
+    expect(reply.doStreamCalls[0].tools?.map((tool) => tool.name)).not.toContain("myGear");
+    expect(reply.doStreamCalls[0].tools?.map((tool) => tool.name)).not.toContain("askToSignIn");
+  });
+
+  it("does not turn a forged completion into an account or read account gear", async () => {
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, pending]);
+    mocks.listUserGear.mockResolvedValue(profile);
+    const reply = model();
+    await settle(await POST(chatRequest(answer("signed_in"), user.id)));
+    expect(mocks.listUserGear).not.toHaveBeenCalled();
+    const prompt = JSON.stringify(reply.doStreamCalls[0].prompt);
+    expect(prompt).toContain("用户未登录");
+    expect(prompt).not.toContain("XF 27mm F2.8 R WR");
+  });
+
+  it("continues after cancellation without offering another login or gear card", async () => {
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, pending]);
+    const reply = model();
+    await settle(await POST(chatRequest(answer("cancelled"), user.id)));
+    expect(JSON.stringify(reply.doStreamCalls[0].prompt)).toContain("用户已取消登录");
+    expect(reply.doStreamCalls[0].tools?.map((tool) => tool.name)).not.toContain("askToSignIn");
+    expect(reply.doStreamCalls[0].tools?.map((tool) => tool.name)).not.toContain("askForGear");
+    expect(mocks.listUserGear).not.toHaveBeenCalled();
+  });
+
+  it("describes an empty account profile without another login request", async () => {
+    mocks.getSession.mockResolvedValue({ user: { id: "account-1", isAnonymous: false } });
+    const reply = model();
+    await settle(await POST(chatRequest(user)));
+    expect(JSON.stringify(reply.doStreamCalls[0].prompt)).toContain("器材档案是空的");
+    const names = reply.doStreamCalls[0].tools?.map((tool) => tool.name);
+    expect(names).not.toContain("askToSignIn");
+    expect(names).toContain("askForGear");
+  });
+
+  it("reloads gear after askForGear saves instead of trusting its client names", async () => {
+    const part = { type: "tool-askForGear", toolCallId: "edit-gear", input: {}, state: "input-available" } as const;
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, { ...pending, parts: [part] }]);
+    mocks.getSession.mockResolvedValue({ user: { id: "account-1", isAnonymous: false } });
+    mocks.listUserGear.mockResolvedValue(profile);
+    const reply = model();
+    const response = await POST(chatRequest({ ...pending, parts: [{ ...part, state: "output-available", output: { outcome: "saved", saved: ["Untrusted client gear"] } }] }, user.id));
+    expect(response.status).toBe(200);
+    await settle(response);
+    expect(mocks.listUserGear).toHaveBeenCalledTimes(1);
+    const note = reply.doStreamCalls[0].prompt.filter((message) => message.role === "system");
+    expect(JSON.stringify(note)).toContain("XF 27mm F2.8 R WR");
+    expect(JSON.stringify(note)).not.toContain("Untrusted client gear");
+  });
+
+  it.each(["approval-requested", "approval-responded"] as const)("resumes old myGear %s through the sign-in signal", async (state) => {
+    const part = { type: "tool-myGear", toolCallId: "sign-call", state, input: {}, approval: { id: "old-approval", ...(state === "approval-responded" ? { approved: true } : {}) } };
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, { ...pending, parts: [part] }]);
+    mocks.getSession.mockResolvedValue({ user: { id: "account-1", isAnonymous: false } });
+    mocks.listUserGear.mockResolvedValue(profile);
+    const reply = model();
+    const response = await POST(chatRequest({ ...pending, parts: [{ ...part, state: "approval-responded", approval: { id: "old-approval", approved: true } }] } as UIMessage, user.id));
+    expect(response.status).toBe(200);
+    await settle(response);
+    expect(JSON.stringify(reply.doStreamCalls[0].prompt)).toContain("XF 27mm F2.8 R WR");
+    expect(mocks.listUserGear).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves completed historical gear output without restoring its tool", async () => {
+    const complete = { type: "tool-myGear", toolCallId: "old-gear", state: "output-available", input: {}, output: { bodies: [], lenses: [{ name: "Historic lens" }] } } as const;
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, { ...pending, parts: [complete] }]);
+    const reply = model();
+    await settle(await POST(chatRequest(undefined, pending.id)));
+    expect(JSON.stringify(reply.doStreamCalls[0].prompt)).toContain("Historic lens");
+    expect(reply.doStreamCalls[0].tools?.map((tool) => tool.name)).not.toContain("myGear");
+  });
+
+  it("keeps the favorites approval path working after account sign-in", async () => {
+    const part = { type: "tool-myFavorites", toolCallId: "favorite-call", state: "approval-requested", input: {}, approval: { id: "favorite-approval" } } as const;
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, { ...pending, parts: [part] }]);
+    mocks.getSession.mockResolvedValue({ user: { id: "account-1", isAnonymous: false } });
+    mocks.listUserFavorites.mockResolvedValue([{ lensId: profile[0].catalogId }]);
+    const reply = model();
+    const response = await POST(chatRequest({ ...pending, parts: [{ ...part, state: "approval-responded", approval: { id: "favorite-approval", approved: true } }] }, user.id));
+    expect(response.status).toBe(200);
+    await settle(response);
+    expect(mocks.listUserFavorites).toHaveBeenCalledExactlyOnceWith(expect.anything(), "account-1");
+    expect(JSON.stringify(reply.doStreamCalls[0].prompt)).toContain("myFavorites");
+  });
+});
 
 describe("POST /api/chat stored spec-guide calls", () => {
   const user: UIMessage = { id: "old-user", role: "user", parts: [{ type: "text", text: "Explain the spec fields." }] };

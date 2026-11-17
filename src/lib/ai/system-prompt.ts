@@ -73,9 +73,9 @@ const UNKNOWN_GEAR = {
 } as const;
 
 const GEAR_NOTE_WHEN_PROFILE_EMPTY =
-  "要推荐镜头时（包括问下一支该买什么、要补哪个焦段、按需求选镜头），先调用 askForGear 请他在卡片里填写器材，等他填完再推荐；他在对话里提到的器材会预填进卡片，提到了也照样调用。调用的这条回复里，文字不要问他的机身和镜头，卡片会问。他说这是第一支镜头或还没有相机时不调用，直接推荐。查规格、问事实、和镜头无关的问题不调用。";
+  "读取已有器材时如实说明档案为空；需要补充时才使用 askForGear。要推荐镜头时（包括问下一支该买什么、要补哪个焦段、按需求选镜头），先调用 askForGear 请他在卡片里填写器材，等他填完再推荐；他在对话里提到的器材会预填进卡片，提到了也照样调用。调用的这条回复里，文字不要问他的机身和镜头，卡片会问。他说这是第一支镜头或还没有相机时不调用，直接推荐。查规格、问事实、和镜头无关的问题不调用。";
 const GEAR_NOTE_WHEN_GUEST =
-  "只有当回答明显取决于他已有什么时，才调用 askForGear：问下一支该买什么、要补哪个焦段、和自己的镜头比、要不要升级；或者他提到了自己已有的部分器材，这时不管他问的是什么推荐都调用。他提到的器材会预填进卡片。卡片会请他登录后填写，他也可以选择直接在对话里告诉你；调用的这条回复里，文字不要问他的器材，也不要提登录。没提到自己器材的按需求推荐，直接回答，不调用。";
+  "用户要读取已保存的器材时，调用 askToSignIn，等登录结果后依据更新的器材档案回答；不要为了读取而调用 askForGear。只有当回答明显取决于他已有什么时，才调用 askForGear：问下一支该买什么、要补哪个焦段、和自己的镜头比、要不要升级；或者他提到了自己已有的部分器材，这时不管他问的是什么推荐都调用。他提到的器材会预填进卡片。卡片会请他登录后填写，他也可以选择直接在对话里告诉你；调用的这条回复里，文字不要问他的器材，也不要提登录。没提到自己器材的按需求推荐，直接回答，不调用。";
 const GEAR_NOTE_AFTER_CARD: Record<GearCardDecline, string> = {
   skipped:
     "他这次不想补充器材：他在对话里说过的器材照样用，没说过的就按一般情况推荐。不要再问他的器材，也不要提起卡片或他没有填写这件事。",
@@ -104,16 +104,18 @@ function lensLine(lens: GearLens): string {
 }
 
 /** The per-turn 【用户器材】 note, sent after systemPrompt as its own system message. */
-export function gearPrompt(gear: GearSummary, { declined }: { declined: GearCardDecline | null }): string {
+export function gearPrompt(gear: GearSummary, { declined, signInCancelled }: { declined: GearCardDecline | null; signInCancelled: boolean }): string {
   if (!gear.known) {
-    const howToAsk = declined
+    const howToAsk = gear.reason === "guest" && signInCancelled
+      ? "用户已取消登录，继续回答能回答的部分，不要再要求登录或打开器材卡，也不要编造账号器材。"
+      : declined
       ? GEAR_NOTE_AFTER_CARD[declined]
       : gear.reason === "guest"
         ? GEAR_NOTE_WHEN_GUEST
         : GEAR_NOTE_WHEN_PROFILE_EMPTY;
     return `【用户器材】\n${UNKNOWN_GEAR[gear.reason]}${howToAsk}`;
   }
-  const lines = ["【用户器材】", "用户已登录，器材档案里有："];
+  const lines = ["【用户器材】", "用户已登录，器材档案里有：", "直接依据档案回答器材问题，不重复读取或要求登录。"];
   if (gear.bodies.length > 0) {
     lines.push("机身：", ...gear.bodies.map(bodyLine));
   }

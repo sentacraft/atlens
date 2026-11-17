@@ -12,7 +12,7 @@ vi.mock("@/components/askiris/Markdown", () => ({ default: ({ children }: { chil
 vi.mock("@/components/askiris/RecommendationDeck", () => ({ default: () => null }));
 vi.mock("@/components/askiris/LensTable", () => ({ default: () => null }));
 vi.mock("@/components/askiris/GearRequestCard", () => ({ default: () => null }));
-vi.mock("@/components/askiris/SignInCard", () => ({ SignInGate: () => null }));
+vi.mock("@/components/askiris/SignInCard", () => ({ SignInInteraction: () => null }));
 
 afterEach(cleanup);
 

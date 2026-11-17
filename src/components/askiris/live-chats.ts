@@ -3,9 +3,15 @@
 import { Chat } from "@ai-sdk/react";
 import {
   DefaultChatTransport,
+  getToolName,
+  isToolUIPart,
   lastAssistantMessageIsCompleteWithApprovalResponses,
   lastAssistantMessageIsCompleteWithToolCalls,
 } from "ai";
+import { ASK_TO_SIGN_IN, type SignInOutput } from "@/lib/ai/sign-in-request";
+import { ASK_FOR_GEAR } from "@/lib/ai/gear-request";
+import { ASK_CHOICES } from "@/lib/ai/choice-request";
+import { normalizeLegacyGearCalls } from "@/lib/askiris/legacy-gear-call";
 import { askIrisChatRequestBody } from "@/lib/askiris/chat-request";
 import { askIrisMessageMetadataSchema, type AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
@@ -46,6 +52,33 @@ export function replyingChat(id: string): Chat<AskIrisUIMessage> | undefined {
   return entry && isReplying(entry.chat) ? entry.chat : undefined;
 }
 
+function hasPendingCard(messages: AskIrisUIMessage[]) {
+  return messages.at(-1)?.parts.some((part) => isToolUIPart(part) && part.state === "input-available" &&
+    [ASK_TO_SIGN_IN, ASK_FOR_GEAR, ASK_CHOICES].includes(getToolName(part))) ?? false;
+}
+
+function hasLocalSignInAnswer(chat: Chat<AskIrisUIMessage>, seed: AskIrisUIMessage[]) {
+  return normalizeLegacyGearCalls(seed).some((stored) => stored.parts.some((part) =>
+    isToolUIPart(part) && getToolName(part) === ASK_TO_SIGN_IN && part.state === "input-available" &&
+    chat.messages.find((message) => message.id === stored.id)?.parts.some((local) =>
+      isToolUIPart(local) && local.toolCallId === part.toolCallId && local.state === "output-available",
+    ),
+  ));
+}
+
+const answeredSignIns = new WeakMap<Chat<AskIrisUIMessage>, Set<string>>();
+
+/** A remounted sign-in card must not submit the same completion twice. */
+export function completeSignIn(chat: Chat<AskIrisUIMessage>, toolCallId: string, output: SignInOutput, body: Record<string, unknown>) {
+  const pending = chat.messages.at(-1)?.parts.some((part) => isToolUIPart(part) && getToolName(part) === ASK_TO_SIGN_IN &&
+    part.toolCallId === toolCallId && part.state === "input-available");
+  const answered = answeredSignIns.get(chat) ?? new Set<string>();
+  if (!pending || answered.has(toolCallId)) {return;}
+  answered.add(toolCallId);
+  answeredSignIns.set(chat, answered);
+  void chat.addToolOutput({ tool: ASK_TO_SIGN_IN, toolCallId, output, options: { body } });
+}
+
 let lastConversationId: string | undefined;
 
 /** Records the conversation last shown with messages in this tab, which Iris picks up on opening. */
@@ -84,12 +117,12 @@ export function openChat(id: string, seed: AskIrisUIMessage[]): Chat<AskIrisUIMe
     return createChat(id, seed);
   }
   const existing = entries.get(id);
-  if (existing && (existing.seed === seed || isReplying(existing.chat))) {
+  if (existing && (existing.seed === seed || isReplying(existing.chat) || (hasPendingCard(existing.chat.messages) && hasPendingCard(normalizeLegacyGearCalls(seed)) && existing.chat.messages.at(-1)?.id === seed.at(-1)?.id) || hasLocalSignInAnswer(existing.chat, seed))) {
     existing.seed = seed;
     return existing.chat;
   }
   for (const [key, entry] of entries) {
-    if (!isReplying(entry.chat)) {
+    if (!isReplying(entry.chat) && !hasPendingCard(entry.chat.messages) && !hasLocalSignInAnswer(entry.chat, entry.seed)) {
       entries.delete(key);
     }
   }
@@ -101,7 +134,7 @@ export function openChat(id: string, seed: AskIrisUIMessage[]): Chat<AskIrisUIMe
 function createChat(id: string, seed: AskIrisUIMessage[]) {
   return new Chat<AskIrisUIMessage>({
     id,
-    messages: seed,
+    messages: normalizeLegacyGearCalls(seed),
     transport,
     generateId: () => crypto.randomUUID(),
     messageMetadataSchema: askIrisMessageMetadataSchema,
