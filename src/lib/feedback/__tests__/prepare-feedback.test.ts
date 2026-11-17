@@ -4,7 +4,7 @@ import { buildFeedbackFields, prepareFeedback, prepareFeedbackInputSchema, type 
 import { buildLensTools, type ToolData } from "@/lib/ai/tools";
 
 const input: PrepareFeedbackInput = { type: "general", description: "Please add this filter.", lensRef: null, field: null, suggestedCorrection: null, searchQuery: null, wantsReply: false, replyContact: null };
-const guest: ToolData = { favorites: async () => null, gear: { known: false, reason: "guest" }, reviews: async () => new Map() };
+const guest: ToolData = { favorites: async () => null, gear: async () => ({ known: false, reason: "guest" }), reviews: async () => new Map() };
 
 describe("prepareFeedback", () => {
   it("prepares an anonymous draft without sending it or requiring an account", async () => {
