@@ -18,11 +18,13 @@ import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
-import { SKILL_NAMES, readSkill } from "@/lib/ai/skills";
+import { SPEC_GUIDE } from "@/lib/ai/spec-guide";
+import { fillUiStrings } from "@/lib/ui-strings";
 import { bodyQuerySchema, queryBodies } from "@/lib/body/query";
 import { favoritesOnMount } from "@/lib/ai/favorites";
 import type { GearSummary } from "@/lib/ai/gear-context";
 import { REVIEW_ASPECTS } from "@/lib/lens/reviews";
+import { prepareFeedback, prepareFeedbackInputSchema } from "@/lib/feedback/prepare-feedback";
 import type { LensReviews } from "@/lib/lens/reviews-repository";
 
 const RECALL_LIMIT = 20;
@@ -492,12 +494,24 @@ export function buildLensTools(
       }),
     }),
 
-    skill: tool({
+    prepareFeedback: tool({
       description:
-        "Read a reference document by name. terms: how to read Atlens spec fields and lens model names; " +
+        "Prepare an editable feedback card for an Atlens issue, suggestion, missing lens, or data correction. " +
+        "Use when the user asks to give feedback, or a concrete site issue remains after helping. Does not submit feedback.",
+      inputSchema: prepareFeedbackInputSchema,
+      execute: (input) => {
+        const lens = input.lensRef ? recalledLenses([input.lensRef])[0] : undefined;
+        return prepareFeedback(input, lens, locale, lens ? tBrand(lens.brand) : "");
+      },
+      toModelOutput: () => ({ type: "text", value: "Displayed an editable feedback draft. Nothing has been submitted. The user may submit it or continue chatting." }),
+    }),
+
+    readSpecGuide: tool({
+      description:
+        "Read the guide to interpreting Atlens spec fields and lens model names; " +
         "read it before explaining what a spec value means or what a code in a lens name stands for.",
-      inputSchema: z.object({ name: z.enum(SKILL_NAMES) }),
-      execute: ({ name }) => ({ text: readSkill(name, locale) }),
+      inputSchema: z.object({}),
+      execute: () => ({ text: fillUiStrings(SPEC_GUIDE.text, locale) }),
     }),
 
     siteInfo: tool({

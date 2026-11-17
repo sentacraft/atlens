@@ -13,6 +13,8 @@ import { track } from "@/lib/analytics/analytics";
 import { cn } from "@/lib/utils";
 import MountSwitcher from "@/components/mount/MountSwitcher";
 import FeedbackDialog from "@/components/feedback/FeedbackDialog";
+import { createFeedbackDraft } from "@/lib/feedback/feedback-draft";
+import { useFeedback } from "@/lib/feedback/use-feedback";
 import GitHubMark from "@/components/logos/GitHubMark";
 import NavMenu from "@/components/nav/NavMenu";
 import TabBar from "@/components/nav/TabBar";
@@ -30,6 +32,8 @@ export default function Nav() {
   const isPwa = usePwa();
   const [scrolledDown, setScrolledDown] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackSeed, setFeedbackSeed] = useState(() => createFeedbackDraft({ type: "general" }));
+  const feedback = useFeedback(feedbackSeed, feedbackOpen);
   const lastScrollY = useRef(0);
   const headerRef = useRef<HTMLElement>(null);
 
@@ -37,6 +41,7 @@ export default function Nav() {
   // trigger-owned dialog before it opens.
   function openFeedback() {
     track("feedback_open", { feedback_type: "general" });
+    setFeedbackSeed(createFeedbackDraft({ type: "general" }));
     setFeedbackOpen(true);
   }
 
@@ -166,7 +171,8 @@ export default function Nav() {
     <FeedbackDialog
       open={feedbackOpen}
       onOpenChange={setFeedbackOpen}
-      type="general"
+      feedback={feedback}
+      mode="create"
     />
     </>
   );

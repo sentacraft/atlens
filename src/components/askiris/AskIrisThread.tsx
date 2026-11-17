@@ -16,6 +16,8 @@ import { CitationsProvider, SourceList } from "@/components/askiris/ReviewSource
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
 import LensTable from "@/components/askiris/LensTable";
 import ResponseFeedback from "@/components/askiris/ResponseFeedback";
+import FeedbackCard from "@/components/feedback/FeedbackCard";
+import type { FeedbackDraft } from "@/lib/feedback/feedback-draft";
 import ChoiceCard from "@/components/askiris/ChoiceCard";
 import GearRequestCard from "@/components/askiris/GearRequestCard";
 import { SignInGate } from "@/components/askiris/SignInCard";
@@ -141,6 +143,8 @@ function ToolPart({
   }
   if (part.state === "output-available") {
     switch (getToolName(part)) {
+      case "prepareFeedback":
+        return <div className="w-full px-1"><FeedbackCard draft={part.output as FeedbackDraft} /></div>;
       case "recommendLenses": {
         const { recommendations } = part.output as { recommendations: Recommendation[] };
         return (

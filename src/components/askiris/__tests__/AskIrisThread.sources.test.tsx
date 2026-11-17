@@ -32,6 +32,23 @@ const reply: AskIrisUIMessage = {
 };
 const messages: AskIrisUIMessage[] = [{ id: "u1", role: "user", parts: [{ type: "text", text: "Sharp?" }] }, reply];
 
+describe("stored spec-guide tool calls", () => {
+  it.each([false, true])("keeps the surrounding answer when debug is %s", (debug) => {
+    const history: AskIrisUIMessage[] = [{
+      id: "old-guide-answer", role: "assistant", parts: [
+        { type: "tool-skill", toolCallId: "old-guide", state: "output-available", input: { name: "terms" }, output: { text: "Original spec guide." } },
+        { type: "text", text: "The saved answer." },
+      ],
+    }];
+
+    render(<AskIrisThread messages={history} debug={debug} />);
+
+    expect(screen.getByText("The saved answer.")).toBeTruthy();
+    expect(Boolean(screen.queryByText(/skill · output-available/))).toBe(debug);
+    expect(screen.queryByText("Original spec guide.")).toBeNull();
+  });
+});
+
 describe("the source list under a reply", () => {
   it("waits until the reply has finished streaming", () => {
     render(<AskIrisThread messages={messages} busy />);

@@ -55,6 +55,16 @@ describe("tool schemas stay portable across providers", () => {
   }
 });
 
+describe("readSpecGuide input", () => {
+  it("takes an empty object without a document selector", () => {
+    const schema = tools.readSpecGuide.inputSchema as z.ZodType;
+    expect(schema.parse({})).toEqual({});
+    const json = z.toJSONSchema(schema);
+    expect(json.properties).toEqual({});
+    expect(json.required ?? []).toEqual([]);
+  });
+});
+
 describe("queryLenses input", () => {
   it("lets a caller leave a constraint unset with null", () => {
     // GPT models fill every field; with no null allowed they sent 0, and maxWide: 0 matched nothing.
