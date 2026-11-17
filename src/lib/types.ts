@@ -304,23 +304,29 @@ export const LENS_IMAGE_ROLES = [
 
 export type LensImageRole = (typeof LENS_IMAGE_ROLES)[number];
 
-/** Public supplemental image content; private review and processing data stay in the pipeline. */
+/** Public image metadata; omit unknown conditions and keep private provenance and processing records in the pipeline. */
 export interface LensImageAsset {
-  /** Pipeline-assigned numeric ID, at least three digits, served as /lenses/<lens-id>/<id>.webp. */
+  /** Stable numeric ID assigned by the pipeline importer, at least three digits. Resolve the file through the resource manifest, not a path inferred from this ID. */
   id: string;
-  /** Content type, independent of placement, background, crop history, or approval status. */
+  /**
+   * Classify the visible content, not its placement, background, crop history or approval status:
+   * product = lens appearance; usage = mounted or in-use scene; sample = photograph taken with the lens;
+   * mtf = MTF chart; optical-construction = optical diagram; dimensions = dimension drawing;
+   * spec-sheet = specification or compatibility table; feature = technical illustration or comparison;
+   * accessory = accessory or packaging. Archive-only material does not become a public role.
+   */
   role: LensImageRole;
-  /** Actual focal length explicitly identified by the chart or sample caption, in mm. */
+  /** Positive focal length in mm explicitly identified by the image, chart grouping or caption. Never infer it from the lens name, file order or adjacent images. */
   focalLengthMm?: number;
-  /** Source-labelled MTF frequencies; preserve the stated unit without conversion. */
+  /** MTF-only frequencies: a nonempty list of unique positive values and the stated unit, without conversion. If the unit is unknown, omit this field and explain the limitation in conditionsNote. */
   spatialFrequency?: { values: number[]; unit: "lines/mm" | "lp/mm" };
-  /** Explicit test or capture f-numbers, not the lens's maximum aperture. */
+  /** Nonempty list of unique positive test or capture f-numbers explicitly stated by the image or caption; not the lens's maximum aperture. */
   apertureFNumbers?: number[];
-  /** MTF calculation method only when explicitly identified by the source. */
+  /** MTF-only calculation method, geometrical or diffraction, only when explicitly identified. Do not infer it from curve appearance. */
   mtfMethod?: "geometrical" | "diffraction";
-  /** Mount explicitly depicted or labelled, e.g. X, G, E, RF, M43; not an assertion about Lens.mount. */
+  /** Mount explicitly depicted or labelled, e.g. X, G, E, RF, M43; not an assertion about Lens.mount. Use an uppercase mount code, not a model name, and do not infer it from the camera or another image. */
   depictedMount?: string;
-  /** English, user-facing conditions or applicability limits; never embed private source URLs, credits or license records. */
+  /** English, user-facing test conditions, applicability limits, missing information or source contradictions, up to 1200 characters. Do not repeat lens specifications or embed private source URLs, credits, license records or review history. */
   conditionsNote?: string;
 }
 
@@ -865,23 +871,14 @@ export interface Lens {
 
   /**
    * Ordered, classified supplemental assets. The primary product image is separate.
-   * Populate only for content explicitly selected for import; omit unknown conditions.
+   * Populate a nonempty list with unique IDs only for content selected for import; omit it when none is selected.
+   * The pipeline importer assigns IDs; omit unknown conditions.
    * Do not copy private provenance URLs, credits, license records, dispositions, reasons,
    * file paths, hashes, crop links or processing logs, including into conditionsNote.
    * Notes are English; translations.zh.imageNotes supplies Chinese notes by image ID.
-   * Never dual-write these assets to alternateImages.
    * @example [{ id: "001", role: "mtf", focalLengthMm: 35, spatialFrequency: { values: [10, 30], unit: "lp/mm" } }]
    */
   images?: LensImageAsset[];
-
-  /**
-   * Ordered supplemental product image IDs in the existing pipeline catalogs.
-   * LensImageGallery and the detail page still consume this legacy contract.
-   * Keep only until the pipeline migrates those records and these consumers to images;
-   * remove in the same migration release, with no dual-writing or automatic role inference.
-   * @deprecated New imports use images. Mutually exclusive with images.
-   */
-  alternateImages?: string[];
 
   /**
    * Localized translations of user-visible free-text fields.

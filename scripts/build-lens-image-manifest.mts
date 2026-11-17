@@ -46,11 +46,14 @@ if (catalogPaths.length) {
   const required = new Set<string>();
   for (const file of catalogPaths) {
     const lenses = JSON.parse(readFileSync(resolve(file), "utf8")) as {
-      id: string; images?: { id: string }[]; alternateImages?: string[];
+      id: string; images?: { id: string }[];
     }[];
     for (const lens of lenses) {
-      for (const id of lens.images?.map(image => image.id) ?? lens.alternateImages ?? []) {
-        required.add(`${lens.id}/${id}`);
+      if (Object.hasOwn(lens, "alternateImages")) {
+        throw new Error(`Unsupported image field in ${lens.id}: alternateImages`);
+      }
+      for (const image of lens.images ?? []) {
+        required.add(`${lens.id}/${image.id}`);
       }
     }
   }

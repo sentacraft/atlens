@@ -29,7 +29,7 @@ const CAROUSEL_OPTIONS = {
 export default function LensImageGallery({
   lens, labels,
 }: {
-  lens: Pick<Lens, "id" | "model" | "images" | "alternateImages">;
+  lens: Pick<Lens, "id" | "model" | "images">;
   labels: GalleryLabels;
 }) {
   const images = [undefined, ...getLensGalleryImageIds(lens)];

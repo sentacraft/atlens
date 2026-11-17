@@ -5,9 +5,9 @@ export const lensImageStyle = {
   objectPosition: "center",
 } as const;
 
-export function getLensImageUrl(id: string, alternateId?: string): string {
-  if (alternateId !== undefined) {
-    const key = `${id}/${alternateId}`;
+export function getLensImageUrl(id: string, imageId?: string): string {
+  if (imageId !== undefined) {
+    const key = `${id}/${imageId}`;
     if (!Object.hasOwn(LENS_SUPPLEMENTAL_IMAGES, key)) {
       throw new Error(`Missing supplemental image resource: ${key}`);
     }
@@ -17,6 +17,6 @@ export function getLensImageUrl(id: string, alternateId?: string): string {
   return `/lenses/${id}.webp${hash ? `?v=${hash}` : ""}`;
 }
 
-export function getLensGalleryImageIds(lens: Pick<Lens, "images" | "alternateImages">): string[] {
-  return lens.images?.filter(image => image.role === "product").map(image => image.id) ?? lens.alternateImages ?? [];
+export function getLensGalleryImageIds(lens: Pick<Lens, "images">): string[] {
+  return lens.images?.filter(image => image.role === "product").map(image => image.id) ?? [];
 }

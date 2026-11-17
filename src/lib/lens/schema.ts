@@ -287,8 +287,6 @@ const lensObjectSchema = z.strictObject({
     (images) => new Set(images.map((image) => image.id)).size === images.length,
     "Image IDs must be unique",
   ).optional(),
-  alternateImages: z.array(imageIdSchema).min(1)
-    .refine((ids) => new Set(ids).size === ids.length, "Image IDs must be unique").optional(),
   translations: z.strictObject({ zh: localeTranslationsSchema.optional() }).optional(),
 });
 
@@ -402,9 +400,6 @@ function applyLensBusinessRules(
 
 export const lensSchema = lensObjectSchema.superRefine((value, ctx) => {
   applyLensBusinessRules(value, ctx);
-  if (value.images && value.alternateImages) {
-    ctx.addIssue({ code: "custom", path: ["images"], message: "Use images or alternateImages, not both" });
-  }
   for (const id of Object.keys(value.translations?.zh?.imageNotes ?? {})) {
     if (!value.images?.some((image) => image.id === id && image.conditionsNote !== undefined)) {
       ctx.addIssue({ code: "custom", path: ["translations", "zh", "imageNotes", id], message: "Image translation requires an existing image with an English conditionsNote" });
@@ -473,7 +468,7 @@ export const KNOWN_DISTINCT_PAIRS = new Set([
 
 const SIMILARITY_EXCLUDE = new Set([
   "id", "brand", "model", "series", "officialLinks", "fieldNotes", "translations", "searchAliases", "pricing",
-  "createdAt", "updatedAt", "alternateImages", "images",
+  "createdAt", "updatedAt", "images",
 ]);
 
 // Calibrated: legitimate pairs score 0.895 and 0.870; the next unrelated pair 0.762.

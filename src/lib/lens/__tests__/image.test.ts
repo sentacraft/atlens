@@ -67,8 +67,7 @@ describe("gallery image selection", () => {
     expect(getLensGalleryImageIds({ images: [{ id: "001", role: "mtf" }, { id: "002", role: "product" }, { id: "003", role: "optical-construction" }] })).toEqual(["002"]);
   });
 
-  it("preserves the actual legacy image consumers until their records are classified", () => {
-    expect(getLensGalleryImageIds({ alternateImages: ["003", "1000"] })).toEqual(["003", "1000"]);
+  it("uses no supplemental images when classified images are absent", () => {
     expect(getLensGalleryImageIds({})).toEqual([]);
   });
 });
@@ -120,6 +119,13 @@ describe("image manifest generation", () => {
     const root = fixture();
     writeFileSync(resolve(root, "src/data/lenses.json"), JSON.stringify([{ id: "one-x", images: [{ id: "001", role: "mtf" }] }]));
     expect(() => manifest(root)).toThrow();
+  });
+
+  it.each([{ alternateImages: [] }, { alternateImages: ["001"] }])("rejects old catalog image fields without converting them: %j", ({ alternateImages }) => {
+    const root = fixture();
+    supplemental(root);
+    writeFileSync(resolve(root, "src/data/lenses.json"), JSON.stringify([{ id: "one-x", alternateImages }]));
+    expect(() => manifest(root)).toThrow(/Unsupported image field/);
   });
 
   it("writes empty maps when the catalog has no images", () => {
