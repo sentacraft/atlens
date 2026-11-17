@@ -5,14 +5,15 @@ import { useTranslations } from "next-intl";
 import { ChevronDown, type LucideIcon, RotateCcw, SlidersHorizontal } from "lucide-react";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import type { AvailableFilterOptions, FilterState, FocusFilter, FocusMotorClass, LensType, FilterFeatureKey, FocalCategory } from "@/lib/lens/lens";
-import { APERTURE_FILTER_STOPS, convertFocalLength, WEIGHT_LIMIT_PRESETS, type FocalReference } from "@/lib/lens/lens";
+import { APERTURE_FILTER_STOPS, WEIGHT_LIMIT_PRESETS } from "@/lib/lens/lens";
 import { OPTICAL_TRAITS, type Mount, type OpticalTrait } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { brandLabel } from "@/lib/lens/format";
-import { TEXT_LINK_CLS } from "@/config/ui-tokens";
+import { PILL_INPUT_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import BrandFilterMenu from "@/components/lens-filters/BrandFilterMenu";
 import FilterRow from "@/components/lens-filters/FilterRow";
 import FilterNumberInput from "@/components/lens-filters/FilterNumberInput";
+import FocalCoverageChip from "@/components/lens-filters/FocalCoverageChip";
 import FilterSelectMenu from "@/components/lens-filters/FilterSelectMenu";
 import ToggleChipGroup, { type ToggleChipOption } from "@/components/ui/toggle-chip-group";
 import { FieldNotePopover } from "@/components/ui/field-note-popover";
@@ -117,7 +118,7 @@ export default function LensFilters({
           <span className={rowLabelClass}>{t("brand")}</span>
           <div className="min-w-0 flex-1">
             <ToggleChipGroup
-              allOption={{ label: allOptionLabel, onSelect: () => updateFilters("brands", []) }}
+              allOption={{ label: allOptionLabel, selected: filters.brands.length === 0, onSelect: () => updateFilters("brands", []) }}
               options={brandOptions}
               selectedKeys={filters.brands}
               onToggle={(brand) =>
@@ -167,69 +168,27 @@ export default function LensFilters({
 
   const focalOptions: ToggleChipOption<FocalCategory>[] = available.focalCategories.map((key) => ({ key, label: t(`category-${key}`) }));
   const customFocal = filters.focalLength;
-  const referenceOptions: { value: FocalReference; label: string }[] = [
-    { value: "equivalent", label: t("focalEquivalent") },
-    { value: "actual", label: t("focalActual") },
-  ];
   const focalRow = (
-    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 gap-y-1.5 sm:grid-cols-[7rem_auto_minmax(0,1fr)] sm:items-start sm:gap-x-2.5">
-      <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-zinc-400 sm:hidden">{t("focalLength")}</span>
-      <span className={cn(rowLabelClass, "hidden sm:flex")}>{t("focalLength")}</span>
-      <div className="flex min-w-0 items-center gap-1.5">
-        <FilterSelectMenu
-          label={t("focalMode")}
-          value={customFocal ? "coverage" : "category"}
-          options={[
-            { value: "category", label: t("focalByCategory") },
-            { value: "coverage", label: t("focalCover") },
-          ]}
-          appearance="text"
-          active={false}
-          onChange={(mode) => onFiltersChange({
-            ...filters,
-            focalCategories: [],
-            focalLength: mode === "coverage" ? { value: null, reference: "equivalent" } : null,
-          })}
-        />
-        {customFocal && <FieldNotePopover note={t("focalTolerance")} />}
-      </div>
-      <div className="col-span-2 min-w-0 sm:col-span-1 sm:col-start-3 sm:row-start-1">
-        {customFocal ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-zinc-500">{t("focalCovering")}</span>
-            <FilterNumberInput
-              key={`${customFocal.value}:${customFocal.reference}`}
-              label={t("focalInput")}
-              value={customFocal.value}
-              unit="mm"
-              placeholder={t("focalPlaceholder")}
-              invalidLabel={t("positiveNumber")}
-              onCommit={(value) => updateFilters("focalLength", { ...customFocal, value })}
-            />
-            <FilterSelectMenu
-              label={t("focalReference")}
-              value={customFocal.reference}
-              options={referenceOptions}
-              appearance="pill"
-              active={false}
-              onChange={(reference) => {
-                updateFilters("focalLength", {
-                  reference,
-                  value: customFocal.value === null ? null : convertFocalLength(customFocal.value, customFocal.reference, reference, mount),
-                });
-              }}
-            />
-          </div>
-        ) : (
-          <ToggleChipGroup
-            allOption={{ label: allOptionLabel, onSelect: () => onFiltersChange({ ...filters, focalCategories: [], focalLength: null }) }}
-            options={focalOptions}
-            selectedKeys={filters.focalCategories}
-            onToggle={(key) => onFiltersChange({ ...filters, focalLength: null, focalCategories: toggleMultiFilter(filters.focalCategories, key, available.focalCategories) })}
+    <FilterRow label={t("focalLength")}>
+      <div role="group" aria-label={t("focalLength")} className="min-w-0 flex-1">
+        <ToggleChipGroup
+          allOption={{
+            label: allOptionLabel,
+            selected: filters.focalCategories.length === 0 && customFocal?.value == null,
+            onSelect: () => onFiltersChange({ ...filters, focalCategories: [], focalLength: null }),
+          }}
+          options={focalOptions}
+          selectedKeys={filters.focalCategories}
+          onToggle={(key) => onFiltersChange({ ...filters, focalLength: null, focalCategories: toggleMultiFilter(filters.focalCategories, key, available.focalCategories) })}
+        >
+          <FocalCoverageChip
+            value={customFocal}
+            mount={mount}
+            onChange={(focalLength) => onFiltersChange({ ...filters, focalCategories: [], focalLength })}
           />
-        )}
+        </ToggleChipGroup>
       </div>
-    </div>
+    </FilterRow>
   );
 
   const apertureOptions = [
@@ -243,7 +202,6 @@ export default function LensFilters({
           label={t("sortAperture")}
           value={filters.maxAperture === null ? "all" : String(filters.maxAperture)}
           options={apertureOptions}
-          appearance="pill"
           active={filters.maxAperture !== null}
           onChange={(value) => updateFilters("maxAperture", value === "all" ? null : Number(value))}
         />
@@ -265,7 +223,6 @@ export default function LensFilters({
           label={t("weightLimit")}
           value={customWeight ? "custom" : weightLimit === null ? "all" : String(weightLimit)}
           options={weightOptions}
-          appearance="pill"
           active={weightLimit !== null}
           onChange={(value) => {
             setCustomWeightFor(value === "custom" ? null : undefined);
@@ -273,15 +230,19 @@ export default function LensFilters({
           }}
         />
         {customWeight && (
-          <FilterNumberInput
-            key={weightLimit}
-            label={t("weightInput")}
-            value={weightLimit}
-            unit="g"
-            placeholder={t("weightPlaceholder")}
-            invalidLabel={t("positiveNumber")}
-            onCommit={(value) => { setCustomWeightFor(value); updateFilters("weightLimit", value); }}
-          />
+          <label className={PILL_INPUT_CLS}>
+            <FilterNumberInput
+              key={weightLimit}
+              label={t("weightInput")}
+              value={weightLimit}
+              placeholder={t("weightPlaceholder")}
+              invalidLabel={t("positiveNumber")}
+              width="fixed"
+              inputRef={undefined}
+              onCommit={(value) => { setCustomWeightFor(value); updateFilters("weightLimit", value); }}
+            />
+            <span className="text-xs text-zinc-500">g</span>
+          </label>
         )}
       </div>
     </FilterRow>

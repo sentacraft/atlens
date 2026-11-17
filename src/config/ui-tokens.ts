@@ -86,6 +86,7 @@ export const PILL_MENU_OPTION_CLS =
   "min-h-11 justify-between gap-5 text-[12px] leading-[18px] sm:min-h-10";
 export const PILL_INPUT_CLS =
   "inline-flex h-9 items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 focus-within:ring-2 focus-within:ring-zinc-400";
+export const PILL_CUSTOM_ENTRY_CLS = `${PILL_INPUT_CLS} shrink-0 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-400 hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400`;
 
 export const CHIP_BASE_CLS =
   "flex-shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-all duration-150 select-none";

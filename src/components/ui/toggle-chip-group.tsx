@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -19,20 +20,22 @@ export default function ToggleChipGroup<K extends string>({
   selectedKeys,
   onToggle,
   allOption,
+  children,
 }: {
   options: ToggleChipOption<K>[];
   selectedKeys: readonly K[];
   onToggle: (key: K) => void;
-  allOption?: { label: string; onSelect: () => void };
+  allOption?: { label: string; selected: boolean; onSelect: () => void };
+  children?: ReactNode;
 }) {
   return (
     <div className="flex min-w-0 flex-wrap gap-1.5">
       {allOption && (
         <button
           type="button"
-          className={cn(selectedKeys.length === 0 ? PILL_ALL_ACTIVE_CLS : PILL_CLS, "shrink-0 justify-center whitespace-nowrap")}
+          className={cn(allOption.selected ? PILL_ALL_ACTIVE_CLS : PILL_CLS, "shrink-0 justify-center whitespace-nowrap")}
           onClick={allOption.onSelect}
-          aria-pressed={selectedKeys.length === 0}
+          aria-pressed={allOption.selected}
         >
           {allOption.label}
         </button>
@@ -91,6 +94,7 @@ export default function ToggleChipGroup<K extends string>({
           </button>
         );
       })}
+      {children}
     </div>
   );
 }
