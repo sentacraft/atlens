@@ -112,7 +112,7 @@ for (const width of [375, 1280]) {
       await dialog.getByRole("img", { name: /.+/ }).click();
       await expect(dialog.locator('[data-slot="gallery-controls"]')).toHaveAttribute("inert", "");
       await expect(dialog).toBeVisible();
-      await dialog.locator('.pswp__item[aria-hidden="false"] .pswp__img').click();
+      await dialog.getByRole("img", { name: /.+/ }).click();
       await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");
     });
 
@@ -129,7 +129,7 @@ for (const width of [375, 1280]) {
         await trigger.tap();
         const dialog = page.getByRole("dialog");
         await expectSlide(dialog, SECOND_IMAGE);
-        const image = dialog.locator('.pswp__item[aria-hidden="false"] .pswp__img');
+        const image = dialog.getByRole("img", { name: /.+/ });
         await touchSwipe(session, image, true);
         await expectSlide(dialog, PRIMARY);
         await touchSwipe(session, image, false, true);
