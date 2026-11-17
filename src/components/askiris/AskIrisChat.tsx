@@ -48,7 +48,7 @@ import AiTag from "@/components/iris/AiTag";
 import { ConversationHistoryPopover, ConversationHistoryView } from "@/components/askiris/ConversationHistory";
 import { useBreakpoint } from "@/hooks/useViewport";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
-import { completeSignIn, openChat, rememberConversation, rememberedConversationId, replyingConversationId, retryChat, setModelPreset } from "@/components/askiris/live-chats";
+import { completeApproval, openChat, rememberConversation, rememberedConversationId, replyingConversationId, retryChat, setModelPreset } from "@/components/askiris/live-chats";
 import { resolveOpening } from "@/lib/askiris/opening";
 
 type ConversationSwitch = { kind: "select"; id: string } | { kind: "new"; reason: "manual" | "reopen" };
@@ -153,7 +153,7 @@ export default function AskIrisChat({
     () => openChat(conversationId, conversation.initialMessages),
     [conversationId, conversation.initialMessages],
   );
-  const { messages, sendMessage, status, setMessages, stop, error, addToolOutput, addToolApprovalResponse } =
+  const { messages, sendMessage, status, setMessages, stop, error, addToolOutput } =
     useChat<AskIrisUIMessage>({
     chat,
     experimental_throttle: 50,
@@ -495,9 +495,7 @@ export default function AskIrisChat({
                   void addToolOutput({ tool: ASK_FOR_GEAR, toolCallId, output, options: { body: turnBody() } }),
                 answerChoices: (toolCallId, output) =>
                   void addToolOutput({ tool: ASK_CHOICES, toolCallId, output, options: { body: turnBody() } }),
-                answerSignIn: (toolCallId, output) => completeSignIn(chat, toolCallId, output, turnBody()),
-                answerApproval: (id, approved) =>
-                  void addToolApprovalResponse({ id, approved, options: { body: turnBody() } }),
+                answerApproval: (id, approved) => completeApproval(chat, id, approved, turnBody()),
                 signInReturnTo: () =>
                   shell.variant === "page" ? window.location.href : panelReturnUrl(conversationId),
               }}

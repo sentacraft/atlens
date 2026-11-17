@@ -19,14 +19,12 @@ import {
 } from "@/lib/ai/model";
 import { gearPrompt, systemPrompt } from "@/lib/ai/system-prompt";
 import { findAgentModelPreset, MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
-import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus } from "@/lib/ai/gear-context";
+import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus, type GearSummary } from "@/lib/ai/gear-context";
 import { EVAL_FAVORITES_HEADER, evalFavorites } from "@/lib/ai/favorites";
 import { listUserFavorites } from "@/lib/me/favorites-repository";
 import { ASK_CHOICES } from "@/lib/ai/choice-request";
 import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
-import { ASK_TO_SIGN_IN, signInCancelled } from "@/lib/ai/sign-in-request";
-import { normalizeLegacyGearCalls } from "@/lib/askiris/legacy-gear-call";
-import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval } from "@/lib/ai/sign-in-gate";
+import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval, signInDeclined } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
 import { buildLensTools, seedRecalledRefs } from "@/lib/ai/tools";
 import { loadLensReviews } from "@/lib/lens/reviews-repository";
@@ -140,8 +138,9 @@ export async function POST(req: NextRequest) {
 
   const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const brandName = (slug: string) => brandLabel(tBrand, slug);
-  const gearStatus = await loadGearStatus(req, appDb, userId, isAccount);
-  const gearSummary = describeGear(gearStatus, brandName);
+  const testGear = process.env.NODE_ENV === "production" ? undefined : evalGear(req.headers.get(EVAL_GEAR_HEADER));
+  const gearAccess = isAccount || testGear !== undefined ? "account" : "guest";
+  let gearSummary: Promise<GearSummary> | undefined;
   const testFavorites =
     process.env.NODE_ENV === "production" ? undefined : evalFavorites(req.headers.get(EVAL_FAVORITES_HEADER));
   // Filled once the history is resolved below; validate needs the tools before that.
@@ -153,7 +152,7 @@ export async function POST(req: NextRequest) {
       brandName,
       {
         favorites: () => loadFavorites(testFavorites, appDb, userId, isAccount),
-        gear: gearSummary,
+        gear: () => gearSummary ??= loadGearStatus(testGear, appDb, userId, isAccount).then((status) => describeGear(status, brandName)),
         reviews: (lensIds) => {
           if (!catalogDb) {
             throw new Error("Review findings are unavailable right now.");
@@ -172,7 +171,7 @@ export async function POST(req: NextRequest) {
       tools,
     });
 
-  const incoming = await validate(normalizeLegacyGearCalls([message as unknown as AskIrisUIMessage], { incoming: true }));
+  const incoming = await validate([message]);
   if (!incoming.success) {
     console.warn("[askiris] invalid message", incoming.error.message.slice(0, 500));
     return chatErrorResponse("unavailable", 400);
@@ -180,7 +179,7 @@ export async function POST(req: NextRequest) {
 
   let stored: AskIrisUIMessage[];
   try {
-    stored = normalizeLegacyGearCalls((await loadAskIrisTurnHistory(appDb, { conversationId, userId })) as AskIrisUIMessage[]);
+    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId })) as AskIrisUIMessage[];
     // validateUIMessages rejects an empty list, which a new conversation has.
     const checked = stored.length > 0 ? await validate(stored) : undefined;
     // Stored turns that no longer match the tool schemas are still replayed: dropping
@@ -199,7 +198,7 @@ export async function POST(req: NextRequest) {
     return chatErrorResponse("unavailable", 500);
   }
   const turn = resolveTurn(stored, incoming.data[0], previousMessageId, {
-    clientTools: [ASK_FOR_GEAR, ASK_CHOICES, ASK_TO_SIGN_IN],
+    clientTools: [ASK_FOR_GEAR, ASK_CHOICES],
     approvalTools: SIGN_IN_GATED_TOOL_NAMES,
     deniedReason: SIGN_IN_DECLINED,
   });
@@ -221,11 +220,10 @@ export async function POST(req: NextRequest) {
   const { history, userMessage, historyChanged } = turn;
   seedRecalledRefs(recalledRefs, history);
   const gearDeclined = gearCardDecline(history);
-  const cancelledSignIn = signInCancelled(history);
-  const offerSignIn = gearStatus.kind === "guest" && !cancelledSignIn;
+  const declinedSignIn = signInDeclined(history);
   const activeTools = Object.keys(tools).filter((name) =>
-    (name !== ASK_FOR_GEAR || (!(gearStatus.kind === "account" && gearStatus.gear.length > 0) && !gearDeclined && !(gearStatus.kind === "guest" && cancelledSignIn))) &&
-    (name !== ASK_TO_SIGN_IN || offerSignIn),
+    !(declinedSignIn && SIGN_IN_GATED_TOOL_NAMES.includes(name)) &&
+    !(name === ASK_FOR_GEAR && (gearDeclined || declinedSignIn)),
   ) as Array<keyof typeof tools>;
   const messageContext = traceMessageContext(history);
   const analyticsConversationId = await anonymizeId(
@@ -282,19 +280,18 @@ export async function POST(req: NextRequest) {
 
   const result = streamText({
     ...agentCallSettings(model),
-    // The gear note is its own message after the fixed prompt, so that prompt stays identical
-    // across users for prompt caching.
+    // Per-user access state stays separate from the fixed prompt for caching.
     instructions: [
       { role: "system", content: systemPrompt(mount, locale) },
       {
         role: "system",
-        content: gearPrompt(gearSummary, { declined: gearDeclined, signInCancelled: cancelledSignIn }),
+        content: gearPrompt(gearAccess, { declined: gearDeclined, signInDeclined: declinedSignIn }),
       },
     ],
     messages: modelMessages,
     tools,
     activeTools,
-    toolApproval: signInApproval(gearStatus.kind === "account" || testFavorites !== undefined),
+    toolApproval: signInApproval(gearAccess === "account" || testFavorites !== undefined),
     stopWhen: stepCountIs(STEP_BUDGET),
     // req.signal only fires on Workers with the enable_request_signal compatibility flag.
     abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(STREAM_TIMEOUT_MS)]),
@@ -416,12 +413,11 @@ export async function POST(req: NextRequest) {
 }
 
 async function loadGearStatus(
-  req: Request,
+  testGear: ReturnType<typeof evalGear>,
   appDb: D1Database,
   userId: string,
   isAccount: boolean,
 ): Promise<GearStatus> {
-  const testGear = process.env.NODE_ENV === "production" ? undefined : evalGear(req.headers.get(EVAL_GEAR_HEADER));
   if (testGear) {
     return { kind: "account", gear: testGear };
   }

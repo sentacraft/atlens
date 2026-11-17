@@ -143,7 +143,7 @@ Ask Iris, the built-in AI assistant, is a **tool-calling agent loop** on the Ver
 
 ### Tools
 
-Core tools cover retrieval (`queryLenses`, `searchLensByName`, `lensDetails`), rendering (`recommendLenses` for cards, `listLenses` for spec tables), and context (`siteInfo` for facts about the site, with client-side cards for sign-in and gear editing).
+Core tools cover retrieval (`queryLenses`, `searchLensByName`, `lensDetails`), rendering (`recommendLenses` for cards, `listLenses` for spec tables), and context (`siteInfo` for site facts and `myGear` for saved gear). Account readers share a sign-in approval card; gear editing uses the client-side `askForGear` card.
 
 <details>
 <summary>What each tool does</summary>
@@ -156,8 +156,8 @@ Core tools cover retrieval (`queryLenses`, `searchLensByName`, `lensDetails`), r
 | `recommendLenses` | Renders recommendation cards, each with a reason |
 | `listLenses` | Renders a spec table |
 | `siteInfo` | Returns facts about Atlens itself, by topic |
-| `askToSignIn` | Client-side tool: shows the existing sign-in card for saved-gear reads; success or cancellation resumes the original question |
-| `askForGear` | Client-side tool: shows an in-chat card to edit gear; saving resumes with the freshly loaded profile |
+| `myGear` | Server tool: reads current saved bodies and lenses; guests resume through the same sign-in approval as `myFavorites` |
+| `askForGear` | Client-side tool: edits gear on request, or fills an empty profile when needed for advice; saved names confirm the edit, and `myGear` supplies profile facts |
 
 </details>
 
@@ -166,13 +166,13 @@ Core tools cover retrieval (`queryLenses`, `searchLensByName`, `lensDetails`), r
 - **Two-tier retrieval.** `queryLenses` returns a compact record per lens — under twenty comparison fields — capped at 20 results in the sort order the model asks for, plus the total count it didn't see. The full spec record, with the long tail of optics and mechanics, comes only from `lensDetails`, for at most six lenses at a time.
 - **Opaque refs.** Lenses are identified by short hashed refs, never by catalog IDs: fewer tokens, and the model can't extend a patterned ID into a lens it never retrieved.
 - **Rendered output isn't echoed back.** Cards and tables carry full data to the user, but the model sees a one-line acknowledgement, both in that turn and in later turns' history.
-- **One gear source.** Each request checks the real session and loads the gear profile into context. The sign-in tool returns only an interaction outcome, never identity or gear data; no separate gear-reading tool repeats the profile.
-- **Cache-friendly prompt.** The system prompt is fixed; per-user context — saved gear, or a note that it is unknown — goes in a separate system message each turn, and site facts are fetched only when asked about.
+- **On-demand gear.** `myGear` is the saved-profile reader, authorized by the real server session. Its snapshot is loaded lazily and reused within a request; a later question can read a fresh one. A guest's approval is an interaction result, never account authorization. Reading an empty profile does not open the editor, and an existing profile does not disable editing.
+- **Cache-friendly prompt.** The system prompt is fixed; per-user context contains only account access state and the current question's declined interactions, never body/lens lists or refs. Site facts and gear details arrive through tools only when needed.
 
 ### Guardrails
 
 - Each turn has a fixed step budget, and the last step cannot call tools.
-- `lensDetails`, `recommendLenses`, and `listLenses` reject any lens whose ref was not returned by a recall tool in the conversation or included in the server-loaded gear context, with an error that tells the model to look it up first.
+- `lensDetails`, `recommendLenses`, and `listLenses` reject any lens whose ref was not returned by a recall tool (including `myGear`) in the conversation, with an error that tells the model to look it up first.
 - Requests are rate-limited per IP, and token use has daily budgets per IP and overall.
 - Conversations persist in SQLite (D1), and every turn leaves a trace for debugging and analytics.
 

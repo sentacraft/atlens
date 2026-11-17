@@ -111,10 +111,6 @@ function answerCards(message, gearOutcome) {
       shown.gear = true;
       return { ...part, state: "output-available", output: { outcome: gearOutcome } };
     }
-    if (part.type === "tool-askToSignIn" && part.state === "input-available") {
-      shown.signIn = true;
-      return { ...part, state: "output-available", output: { outcome: "cancelled" } };
-    }
     if (part.state === "approval-requested" && !part.approval?.isAutomatic) {
       shown.signIn = true;
       return { ...part, state: "approval-responded", approval: { ...part.approval, approved: false } };

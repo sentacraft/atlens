@@ -862,7 +862,7 @@ tests:
           already cover (18mm, about 27mm equivalent) and suggest lenses wider than that.
           It fails if it does not acknowledge what they already have.
 
-  # Gear: when the answer depends on unknown gear, Iris asks through the gear card.
+  # Gear: saved-gear-dependent advice starts with myGear and shared sign-in approval.
   - description: gear-unknown-guest
     metadata:
       area: gear
@@ -874,27 +874,24 @@ tests:
           - "我下一支镜头该买什么？"
     assert:
       - *card_quality
-      - type: javascript # the gear card is how Iris asks about gear
+      - type: javascript # approval reads saved gear; it is not an edit request
         metric: gear
-        value: "context.metadata.gearCardShown"
+        value: "context.metadata.signInCardShown && !context.metadata.gearCardShown && context.metadata.toolsCalled.includes('myGear')"
       - *no_sign_in_wording
       - type: llm-rubric
         metric: gear
         provider: *behavior_grader
         value: >-
-          Iris does not know what this guest owns. A card asked them to sign in so Iris
-          could see their gear, and they chose "not now, I'll tell Iris" instead. The reply
-          must not assume a particular body or lens collection. Asking once in prose for
-          their body and lenses is what that choice invites and is fine. Iris only covers
+          Iris does not know what this guest owns. They declined the shared sign-in approval for reading their saved gear. The reply
+          must not assume a particular body or lens collection, request sign-in again,
+          or open a gear editor. It should continue from conversation facts or general advice. Iris only covers
           Fujifilm X mount, so taking an X-mount body for granted is not an assumption.
 
-  # Gear: a recommendation request from a guest who named only some of their gear still
-  # gets the card, so they can complete it.
+  # Gear: partial gear in chat does not replace reading the saved profile before gear-dependent advice.
   - description: gear-partial-guest
     metadata:
       area: gear
     vars:
-      stopAtGearCard: true
       mount: X
       locale: zh
       dialog:
@@ -903,7 +900,7 @@ tests:
     assert:
       - type: javascript
         metric: gear
-        value: "context.metadata.gearCardShown"
+        value: "context.metadata.signInCardShown && !context.metadata.gearCardShown && context.metadata.toolsCalled.includes('myGear')"
 
   # Gear: a spec question never asks for gear.
   - description: gear-not-for-specs
@@ -919,9 +916,9 @@ tests:
     assert:
       - type: javascript
         metric: gear
-        value: "!context.metadata.gearCardShown"
+        value: "!context.metadata.signInCardShown && !context.metadata.gearCardShown"
 
-  # Gear: a guest reads saved gear through sign-in, not a duplicate account-data tool.
+  # Gear: myGear uses the same approval sign-in as myFavorites for a guest.
   - description: gear-own-guest
     metadata:
       area: gear
@@ -937,7 +934,7 @@ tests:
         value: "context.metadata.signInCardShown"
       - *declined_sign_in
 
-  # Gear: the same question from an account with nothing saved reads the empty profile or asks for it.
+  # Gear: reading an empty saved profile does not open an editor.
   - description: gear-own-empty-account
     metadata:
       area: gear
@@ -953,7 +950,7 @@ tests:
     assert:
       - type: javascript
         metric: gear
-        value: "!context.metadata.toolsCalled.includes('myGear') && !context.metadata.signInCardShown && (context.metadata.gearCardShown || /空|没有.*(?:保存|记录)|未.*(?:保存|记录)/.test(output.split('[Iris]').pop()))"
+        value: "context.metadata.toolsCalled.includes('myGear') && !context.metadata.signInCardShown && !context.metadata.gearCardShown && /空|没有.*(?:保存|记录)|未.*(?:保存|记录)/.test(output.split('[Iris]').pop())"
 
   # Gear: an account with gear saved hears what it holds.
   - description: gear-own-account
@@ -971,7 +968,7 @@ tests:
     assert:
       - type: javascript
         metric: gear
-        value: "/23mm/i.test(output.split('[Iris]').pop()) && !context.metadata.signInCardShown"
+        value: "context.metadata.toolsCalled.includes('myGear') && /23mm/i.test(output.split('[Iris]').pop()) && !context.metadata.signInCardShown && !context.metadata.gearCardShown"
 
   # Gear: a guest asking for recommendations by need is answered directly, not stopped at a card.
   - description: gear-guest-plain-recommend
@@ -988,7 +985,7 @@ tests:
       - *card_quality
       - type: javascript
         metric: gear
-        value: "!context.metadata.gearCardShown && context.metadata.picks.length > 0"
+        value: "!context.metadata.signInCardShown && !context.metadata.gearCardShown && context.metadata.picks.length > 0"
 
   # Gear: a signed-in user with an empty profile gets the card on any recommendation request.
   - description: gear-empty-account-recommend
@@ -1007,7 +1004,7 @@ tests:
     assert:
       - type: javascript
         metric: gear
-        value: "context.metadata.gearCardShown"
+        value: "context.metadata.toolsCalled.includes('myGear') && context.metadata.gearCardShown && !context.metadata.signInCardShown"
 
   # Gear: a guest's budget-bound need has a good general answer, so it is answered directly.
   - description: gear-guest-budget-travel
@@ -1025,7 +1022,7 @@ tests:
       - *priced_prose
       - type: javascript
         metric: gear
-        value: "!context.metadata.gearCardShown && context.metadata.picks.length > 0"
+        value: "!context.metadata.signInCardShown && !context.metadata.gearCardShown && context.metadata.picks.length > 0"
 
   # Gear: someone without a camera yet has no gear to ask about.
   - description: gear-first-lens-guest
@@ -1042,7 +1039,7 @@ tests:
       - *card_quality
       - type: javascript
         metric: gear
-        value: "!context.metadata.gearCardShown"
+        value: "!context.metadata.signInCardShown && !context.metadata.gearCardShown"
 
   # Gear: a signed-in user with an empty profile is not asked for gear they say they don't have yet.
   - description: gear-first-lens-empty-account
@@ -1062,6 +1059,44 @@ tests:
       - type: javascript
         metric: gear
         value: "!context.metadata.gearCardShown"
+
+  # Gear: an existing profile never disables an explicit edit.
+  - description: gear-edit-existing-account
+    metadata:
+      area: gear
+    vars:
+      stopAtGearCard: true
+      mount: X
+      locale: zh
+      gear:
+        bodies: [fujifilm-x-t5]
+        lenses: [fujifilm-xf-18-55mmf28-4-r-lm-ois-x]
+      dialog:
+        turns:
+          - "帮我把新买的 XF 56mm F1.2 R WR 加进器材档案"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "context.metadata.gearCardShown && !context.metadata.signInCardShown"
+
+  # Gear: a later question reads the profile again instead of assuming old results are current.
+  - description: gear-refresh-next-question
+    metadata:
+      area: gear
+    vars:
+      mount: X
+      locale: zh
+      gear:
+        bodies: [fujifilm-x-t5]
+        lenses: [fujifilm-xf-18-55mmf28-4-r-lm-ois-x]
+      dialog:
+        turns:
+          - "读一下我保存的器材"
+          - "我刚在器材页改过了，重新看一下我现在保存了什么"
+    assert:
+      - type: javascript
+        metric: gear
+        value: "context.metadata.toolsCalled.includes('myGear') && !context.metadata.gearCardShown && !context.metadata.signInCardShown"
 
   # Site: questions about Atlens itself are answered from siteInfo, and only from it.
   - description: site-free

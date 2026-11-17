@@ -1,4 +1,4 @@
-import type { GearBody, GearLens, GearSummary } from "@/lib/ai/gear-context";
+import type { GearStatus } from "@/lib/ai/gear-context";
 import type { GearCardDecline } from "@/lib/ai/gear-request";
 import { factLinkMarkdown, type LinkAction } from "@/lib/askiris/inline-links";
 import type { Mount } from "@/lib/types";
@@ -51,7 +51,9 @@ ${actions}
 
 在用户已经说清的需求和约束之下，不要漏掉任何可能合适的镜头——把它们排出主次、分组呈现，而不是把你不想推的悄悄拿掉。除非一只镜头样样都不如你已经展示的某一只，否则不要拿掉它。用户直接要你替他拍板时，先把取舍讲透；之后可以给一个跟他的用法挂钩的倾向（比如“主要拍人像的话我更倾向 A”），但不要不讲取舍就替他定。
 
-每轮对话开头的「用户器材」写着你对他已有器材的了解。知道他的器材时，推荐和比较都以此为前提：他已经有的镜头出现在推荐或比较里时，说明他已经有了；讲清新镜头和已有镜头在焦段上是重叠还是互补，把机身有没有防抖考虑进去，并说出你参考了哪几件器材。不知道他的器材、而回答又取决于他已有什么时，按「用户器材」里写的方式请他补充，不要自己假设。
+用户问保存了什么、要按已有器材推荐或比较时，先调用 myGear；已登录用户的一般选镜推荐也先读取档案。新问题需要当前档案时重新读取，不把历史结果当当前值。有档案直接据此回答或推荐，说明参考了哪些器材、焦段重叠或互补、机身防抖，已有镜头不当作新购推荐。档案为空就如实说明；仅当推荐确需器材信息时用 askForGear 补充，不为单纯读取打开编辑卡。读取失败不等于档案为空。
+
+用户明确添加或修改器材时用 askForGear，已有档案也可以编辑。保存结果若只有名称确认而没有服务端确认的新档案，需要器材资料时再调用 myGear；跳过后用对话已有信息或一般建议继续，不再索要填写。
 
 用户自己说了拿不准的取舍，你不要替他两边都占：这一轮只把这个取舍问清楚，不出任何镜头。你也可以按自己的理解替他定下来，但要说出这个理解让他能纠正，然后只推定下来的那一边。不要把一堆维度摊开让用户自己排优先级。
 
@@ -64,65 +66,15 @@ ${actions}
 用${language}回复；用户换用别的语言，就跟着换。`;
 }
 
-const SENSOR_LABEL: Record<Mount, string> = { X: "APS-C", G: "中画幅" };
-
-const UNKNOWN_GEAR = {
-  guest: "用户未登录，不知道他有哪些器材。",
-  empty: "用户已登录，但器材档案是空的，不知道他有哪些器材。",
-  unavailable: "暂时读不到用户的器材档案，不知道他有哪些器材。",
-} as const;
-
-const GEAR_NOTE_WHEN_PROFILE_EMPTY =
-  "读取已有器材时如实说明档案为空；需要补充时才使用 askForGear。要推荐镜头时（包括问下一支该买什么、要补哪个焦段、按需求选镜头），先调用 askForGear 请他在卡片里填写器材，等他填完再推荐；他在对话里提到的器材会预填进卡片，提到了也照样调用。调用的这条回复里，文字不要问他的机身和镜头，卡片会问。他说这是第一支镜头或还没有相机时不调用，直接推荐。查规格、问事实、和镜头无关的问题不调用。";
-const GEAR_NOTE_WHEN_GUEST =
-  "用户要读取已保存的器材时，调用 askToSignIn，等登录结果后依据更新的器材档案回答；不要为了读取而调用 askForGear。只有当回答明显取决于他已有什么时，才调用 askForGear：问下一支该买什么、要补哪个焦段、和自己的镜头比、要不要升级；或者他提到了自己已有的部分器材，这时不管他问的是什么推荐都调用。他提到的器材会预填进卡片。卡片会请他登录后填写，他也可以选择直接在对话里告诉你；调用的这条回复里，文字不要问他的器材，也不要提登录。没提到自己器材的按需求推荐，直接回答，不调用。";
-const GEAR_NOTE_AFTER_CARD: Record<GearCardDecline, string> = {
-  skipped:
-    "他这次不想补充器材：他在对话里说过的器材照样用，没说过的就按一般情况推荐。不要再问他的器材，也不要提起卡片或他没有填写这件事。",
-  not_signed_in:
-    "他选择先不登录、直接在对话里告诉你器材：他说过的器材照样用；还没说过、而回答又取决于他已有什么时，在文字里请他说一下机身和镜头，整段对话只问这一次。不要提登录，也不要提起卡片。",
-};
-
-function bodyLine(body: GearBody): string {
-  if (!body.sensor) {
-    return `- ${body.name}`;
-  }
-  const traits = [SENSOR_LABEL[body.sensor], `${body.megapixels} 百万像素`, body.ibis ? "有机身防抖" : "无机身防抖"];
-  return `- ${body.name}（${traits.join("，")}）`;
-}
-
-function lensLine(lens: GearLens): string {
-  const traits = [
-    lens.manual ? "手动录入" : undefined,
-    lens.ref ? `ref ${lens.ref}` : undefined,
-    lens.focal ? `焦段 ${lens.focal}` : undefined,
-    lens.equivalent ? `等效 ${lens.equivalent}` : undefined,
-    lens.aperture ? `最大光圈 ${lens.aperture}` : undefined,
-    lens.adapted ? (lens.originalMount ? `转接使用，原卡口 ${lens.originalMount}` : "转接使用") : undefined,
-  ].filter(Boolean);
-  return traits.length > 0 ? `- ${lens.name}（${traits.join("，")}）` : `- ${lens.name}`;
-}
-
-/** The per-turn 【用户器材】 note, sent after systemPrompt as its own system message. */
-export function gearPrompt(gear: GearSummary, { declined, signInCancelled }: { declined: GearCardDecline | null; signInCancelled: boolean }): string {
-  if (!gear.known) {
-    const howToAsk = gear.reason === "guest" && signInCancelled
-      ? "用户已取消登录，继续回答能回答的部分，不要再要求登录或打开器材卡，也不要编造账号器材。"
-      : gear.reason === "unavailable"
-        ? "读取器材时说明暂时无法读取，不要把读取失败当作没有保存器材，也不要要求用户重新填写。"
-      : declined
-      ? GEAR_NOTE_AFTER_CARD[declined]
-      : gear.reason === "guest"
-        ? GEAR_NOTE_WHEN_GUEST
-        : GEAR_NOTE_WHEN_PROFILE_EMPTY;
-    return `【用户器材】\n${UNKNOWN_GEAR[gear.reason]}${howToAsk}`;
-  }
-  const lines = ["【用户器材】", "用户已登录，器材档案里有：", "直接依据档案回答器材问题，不重复读取或要求登录。"];
-  if (gear.bodies.length > 0) {
-    lines.push("机身：", ...gear.bodies.map(bodyLine));
-  }
-  if (gear.lenses.length > 0) {
-    lines.push("镜头：", ...gear.lenses.map(lensLine));
-  }
-  return lines.join("\n");
+/** Per-turn access state only; saved profile facts come from myGear. */
+export function gearPrompt(state: GearStatus["kind"], { declined, signInDeclined }: { declined: GearCardDecline | null; signInDeclined: boolean }): string {
+  const status = state === "guest" ? "用户未登录。" : state === "account" ? "用户已登录。" : "暂时无法读取用户器材。";
+  const instruction = signInDeclined
+    ? "用户已取消登录，当前问题不要再要求登录或打开器材卡；用对话已提供的信息或一般建议继续，不编造账号器材。"
+    : declined
+      ? "用户这次跳过了器材填写，用对话已有信息或一般建议继续，不再要求填写或登录。"
+      : state === "guest"
+        ? "读取保存的器材或按已有器材推荐，交给 myGear 的登录卡；一般按需求推荐直接回答，不必索要登录或填写。"
+        : "具体器材由 myGear 读取，不要根据登录状态猜测档案内容。";
+  return `【器材访问状态】\n${status}${instruction}`;
 }

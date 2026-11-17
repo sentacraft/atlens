@@ -7,7 +7,7 @@ import { buildLensTools, type ToolData, seedRecalledRefs } from "../tools";
 import { getLensesByMount } from "@/lib/lens/data";
 import { lensRef, sourceRef } from "../lens-ref";
 
-const GUEST: ToolData = { favorites: async () => null, gear: { known: false, reason: "guest" }, reviews: async () => new Map() };
+const GUEST: ToolData = { favorites: async () => null, gear: async () => ({ known: false, reason: "guest" }), reviews: async () => new Map() };
 
 const tools = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
 
@@ -245,26 +245,44 @@ describe("refs recalled earlier in the conversation", () => {
   });
 });
 
-describe("gear context refs", () => {
-  it("accepts catalog gear refs without a duplicate read tool", async () => {
+describe("myGear", () => {
+  it("reads lazily and permits catalog refs only after the tool returns them", async () => {
     const [lens] = getLensesByMount("X", "zh");
     const ref = lensRef(lens.id);
+    let reads = 0;
     const tools = buildLensTools("X", "zh", (brand) => brand, {
       ...GUEST,
-      gear: { known: true, bodies: [{ name: "Fujifilm X-T5" }], lenses: [{ name: lens.model, ref, manual: false, adapted: false }] },
+      gear: async () => {
+        reads++;
+        return { known: true, bodies: [{ name: "Fujifilm X-T5" }], lenses: [{ name: lens.model, ref, manual: false, adapted: false }] };
+      },
     }, new Set());
-
-    expect(tools).not.toHaveProperty("myGear");
+    expect(tools).not.toHaveProperty("askToSignIn");
+    expect(reads).toBe(0);
+    expect(() => run(tools.lensDetails, { refs: [ref] })).toThrow(/was not returned/);
+    expect(await run(tools.myGear, {})).toMatchObject({ bodies: [{ name: "Fujifilm X-T5" }], lenses: [{ ref }] });
+    expect(reads).toBe(1);
     expect((await run(tools.lensDetails, { refs: [ref] })).lenses).toHaveLength(1);
   });
 
-  it("does not trust invented or other-mount gear refs", () => {
+  it("returns an empty profile without invoking an editor", async () => {
+    const tools = buildLensTools("X", "en", (brand) => brand, { ...GUEST, gear: async () => ({ known: false, reason: "empty" }) }, new Set());
+    expect(await run(tools.myGear, {})).toEqual({ bodies: [], lenses: [] });
+  });
+
+  it.each(["guest", "unavailable"] as const)("fails closed for %s", async (reason) => {
+    const tools = buildLensTools("X", "en", (brand) => brand, { ...GUEST, gear: async () => ({ known: false, reason }) }, new Set());
+    await expect(run(tools.myGear, {})).rejects.toThrow(reason === "guest" ? /not signed in/ : /could not be read/);
+  });
+
+  it("does not authorize invented, manual, or other-mount refs", async () => {
     const other = getLensesByMount("G", "en")[0];
     const refs = new Set<string>();
-    buildLensTools("X", "en", (brand) => brand, { ...GUEST, gear: { known: true, bodies: [], lenses: [
+    const tools = buildLensTools("X", "en", (brand) => brand, { ...GUEST, gear: async () => ({ known: true, bodies: [], lenses: [
       { name: "Invented", ref: "fake1", manual: true, adapted: false },
       { name: other.model, ref: lensRef(other.id), manual: false, adapted: false },
-    ] } }, refs);
+    ] }) }, refs);
+    await run(tools.myGear, {});
     expect(refs.size).toBe(0);
   });
 });

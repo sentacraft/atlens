@@ -9,7 +9,6 @@ import FreeNote from "@/components/auth/FreeNote";
 import { ACTION_PRIMARY_CLS, ACTION_QUIET_CLS, CHAT_CARD_CLS, IRIS_PROSE_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
-import type { SignInOutput } from "@/lib/ai/sign-in-request";
 import AnsweredLine from "@/components/askiris/AnsweredLine";
 
 /** The in-chat card Iris shows a guest when what they asked for needs an account, led by a line saying why. */
@@ -53,37 +52,37 @@ export default function SignInCard({
   );
 }
 
-/** The shared sign-in interaction for account tools and server approvals. */
-export function SignInInteraction({ reason, outcome, active, returnTo, onAnswer }: {
+/** The shared sign-in card for a server tool waiting for approval. */
+export function SignInGate({ reason, answered, active, returnTo, onAnswer }: {
   reason: SignInCardReason;
-  outcome: SignInOutput["outcome"] | null;
+  answered?: boolean;
   active: boolean;
   returnTo: () => string;
-  onAnswer: (output: SignInOutput) => void;
+  onAnswer: (approved: boolean) => void;
 }) {
   const t = useTranslations("AskIris.signInCard");
   const { data: session } = authClient.useSession();
   const signedIn = Boolean(accountUser(session));
-  const waiting = outcome === null && active;
+  const waiting = answered === undefined && active;
   const sent = useRef(false);
-  function answer(output: SignInOutput) {
+  function answer(approved: boolean) {
     if (sent.current) {return;}
     sent.current = true;
-    onAnswer(output);
+    onAnswer(approved);
   }
   useEffect(() => {
     if (waiting && signedIn && !sent.current) {
       sent.current = true;
-      onAnswer({ outcome: "signed_in" });
+      onAnswer(true);
     }
   }, [waiting, signedIn, onAnswer]);
 
-  if (outcome === "signed_in") {
+  if (answered === true) {
     return <AnsweredLine done>{t("signedIn")}</AnsweredLine>;
   }
   if (!waiting) {
     return <AnsweredLine done={false}>{t("declined")}</AnsweredLine>;
   }
   if (signedIn) {return null;}
-  return <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => answer({ outcome: "cancelled" })} />;
+  return <SignInCard reason={reason} returnTo={returnTo} onNotNow={() => answer(false)} />;
 }

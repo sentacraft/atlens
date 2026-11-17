@@ -30,12 +30,13 @@ export type GearRequestOutput = z.infer<typeof gearRequestOutputSchema>;
 export type GearCardDecline = "skipped" | "not_signed_in";
 
 /**
- * How a gear card in this conversation ended without saving: the form skipped (or typed past
+ * How a gear card in the current question ended without saving: the form skipped (or typed past
  * without an answer), or a guest choosing to tell Iris in chat instead of signing in.
  */
 export function gearCardDecline(messages: UIMessage[]): GearCardDecline | null {
   let decline: GearCardDecline | null = null;
-  for (const part of messages.flatMap((message) => message.parts)) {
+  const question = messages.slice(Math.max(0, messages.findLastIndex((message) => message.role === "user")));
+  for (const part of question.flatMap((message) => message.parts)) {
     if (!isToolUIPart(part) || getToolName(part) !== ASK_FOR_GEAR) {
       continue;
     }

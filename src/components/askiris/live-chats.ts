@@ -8,10 +8,8 @@ import {
   lastAssistantMessageIsCompleteWithApprovalResponses,
   lastAssistantMessageIsCompleteWithToolCalls,
 } from "ai";
-import { ASK_TO_SIGN_IN, type SignInOutput } from "@/lib/ai/sign-in-request";
 import { ASK_FOR_GEAR } from "@/lib/ai/gear-request";
 import { ASK_CHOICES } from "@/lib/ai/choice-request";
-import { normalizeLegacyGearCalls } from "@/lib/askiris/legacy-gear-call";
 import { askIrisChatRequestBody } from "@/lib/askiris/chat-request";
 import { askIrisMessageMetadataSchema, type AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
@@ -53,43 +51,47 @@ export function replyingChat(id: string): Chat<AskIrisUIMessage> | undefined {
 }
 
 function hasPendingCard(messages: AskIrisUIMessage[]) {
-  return messages.at(-1)?.parts.some((part) => isToolUIPart(part) && part.state === "input-available" &&
-    [ASK_TO_SIGN_IN, ASK_FOR_GEAR, ASK_CHOICES].includes(getToolName(part))) ?? false;
+  const last = messages.at(-1);
+  return last?.role === "assistant" && last.parts.some((part) => isToolUIPart(part) && (
+    (part.state === "approval-requested" && !part.approval.isAutomatic) ||
+    (part.state === "input-available" && [ASK_FOR_GEAR, ASK_CHOICES].includes(getToolName(part)))
+  ));
 }
 
-function hasLocalSignInAnswer(chat: Chat<AskIrisUIMessage>, seed: AskIrisUIMessage[]) {
-  const answered = answeredSignIns.get(chat);
+const answeredApprovals = new WeakMap<Chat<AskIrisUIMessage>, Set<string>>();
+
+function hasLocalApprovalAnswer(chat: Chat<AskIrisUIMessage>, seed: AskIrisUIMessage[]) {
+  const answered = answeredApprovals.get(chat);
   if (!answered) {return false;}
-  const stored = normalizeLegacyGearCalls(seed);
   return chat.messages.some((message) => message.parts.some((part) =>
-    isToolUIPart(part) && getToolName(part) === ASK_TO_SIGN_IN && part.state === "output-available" && answered.has(part.toolCallId) &&
-    !stored.find((item) => item.id === message.id)?.parts.some((saved) =>
-      isToolUIPart(saved) && getToolName(saved) === ASK_TO_SIGN_IN && saved.toolCallId === part.toolCallId &&
-      (saved.state === "output-available" || saved.state === "output-error" || saved.state === "output-denied"),
+    isToolUIPart(part) && "approval" in part && part.approval && answered.has(part.approval.id) &&
+    !seed.find((item) => item.id === message.id)?.parts.some((saved) =>
+      isToolUIPart(saved) && saved.toolCallId === part.toolCallId &&
+      (saved.state === "approval-responded" || saved.state === "output-available" || saved.state === "output-error" || saved.state === "output-denied"),
     ),
   ));
 }
 
-const answeredSignIns = new WeakMap<Chat<AskIrisUIMessage>, Set<string>>();
-
-/** A remounted sign-in card must not submit the same completion twice. */
-export function completeSignIn(chat: Chat<AskIrisUIMessage>, toolCallId: string, output: SignInOutput, body: Record<string, unknown>) {
-  const pending = chat.messages.at(-1)?.parts.some((part) => isToolUIPart(part) && getToolName(part) === ASK_TO_SIGN_IN &&
-    part.toolCallId === toolCallId && part.state === "input-available");
-  const answered = answeredSignIns.get(chat) ?? new Set<string>();
-  if (!pending || answered.has(toolCallId)) {return;}
-  answered.add(toolCallId);
-  answeredSignIns.set(chat, answered);
-  void chat.addToolOutput({ tool: ASK_TO_SIGN_IN, toolCallId, output, options: { body } });
+/** A remounted approval card must not submit the same decision twice. */
+export function completeApproval(chat: Chat<AskIrisUIMessage>, approvalId: string, approved: boolean, body: Record<string, unknown>) {
+  const last = chat.messages.at(-1);
+  const pending = last?.role === "assistant" && last.parts.some((part) => isToolUIPart(part) &&
+    part.state === "approval-requested" && !part.approval.isAutomatic && part.approval.id === approvalId);
+  const answered = answeredApprovals.get(chat) ?? new Set<string>();
+  if (!pending || answered.has(approvalId)) {return;}
+  // The SDK queues state updates; another view can answer before that queue runs.
+  answered.add(approvalId);
+  answeredApprovals.set(chat, answered);
+  void chat.addToolApprovalResponse({ id: approvalId, approved, options: { body } });
 }
 
 export function retryChat(chat: Chat<AskIrisUIMessage>, body: Record<string, unknown>) {
   const last = chat.messages.at(-1);
-  const hasSignInAnswer = last?.role === "assistant" && last.parts.some((part) =>
-    isToolUIPart(part) && getToolName(part) === ASK_TO_SIGN_IN && part.state === "output-available",
+  const hasApprovalAnswer = last?.role === "assistant" && last.parts.some((part) =>
+    isToolUIPart(part) && "approval" in part && part.approval?.approved !== undefined,
   );
-  // Regeneration removes the assistant message, including the user's sign-in decision.
-  return hasSignInAnswer ? chat.sendMessage(undefined, { body }) : chat.regenerate({ body });
+  // Regeneration removes the assistant message, including the user's approval decision.
+  return hasApprovalAnswer ? chat.sendMessage(undefined, { body }) : chat.regenerate({ body });
 }
 
 let lastConversationId: string | undefined;
@@ -130,12 +132,15 @@ export function openChat(id: string, seed: AskIrisUIMessage[]): Chat<AskIrisUIMe
     return createChat(id, seed);
   }
   const existing = entries.get(id);
-  if (existing && (existing.seed === seed || isReplying(existing.chat) || (hasPendingCard(existing.chat.messages) && hasPendingCard(normalizeLegacyGearCalls(seed)) && existing.chat.messages.at(-1)?.id === seed.at(-1)?.id) || hasLocalSignInAnswer(existing.chat, seed))) {
+  if (existing && (existing.seed === seed || isReplying(existing.chat) ||
+    (hasPendingCard(existing.chat.messages) && (seed.length === 0 ||
+      (hasPendingCard(seed) && existing.chat.messages.at(-1)?.id === seed.at(-1)?.id))) ||
+    hasLocalApprovalAnswer(existing.chat, seed))) {
     existing.seed = seed;
     return existing.chat;
   }
   for (const [key, entry] of entries) {
-    if (!isReplying(entry.chat) && !hasPendingCard(entry.chat.messages) && !hasLocalSignInAnswer(entry.chat, entry.seed)) {
+    if (!isReplying(entry.chat) && !hasPendingCard(entry.chat.messages) && !hasLocalApprovalAnswer(entry.chat, entry.seed)) {
       entries.delete(key);
     }
   }
@@ -147,7 +152,7 @@ export function openChat(id: string, seed: AskIrisUIMessage[]): Chat<AskIrisUIMe
 function createChat(id: string, seed: AskIrisUIMessage[]) {
   return new Chat<AskIrisUIMessage>({
     id,
-    messages: normalizeLegacyGearCalls(seed),
+    messages: seed,
     transport,
     generateId: () => crypto.randomUUID(),
     messageMetadataSchema: askIrisMessageMetadataSchema,

@@ -20,8 +20,7 @@ import FeedbackCard from "@/components/feedback/FeedbackCard";
 import type { FeedbackDraft } from "@/lib/feedback/feedback-draft";
 import ChoiceCard from "@/components/askiris/ChoiceCard";
 import GearRequestCard from "@/components/askiris/GearRequestCard";
-import { SignInInteraction } from "@/components/askiris/SignInCard";
-import { ASK_TO_SIGN_IN, type SignInOutput } from "@/lib/ai/sign-in-request";
+import { SignInGate } from "@/components/askiris/SignInCard";
 import { signInGate } from "@/lib/ai/sign-in-gate";
 import { ASK_CHOICES, type ChoiceRequestInput, type ChoiceRequestOutput } from "@/lib/ai/choice-request";
 import { ASK_FOR_GEAR, type GearRequestInput, type GearRequestOutput } from "@/lib/ai/gear-request";
@@ -74,7 +73,6 @@ export interface ChatCardBinding {
   lenses: LensSummary[];
   answerGear: (toolCallId: string, output: GearRequestOutput) => void;
   answerChoices: (toolCallId: string, output: ChoiceRequestOutput) => void;
-  answerSignIn: (toolCallId: string, output: SignInOutput) => void;
   answerApproval: (approvalId: string, approved: boolean) => void;
   /** Where a sign-in that leaves the page returns, reopening this conversation. */
   signInReturnTo: () => string;
@@ -83,7 +81,7 @@ export interface ChatCardBinding {
 /** A call the turn is paused on until the user answers its card. */
 function isAwaitingUser(part: ToolUIPart | DynamicToolUIPart): boolean {
   return (
-    ((getToolName(part) === ASK_FOR_GEAR || getToolName(part) === ASK_CHOICES || getToolName(part) === ASK_TO_SIGN_IN) && part.state === "input-available") ||
+    ((getToolName(part) === ASK_FOR_GEAR || getToolName(part) === ASK_CHOICES) && part.state === "input-available") ||
     (part.state === "approval-requested" && !part.approval.isAutomatic)
   );
 }
@@ -128,26 +126,17 @@ function ToolPart({
       </div>
     );
   }
-  if (getToolName(part) === ASK_TO_SIGN_IN && cards && (part.state === "input-available" || part.state === "output-available")) {
-    return <div className="w-full px-1"><SignInInteraction
-      reason="gear"
-      outcome={part.state === "output-available" ? (part.output as SignInOutput).outcome : null}
-      active={latest}
-      returnTo={cards.signInReturnTo}
-      onAnswer={(output) => cards.answerSignIn(part.toolCallId, output)}
-    /></div>;
-  }
   const gate = signInGate(getToolName(part));
   if (gate && cards && "approval" in part && part.approval && !part.approval.isAutomatic) {
     const { id } = part.approval;
     return (
       <div className="w-full px-1">
-        <SignInInteraction
+        <SignInGate
           reason={gate}
-          outcome={part.state === "approval-requested" ? null : part.approval.approved ? "signed_in" : "cancelled"}
+          answered={part.state === "approval-requested" ? undefined : part.approval.approved}
           active={latest}
           returnTo={cards.signInReturnTo}
-          onAnswer={(output) => cards.answerApproval(id, output.outcome === "signed_in")}
+          onAnswer={(approved) => cards.answerApproval(id, approved)}
         />
       </div>
     );

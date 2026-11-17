@@ -23,6 +23,11 @@ describe("gearCardDecline", () => {
     );
   });
 
+  it("allows an explicit edit in a new question after an earlier skip", () => {
+    const skipped = reply({ state: "output-available", output: { outcome: "skipped" } });
+    expect(gearCardDecline([skipped, { id: "u2", role: "user", parts: [{ type: "text", text: "Add my new lens" }] }])).toBeNull();
+  });
+
   it("counts a card the user typed past as skipped", () => {
     expect(gearCardDecline([reply({ state: "input-available" })])).toBe("skipped");
   });
