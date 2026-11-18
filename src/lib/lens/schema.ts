@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Relative .ts import: scripts/validate-lenses.mts runs under plain Node, which ignores tsconfig paths.
-import { FIELD_NOTE_KEYS, LENS_IMAGE_ROLES, OPTICAL_TRAITS, SPEC_NA } from "../types.ts";
+import { FIELD_NOTE_KEYS, LENS_IMAGE_DISPLAY_PRESETS, LENS_IMAGE_ROLES, OPTICAL_TRAITS, SPEC_NA } from "../types.ts";
 import type { ApertureValue, Lens } from "../types.ts";
 
 const positiveNumberSchema = z.number().positive();
@@ -247,6 +247,7 @@ const imageNumberListSchema = z.array(positiveNumberSchema).min(1).refine(
 const lensImageAssetSchema = z.strictObject({
   id: imageIdSchema,
   role: z.enum(LENS_IMAGE_ROLES),
+  displayPreset: z.enum(LENS_IMAGE_DISPLAY_PRESETS).optional(),
   focalLengthMm: positiveNumberSchema.optional(),
   spatialFrequency: z.strictObject({
     values: imageNumberListSchema,
@@ -257,6 +258,9 @@ const lensImageAssetSchema = z.strictObject({
   depictedMount: z.string().regex(/^[A-Z][A-Z0-9-]{0,15}$/).optional(),
   conditionsNote: imageNoteSchema.optional(),
 }).superRefine((image, ctx) => {
+  if (image.displayPreset !== undefined && image.role !== "mtf" && image.role !== "optical-construction") {
+    ctx.addIssue({ code: "custom", path: ["displayPreset"], message: "Display presets are only valid for MTF charts and optical diagrams" });
+  }
   if (image.role === "mtf") {
     return;
   }

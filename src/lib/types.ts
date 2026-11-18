@@ -304,6 +304,9 @@ export const LENS_IMAGE_ROLES = [
 
 export type LensImageRole = (typeof LENS_IMAGE_ROLES)[number];
 
+export const LENS_IMAGE_DISPLAY_PRESETS = ["white-background", "invert-on-white"] as const;
+export type LensImageDisplayPreset = (typeof LENS_IMAGE_DISPLAY_PRESETS)[number];
+
 /** Public image metadata; omit unknown conditions and keep private provenance and processing records in the pipeline. */
 export interface LensImageAsset {
   /** Stable numeric ID assigned by the pipeline importer, at least three digits. Resolve the file through the resource manifest, not a path inferred from this ID. */
@@ -316,6 +319,8 @@ export interface LensImageAsset {
    * accessory = accessory or packaging. Archive-only material does not become a public role.
    */
   role: LensImageRole;
+  /** Per-image reviewed display hint, only for MTF charts and optical diagrams. Omit to retain existing display. white-background adds a white backing; invert-on-white adds the same backing and applies invert(1) hue-rotate(180deg) to the image only. Never alter source pixels or store arbitrary CSS here. */
+  displayPreset?: LensImageDisplayPreset;
   /** Positive focal length in mm explicitly identified by the image, chart grouping or caption. Never infer it from the lens name, file order or adjacent images. */
   focalLengthMm?: number;
   /** MTF-only frequencies: a nonempty list of unique positive values and the stated unit, without conversion. If the unit is unknown, omit this field and explain the limitation in conditionsNote. */
