@@ -25,7 +25,7 @@ const set: TechnicalImageSet = {
     { id: "001", role: "mtf", focalLengthMm: 35, displayPreset: "invert-on-white" },
     { id: "002", role: "mtf", focalLengthMm: 50, displayPreset: "white-background" },
     { id: "003", role: "mtf", focalLengthMm: 70, conditionsNote: "Third chart conditions" },
-    { id: "004", role: "mtf", focalLengthMm: 100 },
+    { id: "004", role: "mtf" },
   ],
 };
 
@@ -63,7 +63,9 @@ describe("technical image viewer", () => {
     const picker = dialog.getByRole("combobox", { name: "Select image for Second" });
     expect(picker.getAttribute("data-slot")).toBe("select-trigger");
     fireEvent.click(picker);
-    const option = screen.getByRole("option", { name: "Image 3 · 70mm" });
+    expect(screen.queryByRole("option", { name: /Image 3/ })).toBeNull();
+    const option = screen.getByRole("option", { name: "70mm" });
+    expect(screen.getByRole("option", { name: "Image 4" })).toBeDefined();
     fireEvent.pointerDown(option, { pointerType: "mouse" });
     fireEvent.click(option);
     expect(dialog.getByRole("img", { name: "Second — 70mm" })).toBeDefined();

@@ -166,11 +166,15 @@ function ViewerSelect({ label, value, onChange, items, className }: {
 }) {
   return (
     <Select value={value} items={items} onValueChange={(value) => {if (value !== null) {onChange(value);}}}>
-      <SelectTrigger aria-label={label} className={cn("max-w-full", className)}>
-        <SelectValue />
+      <SelectTrigger aria-label={label} className={cn("min-w-0 max-w-full whitespace-normal data-[size=default]:h-auto data-[size=default]:min-h-8", className)}>
+        <SelectValue className="min-w-0 [overflow-wrap:anywhere]" />
       </SelectTrigger>
-      <SelectContent align="end">
-        {items.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}
+      <SelectContent align="end" className="w-max min-w-[min(var(--anchor-width),var(--available-width))] max-w-(--available-width)">
+        {items.map((item) => (
+          <SelectItem key={item.value} value={item.value} className="[&_[data-slot=chart-option-label]]:whitespace-normal [&_[data-slot=chart-option-label]]:[overflow-wrap:anywhere] [&>div]:min-w-0 [&>div]:shrink">
+            <span data-slot="chart-option-label">{item.label}</span>
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );
@@ -185,6 +189,7 @@ function ImagePanel({ set, initialIndex, compare }: { set: TechnicalImageSet; in
   const count = set.images.length;
   const multiple = count > 1;
   const description = label || t("imageNumber", { number: String(index + 1) });
+  const optionLabels = multiple && compare ? set.images.map(imageShortLabel) : [];
   function move(offset: number) {
     setIndex((current) => Math.max(0, Math.min(count - 1, current + offset)));
   }
@@ -210,10 +215,9 @@ function ImagePanel({ set, initialIndex, compare }: { set: TechnicalImageSet; in
             label={t("selectImage", { lens: set.model })}
             value={String(index)}
             onChange={(value) => setIndex(Number(value))}
-            items={set.images.map((item, position) => {
-              const condition = imageShortLabel(item);
+            items={optionLabels.map((condition, position) => {
               const number = t("imageNumber", { number: String(position + 1) });
-              return { value: String(position), label: condition ? `${number} · ${condition}` : number };
+              return { value: String(position), label: !condition ? number : optionLabels.indexOf(condition) === optionLabels.lastIndexOf(condition) ? condition : `${condition} · ${number}` };
             })}
             className="text-xs"
           />
