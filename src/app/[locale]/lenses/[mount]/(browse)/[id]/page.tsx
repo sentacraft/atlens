@@ -41,6 +41,7 @@ import { FieldNotePopover } from "@/components/ui/field-note-popover";
 import { buildAlternates, lensOgImages } from "@/lib/seo";
 import { SITE } from "@/config/site";
 import { lensDisplayName, brandLabel } from "@/lib/lens/format";
+import type { Locale } from "@/i18n/routing";
 import { buildLensDescription, buildLensProductSchema } from "@/lib/lens/seo";
 import { PriceSection } from "@/components/price/PriceSection";
 import { PriceDisclaimer } from "@/components/price/PriceDisclaimer";
@@ -84,7 +85,7 @@ export async function generateMetadata({
 
   const brandName = brandLabel(tBrand, lens.brand);
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
-  const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
+  const description = buildLensDescription({ lens, mount: resolvedMount, brandName, locale: locale as Locale, t });
 
   return {
     title: t("metaTitle", { name: displayName }),
@@ -182,7 +183,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
   const brandName = brandLabel(tBrand, lens.brand);
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
-  const description = buildLensDescription({ lens, mount: resolvedMount, brandName, t });
+  const description = buildLensDescription({ lens, mount: resolvedMount, brandName, locale: locale as Locale, t });
   const hasBrandPage = mountHasCollections(resolvedMount) && getBrandInfo(lens.brand) !== undefined;
   const seriesPage = mountHasCollections(resolvedMount) ? seriesCollection(lens, locale) : undefined;
   const onCharts = mountHasCharts(resolvedMount) && isOnCharts(lens);

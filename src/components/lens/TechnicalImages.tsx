@@ -24,17 +24,22 @@ const LensImageViewer = lazy(() => import("./LensImageViewer"));
 const IMAGE_FRAME = "relative isolate overflow-hidden";
 const IMAGE_BUTTON = "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2";
 
-function TechnicalImage({ set, image, caption, preview = false }: {
+function technicalImageAlt(t: ReturnType<typeof useTranslations<"LensDetail">>, model: string, image: LensImageAsset) {
+  const label = imageShortLabel(image);
+  return t("opticalImages.imageAlt", { model, role: image.role, conditions: label ? ` — ${label}` : "" });
+}
+
+function TechnicalImage({ set, image, preview = false }: {
   set: TechnicalImageSet;
   image: LensImageAsset;
-  caption: string;
   preview?: boolean;
 }) {
+  const t = useTranslations("LensDetail");
   const filter = technicalImageFilter(image.displayPreset);
   return (
     <Image
       src={getLensImageUrl(set.id, image.id)}
-      alt={`${set.model} — ${caption}`}
+      alt={technicalImageAlt(t, set.model, image)}
       fill
       data-gallery-preview={preview || undefined}
       unoptimized
@@ -76,7 +81,7 @@ export function InlineTechnicalImages({ set, role }: { set: TechnicalImageSet; r
                 onClick={(event) => viewer.show(event, index)}
                 className={cn(IMAGE_FRAME, IMAGE_BUTTON, "block h-26 w-full rounded-lg border border-zinc-200 hover:border-zinc-400", image.displayPreset && "bg-white")}
               >
-                <TechnicalImage set={set} image={image} caption={label} preview />
+                <TechnicalImage set={set} image={image} preview />
               </button>
               {role === "mtf" && <figcaption className="mt-1 text-[11px] leading-snug text-zinc-600 tabular-nums">{label}</figcaption>}
             </figure>
@@ -130,7 +135,7 @@ function TechnicalGallery({ set, role, index, viewer }: {
     return {
       src: getLensImageUrl(set.id, image.id),
       label,
-      alt: `${set.model} — ${label}`,
+      alt: technicalImageAlt(t, set.model, image),
       filter: technicalImageFilter(image.displayPreset),
       caption: { primary: short, details },
     };
@@ -240,7 +245,6 @@ function ImagePanel({ set }: { set: TechnicalImageSet }) {
   const notes = imageNotes(image, t);
   const count = set.images.length;
   const multiple = count > 1;
-  const description = label || t("opticalImages.imageNumber", { number: String(index + 1) });
   const optionLabels = multiple ? set.images.map(imageShortLabel) : [];
   function move(offset: number) {
     setIndex((current) => Math.max(0, Math.min(count - 1, current + offset)));
@@ -276,7 +280,7 @@ function ImagePanel({ set }: { set: TechnicalImageSet }) {
         )}
       </div>
       <div onTouchStart={multiple ? startSwipe : undefined} onTouchEnd={multiple ? endSwipe : undefined} onTouchCancel={() => {touch.current = null;}} className={cn(IMAGE_FRAME, "h-[min(36dvh,23rem)] touch-pan-y sm:h-[min(50dvh,27rem)]", image.displayPreset && "bg-white")}>
-        <TechnicalImage set={set} image={image} caption={description} />
+        <TechnicalImage set={set} image={image} />
       </div>
       <figcaption className="flex items-start gap-2 text-xs leading-relaxed text-zinc-600">
         <div className="min-w-0 flex-1" aria-live="polite">

@@ -507,6 +507,7 @@
     "opticalImages": {
       "mtf": "MTF charts",
       "structure": "Optical diagram",
+      "imageAlt": "{model} — {role, select, mtf {MTF chart} other {Optical diagram}}{conditions}",
       "viewMtf": "View MTF charts",
       "viewStructure": "View diagram",
       "viewRemaining": "View remaining MTF charts",
@@ -545,6 +546,7 @@
     "seeOnTimeline": "See it on the release timeline →",
     "metaDescPrefix": "{name} ({mount}-mount {type}) specs and side-by-side comparison",
     "metaTitle": "{name}: Specs, Weight & Size",
+    "metaDescWithOptics": "{name} ({mount}-mount {type}) specs and comparison with {optics, select, mtf {MTF charts} diagram {an optical diagram} other {MTF charts and an optical diagram}}",
     "metaJoinSpace": ": ",
     "metaSep": ", ",
     "metaPeriod": ".",

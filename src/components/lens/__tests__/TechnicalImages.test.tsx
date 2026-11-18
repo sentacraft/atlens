@@ -8,7 +8,8 @@ import type { ComponentProps } from "react";
 import type LensImageViewer from "../LensImageViewer";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CompareTechnicalImages, InlineTechnicalImages, type TechnicalImageSet } from "../TechnicalImages";
-import messages from "@/messages/en.json";
+import en from "@/messages/en.json";
+import zh from "@/messages/zh.json";
 
 vi.mock("@/lib/lens/image", () => ({ getLensImageUrl: (lens: string, image: string) => `/images/${lens}/${image}.webp` }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));
@@ -47,20 +48,27 @@ const set: TechnicalImageSet = {
   ],
 };
 
-function renderLocalized(children: React.ReactNode) {
-  render(<NextIntlClientProvider locale="en" timeZone="UTC" messages={messages}>{children}</NextIntlClientProvider>);
+const MESSAGES = { en, zh: zh as unknown as typeof en };
+
+function renderLocalized(children: React.ReactNode, locale: "en" | "zh" = "en") {
+  render(<NextIntlClientProvider locale={locale} timeZone="UTC" messages={MESSAGES[locale]}>{children}</NextIntlClientProvider>);
 }
 
 describe("technical image viewer", () => {
+  it("names an optical diagram without inventing conditions or adding an image number", () => {
+    renderLocalized(<InlineTechnicalImages set={{ ...set, images: [{ id: "diagram", role: "optical-construction" }] }} role="optical-construction" />, "zh");
+    expect(screen.getByRole("img", { name: "Example 光学结构图" })).toBeDefined();
+  });
+
   it("renders two previews and opens remaining images at the first hidden chart", async () => {
     renderLocalized(<InlineTechnicalImages set={set} role="mtf" />);
     expect(screen.getAllByRole("img")).toHaveLength(2);
-    expect(screen.getByRole("img", { name: "Example — 35mm" }).style.filter).toBe("invert(1) hue-rotate(180deg) saturate(0.6)");
+    expect(screen.getByRole("img", { name: "Example — MTF chart — 35mm" }).style.filter).toBe("invert(1) hue-rotate(180deg) saturate(0.6)");
     fireEvent.click(screen.getByRole("button", { name: "View remaining MTF charts" }));
     const dialog = within(await screen.findByRole("dialog", { name: "MTF charts · Example" }));
     expect(dialog.getByText("3 / 4")).toBeDefined();
     expect(dialog.getByText(/Third chart conditions/)).toBeDefined();
-    expect(dialog.getByRole("img").style.filter).toBe("");
+    expect(dialog.getByRole("img", { name: "Example — MTF chart — 70mm" }).style.filter).toBe("");
     fireEvent.click(dialog.getByRole("button", { name: "Previous image" }));
     expect(dialog.getByRole("img").style.filter).toBe("saturate(0.6)");
   });
@@ -93,7 +101,7 @@ describe("technical image viewer", () => {
     expect(screen.getByRole("option", { name: "Image 4" })).toBeDefined();
     fireEvent.pointerDown(option, { pointerType: "mouse" });
     fireEvent.click(option);
-    expect(dialog.getByRole("img", { name: "Second — 70mm" })).toBeDefined();
-    expect(dialog.getByRole("img", { name: "Example — 35mm" })).toBeDefined();
+    expect(dialog.getByRole("img", { name: "Second — MTF chart — 70mm" })).toBeDefined();
+    expect(dialog.getByRole("img", { name: "Example — MTF chart — 35mm" })).toBeDefined();
   });
 });

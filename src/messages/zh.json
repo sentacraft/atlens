@@ -507,6 +507,7 @@
     "opticalImages": {
       "mtf": "MTF 曲线",
       "structure": "光学结构图",
+      "imageAlt": "{model} {role, select, mtf {MTF 曲线} other {光学结构图}}{conditions}",
       "viewMtf": "查看 MTF 曲线",
       "viewStructure": "查看结构图",
       "viewRemaining": "查看其余 MTF 图",
@@ -545,6 +546,7 @@
     "seeOnTimeline": "在时间轴里看 →",
     "metaDescPrefix": "{name}：富士 {mount} 卡口{type}镜头规格参数与横向对比。",
     "metaTitle": "{name} 重量尺寸与规格参数",
+    "metaDescWithOptics": "{name}：富士 {mount} 卡口{type}镜头的规格参数、横向对比及{optics, select, mtf { MTF 曲线} diagram {光学结构图} other { MTF 曲线和光学结构图}}。",
     "metaJoinSpace": "",
     "metaSep": "，",
     "metaPeriod": "。",
