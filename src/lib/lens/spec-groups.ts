@@ -3,6 +3,7 @@ import { SPEC_NA, type Lens, type FieldNoteKey } from "@/lib/types";
 import type { LensConfigurationLabels } from "@/lib/lens/format";
 import { classifyFocusMotor, leadingValue, type FocusMotorClass } from "@/lib/lens/lens";
 import * as fmt from "@/lib/lens/format";
+import { getTechnicalImages, type TechnicalImageRole } from "@/lib/lens/technical-images";
 
 export interface StructuredLine {
   value: string;
@@ -22,6 +23,7 @@ interface BaseRow {
 
 export interface TextRow extends BaseRow {
   kind: "text";
+  imageRole?: TechnicalImageRole;
   getDisplayValue: (l: Lens) => string | undefined;
   getSubValue?: (l: Lens) => string | undefined;
 }
@@ -64,6 +66,7 @@ export interface SpecValueTextLabels {
 
 export interface ResolvedTextRow {
   kind: "text";
+  imageRole?: TechnicalImageRole;
   label: string;
   labelNote?: string;
   labelNoteVariant?: "info" | "warning";
@@ -122,6 +125,7 @@ export interface SpecGroupLabels {
   angleOfViewEstNote: string;
   apertureBladeCount: string;
   lensConfiguration: string;
+  mtf: string;
   af: string;
   focusMotor: string;
   internalFocusing: string;
@@ -172,6 +176,7 @@ export function buildSpecGroupLabels(t: Translator): SpecGroupLabels {
     angleOfViewEstNote: t("angleOfViewEstNote"),
     apertureBladeCount: t("apertureBladeCount"),
     lensConfiguration: t("lensConfiguration"),
+    mtf: t("opticalImages.mtf"),
     af: t("af"),
     focusMotor: t("focusMotor"),
     internalFocusing: t("internalFocusing"),
@@ -262,6 +267,7 @@ export function resolveSpecRow(row: SpecRow, lens: Lens): ResolvedSpecRow | null
 
   return {
     kind: "text",
+    imageRole: row.imageRole,
     label: row.label,
     labelNote,
     labelNoteVariant,
@@ -308,7 +314,7 @@ export function rowPlainText(row: ResolvedSpecRow, labels: SpecValueTextLabels):
   return joinParts(row.displayValue ?? labels.missing, row.subValue, row.note && `(${row.note})`);
 }
 
-export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
+export function buildSpecGroups(labels: SpecGroupLabels, { opticalImages = false } = {}): SpecGroup[] {
   const {
     retracted,
     wide,
@@ -398,12 +404,20 @@ export function buildSpecGroups(labels: SpecGroupLabels): SpecGroup[] {
           kind: "text",
           label: labels.lensConfiguration,
           fieldNoteKey: "lensConfiguration" as FieldNoteKey,
-          hasData: (l) => l.lensConfiguration !== undefined,
+          imageRole: opticalImages ? "optical-construction" : undefined,
+          hasData: (l) => l.lensConfiguration !== undefined || (opticalImages && getTechnicalImages(l, "optical-construction").length > 0),
           getDisplayValue: (l) =>
             fmt.lensConfigurationPrimaryDisplay(l.lensConfiguration, lc),
           getSubValue: (l) =>
             fmt.lensConfigurationSecondaryDisplay(l.lensConfiguration, lc),
         },
+        ...(opticalImages ? [{
+          kind: "text" as const,
+          imageRole: "mtf" as const,
+          label: labels.mtf,
+          hasData: (l: Lens) => getTechnicalImages(l, "mtf").length > 0,
+          getDisplayValue: () => undefined,
+        }] : []),
       ] satisfies SpecRow[],
     },
 

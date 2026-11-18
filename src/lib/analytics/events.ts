@@ -14,6 +14,7 @@ const EVENT_FIELDS = {
   compare_add: { lens_slug: "string" },
   compare_view: { lens_slugs: "string", lens_count: "number" },
   compare_scroll: { lens_slugs: "string" },
+  optical_image_open: { surface: "string", role: "string" },
   lens_view: { lens_slug: "string", referrer: "string" },
   lens_scroll: { lens_slug: "string", depth_pct: "number" },
   feedback_open: { feedback_type: "string" },
@@ -188,6 +189,10 @@ export const EVENT_DOCS: EventDocs = {
   compare_add: { description: "A lens was added to the comparison tray." },
   compare_view: { description: "A comparison page opened, once per page load." },
   compare_scroll: { description: "A visitor scrolled the comparison table." },
+  optical_image_open: {
+    description: "A technical image viewer was opened from the detail or comparison specs.",
+    fields: { surface: { description: "Detail or comparison page." }, role: { description: "MTF chart or optical construction diagram." } },
+  },
   lens_view: {
     description: "A lens's detail page opened.",
     fields: { referrer: { description: "The page the browser came from, outside the site or within it." } },

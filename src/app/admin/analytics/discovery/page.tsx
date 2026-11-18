@@ -21,7 +21,7 @@ export default async function AnalyticsDiscoveryPage({
   const picksSince = await loadFirstEventTs(events, "page_view");
   const pickWindow = { from: Math.max(current.from, picksSince ?? current.to), to: current.to };
 
-  const [searchZero, searchTop, lensViews, referrers, compareCombos, filterAll, searchFunnel, searchPicks, pageViews, pagePaths] =
+  const [searchZero, searchTop, lensViews, referrers, compareCombos, filterAll, searchFunnel, searchPicks, pageViews, pagePaths, opticalImageOpens] =
     await Promise.all([
       countBy(events, current, "search", ["query"], { where: { results_count: 0 } }),
       countBy(events, current, "search", ["query"]),
@@ -33,6 +33,7 @@ export default async function AnalyticsDiscoveryPage({
       countBy(events, current, "search_select", ["lens_id"]),
       countBy(events, current, "page_view", ["path"]),
       countBy(events, current, "page_view", ["from_path", "path"], { limit: 30 }),
+      countBy(events, current, "optical_image_open", ["surface", "role"]),
     ]);
 
   return (
@@ -98,6 +99,9 @@ export default async function AnalyticsDiscoveryPage({
           rows={referrers.filter((r) => r.referrer).map((r) => ({ ...r, display: formatHref(String(r.referrer)) }))}
           columns={[{ key: "display", label: "Referrer", titleKey: "referrer" }, { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH }]}
         />
+      </Card>
+      <Card title="Optical images · viewer opens" subtitle="Viewer opens by page and image type" info={<EventDefinitions event="optical_image_open" />}>
+        <Table rows={opticalImageOpens} columns={[{ key: "surface", label: "Page" }, { key: "role", label: "Image type" }, { key: "n", label: "Opens", align: "right", widthClass: COUNT_WIDTH }]} />
       </Card>
       <Card title="Compare · lens combinations" subtitle="Comparison page views, by the lenses in them" info={<EventDefinitions event="compare_view" />}>
         <Table

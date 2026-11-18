@@ -504,6 +504,24 @@
     "note": "这里的参数不是 AI 生成的，取自厂商正式发布的资料。AI 只帮忙把官方资料整理成统一格式，不编造数值；每支镜头上线前由作者审核。<link>数据怎么来</link>"
   },
   "LensDetail": {
+    "opticalImages": {
+      "mtf": "MTF 曲线",
+      "structure": "光学结构图",
+      "viewMtf": "查看 MTF 曲线",
+      "viewStructure": "查看结构图",
+      "viewRemaining": "查看其余 MTF 图",
+      "imageNumber": "图 {number}",
+      "openImage": "打开图片：{label}",
+      "close": "关闭",
+      "previous": "上一张",
+      "next": "下一张",
+      "selectLens": "选择镜头",
+      "selectImage": "选择 {lens} 的图片",
+      "compareConditions": "测试条件可能不同，请分别阅读每张图的标注。",
+      "geometrical": "几何 MTF",
+      "diffraction": "衍射 MTF",
+      "mount": "图中卡口：{mount}"
+    },
     "galleryOpen": "放大产品图",
     "galleryClose": "关闭大图",
     "galleryPrevious": "上一张",

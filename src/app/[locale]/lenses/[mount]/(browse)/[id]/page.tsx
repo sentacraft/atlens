@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import LensImageGallery from "@/components/lens/LensImageGallery";
+import { InlineTechnicalImages } from "@/components/lens/TechnicalImages";
+import { getTechnicalImages } from "@/lib/lens/technical-images";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import SectionNav from "@/components/nav/SectionNav";
@@ -194,7 +196,7 @@ export default async function LensDetailPage({ params }: { params: Params }) {
     canonicalUrl,
   });
 
-  const specGroups = buildSpecGroups(buildSpecGroupLabels(t));
+  const specGroups = buildSpecGroups(buildSpecGroupLabels(t), { opticalImages: true });
 
   const valueCellLabels = {
     yes: t("yes"),
@@ -342,33 +344,43 @@ export default async function LensDetailPage({ params }: { params: Params }) {
 
                 <table className="w-full text-sm">
                   <tbody>
-                    {group.rows.map((resolved) => (
-                      <tr
-                        key={resolved.label}
-                        className="border-b border-zinc-100 last:border-0"
-                      >
-                        <td className="px-4 py-2.5 text-xs font-medium text-zinc-500 bg-zinc-50/60 w-40 align-top">
-                          <div className="flex items-center gap-1">
-                            <span className="whitespace-nowrap">{resolved.label}</span>
-                            {resolved.labelNote && <FieldNotePopover note={resolved.labelNote} variant={resolved.labelNoteVariant} />}
-                          </div>
-                        </td>
-                        <td className="px-4 py-2.5 text-zinc-700">
-                          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                            {renderRowValue(resolved, valueCellLabels)}
-                            {resolved.note && <FieldNotePopover note={resolved.note} />}
-                            {resolved.kind === "numeric" && resolved.chart && onCharts && (
-                              <Link
-                                href={chartHref(chartPath(resolvedMount, resolved.chart), { lens: lens.id })}
-                                className={`basis-full text-xs sm:ml-3 sm:basis-auto ${TEXT_LINK_CLS}`}
-                              >
-                                {t(resolved.chart === "weight" ? "seeOnWeightLadder" : "seeOnTimeline")}
-                              </Link>
+                    {group.rows.map((resolved) => {
+                      const role = resolved.kind === "text" ? resolved.imageRole : undefined;
+                      const images = role ? getTechnicalImages(lens, role) : [];
+                      const hasText = resolved.kind !== "text" || !!resolved.displayValue || !!resolved.subValue || !images.length;
+                      return (
+                        <tr
+                          key={resolved.label}
+                          className="border-b border-zinc-100 last:border-0"
+                        >
+                          <td className="px-4 py-2.5 text-xs font-medium text-zinc-500 bg-zinc-50/60 w-40 align-top">
+                            <div className="flex items-center gap-1">
+                              <span className="whitespace-nowrap">{resolved.label}</span>
+                              {resolved.labelNote && <FieldNotePopover note={resolved.labelNote} variant={resolved.labelNoteVariant} />}
+                            </div>
+                          </td>
+                          <td className="px-4 py-2.5 text-zinc-700">
+                            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                              {hasText && renderRowValue(resolved, valueCellLabels)}
+                              {resolved.note && <FieldNotePopover note={resolved.note} />}
+                              {resolved.kind === "numeric" && resolved.chart && onCharts && (
+                                <Link
+                                  href={chartHref(chartPath(resolvedMount, resolved.chart), { lens: lens.id })}
+                                  className={`basis-full text-xs sm:ml-3 sm:basis-auto ${TEXT_LINK_CLS}`}
+                                >
+                                  {t(resolved.chart === "weight" ? "seeOnWeightLadder" : "seeOnTimeline")}
+                                </Link>
+                              )}
+                            </div>
+                            {role && images.length > 0 && (
+                              <div className={hasText ? "mt-2" : undefined}>
+                                <InlineTechnicalImages set={{ id: lens.id, model: lens.model, images }} role={role} />
+                              </div>
                             )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
