@@ -249,6 +249,37 @@ describe("lensSchema classified image assets", () => {
     expect(parsed.images).toEqual([{ id: "001", role }]);
   });
 
+  it.each(["white-background", "invert-on-white"])("preserves the reviewed display preset %s on technical figures", (displayPreset) => {
+    const images = [{ ...mtf, displayPreset }, { id: "003", role: "optical-construction", displayPreset }];
+    expect(lensSchema.parse({ ...prime35, images }).images).toEqual(images);
+  });
+
+  it.each(["invert(1)", "auto", "", null, { filter: "invert(1)" }])("rejects an unsupported display preset: %j", (displayPreset) => {
+    expect(lensSchema.safeParse({ ...prime35, images: [{ ...mtf, displayPreset }] }).success).toBe(false);
+  });
+
+  it.each(["product", "usage", "sample", "dimensions", "spec-sheet", "feature", "accessory"])("rejects display presets on %s images", (role) => {
+    for (const displayPreset of ["white-background", "invert-on-white"]) {
+      const result = lensSchema.safeParse({ ...prime35, images: [{ id: "001", role, displayPreset }] });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues).toContainEqual(expect.objectContaining({ path: ["images", 0, "displayPreset"] }));
+      }
+    }
+  });
+
+  it("keeps display presets unchanged when resolving translated image notes", () => {
+    const lens = lensSchema.parse({
+      ...prime35,
+      images: [{ ...mtf, displayPreset: "invert-on-white" }],
+      translations: { zh: { imageNotes: { "002": "源图未注明卡口。" } } },
+    });
+    const translated = resolveTranslations(lens, "zh");
+    expect(translated.images?.[0].displayPreset).toBe("invert-on-white");
+    expect(translated.images?.[0].conditionsNote).toBe("源图未注明卡口。");
+    expect(lens.images?.[0].conditionsNote).toBe(mtf.conditionsNote);
+  });
+
   it("preserves source frequency units and actual sample settings", () => {
     const images = [
       { ...mtf, spatialFrequency: { values: [10, 20, 40], unit: "lines/mm" } },
