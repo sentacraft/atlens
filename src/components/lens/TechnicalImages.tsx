@@ -4,7 +4,7 @@ import { useRef, useState, type MouseEvent, type TouchEvent } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
+import { ICON_CLOSE_BTN_CLS, IMAGE_CONTROL_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { Dialog, DialogClose, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import { track } from "@/lib/analytics/analytics";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -235,8 +235,8 @@ function ImagePanel({ set, initialIndex, compare }: { set: TechnicalImageSet; in
           {image.conditionsNote && <p>{image.conditionsNote}</p>}
         </div>
         {multiple && <div className="flex shrink-0 gap-1">
-          <button type="button" onClick={() => move(-1)} disabled={index === 0} aria-label={t("previous")} className={cn(ICON_CLOSE_BTN_CLS, "size-11 disabled:opacity-35")}><ChevronLeft className="size-4" /></button>
-          <button type="button" onClick={() => move(1)} disabled={index === count - 1} aria-label={t("next")} className={cn(ICON_CLOSE_BTN_CLS, "size-11 disabled:opacity-35")}><ChevronRight className="size-4" /></button>
+          <button type="button" onClick={() => move(-1)} disabled={index === 0} aria-label={t("previous")} className={IMAGE_CONTROL_CLS}><ChevronLeft className="size-4" /></button>
+          <button type="button" onClick={() => move(1)} disabled={index === count - 1} aria-label={t("next")} className={IMAGE_CONTROL_CLS}><ChevronRight className="size-4" /></button>
         </div>}
       </figcaption>
     </figure>
