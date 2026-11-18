@@ -2,42 +2,49 @@ name: IndexNow
 
 # Tells IndexNow (Bing, Yandex) about changed pages once a production deploy is live. Cloudflare
 # Workers Builds reports each build as a check run; the one on main is the production deploy.
-# Run it by hand with "force" to submit every sitemap URL regardless of what changed.
+# A manual run compares the same production deployments, with no submission by default.
 
 on:
   check_run:
     types: [completed]
   workflow_dispatch:
     inputs:
-      force:
-        description: Submit every sitemap URL, even if no content changed
+      dry_run:
+        description: List changed URLs without submitting them
         type: boolean
         default: true
 
 permissions:
   contents: read
+  checks: read
 
 jobs:
   submit:
     name: Submit to IndexNow
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.check_run.name == 'Workers Builds: atlens' &&
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event.check_run.app.slug == 'cloudflare-workers-and-pages' &&
+       github.event.check_run.name == 'Workers Builds: atlens' &&
        github.event.check_run.conclusion == 'success' &&
        github.event.check_run.check_suite.head_branch == 'main')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          # check_run runs on main's latest commit; check out the one this build deployed.
-          ref: ${{ github.event.check_run.head_sha || github.sha }}
-          fetch-depth: 2
+          ref: main
+          fetch-depth: 0
 
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
 
-      - run: node scripts/indexnow.mjs
+      - run: pnpm exec tsx scripts/indexnow.mts
         env:
           BASE_URL: https://atlens.app
-          INDEXNOW_FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force && '1' || '' }}
+          GH_TOKEN: ${{ github.token }}
+          LENS_CATALOG_TOKEN: ${{ secrets.LENS_CATALOG_TOKEN }}
+          INDEXNOW_DEPLOYED_SHA: ${{ github.event.check_run.head_sha }}
+          INDEXNOW_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}

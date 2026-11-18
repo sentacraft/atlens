@@ -6,7 +6,7 @@ export default defineConfig({
     environment: 'node',
     setupFiles: ['./vitest.setup.ts'],
     // Anchored at the root: the default `**/` glob also collects tests from nested worktrees.
-    include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)', 'scripts/**/*.test.ts'],
   },
   resolve: {
     alias: {

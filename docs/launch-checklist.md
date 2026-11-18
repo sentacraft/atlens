@@ -55,8 +55,9 @@ say in the PR description which items you changed and which do not apply.
 - **Section jump.** A long page with sections of its own puts them in `SectionNav`
   (`src/components/nav/`), inside a `relative` box as wide as the page content, with `width` set to
   the page's width class. Give each section an `id` and `scroll-mt` (`ANCHORED_SECTION_CLS`).
-- **After merge.** Tell the maintainer to request indexing in Google Search Console; Bing gets
-  the page through IndexNow on deploy.
+- **After merge.** Tell the maintainer to request indexing in Google Search Console. Bing can
+  discover new pages through the sitemap; the post-deploy IndexNow job also notifies it of tracked
+  catalog and metadata changes. A new route outside those sources is not submitted automatically.
 
 ## A new API route
 
