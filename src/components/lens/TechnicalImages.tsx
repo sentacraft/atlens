@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { ICON_CLOSE_BTN_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { Dialog, DialogClose, DialogHeader, DialogPopup, DialogTitle } from "@/components/ui/dialog";
 import { track } from "@/lib/analytics/analytics";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { TECHNICAL_IMAGE_PREVIEW_LIMIT, technicalImageFilter, type TechnicalImageRole } from "@/lib/lens/technical-images";
 import type { LensImageAsset } from "@/lib/types";
@@ -18,7 +19,7 @@ export interface TechnicalImageSet {
   images: LensImageAsset[];
 }
 
-const IMAGE_FRAME = "relative isolate overflow-hidden rounded-lg border border-zinc-200";
+const IMAGE_FRAME = "relative isolate overflow-hidden";
 const IMAGE_BUTTON = "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2";
 
 function TechnicalImage({ set, image, caption, preview = false }: {
@@ -70,7 +71,7 @@ export function InlineTechnicalImages({ set, role }: { set: TechnicalImageSet; r
                 aria-haspopup="dialog"
                 aria-label={t("openImage", { label })}
                 onClick={(event) => viewer.show(event, index)}
-                className={cn(IMAGE_FRAME, IMAGE_BUTTON, "block h-26 w-full hover:border-zinc-400", image.displayPreset && "bg-white")}
+                className={cn(IMAGE_FRAME, IMAGE_BUTTON, "block h-26 w-full rounded-lg border border-zinc-200 hover:border-zinc-400", image.displayPreset && "bg-white")}
               >
                 <TechnicalImage set={set} image={image} caption={label} preview />
               </button>
@@ -135,9 +136,13 @@ function TechnicalViewer({ open, role, sets, activeId, initialIndex, close, trig
         </DialogHeader>
         {sets.length > 1 && (
           <div className="px-4 pb-3 sm:hidden">
-            <select aria-label={t("selectLens")} value={active} onChange={(event) => setActive(event.target.value)} className="min-h-11 w-full rounded-lg border border-zinc-200 bg-white px-2 text-sm">
-              {sets.map((set) => <option key={set.id} value={set.id}>{set.model}</option>)}
-            </select>
+            <ViewerSelect
+              label={t("selectLens")}
+              value={active}
+              onChange={setActive}
+              items={sets.map((set) => ({ value: set.id, label: set.model }))}
+              className="w-full"
+            />
           </div>
         )}
         <div className={cn("grid gap-4 px-4 pb-4", sets.length > 1 && "sm:grid-cols-2")}>
@@ -149,6 +154,25 @@ function TechnicalViewer({ open, role, sets, activeId, initialIndex, close, trig
         </div>
       </DialogPopup>
     </Dialog>
+  );
+}
+
+function ViewerSelect({ label, value, onChange, items, className }: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  items: { value: string; label: string }[];
+  className: string;
+}) {
+  return (
+    <Select value={value} items={items} onValueChange={(value) => {if (value !== null) {onChange(value);}}}>
+      <SelectTrigger aria-label={label} className={cn("max-w-full", className)}>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent align="end">
+        {items.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -182,12 +206,17 @@ function ImagePanel({ set, initialIndex, compare }: { set: TechnicalImageSet; in
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-medium">{set.model}</p>
         {multiple && compare && (
-          <select aria-label={t("selectImage", { lens: set.model })} value={index} onChange={(event) => setIndex(Number(event.target.value))} className="max-w-full rounded-lg border border-zinc-200 bg-white px-2 py-2 text-xs">
-            {set.images.map((item, position) => {
+          <ViewerSelect
+            label={t("selectImage", { lens: set.model })}
+            value={String(index)}
+            onChange={(value) => setIndex(Number(value))}
+            items={set.images.map((item, position) => {
               const condition = imageShortLabel(item);
-              return <option key={item.id} value={position}>{t("imageNumber", { number: String(position + 1) })}{condition ? ` · ${condition}` : ""}</option>;
+              const number = t("imageNumber", { number: String(position + 1) });
+              return { value: String(position), label: condition ? `${number} · ${condition}` : number };
             })}
-          </select>
+            className="text-xs"
+          />
         )}
       </div>
       <div onTouchStart={multiple ? startSwipe : undefined} onTouchEnd={multiple ? endSwipe : undefined} onTouchCancel={() => {touch.current = null;}} className={cn(IMAGE_FRAME, "h-[min(36dvh,23rem)] touch-pan-y sm:h-[min(50dvh,27rem)]", image.displayPreset && "bg-white")}>

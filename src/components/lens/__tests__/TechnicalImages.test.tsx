@@ -60,7 +60,12 @@ describe("technical image viewer", () => {
     renderLocalized(<CompareTechnicalImages sets={[set, { ...set, id: "second-x", model: "Second" }]} activeId={set.id} role="mtf" />);
     fireEvent.click(screen.getByRole("button", { name: "View MTF charts" }));
     const dialog = within(screen.getByRole("dialog"));
-    fireEvent.change(dialog.getByRole("combobox", { name: "Select image for Second" }), { target: { value: "2" } });
+    const picker = dialog.getByRole("combobox", { name: "Select image for Second" });
+    expect(picker.getAttribute("data-slot")).toBe("select-trigger");
+    fireEvent.click(picker);
+    const option = screen.getByRole("option", { name: "Image 3 · 70mm" });
+    fireEvent.pointerDown(option, { pointerType: "mouse" });
+    fireEvent.click(option);
     expect(dialog.getByRole("img", { name: "Second — 70mm" })).toBeDefined();
     expect(dialog.getByRole("img", { name: "Example — 35mm" })).toBeDefined();
   });
