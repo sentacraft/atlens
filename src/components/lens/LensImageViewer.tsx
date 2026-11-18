@@ -28,11 +28,11 @@ type Props = {
   images: GalleryImage[];
   initialIndex: number;
   title: string;
-  labels: GalleryLabels;
+  labels: Omit<GalleryLabels, "images" | "open">;
   trigger: RefObject<HTMLButtonElement | null>;
-  onChange: (index: number) => void;
+  onChange?: (index: number) => void;
   onClose: () => void;
-  onReady: () => void;
+  onReady?: () => void;
 };
 
 export default function LensImageViewer(props: Props) {
@@ -43,6 +43,7 @@ export default function LensImageViewer(props: Props) {
   const [touch, setTouch] = useState(false);
   const pswpRef = useRef<PhotoSwipe | null>(null);
   const titleId = useId();
+  const captionHeight = initial.images.some(image => image.caption?.length) ? 80 : 0;
 
   useEffect(() => {
     for (const arrow of pswpRef.current?.element?.querySelectorAll<HTMLElement>(".gallery-side-arrow") ?? []) {
@@ -56,7 +57,13 @@ export default function LensImageViewer(props: Props) {
     let opening = true;
     const pending = new Set<number>();
     let unlock: (() => void) | undefined;
-    const data: SlideData[] = initial.images.map(image => ({ src: image.src, alt: initial.title, width: 0, height: 0 }));
+    const data: SlideData[] = initial.images.map(image => ({ src: image.src, alt: image.alt ?? initial.title, width: 0, height: 0 }));
+    function thumbnail(item: SlideData) {
+      const button = initial.trigger.current;
+      const image = button?.querySelector<HTMLImageElement>('[aria-hidden="false"] img, img[data-gallery-preview]');
+      if (!image) {return undefined;}
+      return !image.hasAttribute("data-gallery-preview") || image.src === new URL(item.src ?? "", document.baseURI).href ? image : undefined;
+    }
     const loads = initial.images.map((image, i) => loadGalleryImage(image.src).then(size => {
       Object.assign(data[i], size.width ? size : { width: 1, height: 1 });
       if (!cancelled && pswpRef.current && size.width) {
@@ -85,7 +92,7 @@ export default function LensImageViewer(props: Props) {
         arrowPrevSVG: CHEVRON_SVG,
         arrowNextSVG: CHEVRON_SVG,
         bgOpacity: 1,
-        showHideAnimationType: reducedMotion || !size.width ? "fade" : "zoom",
+        showHideAnimationType: reducedMotion || !size.width || !thumbnail(data[initial.initialIndex]) ? "fade" : "zoom",
         showAnimationDuration: reducedMotion ? 80 : 240,
         hideAnimationDuration: reducedMotion ? 80 : 240,
         zoomAnimationDuration: reducedMotion ? 0 : 240,
@@ -114,7 +121,7 @@ export default function LensImageViewer(props: Props) {
           probe.remove();
           const x = mobile ? 16 : Math.max(24, (viewport.x - 748) / 2) + 52;
           const y = mobile ? 0 : Math.max(24, (viewport.y - 668) / 2);
-          return { left: x, right: x, top: y + 76 + topInset, bottom: y + 148 + bottomInset };
+          return { left: x, right: x, top: y + 76 + topInset, bottom: y + 148 + captionHeight + bottomInset };
         },
       });
       pswpRef.current = pswp;
@@ -128,15 +135,22 @@ export default function LensImageViewer(props: Props) {
         }
         return element;
       });
-      pswp.addFilter("thumbEl", () => initial.trigger.current!.querySelector<HTMLImageElement>('[aria-hidden="false"] img') ?? initial.trigger.current!);
+      pswp.addFilter("thumbEl", (_, item) => thumbnail(item) ?? initial.trigger.current!);
       pswp.addFilter("thumbBounds", (bounds, item) => {
-        const image = initial.trigger.current?.querySelector<HTMLImageElement>('[aria-hidden="false"] img');
+        const image = thumbnail(item);
         if (!image || !item.width || !item.height) {return bounds!;}
         const rect = image.getBoundingClientRect();
         const scale = Math.min(rect.width / item.width, rect.height / item.height);
         return { x: rect.left + (rect.width - item.width * scale) / 2, y: rect.top + (rect.height - item.height * scale) / 2, w: item.width * scale };
       });
-      pswp.addFilter("placeholderSrc", () => initial.trigger.current?.querySelector<HTMLImageElement>('[aria-hidden="false"] img')?.currentSrc ?? false);
+      pswp.addFilter("placeholderSrc", (_, content) => thumbnail(content.data)?.currentSrc || false);
+      pswp.on("contentLoad", ({ content }) => {
+        const placeholder = content.placeholder?.element;
+        if (placeholder instanceof HTMLImageElement) {placeholder.style.filter = initial.images[content.index].filter ?? "";}
+      });
+      pswp.on("contentLoadImage", ({ content }) => {
+        if (content.element instanceof HTMLImageElement) {content.element.style.filter = initial.images[content.index].filter ?? "";}
+      });
       pswp.on("uiRegister", () => {
         pswp.ui?.registerElement({ name: "gallery-chrome", appendTo: "root", onInit: element => setChrome(element) });
       });
@@ -150,7 +164,7 @@ export default function LensImageViewer(props: Props) {
       pswp.on("change", () => {
         setIndex(pswp.currIndex);
         setControls(true);
-        initial.onChange(pswp.currIndex);
+        initial.onChange?.(pswp.currIndex);
       });
       pswp.on("openingAnimationEnd", () => {
         opening = false;
@@ -188,6 +202,7 @@ export default function LensImageViewer(props: Props) {
       root.style.overflow = "hidden";
       unlock = () => {root.style.overflow = rootOverflow;body.style.overflow = overflow;body.style.paddingRight = paddingRight;};
       pswp.init();
+      pswp.element?.style.setProperty("--gallery-caption-height", `${captionHeight}px`);
       const background = [...body.children].filter((element): element is HTMLElement => element instanceof HTMLElement && element !== pswp.element && !element.inert);
       for (const element of background) {element.inert = true;}
       const restoreScroll = unlock;
@@ -195,7 +210,7 @@ export default function LensImageViewer(props: Props) {
       pswp.element?.setAttribute("aria-label", initial.title);
       pswp.element?.setAttribute("aria-labelledby", titleId);
       pswp.element?.setAttribute("aria-modal", "true");
-      initial.onReady();
+      initial.onReady?.();
     });
 
     return () => {
@@ -209,7 +224,7 @@ export default function LensImageViewer(props: Props) {
       pswpRef.current = null;
       unlock?.();
     };
-  }, [initial, titleId]);
+  }, [captionHeight, initial, titleId]);
 
   if (!chrome) {return <span role="status" className="sr-only">{initial.labels.loading}</span>;}
   const multiple = initial.images.length > 1;
@@ -223,6 +238,11 @@ export default function LensImageViewer(props: Props) {
         <button type="button" aria-label={initial.labels.close} onClick={() => pswpRef.current?.close()} className={cn(ICON_CLOSE_BTN_CLS, "size-11 shrink-0 cursor-pointer")}><X className="size-5" /></button>
       </div>
       <div className="gallery-footer">
+        {captionHeight > 0 && (
+          <div data-slot="gallery-caption" aria-live="polite" className="w-full max-w-xl overflow-y-auto overscroll-contain whitespace-pre-line text-center text-xs leading-relaxed text-zinc-700" style={{ maxHeight: captionHeight - 8 }}>
+            {initial.images[index].caption?.join("\n")}
+          </div>
+        )}
         {multiple && <>
           <div className="flex items-center gap-3">
             <button type="button" aria-label={initial.labels.previous} disabled={index === 0} onClick={() => pswpRef.current?.prev()} className={cn(IMAGE_CONTROL_CLS, "sm:hidden")}><ChevronLeft className="size-4" /></button>

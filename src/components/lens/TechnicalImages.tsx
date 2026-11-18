@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type MouseEvent, type TouchEvent } from "react";
+import { lazy, Suspense, useRef, useState, type MouseEvent, type TouchEvent } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
@@ -19,6 +19,8 @@ export interface TechnicalImageSet {
   images: LensImageAsset[];
 }
 
+const LensImageViewer = lazy(() => import("./LensImageViewer"));
+
 const IMAGE_FRAME = "relative isolate overflow-hidden";
 const IMAGE_BUTTON = "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2";
 
@@ -34,6 +36,7 @@ function TechnicalImage({ set, image, caption, preview = false }: {
       src={getLensImageUrl(set.id, image.id)}
       alt={`${set.model} — ${caption}`}
       fill
+      data-gallery-preview={preview || undefined}
       unoptimized
       sizes={preview ? "144px" : "(max-width: 639px) 100vw, 600px"}
       className="object-contain p-2"
@@ -85,9 +88,7 @@ export function InlineTechnicalImages({ set, role }: { set: TechnicalImageSet; r
           {t("viewRemaining")}
         </button>
       )}
-      {viewer.selection !== null && (
-        <TechnicalViewer key={viewer.selection.version} open={viewer.open} role={role} sets={[set]} activeId={set.id} initialIndex={viewer.selection.index} close={viewer.close} trigger={viewer.trigger} />
-      )}
+      {viewer.open && viewer.selection && <TechnicalGallery set={set} role={role} index={viewer.selection.index} viewer={viewer} />}
     </>
   );
 }
@@ -100,9 +101,9 @@ export function CompareTechnicalImages({ sets, activeId, role }: { sets: Technic
       <button type="button" aria-haspopup="dialog" onClick={(event) => viewer.show(event, 0)} className={cn(TEXT_LINK_CLS, "text-xs")}>
         {t(role === "mtf" ? "viewMtf" : "viewStructure")}
       </button>
-      {viewer.selection !== null && (
-        <TechnicalViewer key={viewer.selection.version} open={viewer.open} role={role} sets={sets} activeId={activeId} initialIndex={0} close={viewer.close} trigger={viewer.trigger} />
-      )}
+      {sets.length === 1
+        ? viewer.open && <TechnicalGallery set={sets[0]} role={role} index={0} viewer={viewer} />
+        : viewer.selection !== null && <CompareViewer key={viewer.selection.version} open={viewer.open} role={role} sets={sets} activeId={activeId} close={viewer.close} trigger={viewer.trigger} />}
     </>
   );
 }
@@ -115,12 +116,65 @@ function imageShortLabel(image: LensImageAsset) {
   ].filter(Boolean).join(" · ");
 }
 
-function TechnicalViewer({ open, role, sets, activeId, initialIndex, close, trigger }: {
+function TechnicalGallery({ set, role, index, viewer }: {
+  set: TechnicalImageSet;
+  role: TechnicalImageRole;
+  index: number;
+  viewer: ReturnType<typeof useViewer>;
+}) {
+  const t = useTranslations("LensDetail");
+  const images = set.images.map((image, position) => {
+    const short = imageShortLabel(image);
+    const caption = imageConditions(image, t);
+    const label = short || t("opticalImages.imageNumber", { number: String(position + 1) });
+    return {
+      src: getLensImageUrl(set.id, image.id),
+      label,
+      alt: `${set.model} — ${label}`,
+      filter: technicalImageFilter(image.displayPreset),
+      caption,
+    };
+  });
+  return (
+    <Suspense fallback={<span role="status" className="sr-only">{t("galleryLoading")}</span>}>
+      <LensImageViewer
+        images={images}
+        initialIndex={index}
+        title={`${t(role === "mtf" ? "opticalImages.mtf" : "opticalImages.structure")} · ${set.model}`}
+        labels={{
+          close: t("galleryClose"),
+          previous: t("galleryPrevious"),
+          next: t("galleryNext"),
+          loading: t("galleryLoading"),
+          error: t("galleryError"),
+          hint: {
+            mouse: t("galleryHint.mouse"),
+            touch: t("galleryHint.touch"),
+            mouseSingle: t("galleryHint.mouseSingle"),
+            touchSingle: t("galleryHint.touchSingle"),
+          },
+        }}
+        trigger={viewer.trigger}
+        onClose={viewer.close}
+      />
+    </Suspense>
+  );
+}
+
+function imageConditions(image: LensImageAsset, t: ReturnType<typeof useTranslations<"LensDetail">>) {
+  return [
+    imageShortLabel(image),
+    image.mtfMethod && t(`opticalImages.${image.mtfMethod}`),
+    image.depictedMount && t("opticalImages.mount", { mount: image.depictedMount }),
+    image.conditionsNote,
+  ].filter((line): line is string => !!line);
+}
+
+function CompareViewer({ open, role, sets, activeId, close, trigger }: {
   open: boolean;
   role: TechnicalImageRole;
   sets: TechnicalImageSet[];
   activeId: string;
-  initialIndex: number;
   close: () => void;
   trigger: React.RefObject<HTMLButtonElement | null>;
 }) {
@@ -128,27 +182,25 @@ function TechnicalViewer({ open, role, sets, activeId, initialIndex, close, trig
   const [active, setActive] = useState(activeId);
   return (
     <Dialog open={open} onOpenChange={(open) => {if (!open) {close();}}}>
-      <DialogPopup finalFocus={trigger} className={cn("max-h-[85dvh] overflow-y-auto sm:w-[calc(100%_-_2rem)]", sets.length > 1 && "sm:max-w-5xl")}>
+      <DialogPopup finalFocus={trigger} className="max-h-[85dvh] overflow-y-auto sm:w-[calc(100%_-_2rem)] sm:max-w-5xl">
         <DialogHeader className="relative">
           <DialogTitle>{t(role === "mtf" ? "mtf" : "structure")}</DialogTitle>
           <DialogClose className={cn(ICON_CLOSE_BTN_CLS, "absolute right-3 top-3 size-9")} aria-label={t("close")}><X className="size-4" /></DialogClose>
-          {sets.length > 1 && role === "mtf" && <p className="text-sm text-zinc-600">{t("compareConditions")}</p>}
+          {role === "mtf" && <p className="text-sm text-zinc-600">{t("compareConditions")}</p>}
         </DialogHeader>
-        {sets.length > 1 && (
-          <div className="px-4 pb-3 sm:hidden">
-            <ViewerSelect
-              label={t("selectLens")}
-              value={active}
-              onChange={setActive}
-              items={sets.map((set) => ({ value: set.id, label: set.model }))}
-              className="w-full"
-            />
-          </div>
-        )}
-        <div className={cn("grid gap-4 px-4 pb-4", sets.length > 1 && "sm:grid-cols-2")}>
+        <div className="px-4 pb-3 sm:hidden">
+          <ViewerSelect
+            label={t("selectLens")}
+            value={active}
+            onChange={setActive}
+            items={sets.map((set) => ({ value: set.id, label: set.model }))}
+            className="w-full"
+          />
+        </div>
+        <div className="grid gap-4 px-4 pb-4 sm:grid-cols-2">
           {sets.map((set) => (
             <div key={set.id} className={cn("min-w-0", set.id !== active && "hidden sm:block")}>
-              <ImagePanel set={set} initialIndex={set.id === activeId ? initialIndex : 0} compare={sets.length > 1} />
+              <ImagePanel set={set} />
             </div>
           ))}
         </div>
@@ -180,16 +232,17 @@ function ViewerSelect({ label, value, onChange, items, className }: {
   );
 }
 
-function ImagePanel({ set, initialIndex, compare }: { set: TechnicalImageSet; initialIndex: number; compare: boolean }) {
-  const t = useTranslations("LensDetail.opticalImages");
-  const [index, setIndex] = useState(initialIndex);
+function ImagePanel({ set }: { set: TechnicalImageSet }) {
+  const t = useTranslations("LensDetail");
+  const [index, setIndex] = useState(0);
   const touch = useRef<{ x: number; y: number } | null>(null);
   const image = set.images[index];
   const label = imageShortLabel(image);
+  const conditions = imageConditions(image, t);
   const count = set.images.length;
   const multiple = count > 1;
-  const description = label || t("imageNumber", { number: String(index + 1) });
-  const optionLabels = multiple && compare ? set.images.map(imageShortLabel) : [];
+  const description = label || t("opticalImages.imageNumber", { number: String(index + 1) });
+  const optionLabels = multiple ? set.images.map(imageShortLabel) : [];
   function move(offset: number) {
     setIndex((current) => Math.max(0, Math.min(count - 1, current + offset)));
   }
@@ -210,13 +263,13 @@ function ImagePanel({ set, initialIndex, compare }: { set: TechnicalImageSet; in
     <figure className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-medium">{set.model}</p>
-        {multiple && compare && (
+        {multiple && (
           <ViewerSelect
-            label={t("selectImage", { lens: set.model })}
+            label={t("opticalImages.selectImage", { lens: set.model })}
             value={String(index)}
             onChange={(value) => setIndex(Number(value))}
             items={optionLabels.map((condition, position) => {
-              const number = t("imageNumber", { number: String(position + 1) });
+              const number = t("opticalImages.imageNumber", { number: String(position + 1) });
               return { value: String(position), label: !condition ? number : optionLabels.indexOf(condition) === optionLabels.lastIndexOf(condition) ? condition : `${condition} · ${number}` };
             })}
             className="text-xs"
@@ -229,14 +282,11 @@ function ImagePanel({ set, initialIndex, compare }: { set: TechnicalImageSet; in
       <figcaption className="flex items-start gap-2 text-xs leading-relaxed text-zinc-600">
         <div className="min-w-0 flex-1" aria-live="polite">
           {multiple && <p className="tabular-nums">{index + 1} / {count}</p>}
-          {label && <p className="font-medium text-zinc-900">{label}</p>}
-          {image.mtfMethod && <p>{t(image.mtfMethod)}</p>}
-          {image.depictedMount && <p>{t("mount", { mount: image.depictedMount })}</p>}
-          {image.conditionsNote && <p>{image.conditionsNote}</p>}
+          {conditions.map((line, i) => <p key={i} className={line === label ? "font-medium text-zinc-900" : undefined}>{line}</p>)}
         </div>
         {multiple && <div className="flex shrink-0 gap-1">
-          <button type="button" onClick={() => move(-1)} disabled={index === 0} aria-label={t("previous")} className={IMAGE_CONTROL_CLS}><ChevronLeft className="size-4" /></button>
-          <button type="button" onClick={() => move(1)} disabled={index === count - 1} aria-label={t("next")} className={IMAGE_CONTROL_CLS}><ChevronRight className="size-4" /></button>
+          <button type="button" onClick={() => move(-1)} disabled={index === 0} aria-label={t("opticalImages.previous")} className={IMAGE_CONTROL_CLS}><ChevronLeft className="size-4" /></button>
+          <button type="button" onClick={() => move(1)} disabled={index === count - 1} aria-label={t("opticalImages.next")} className={IMAGE_CONTROL_CLS}><ChevronRight className="size-4" /></button>
         </div>}
       </figcaption>
     </figure>
