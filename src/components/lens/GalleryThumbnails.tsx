@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-export type GalleryImage = { src: string; label: string };
+export type GalleryImage = { src: string; label: string; alt?: string; filter?: string; caption?: { primary: string; details: string[] } };
 
 export default function GalleryThumbnails({ images, index, onSelect, className }: {
   images: GalleryImage[];
@@ -37,7 +37,7 @@ export default function GalleryThumbnails({ images, index, onSelect, className }
           onClick={() => onSelect(i)}
           className="relative size-12 shrink-0 cursor-pointer rounded-lg border border-zinc-200 bg-white aria-pressed:border-zinc-900 aria-pressed:ring-1 aria-pressed:ring-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-1"
         >
-          <Image src={image.src} alt="" fill sizes="48px" className="object-contain p-1" />
+          <Image src={image.src} alt="" fill sizes="48px" unoptimized={!!image.filter} className="object-contain p-1" style={{ filter: image.filter }} />
         </button>
       ))}
     </div>

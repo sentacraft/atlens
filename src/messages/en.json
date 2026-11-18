@@ -504,6 +504,25 @@
     "note": "These specs are not AI-generated. They come from what the manufacturer officially publishes; AI only files that text into one format and never makes up a value. The author reviews every lens before it goes live. <link>How the data is made</link>"
   },
   "LensDetail": {
+    "opticalImages": {
+      "mtf": "MTF charts",
+      "structure": "Optical diagram",
+      "imageAlt": "{model} — {role, select, mtf {MTF chart} other {Optical diagram}}{conditions}",
+      "viewMtf": "View MTF charts",
+      "viewStructure": "View diagram",
+      "viewRemaining": "View remaining MTF charts",
+      "imageNumber": "Image {number}",
+      "openImage": "Open image: {label}",
+      "close": "Close",
+      "previous": "Previous image",
+      "next": "Next image",
+      "selectLens": "Select lens",
+      "selectImage": "Select image for {lens}",
+      "compareConditions": "Test conditions may differ. Check each chart’s labels.",
+      "geometrical": "Geometrical MTF",
+      "diffraction": "Diffraction MTF",
+      "mount": "Mount shown: {mount}"
+    },
     "galleryOpen": "Enlarge product image",
     "galleryClose": "Close image viewer",
     "galleryPrevious": "Previous image",
@@ -527,6 +546,7 @@
     "seeOnTimeline": "See it on the release timeline →",
     "metaDescPrefix": "{name} ({mount}-mount {type}) specs and side-by-side comparison",
     "metaTitle": "{name}: Specs, Weight & Size",
+    "metaDescWithOptics": "{name} ({mount}-mount {type}) specs and comparison with {optics, select, mtf {MTF charts} diagram {an optical diagram} other {MTF charts and an optical diagram}}",
     "metaJoinSpace": ": ",
     "metaSep": ", ",
     "metaPeriod": ".",

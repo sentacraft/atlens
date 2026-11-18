@@ -18,6 +18,7 @@ const labels = {
   angleOfView: "Angle of View",
   angleOfViewEstNote: "Estimated",
   apertureBladeCount: "Aperture Blades",
+  mtf: "MTF charts",
   lensConfiguration: "Lens Configuration",
   af: "AF",
   focusMotor: "Focus Motor",

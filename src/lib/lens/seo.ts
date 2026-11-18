@@ -1,9 +1,11 @@
 import { SITE } from "@/config/site";
+import type { Locale } from "@/i18n/routing";
 import type { NamespaceTranslator } from "@/i18n/translator";
 import { SPEC_NA } from "@/lib/types";
 import type { Lens, Mount } from "@/lib/types";
 import { mountSeoLabel } from "@/lib/mount";
 import { isZoom } from "@/lib/lens/lens";
+import { META_DESCRIPTION_MAX } from "@/lib/seo/meta-description";
 import { lensPath } from "@/lib/url/routes";
 import {
   lensDisplayName,
@@ -18,9 +20,10 @@ export function buildLensDescription(args: {
   lens: Lens;
   mount: Mount;
   brandName: string;
+  locale: Locale;
   t: T;
 }): string {
-  const { lens, mount, brandName, t } = args;
+  const { lens, mount, brandName, locale, t } = args;
   const displayName = lensDisplayName(brandName, lens.series, lens.model);
   const mountLabel = mountSeoLabel(mount);
   const typeLabel = isZoom(lens) ? t("metaZoom") : t("metaPrime");
@@ -55,9 +58,16 @@ export function buildLensDescription(args: {
     clauses.push(t("metaMf"));
   }
 
-  let description = t("metaDescPrefix", { name: displayName, mount: mountLabel, type: typeLabel });
-  if (clauses.length > 0) {
-    description += t("metaJoinSpace") + clauses.join(t("metaSep")) + t("metaPeriod");
+  const hasMtf = lens.images?.some(({ role }) => role === "mtf");
+  const hasDiagram = lens.images?.some(({ role }) => role === "optical-construction");
+  const values = { name: displayName, mount: mountLabel, type: typeLabel };
+  const optics = hasMtf && hasDiagram ? "both" : hasMtf ? "mtf" : hasDiagram ? "diagram" : null;
+  const prefix = optics ? t("metaDescWithOptics", { ...values, optics }) : t("metaDescPrefix", values);
+  const describe = () => clauses.length ? prefix + t("metaJoinSpace") + clauses.join(t("metaSep")) + t("metaPeriod") : prefix;
+  let description = describe();
+  while (optics && clauses.length && description.length > META_DESCRIPTION_MAX[locale]) {
+    clauses.pop();
+    description = describe();
   }
   return description;
 }

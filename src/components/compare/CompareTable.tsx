@@ -37,6 +37,8 @@ import { pickPriceEntry } from "@/lib/lens/pricing";
 import { lensDisplayName, lensSubtitleLine, brandLabel } from "@/lib/lens/format";
 import { lensPath } from "@/lib/url/routes";
 import { DataSourceBar } from "@/components/lens/DataSource";
+import { CompareTechnicalImages } from "@/components/lens/TechnicalImages";
+import { getTechnicalImages } from "@/lib/lens/technical-images";
 
 function LensHeaderContent({ lens }: { lens: Lens }) {
   const tBrand = useTranslations("Brands");
@@ -206,7 +208,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
     reorder(fromIndex, toIndex);
   }
 
-  const allGroups = useMemo(() => buildSpecGroups(buildSpecGroupLabels(td)), [td]);
+  const allGroups = useMemo(() => buildSpecGroups(buildSpecGroupLabels(td), { opticalImages: true }), [td]);
 
   const resolvedPerLens = useMemo(() => {
     const map = new Map<string, Map<string, ResolvedSpecRow>>();
@@ -238,6 +240,10 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
     [allGroups, orderedLenses, resolvedPerLens]
   );
 
+  const imageSets = {
+    mtf: orderedLenses.map((lens) => ({ id: lens.id, model: lens.model, images: getTechnicalImages(lens, "mtf") })).filter((set) => set.images.length > 0),
+    "optical-construction": orderedLenses.map((lens) => ({ id: lens.id, model: lens.model, images: getTechnicalImages(lens, "optical-construction") })).filter((set) => set.images.length > 0),
+  };
   const totalColSpan = orderedLenses.length + 1 + emptySlotCount;
   const { lockNav } = useNav();
   const isPwa = usePwa();
@@ -527,7 +533,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                               key={lens.id}
                               className="px-3 py-3 text-center text-zinc-400"
                             >
-                              {valueCellLabels.missing}
+                              {row.kind === "text" && row.imageRole === "mtf" ? null : valueCellLabels.missing}
                             </td>
                           );
                         }
@@ -678,6 +684,8 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                           );
                         }
 
+                        const role = resolved.imageRole;
+                        const canView = role && imageSets[role].some((set) => set.id === lens.id);
                         return (
                           <td
                             key={lens.id}
@@ -685,9 +693,9 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                           >
                             <div className="flex items-center justify-center gap-1">
                               <div>
-                                <span className="whitespace-pre-line">
-                                  {resolved.displayValue ?? valueCellLabels.missing}
-                                </span>
+                                {(resolved.displayValue || !canView) && (
+                                  <span className="whitespace-pre-line">{resolved.displayValue ?? valueCellLabels.missing}</span>
+                                )}
                                 {resolved.subValue && (
                                   <p className="mt-0.5 whitespace-pre-line text-[11px] leading-relaxed text-zinc-400">
                                     {resolved.subValue}
@@ -696,6 +704,11 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                               </div>
                               {resolved.note && <FieldNotePopover note={resolved.note} />}
                             </div>
+                            {role && canView && (
+                              <div className={resolved.displayValue ? "mt-1" : undefined}>
+                                <CompareTechnicalImages sets={imageSets[role]} activeId={lens.id} role={role} />
+                              </div>
+                            )}
                           </td>
                         );
                       })}
@@ -723,7 +736,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                   group.rows
                     .map((row) => {
                       const resolved = resolvedPerLens.get(lens.id)?.get(row.label);
-                      return resolved
+                      return resolved && !(resolved.kind === "text" && resolved.imageRole && !resolved.displayValue)
                         ? { label: row.label, currentValue: rowPlainText(resolved, valueCellLabels), group: group.label }
                         : null;
                     })

@@ -24,7 +24,7 @@
 }
 
 .lens-image-viewer.gallery-settled .pswp__item {
-  clip-path: inset(calc(var(--gallery-y) + 76px + var(--safe-inset-top)) var(--gallery-image-x) calc(var(--gallery-y) + 148px + var(--safe-inset-bottom)));
+  clip-path: inset(calc(var(--gallery-y) + 76px + var(--safe-inset-top)) var(--gallery-image-x) calc(var(--gallery-y) + 148px + var(--gallery-caption-height, 0px) + var(--safe-inset-bottom)));
 }
 
 .lens-image-viewer .pswp__img {
