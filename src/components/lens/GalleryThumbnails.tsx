@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-export type GalleryImage = { src: string; label: string; alt?: string; filter?: string; caption?: string[] };
+export type GalleryImage = { src: string; label: string; alt?: string; filter?: string; caption?: { primary: string; details: string[] } };
 
 export default function GalleryThumbnails({ images, index, onSelect, className }: {
   images: GalleryImage[];

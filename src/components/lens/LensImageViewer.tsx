@@ -43,7 +43,7 @@ export default function LensImageViewer(props: Props) {
   const [touch, setTouch] = useState(false);
   const pswpRef = useRef<PhotoSwipe | null>(null);
   const titleId = useId();
-  const captionHeight = initial.images.some(image => image.caption?.length) ? 80 : 0;
+  const captionHeight = initial.images.some(image => image.caption?.primary || image.caption?.details.length) ? 80 : 0;
 
   useEffect(() => {
     for (const arrow of pswpRef.current?.element?.querySelectorAll<HTMLElement>(".gallery-side-arrow") ?? []) {
@@ -228,6 +228,7 @@ export default function LensImageViewer(props: Props) {
 
   if (!chrome) {return <span role="status" className="sr-only">{initial.labels.loading}</span>;}
   const multiple = initial.images.length > 1;
+  const caption = initial.images[index].caption;
   const hint = touch
     ? initial.labels.hint[multiple ? "touch" : "touchSingle"]
     : initial.labels.hint[multiple ? "mouse" : "mouseSingle"];
@@ -240,7 +241,8 @@ export default function LensImageViewer(props: Props) {
       <div className="gallery-footer">
         {captionHeight > 0 && (
           <div data-slot="gallery-caption" aria-live="polite" className="w-full max-w-xl overflow-y-auto overscroll-contain whitespace-pre-line text-center text-xs leading-relaxed text-zinc-700" style={{ maxHeight: captionHeight - 8 }}>
-            {initial.images[index].caption?.join("\n")}
+            {caption?.primary && <p className="text-sm font-medium text-zinc-900">{caption.primary}</p>}
+            {caption?.details.map((line, i) => <p key={i}>{line}</p>)}
           </div>
         )}
         {multiple && <>

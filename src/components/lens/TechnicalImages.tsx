@@ -125,14 +125,14 @@ function TechnicalGallery({ set, role, index, viewer }: {
   const t = useTranslations("LensDetail");
   const images = set.images.map((image, position) => {
     const short = imageShortLabel(image);
-    const caption = imageConditions(image, t);
+    const details = imageNotes(image, t);
     const label = short || t("opticalImages.imageNumber", { number: String(position + 1) });
     return {
       src: getLensImageUrl(set.id, image.id),
       label,
       alt: `${set.model} — ${label}`,
       filter: technicalImageFilter(image.displayPreset),
-      caption,
+      caption: { primary: short, details },
     };
   });
   return (
@@ -161,9 +161,8 @@ function TechnicalGallery({ set, role, index, viewer }: {
   );
 }
 
-function imageConditions(image: LensImageAsset, t: ReturnType<typeof useTranslations<"LensDetail">>) {
+function imageNotes(image: LensImageAsset, t: ReturnType<typeof useTranslations<"LensDetail">>) {
   return [
-    imageShortLabel(image),
     image.mtfMethod && t(`opticalImages.${image.mtfMethod}`),
     image.depictedMount && t("opticalImages.mount", { mount: image.depictedMount }),
     image.conditionsNote,
@@ -238,7 +237,7 @@ function ImagePanel({ set }: { set: TechnicalImageSet }) {
   const touch = useRef<{ x: number; y: number } | null>(null);
   const image = set.images[index];
   const label = imageShortLabel(image);
-  const conditions = imageConditions(image, t);
+  const notes = imageNotes(image, t);
   const count = set.images.length;
   const multiple = count > 1;
   const description = label || t("opticalImages.imageNumber", { number: String(index + 1) });
@@ -282,7 +281,8 @@ function ImagePanel({ set }: { set: TechnicalImageSet }) {
       <figcaption className="flex items-start gap-2 text-xs leading-relaxed text-zinc-600">
         <div className="min-w-0 flex-1" aria-live="polite">
           {multiple && <p className="tabular-nums">{index + 1} / {count}</p>}
-          {conditions.map((line, i) => <p key={i} className={line === label ? "font-medium text-zinc-900" : undefined}>{line}</p>)}
+          {label && <p className="text-sm font-medium text-zinc-900">{label}</p>}
+          {notes.map((line, i) => <p key={i}>{line}</p>)}
         </div>
         {multiple && <div className="flex shrink-0 gap-1">
           <button type="button" onClick={() => move(-1)} disabled={index === 0} aria-label={t("opticalImages.previous")} className={IMAGE_CONTROL_CLS}><ChevronLeft className="size-4" /></button>

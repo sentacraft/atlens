@@ -27,7 +27,8 @@ vi.mock("../LensImageViewer", () => ({
     return <div role="dialog" aria-label={title}>
       <Image src={image.src} alt={image.alt ?? title} width={100} height={100} unoptimized style={{ filter: image.filter }} />
       <p>{index + 1} / {images.length}</p>
-      <p>{image.caption?.join(" ")}</p>
+      <p>{image.caption?.primary}</p>
+      <p>{image.caption?.details.join(" ")}</p>
       <button onClick={() => setIndex(index - 1)}>{labels.previous}</button>
     </div>;
   },
