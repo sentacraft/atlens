@@ -9,7 +9,7 @@ import { Dialog, DialogClose, DialogHeader, DialogPopup, DialogTitle } from "@/c
 import { track } from "@/lib/analytics/analytics";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getLensImageUrl } from "@/lib/lens/image";
-import { TECHNICAL_IMAGE_PREVIEW_LIMIT, technicalImageFilter, type TechnicalImageRole } from "@/lib/lens/technical-images";
+import { getTechnicalImageReadingNote, TECHNICAL_IMAGE_PREVIEW_LIMIT, technicalImageFilter, type TechnicalImageRole } from "@/lib/lens/technical-images";
 import type { LensImageAsset } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -165,7 +165,7 @@ function imageNotes(image: LensImageAsset, t: ReturnType<typeof useTranslations<
   return [
     image.mtfMethod && t(`opticalImages.${image.mtfMethod}`),
     image.depictedMount && t("opticalImages.mount", { mount: image.depictedMount }),
-    image.conditionsNote,
+    getTechnicalImageReadingNote(image.conditionsNote),
   ].filter((line): line is string => !!line);
 }
 
