@@ -28,7 +28,7 @@ export function SupportDialogProvider({ children }: { children: React.ReactNode 
   return (
     <SupportDialogContext value={openSupport}>
       {children}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog dismissOnOutsidePress open={open} onOpenChange={setOpen}>
         <DialogPopup className="max-w-md">
           <DialogHeader className="flex-row items-start justify-between gap-3 pr-5">
             <DialogTitle>{t("title")}</DialogTitle>

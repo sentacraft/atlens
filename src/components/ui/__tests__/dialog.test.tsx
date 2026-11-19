@@ -42,9 +42,9 @@ describe("DialogCancel", () => {
 });
 
 describe("Dialog", () => {
-  function renderDialog(onOpenChange: (open: boolean) => void) {
+  function renderDialog(onOpenChange: (open: boolean) => void, dismissOnOutsidePress?: boolean) {
     render(
-      <Dialog open onOpenChange={onOpenChange}>
+      <Dialog open onOpenChange={onOpenChange} dismissOnOutsidePress={dismissOnOutsidePress}>
         <DialogPopup>
           <DialogTitle>Sign in</DialogTitle>
         </DialogPopup>
@@ -72,6 +72,27 @@ describe("Dialog", () => {
     await pressOutside();
 
     expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
+  it("closes a centered dialog on outside press only when it opts in", async () => {
+    const onOpenChange = vi.fn();
+    renderDialog(onOpenChange, true);
+
+    fireEvent.click(screen.getByRole("heading", { name: "Sign in" }));
+    expect(onOpenChange).not.toHaveBeenCalled();
+    await pressOutside();
+
+    expect(onOpenChange).toHaveBeenCalledWith(false, expect.objectContaining({ reason: "outside-press" }));
+  });
+
+  it("still closes a drawer on outside press without opting in", async () => {
+    viewport.wide = false;
+    const onOpenChange = vi.fn();
+    renderDialog(onOpenChange);
+
+    await pressOutside();
+
+    expect(onOpenChange).toHaveBeenCalledWith(false, expect.objectContaining({ reason: "outside-press" }));
   });
 
   it("still closes a centered dialog with Escape", async () => {
