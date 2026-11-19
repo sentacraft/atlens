@@ -14,7 +14,7 @@ const COVER_PICKS: Record<(typeof SLUGS)[number], readonly [string, string, stri
   "fast-aperture-primes": ["sigma-contemporary-16mm-f14-dc-dn-x", "fujifilm-xf-35mmf14-r-x", "fujifilm-xf-56mmf12-r-wr-x"],
   fisheye: ["laowa-cf-4mmf28-210-circular-fisheye-x", "ttartisan-aps-c-7p5mm-f2-fisheye-x", "laowa-cf-4p5-10mmf28-fisheye-zoom-x"],
   "23mm": ["fujifilm-xf-23mmf2-r-wr-x", "sigma-contemporary-23mm-f14-dc-dn-x", "viltrox-af-23mm-f14-x"],
-  "under-200": ["viltrox-af-28mm-f45-x", "ttartisan-af-27mm-f28-x", "7artisans-af-25mm-f18-x"],
+  "under-200": ["viltrox-af-35mm-f17-air-x", "ttartisan-af-27mm-f28-x", "7artisans-af-25mm-f18-x"],
   "travel-zoom": [
     "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-x",
     "sigma-contemporary-16-300mm-f35-67-dc-os-x",
