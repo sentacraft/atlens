@@ -2,6 +2,19 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { unzipSync } from "fflate";
 
+test("aligns cover photos and caption starts when lens names wrap differently", async ({ page }) => {
+  await page.goto("/admin/promo?collection=fast-aperture-primes");
+  const figures = page.getByRole("article").locator("figure");
+  await expect(figures).toHaveCount(3);
+  await page.evaluate(() => document.fonts.ready.then(() => undefined));
+  const positions = await figures.evaluateAll((nodes) => nodes.map((figure) => ({
+    photo: figure.querySelector("img")!.getBoundingClientRect().top,
+    caption: figure.querySelector("figcaption")!.getBoundingClientRect().top,
+  })));
+  expect(new Set(positions.map(({ photo }) => photo)).size).toBe(1);
+  expect(new Set(positions.map(({ caption }) => caption)).size).toBe(1);
+});
+
 test("previews a collection and exports its numbered PNG deck", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "The archive assertions run on Chromium.");
   await page.goto("/admin");
