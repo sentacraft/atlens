@@ -33,6 +33,8 @@
 .primarySpec.specRange { font-size: 30px; }
 .secondarySpec { font-size: 28px; color: #52525b; white-space: nowrap; }
 .primarySpec small, .secondarySpec small { font: 400 22px/1 var(--font-geist-sans), sans-serif; color: #52525b; }
+.weightRange { position: relative; }
+.weightRange > .weightDetail { position: absolute; top: calc(100% + 4px); right: 0; font-size: 20px; }
 .footer { padding-top: 16px; color: #52525b; font-size: 26px; }
 .endTitle { margin: 40px 0 16px; font-size: 72px; line-height: 1.12; letter-spacing: -.035em; font-weight: 700; }
 .endStats { margin: 0; color: #52525b; font-size: 29px; }

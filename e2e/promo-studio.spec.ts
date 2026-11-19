@@ -89,6 +89,14 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
   await expect(fisheye.getByText("视角", { exact: true })).toBeVisible();
   await expect(fisheye.getByText("180°–175°", { exact: true })).toBeVisible();
   await expect(fisheye.getByText("镜身长度", { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "等效 11–15 mm" }).click();
+  const upperWeight = fisheye.getByText("≤ 370 g", { exact: true });
+  const fullWeight = fisheye.getByText("343–370 g", { exact: true });
+  await expect(upperWeight).toHaveCSS("font-size", "28px");
+  await expect(fullWeight).toHaveCSS("font-size", "20px");
+  const upperBounds = await upperWeight.boundingBox();
+  const fullBounds = await fullWeight.boundingBox();
+  expect(fullBounds!.y).toBeGreaterThan(upperBounds!.y);
   await page.getByRole("button", { name: "末页" }).click();
   await expect(fisheye.getByRole("heading", { name: "不止鱼眼镜头" })).toBeVisible();
   await expect(fisheye.getByRole("heading", { name: "主题合集" })).toBeVisible();

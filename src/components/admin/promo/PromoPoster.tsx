@@ -69,6 +69,13 @@ export function PromoPoster({ deck, page, index, labels }: {
                 const value = lens[column] ?? "—";
                 const unit = column === "length" || column === "focal" ? "mm" : column === "weight" ? "g" : null;
                 const specClass = position === 0 ? styles.primarySpec : styles.secondarySpec;
+                const upperWeight = column === "weight" ? value.split("–")[1] : undefined;
+                if (upperWeight) {
+                  return <span key={column} className={`${specClass} ${styles.weightRange}`}>
+                    <span>≤ {upperWeight} <small>g</small></span>
+                    <small className={styles.weightDetail}>{value} g</small>
+                  </span>;
+                }
                 return <span key={column} className={value.includes("–") ? `${specClass} ${styles.specRange}` : specClass}>
                   {value}{unit && value !== "—" && <> <small>{unit}</small></>}
                 </span>;
