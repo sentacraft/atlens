@@ -232,13 +232,13 @@ it("shows a localized load error and still allows closing", async () => {
 
 it("restores scrolling and removes the viewer on unmount", async () => {
   const { unmount } = render(<LensImageGallery lens={{ id: "example", model: "Example" }} labels={labels} />);
-  const previousOverflow = document.body.style.overflow;
+  const previousOverflow = document.documentElement.style.overflow;
   fireEvent.click(screen.getByRole("button", { name: labels.open }));
   await screen.findByRole("dialog", { name: "Example" });
-  expect(document.body.style.overflow).toBe("hidden");
+  expect(document.documentElement.style.overflow).toBe("hidden");
   unmount();
   expect(document.body.querySelector(".pswp")).toBeNull();
-  expect(document.body.style.overflow).toBe(previousOverflow);
+  expect(document.documentElement.style.overflow).toBe(previousOverflow);
 });
 
 it("opens a single primary image without paging controls", async () => {
