@@ -47,7 +47,9 @@ export function PromoPoster({ deck, page, index, labels, endStyle }: {
           {deck.cover.map((lens) => <figure key={lens.id}><LensPhoto lens={lens} width={248} height={320} /><figcaption>{lens.caption ?? `${lens.brand} · ${lens.name}`}</figcaption></figure>)}
         </div>
         <footer className={styles.coverFooter}>
-          <span><b>{deck.lensCount}</b> {labels.lensUnit}</span><span><b>{deck.brandCount}</b> {labels.brandUnit}</span>
+          <div className={styles.coverStats}>
+            <span><b>{deck.lensCount}</b> {labels.lensUnit}</span><span><b>{deck.brandCount}</b> {labels.brandUnit}</span>
+          </div>
           {deck.scope && <p className={styles.scope}>* {deck.scope}</p>}
         </footer>
       </>}

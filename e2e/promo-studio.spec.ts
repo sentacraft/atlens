@@ -28,12 +28,18 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
       const above = row.top - photos.previousElementSibling!.getBoundingClientRect().bottom;
       const footer = poster.querySelector("footer")!;
       const below = footer.getBoundingClientRect().top - row.bottom;
-      const [lenses, brands, note] = [...footer.children];
+      const [stats, note] = [...footer.children];
+      const [lenses, brands] = [...stats.children];
+      const bounds = stats.getBoundingClientRect();
+      const posterBounds = poster.getBoundingClientRect();
+      const statsOffset = (bounds.left + bounds.right - posterBounds.left - posterBounds.right) / 2;
       const centers = [lenses, brands].map((item) => {
         const { top, height } = item.getBoundingClientRect();
         return top + height / 2;
       });
       return {
+        statsOffset,
+        footerRuleWidth: getComputedStyle(footer).borderTopWidth,
         footerCenterSpread: Math.max(...centers) - Math.min(...centers),
         above, below, height: poster.scrollHeight, width: poster.scrollWidth,
         footerFits: footer.scrollWidth === footer.clientWidth,
@@ -46,6 +52,8 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
     expect(Math.abs(layout.above - layout.below)).toBeLessThan(1);
     expect([layout.width, layout.height]).toEqual([1080, 1440]);
     expect(layout.footerFits).toBe(true);
+    expect(Math.abs(layout.statsOffset)).toBeLessThan(1);
+    expect(layout.footerRuleWidth).toBe("0px");
     expect(layout.footerCenterSpread).toBeLessThan(1);
     expect(layout.footerRows.split(" ")).toHaveLength(2);
     expect(layout.footerRows).toMatch(/ 28px$/);
