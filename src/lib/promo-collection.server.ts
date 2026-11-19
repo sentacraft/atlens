@@ -8,9 +8,19 @@ import { buildPromoGroupPages, promoLens, PROMO_THEMES, type PromoDeck } from "@
 import zh from "@/messages/zh.json";
 
 const SLUGS = Object.keys(PROMO_THEMES) as (keyof typeof PROMO_THEMES)[];
-const PANCAKE_COVER = [
-  "fujifilm-xf-18mmf2-r-x", "fujifilm-xf-23mmf28-r-wr-x", "voigtlander-27mm-f20-ultron-x",
-];
+const COVER_PICKS: Record<(typeof SLUGS)[number], readonly [string, string, string]> = {
+  pancake: ["fujifilm-xf-18mmf2-r-x", "fujifilm-xf-23mmf28-r-wr-x", "voigtlander-27mm-f20-ultron-x"],
+  "under-200g": ["fujifilm-xc-15-45mmf35-56-ois-pz-x", "fujifilm-xf-35mmf14-r-x", "viltrox-af-56mm-f17-air-x"],
+  "fast-aperture-primes": ["sigma-contemporary-16mm-f14-dc-dn-x", "fujifilm-xf-35mmf14-r-x", "fujifilm-xf-56mmf12-r-wr-x"],
+  fisheye: ["laowa-cf-4mmf28-210-circular-fisheye-x", "ttartisan-aps-c-7p5mm-f2-fisheye-x", "laowa-cf-4p5-10mmf28-fisheye-zoom-x"],
+  "23mm": ["fujifilm-xf-23mmf2-r-wr-x", "sigma-contemporary-23mm-f14-dc-dn-x", "viltrox-af-23mm-f14-x"],
+  "under-200": ["viltrox-af-28mm-f45-x", "ttartisan-af-27mm-f28-x", "7artisans-af-25mm-f18-x"],
+  "travel-zoom": [
+    "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-x",
+    "sigma-contemporary-16-300mm-f35-67-dc-os-x",
+    "fujifilm-xf-18-120mmf4-lm-pz-wr-x",
+  ],
+};
 export const promoLabels = zh.PromoStudio;
 const END_PAGE_COPY: Record<string, Pick<PromoDeck["related"][number], "title" | "description">> = {
   "under-200g": { title: promoLabels.lightweightTitle, description: promoLabels.lightweightDetail },
@@ -29,7 +39,7 @@ export function getPromoCollection(slug: string | undefined) {
     const stats = getCollectionStats(id, "zh");
     if (!stats) {return [];}
     const lenses = stats.lenses.filter((lens) => lens.mount === "X");
-    return lenses.length ? [{ collection: stats.collection, lenses, theme: PROMO_THEMES[id] }] : [];
+    return lenses.length ? [{ id, collection: stats.collection, lenses, theme: PROMO_THEMES[id] }] : [];
   });
   const source = sources.find(({ collection }) => collection.slug === slug) ?? sources[0];
   if (!source) {return null;}
@@ -45,7 +55,7 @@ export function getPromoCollection(slug: string | undefined) {
     return row;
   };
   const orderedCover = [...lenses].sort((a, b) => a.focalLengthMin - b.focalLengthMin || a.id.localeCompare(b.id));
-  const picks = pancake ? PANCAKE_COVER.flatMap((id) => orderedCover.find((lens) => lens.id === id) ?? []) : [];
+  const picks = (COVER_PICKS[source.id] ?? []).flatMap((id) => orderedCover.find((lens) => lens.id === id) ?? []);
   for (const index of [0, Math.floor(orderedCover.length / 2), orderedCover.length - 1]) {
     if (picks.length < 3 && !picks.includes(orderedCover[index])) {picks.push(orderedCover[index]);}
   }
@@ -53,7 +63,7 @@ export function getPromoCollection(slug: string | undefined) {
     slug: collection.slug,
     title: pancake ? promoLabels.pancakeTitle : collection.title.zh,
     subtitle: pancake ? promoLabels.pancakeSubtitle : collection.shortDescription.zh,
-    scope: pancake ? promoLabels.pancakeScope : undefined,
+    scope: pancake ? promoLabels.pancakeScope : source.id === "under-200" ? promoLabels.budgetPriceNotice : undefined,
     lensCount: lenses.length,
     brandCount: new Set(lenses.map((lens) => lens.brand)).size,
     cover: picks.map((lens) => {

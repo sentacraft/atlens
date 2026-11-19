@@ -83,7 +83,7 @@ export function PromoPoster({ deck, page, index, labels }: {
             </div>
           </div>)}
         </section>)}
-        <footer className={styles.footer}><span>{number}</span><span>{labels.focus}</span></footer>
+        <footer className={styles.footer}><span>{number}</span><span>{showInlinePrice ? labels.focus : labels.budgetPriceNotice}</span></footer>
       </>}
       {page.kind === "end" && <PromoEnd deck={deck} labels={labels} number={number} editorial={editorial} />}
     </article>

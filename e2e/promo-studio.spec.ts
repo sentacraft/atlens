@@ -59,6 +59,7 @@ test("offers focal-range, single-focal-length and budget decks", async ({ page }
   const cover = page.getByRole("article");
   const options = page.getByLabel("镜头合集");
   await expect(cover.getByRole("heading", { name: "一镜走天下" })).toBeVisible();
+  await expect(cover.locator("figcaption")).toHaveText([/腾龙.*18-300mm/, /适马.*16-300mm/, /富士.*18-120mm/]);
   await page.getByRole("button", { name: /一镜走天下/ }).first().click();
   await expect(cover.getByText("焦段范围", { exact: true })).toBeVisible();
   await expect(cover.getByText(/^\d+–\d+ mm$/).first()).toBeVisible();
@@ -67,12 +68,15 @@ test("offers focal-range, single-focal-length and budget decks", async ({ page }
   await expect(cover.getByText("最大光圈", { exact: true })).toBeVisible();
   await expect(cover.getByText("重量", { exact: true })).toBeVisible();
   await options.selectOption("under-200");
+  const notice = "所列价格仅供参考，实际价格请在购买前核实。";
+  await expect(cover.locator("footer")).toContainText(notice);
   for (const label of ["AF 自动对焦", "MF 手动对焦"]) {
     await page.getByRole("button", { name: new RegExp(label) }).first().click();
     await expect(cover.getByRole("heading", { name: label })).toBeVisible();
     await expect(cover.getByText("参考价", { exact: true })).toBeVisible();
     await expect(cover.getByText(/^¥[\d,]+$/).first()).toBeVisible();
     await expect(cover.getByText(/^参考价 ¥/)).toHaveCount(0);
+    await expect(cover.locator("footer")).toContainText(notice);
   }
 });
 
