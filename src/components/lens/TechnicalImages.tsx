@@ -185,7 +185,7 @@ function CompareViewer({ open, role, sets, activeId, close, trigger }: {
   const t = useTranslations("LensDetail.opticalImages");
   const [active, setActive] = useState(activeId);
   return (
-    <Dialog open={open} onOpenChange={(open) => {if (!open) {close();}}}>
+    <Dialog dismissOnOutsidePress open={open} onOpenChange={(open) => {if (!open) {close();}}}>
       <DialogPopup finalFocus={trigger} className="max-h-[85dvh] overflow-y-auto sm:w-[calc(100%_-_2rem)] sm:max-w-5xl">
         <DialogHeader className="relative">
           <DialogTitle>{t(role === "mtf" ? "mtf" : "structure")}</DialogTitle>

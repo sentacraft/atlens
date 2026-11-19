@@ -24,7 +24,7 @@ export default function ChartLensSheet({
   onOpenChange: (open: boolean) => void;
 }) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog dismissOnOutsidePress open={open} onOpenChange={onOpenChange}>
       <DialogPopup className="sm:max-w-sm">{lens && <SheetBody lens={lens} />}</DialogPopup>
     </Dialog>
   );

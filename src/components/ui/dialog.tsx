@@ -18,11 +18,13 @@ function Dialog({
   onOpenChange,
   children,
   responsive = true,
+  dismissOnOutsidePress = false,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
   responsive?: boolean;
+  dismissOnOutsidePress?: boolean;
 }) {
   const isDesktop = useBreakpoint("sm");
   const mode = responsive && !isDesktop ? "drawer" : "dialog";
@@ -34,7 +36,7 @@ function Dialog({
           <DrawerPrimitive.VirtualKeyboardProvider>{children}</DrawerPrimitive.VirtualKeyboardProvider>
         </DrawerPrimitive.Root>
       ) : (
-        <DialogPrimitive.Root open={open} onOpenChange={onOpenChange} disablePointerDismissal>
+        <DialogPrimitive.Root open={open} onOpenChange={onOpenChange} disablePointerDismissal={!dismissOnOutsidePress}>
           {children}
         </DialogPrimitive.Root>
       )}

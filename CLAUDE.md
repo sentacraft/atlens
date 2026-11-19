@@ -75,7 +75,9 @@ style strings across components. Inline only genuinely one-off local styles.
 
 A dialog with something to fill in or pick puts its Cancel in `DialogCancel`, which phone drawers
 leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps its Cancel. A
-centered dialog does not close on a press outside it, so each one shows a close button or a Cancel.
+centered dialog blocks outside presses by default and always shows a close button or a Cancel.
+Only dialogs without inputs, pending choices, confirmations, or in-progress work may opt into
+`dismissOnOutsidePress`. This does not affect drawers.
 
 A menu's popup is `MenuPopup` from `components/ui/menu.tsx`, never `Menu.Popup` composed by hand: it
 clears the vertical padding that leaves a white strip beside a row's hover, and ESLint rejects the
