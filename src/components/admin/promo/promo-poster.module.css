@@ -14,7 +14,8 @@
 .coverFooter { display: grid; align-items: center; grid-template-columns: max-content max-content 1fr; grid-template-rows: max-content 28px; gap: 10px 36px; padding-top: 30px; font-size: 30px; font-weight: 600; white-space: nowrap; }
 .footer { margin-top: auto; display: flex; align-items: baseline; justify-content: space-between; }
 .coverFooter b { font: 700 64px/1 var(--font-source-serif-4), Georgia, serif; }
-.coverPage { margin-left: auto; text-align: right; font-size: 26px; font-weight: 400; color: #52525b; }
+/* Screenshot cloning resolves the grid item's auto margin to zero. */
+.coverPage { justify-self: end; text-align: right; font-size: 26px; font-weight: 400; color: #52525b; }
 .groupTitle { margin: 42px 0 16px; font-size: 78px; font-weight: 700; letter-spacing: -.035em; line-height: 1.12; }
 .groupSubtitle { margin: 0 0 32px; font-size: 31px; color: #52525b; }
 .row { --primary-col: 168px; --secondary-col: 164px; --column-gap: 20px; display: grid; grid-template-columns: 108px minmax(0, 1fr) var(--primary-col) var(--secondary-col); align-items: center; gap: var(--column-gap); }

@@ -152,4 +152,17 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
     expect(png.getUint32(0)).toBe(0x89504e47);
     expect([png.getUint32(16), png.getUint32(20)]).toEqual([1080, 1440]);
   }
+  const hasRightAlignedFooter = await page.evaluate(async (base64) => {
+    const image = new Image();
+    image.src = `data:image/png;base64,${base64}`;
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext("2d")!;
+    context.drawImage(image, 0, 0);
+    const { data } = context.getImageData(990, 1270, 18, 80);
+    return data.some((value, index) => index % 4 === 0 && value < 160);
+  }, Buffer.from(archive["01-pancake.png"]).toString("base64"));
+  expect(hasRightAlignedFooter).toBe(true);
 });
