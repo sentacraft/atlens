@@ -4,8 +4,8 @@
       {
         "slug": "under-200g",
         "title": {
-          "en": "Ultra-Lightweight Lenses (Under 200g)",
-          "zh": "轻量化镜头（200g 以下）"
+          "en": "Ultra-Lightweight Lenses",
+          "zh": "超轻镜头"
         },
         "description": {
           "en": "Prioritize mobility with every X-mount lens weighing less than 200 grams. Perfect for minimalist travel kits, daily walk-around photography, or stabilizing setups on compact gimbals, these lenses ensure your camera stays out of the bag and in your hand without the physical fatigue.",
@@ -13,7 +13,7 @@
         },
         "shortDescription": {
           "en": "Featherweight glass under 200 grams",
-          "zh": "轻量化镜头，机身平衡好"
+          "zh": "重量低于 200 克，适合轻装出行"
         },
         "chart": "weight"
       },
@@ -38,8 +38,8 @@
       {
         "slug": "fast-aperture-primes",
         "title": {
-          "en": "Fast Aperture Primes (f/1.4 and Faster)",
-          "zh": "大光圈定焦镜头（f/1.4 以上）"
+          "en": "Fast Prime Lenses",
+          "zh": "大光圈定焦镜头"
         },
         "description": {
           "en": "The low-light benchmarks of the system. This index catalogs every X-mount prime featuring a maximum aperture of f/1.4 or wider—from accessible high-speed options to exotic f/0.95 glass. Engineered for maximum light gathering, clinical subject isolation, and ultra-shallow depth of field across multiple manufacturers.",
@@ -47,7 +47,7 @@
         },
         "shortDescription": {
           "en": "f/1.4 and faster for bokeh and low light",
-          "zh": "f/1.4 及以上，极致虚化与暗光"
+          "zh": "最大光圈 f/1.4 或更大，适合低光拍摄与背景虚化"
         },
         "chart": "weight"
       },
