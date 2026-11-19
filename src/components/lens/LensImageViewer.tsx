@@ -202,6 +202,26 @@ export default function LensImageViewer(props: Props) {
       root.style.overflow = "hidden";
       unlock = () => {root.style.overflow = rootOverflow;body.style.overflow = overflow;body.style.paddingRight = paddingRight;};
       pswp.init();
+      const { scrollWrap } = pswp;
+      if (scrollWrap && pswp.element) {
+        // PhotoSwipe's background action targets slide whitespace, not the area outside our panel.
+        const isBackdrop = (event: MouseEvent) => {
+          if (!scrollWrap.contains(event.target as Node)) {return false;}
+          const rect = scrollWrap.getBoundingClientRect();
+          const { top, right, bottom, left } = getComputedStyle(scrollWrap, "::before");
+          return event.clientX < rect.left + parseFloat(left) || event.clientX >= rect.right - parseFloat(right)
+            || event.clientY < rect.top + parseFloat(top) || event.clientY >= rect.bottom - parseFloat(bottom);
+        };
+        let pressedBackdrop = false;
+        pswp.events.add(pswp.element, "pointerdown", (event) => {
+          const press = event as PointerEvent;
+          pressedBackdrop = press.pointerType === "mouse" && press.button === 0 && isBackdrop(press);
+        });
+        pswp.events.add(pswp.element, "click", (event) => {
+          if (pressedBackdrop && !event.defaultPrevented && isBackdrop(event as MouseEvent)) {pswp.close();}
+          pressedBackdrop = false;
+        });
+      }
       pswp.element?.style.setProperty("--gallery-caption-height", `${captionHeight}px`);
       const background = [...body.children].filter((element): element is HTMLElement => element instanceof HTMLElement && element !== pswp.element && !element.inert);
       for (const element of background) {element.inert = true;}

@@ -100,6 +100,24 @@ for (const width of [375, 1280]) {
       await expect(dialog).toHaveCount(0);
     });
 
+    test("only the desktop backdrop closes the gallery on a mouse click", async ({ page }) => {
+      await page.goto(LENS_PATH);
+      const trigger = page.getByRole("button", { name: "Enlarge product image" });
+      await trigger.click();
+      const dialog = page.getByRole("dialog");
+      await expectSlide(dialog, PRIMARY);
+
+      await page.mouse.click(width / 2, 140);
+      await expect(dialog).toHaveClass(/gallery-settled/);
+      await page.mouse.click(8, 450);
+      if (width >= 640) {
+        await expect(dialog).toHaveCount(0);
+        await expect(trigger).toBeFocused();
+      } else {
+        await expect(dialog).toHaveClass(/gallery-settled/);
+      }
+    });
+
     test("mouse clicks toggle image zoom without hiding controls", async ({ page }) => {
       await page.goto(LENS_PATH);
       await page.getByRole("button", { name: "Enlarge product image" }).click();
