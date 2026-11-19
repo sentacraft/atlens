@@ -9,6 +9,7 @@ export type PromoLabels = Record<keyof typeof messages.PromoStudio, string>;
 export function promoPageTitle(deck: PromoDeck, page: PromoPage, labels: PromoLabels) {
   if (page.kind !== "group") {return labels[page.kind];}
   if (page.focus) {return labels[page.focus];}
+  if (page.zoom) {return labels.zooms;}
   if (deck.theme.groupBy === "collection") {return deck.title;}
   return `${labels.equivalent} ${page.range.replace("mm", " mm")}`;
 }
@@ -22,9 +23,11 @@ export function PromoPoster({ deck, page, index, labels }: {
 }) {
   const number = `${promoPageNumber(index + 1)} / ${promoPageNumber(deck.pages.length)}`;
   const rowCount = page.kind === "group" ? page.groups.reduce((n, group) => n + group.lenses.length, 0) : 0;
-  const showActual = page.kind === "group" && page.groups.length === 1 && !deck.theme.groupBy;
-  const showInlinePrice = !deck.theme.columns.includes("referencePrice");
-  const coverOrder = deck.theme.groupBy === "focus" ? labels.focusOrder : deck.theme.groupBy === "collection" ? labels[deck.theme.order] : labels.focalOrder;
+  const listing = page.kind === "group" && page.zoom ? deck.theme.zoom ?? deck.theme : deck.theme;
+  const showActual = page.kind === "group" && page.groups.length === 1 && !listing.groupBy;
+  const showInlinePrice = !listing.columns.includes("referencePrice");
+  const coverOrder = deck.theme.zoom ? labels.lensTypeOrder : deck.theme.groupBy === "focus" ? labels.focusOrder
+    : deck.theme.groupBy === "collection" ? labels[deck.theme.order] : labels.focalOrder;
   const editorial = page.kind === "end" && deck.slug === "fisheye";
   const markSize = editorial ? 42 : 52;
   const layout = page.kind === "cover" ? styles.coverPoster : editorial ? styles.editorial : null;
@@ -49,8 +52,8 @@ export function PromoPoster({ deck, page, index, labels }: {
       </>}
       {page.kind === "group" && <>
         <h2 className={styles.groupTitle}>{promoPageTitle(deck, page, labels)}</h2>
-        <p className={styles.groupSubtitle}>{page.focus ? `${deck.title} · ` : showActual ? `${labels.actual} ${page.groups[0].actual.replace("mm", " mm")} · ` : null}{rowCount} {labels.lensUnit} · {labels[deck.theme.order]}</p>
-        <div className={`${styles.row} ${styles.columns}`}><span>{labels.lens}</span>{deck.theme.columns.map((column) => <span key={column}>{column === "referencePrice" ? labels.priceLabel : labels[column]}</span>)}</div>
+        <p className={styles.groupSubtitle}>{page.focus || page.zoom ? `${deck.title} · ` : deck.theme.zoom ? `${labels.primes} · ` : null}{showActual && `${labels.actual} ${page.groups[0].actual.replace("mm", " mm")} · `}{rowCount} {labels.lensUnit} · {labels[listing.order]}</p>
+        <div className={`${styles.row} ${styles.columns}`}><span>{labels.lens}</span>{listing.columns.map((column) => <span key={column}>{column === "referencePrice" ? labels.priceLabel : labels[column]}</span>)}</div>
         {page.groups.map((group) => <section key={group.lenses[0].id}>
           {group.lenses.map((lens) => <div key={lens.id} className={`${styles.row} ${styles.lensRow}`}>
             <span className={styles.thumb}><LensPhoto lens={lens} width={104} height={96} /></span>
@@ -62,7 +65,7 @@ export function PromoPoster({ deck, page, index, labels }: {
               </div>
             </div>
             <div className={styles.measurements}>
-              {deck.theme.columns.map((column, position) => {
+              {listing.columns.map((column, position) => {
                 const value = lens[column] ?? "—";
                 const unit = column === "length" || column === "focal" ? "mm" : column === "weight" ? "g" : null;
                 const specClass = position === 0 ? styles.primarySpec : styles.secondarySpec;

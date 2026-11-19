@@ -1,4 +1,5 @@
 import { angleOfViewDisplay, focalEquiv, focalRangeDisplay, primaryApertureDisplay, weightDisplay } from "@/lib/lens/format";
+import { isZoom } from "@/lib/lens/lens";
 import { pickNewEntry } from "@/lib/lens/pricing";
 import type { Lens } from "@/lib/types";
 
@@ -8,18 +9,25 @@ const MAX_ROWS = 6;
 
 type PromoSpec = "length" | "weight" | "aperture" | "angle" | "focal" | "referencePrice";
 
-type PromoOrder = "thinOrder" | "lightOrder" | "apertureOrder" | "angleOrder" | "wideEndOrder" | "wideApertureOrder" | "priceOrder";
+type PromoOrder = "thinOrder" | "lightOrder" | "apertureOrder" | "angleOrder" | "wideEndOrder" | "wideApertureOrder" | "priceOrder" | "weightOrder";
 
-export interface PromoTheme {
+interface PromoListing {
   columns: readonly [PromoSpec, PromoSpec];
   order: PromoOrder;
   starts?: readonly number[];
   groupBy?: "collection" | "focus";
 }
 
+export interface PromoTheme extends PromoListing {
+  zoom?: PromoListing;
+}
+
 export const PROMO_THEMES = {
   pancake: { columns: ["length", "weight"], order: "thinOrder", starts: [18, 23, 27] },
-  "under-200g": { columns: ["weight", "aperture"], order: "lightOrder" },
+  "under-200g": {
+    columns: ["weight", "aperture"], order: "lightOrder",
+    zoom: { columns: ["weight", "focal"], order: "weightOrder", groupBy: "collection" },
+  },
   "fast-aperture-primes": { columns: ["aperture", "weight"], order: "apertureOrder" },
   fisheye: { columns: ["angle", "weight"], order: "angleOrder" },
   "travel-zoom": { columns: ["focal", "weight"], order: "wideEndOrder", groupBy: "collection" },
@@ -40,7 +48,7 @@ const specOrder: Record<PromoSpec, (lens: Lens) => number | undefined> = {
   focal: (lens) => lens.focalLengthMin,
   referencePrice: mainlandReference,
   length: (lens) => lens.length?.mm,
-  weight: (lens) => firstValue(lens.weightG),
+  weight: (lens) => Array.isArray(lens.weightG) ? lens.weightG[1] : lens.weightG,
   aperture: (lens) => firstValue(lens.maxAperture),
   angle: (lens) => {
     const angle = firstValue(lens.angleOfView);
@@ -71,6 +79,7 @@ interface FocalGroup {
 export interface PromoGroupPage {
   range: string;
   focus?: PromoLens["focus"];
+  zoom?: true;
   groups: FocalGroup[];
 }
 
@@ -96,7 +105,15 @@ export function buildPromoGroupPages(
   toRow: (lens: Lens) => PromoLens,
   theme: PromoTheme,
 ): PromoGroupPage[] {
-  const { starts = [], groupBy, columns: [primary] } = theme;
+  if (!theme.zoom) {return buildPages(lenses, toRow, theme);}
+  return [
+    ...buildPages(lenses.filter((lens) => !isZoom(lens)), toRow, theme),
+    ...buildPages(lenses.filter(isZoom), toRow, theme.zoom).map((page) => ({ ...page, zoom: true as const })),
+  ];
+}
+
+function buildPages(lenses: readonly Lens[], toRow: (lens: Lens) => PromoLens, listing: PromoListing): PromoGroupPage[] {
+  const { starts = [], groupBy, columns: [primary] } = listing;
   const order = specOrder[primary];
   const sorted = [...lenses].sort((a, b) => {
     const byFocus = groupBy === "focus" ? Number(b.af) - Number(a.af) : 0;

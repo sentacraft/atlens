@@ -40,6 +40,21 @@ describe("collection promo pages", () => {
     expect(toRow(lenses[2]).angle).toBe("—");
   });
 
+  it("keeps lightweight primes and zooms on separate pages and ranks weight ranges by their upper end", () => {
+    const lens = pancake[0];
+    const pages = buildPromoGroupPages([
+      { ...lens, id: "prime-later", focalLengthMin: 23, focalLengthMax: 23, weightG: 80 },
+      { ...lens, id: "prime-range", focalLengthMin: 16, focalLengthMax: 16, weightG: [90, 170] },
+      { ...lens, id: "prime-fixed", focalLengthMin: 16, focalLengthMax: 16, weightG: 120 },
+      { ...lens, id: "zoom-range", focalLengthMin: 13, focalLengthMax: 33, weightG: [110, 190] },
+      { ...lens, id: "zoom-fixed", focalLengthMin: 16, focalLengthMax: 50, weightG: 145 },
+    ], toRow, PROMO_THEMES["under-200g"]);
+    expect(pages.map((page) => Boolean(page.zoom))).toEqual([false, true]);
+    expect(pages.map((page) => page.groups.flatMap((group) => group.lenses.map((row) => row.id)))).toEqual([
+      ["prime-fixed", "prime-range", "prime-later"], ["zoom-fixed", "zoom-range"],
+    ]);
+  });
+
   it("compares near-23mm lenses by aperture before focal length", () => {
     const lens = pancake[0];
     const pages = buildPromoGroupPages([
