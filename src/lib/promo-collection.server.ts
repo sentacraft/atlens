@@ -1,5 +1,7 @@
 import "server-only";
 import { getCollectionStats } from "@/lib/collection-stats";
+import { THEME_GROUPS } from "@/lib/collections";
+import { getLensesByMount } from "@/lib/lens/data";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { buildPromoGroupPages, promoLens, type PromoDeck } from "@/lib/promo-collection";
 import zh from "@/messages/zh.json";
@@ -9,9 +11,15 @@ const PANCAKE_COVER = [
   "fujifilm-xf-18mmf2-r-x", "fujifilm-xf-23mmf28-r-wr-x", "voigtlander-27mm-f20-ultron-x",
 ];
 export const promoLabels = zh.PromoStudio;
-const END_PAGE_COPY: Record<string, PromoDeck["related"][number]> = {
+const END_PAGE_COPY: Record<string, Pick<PromoDeck["related"][number], "title" | "description">> = {
   "under-200g": { title: promoLabels.lightweightTitle, description: promoLabels.lightweightDetail },
   "fast-aperture-primes": { title: promoLabels.fastPrimeTitle, description: promoLabels.fastPrimeDetail },
+};
+const catalogLenses = getLensesByMount("X", "zh");
+const catalog = {
+  brands: new Set(catalogLenses.map((lens) => lens.brand)).size,
+  lenses: catalogLenses.length,
+  themes: THEME_GROUPS.reduce((count, group) => count + group.collections.length, 0),
 };
 
 export function getPromoCollection(slug: string | undefined) {
@@ -40,17 +48,26 @@ export function getPromoCollection(slug: string | undefined) {
   }
   const deck: PromoDeck = {
     slug: collection.slug,
-    collectionTitle: collection.title.zh,
     title: pancake ? promoLabels.pancakeTitle : collection.title.zh,
     subtitle: pancake ? promoLabels.pancakeSubtitle : collection.shortDescription.zh,
     scope: pancake ? promoLabels.pancakeScope : undefined,
     lensCount: lenses.length,
     brandCount: new Set(lenses.map((lens) => lens.brand)).size,
-    cover: picks.map(toRow),
+    cover: picks.map((lens) => {
+      const row = toRow(lens);
+      return { ...row, caption: pancake ? `${row.brand} ${row.name.split(/ F\d/)[0]}` : undefined };
+    }),
     pages: [{ kind: "cover" }, ...buildPromoGroupPages(lenses, toRow, pancake ? [18, 23, 27] : []).map((page) => ({ kind: "group" as const, ...page })), { kind: "end" }],
-    related: sources.filter((other) => other !== source).map(({ collection }) => (
-      END_PAGE_COPY[collection.slug] ?? { title: collection.title.zh, description: collection.shortDescription.zh }
-    )),
+    related: sources.filter((other) => other !== source).slice(0, 2).map(({ collection, lenses }) => ({
+      ...(END_PAGE_COPY[collection.slug] ?? { title: collection.title.zh, description: collection.shortDescription.zh }),
+      slug: collection.slug,
+      count: lenses.length,
+    })),
+    catalog,
+    comparison: PANCAKE_COVER.slice(0, 2).flatMap((id) => {
+      const lens = catalogLenses.find((item) => item.id === id);
+      return lens ? [toRow(lens)] : [];
+    }),
   };
   return { deck, options: sources.map(({ collection }) => ({ slug: collection.slug, title: collection.title.zh })) };
 }

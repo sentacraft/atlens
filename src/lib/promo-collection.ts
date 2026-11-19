@@ -8,6 +8,7 @@ const MAX_ROWS = 6;
 export interface PromoLens {
   id: string;
   name: string;
+  caption?: string;
   brand: string;
   focus: "AF" | "MF";
   length: string;
@@ -29,7 +30,6 @@ export type PromoPage = { kind: "cover" | "end" } | ({ kind: "group" } & PromoGr
 
 export interface PromoDeck {
   slug: string;
-  collectionTitle: string;
   title: string;
   subtitle: string;
   scope?: string;
@@ -37,7 +37,9 @@ export interface PromoDeck {
   brandCount: number;
   cover: PromoLens[];
   pages: PromoPage[];
-  related: { title: string; description: string }[];
+  related: { slug: string; title: string; description: string; count: number }[];
+  catalog: { brands: number; lenses: number; themes: number };
+  comparison: PromoLens[];
 }
 
 export function buildPromoGroupPages(

@@ -18,6 +18,21 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
   await page.getByRole("button", { name: "等效 15–21 mm" }).click();
   await expect(preview.getByText("等效 15 mm", { exact: false })).toHaveCount(0);
   await expect(preview.getByText("等效 21 mm", { exact: false })).toHaveCount(0);
+  await page.getByRole("button", { name: "等效 35–38 mm" }).click();
+  for (const value of ["16.7 mm", "166–189 g"]) {
+    const cell = preview.getByText(value, { exact: true });
+    await expect(cell).toBeVisible();
+    expect(await cell.evaluate((node) => getComputedStyle(node).whiteSpace === "nowrap" && node.scrollWidth <= node.clientWidth)).toBe(true);
+  }
+  await expect(preview.getByRole("heading")).toHaveCSS("font-family", /Geist/);
+  await page.getByRole("button", { name: "末页" }).click();
+  await expect(preview.getByRole("heading", { name: "不止饼干头" })).toBeVisible();
+  await expect(preview.getByText("AI", { exact: true })).toBeVisible();
+  await expect(preview.getByText("想找一支轻便的夜拍镜头，有推荐吗？")).toBeVisible();
+  await expect(preview.getByText("富士 18 和 23，哪支更适合扫街？")).toBeVisible();
+  await expect(preview.getByRole("table").getByRole("cell", { name: "33.7 mm" })).toBeVisible();
+  await expect(preview.getByText("atlens.app", { exact: true })).toBeVisible();
+  expect(await preview.evaluate((node) => node.scrollHeight)).toBe(1440);
   const downloadEvent = page.waitForEvent("download");
   await page.getByRole("button", { name: /下载整套/ }).click();
   const download = await downloadEvent;
