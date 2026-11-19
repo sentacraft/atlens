@@ -195,12 +195,9 @@ export default function LensImageViewer(props: Props) {
       const root = document.documentElement;
       const rootOverflow = root.style.overflow;
       const overflow = body.style.overflow;
-      const paddingRight = body.style.paddingRight;
-      const scrollbar = window.innerWidth - document.documentElement.clientWidth;
-      if (scrollbar > 0) {body.style.paddingRight = `${parseFloat(getComputedStyle(body).paddingRight) + scrollbar}px`;}
       body.style.overflow = "hidden";
       root.style.overflow = "hidden";
-      unlock = () => {root.style.overflow = rootOverflow;body.style.overflow = overflow;body.style.paddingRight = paddingRight;};
+      unlock = () => {root.style.overflow = rootOverflow;body.style.overflow = overflow;};
       pswp.init();
       const { scrollWrap } = pswp;
       if (scrollWrap && pswp.element) {
