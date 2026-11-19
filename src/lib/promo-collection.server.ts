@@ -35,6 +35,7 @@ export function getPromoCollection(slug: string | undefined) {
   if (!source) {return null;}
   const { collection, lenses } = source;
   const pancake = collection.slug === "pancake";
+  const fish = collection.slug === "fisheye";
   const brands: Record<string, string> = zh.Brands;
   const toRow = (lens: (typeof lenses)[number]) => {
     const row = promoLens(lens, brands[lens.brand] ?? lens.brand, getLensImageUrl(lens.id));
@@ -62,7 +63,10 @@ export function getPromoCollection(slug: string | undefined) {
     pages: [{ kind: "cover" }, ...buildPromoGroupPages(lenses, toRow, source.theme).map((page) => ({ kind: "group" as const, ...page })), { kind: "end" }],
     theme: source.theme,
     related: sources.filter((other) => other !== source).slice(0, 2).map(({ collection, lenses }) => ({
-      ...(END_PAGE_COPY[collection.slug] ?? { title: collection.title.zh, description: collection.shortDescription.zh }),
+      title: END_PAGE_COPY[collection.slug]?.title ?? collection.title.zh,
+      description: fish && collection.slug === "pancake" ? promoLabels.pancakeThemeDetail
+        : fish && collection.slug === "under-200g" ? promoLabels.lightweightThemeDetail
+        : END_PAGE_COPY[collection.slug]?.description ?? collection.shortDescription.zh,
       slug: collection.slug,
       count: lenses.length,
     })),

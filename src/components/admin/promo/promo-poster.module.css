@@ -5,7 +5,10 @@
 .coverKicker { margin-top: 70px; font-size: 37px; font-weight: 600; letter-spacing: .1em; }
 .coverTitle { margin: 8px 0 24px; font-size: 124px; font-weight: 800; letter-spacing: -.07em; line-height: 1.14; }
 .coverSubtitle { margin: 0; font-size: 39px; color: #52525b; }
-.scope { margin: 12px 0 0; font-size: 28px; color: #52525b; }
+.scope { grid-column: 1 / -1; margin: 0; font-size: 23px; font-weight: 400; color: #52525b; }
+.scopedCover .coverTitle { letter-spacing: -.01em; }
+.scopedCover .coverImages { margin-block: auto; background: transparent; }
+.scopedCover .coverFooter { display: grid; grid-template-columns: max-content max-content 1fr; gap: 10px 36px; margin-top: 0; }
 .coverImages { display: grid; align-items: start; gap: 20px; margin-top: 64px; padding: 24px 20px 32px; border-radius: 16px; background: #fafafa; }
 .coverImages figure { display: flex; min-width: 0; flex-direction: column; align-items: center; gap: 16px; margin: 0; text-align: center; font-size: 27px; font-weight: 600; overflow-wrap: anywhere; }
 .coverImages img, .thumb img { object-fit: contain; mix-blend-mode: multiply; }
@@ -59,5 +62,41 @@
 .endFooter { display: flex; align-items: end; justify-content: space-between; margin-top: auto; padding-top: 25px; border-top: 2px solid #e4e4e7; color: #52525b; font-size: 26px; }
 .endFooter p { margin: 0 0 7px; color: #18181b; font-size: 28px; font-weight: 600; }
 .endFooter strong { color: #18181b; font: 700 49px/1.15 var(--font-source-serif-4), Georgia, serif; }
+.editorial { line-height: 1.3; font-variant-numeric: tabular-nums; }
+.editorial .header { border-bottom: 1px solid #d4d4d8; padding-bottom: 22px; font-size: 26px; color: #71717a; }
+.editorial .wordmark { gap: 10px; font-size: 35px; }
+.editorial .endTitle { margin: 29px 0 14px; font-size: 76px; line-height: 1.1; letter-spacing: -.042em; }
+.editorial .endStats { font-size: 26px; color: #64646c; }
+.themeSection { margin-top: 44px; }
+.themeHeading { display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px; color: #64646c; font-size: 25px; }
+.themeHeading h3 { margin: 0; color: #18181b; font-size: 33px; font-weight: 650; }
+.editorial .related { gap: 20px; margin: 0; padding: 0; border: 0; }
+.editorial .related li { gap: 16px; padding: 22px 24px; border-radius: 12px; background: #f6f6f4; }
+.editorial .related svg { margin-top: 3px; }
+.editorial .related strong { font-size: 31px; font-weight: 650; }
+.editorial .related p { margin: 6px 0 0; font-size: 24px; }
+.editorial .iris { grid-template-columns: 354px minmax(0, 1fr); gap: 40px; min-height: 192px; margin-block: 28px; padding: 28px 0; border-block: 1px solid #d4d4d8; }
+.editorial .irisName { font-size: 36px; }
+.editorial .irisName .irisTag { font-size: 21px; }
+.editorial .irisName + p { max-width: none; line-height: 1.45; }
+.editorial .irisName + p span { white-space: nowrap; }
+.editorial .irisName + p strong { font-weight: 650; }
+.editorial .bubbles { gap: 10px; }
+.editorial .bubbles p { padding: 11px 25px; border-radius: 16px 16px 6px 16px; background: #f5f5f3; font-size: 26px; line-height: 1.3; }
+.editorial .endCompare { margin: 0; }
+.editorial .endCompare h3 { font-size: 35px; font-weight: 650; line-height: 1.2; }
+.editorial .endCompare table { margin-top: 17px; }
+.editorial .endCompare thead td { width: 156px; }
+.editorial .endCompare thead th { padding: 0 12px 16px; border: 0; vertical-align: bottom; font-size: 25px; font-weight: 650; white-space: nowrap; }
+.editorial .endCompare thead img { margin-bottom: 12px; object-position: center bottom; }
+.editorial .endCompare tbody tr { height: 57px; border: 0; border-top: 1px solid #e4e4e7; background: none; font-size: 31px; font-weight: 600; }
+.editorial .endCompare tbody tr:first-child { border-top-color: #d4d4d8; }
+.editorial .endCompare tbody th { padding-left: 0; }
+.editorial .endCompare small { font-size: .83em; font-weight: 450; }
+.editorial .endCompare p { margin: 10px 0 0; color: #64646c; }
+.editorial .endFooter { padding-top: 19px; border-top: 1px solid #d4d4d8; }
+.editorial .endFooter p { margin-bottom: 6px; font-size: 26px; font-weight: 550; }
+.editorial .endFooter strong { font-size: 43px; font-weight: 650; letter-spacing: .015em; }
+.editorial .endFooter > span { color: #71717a; font-size: 22px; letter-spacing: .075em; }
 .viewport { container-type: inline-size; width: 100%; max-width: 352px; aspect-ratio: 3 / 4; overflow: hidden; }
 .previewScaled { transform-origin: top left; transform: scale(tan(atan2(100cqw, 1080px))); }

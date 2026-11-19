@@ -16,23 +16,27 @@ export function PromoPoster({ deck, page, index, labels }: {
   const number = `${promoPageNumber(index + 1)} / ${promoPageNumber(deck.pages.length)}`;
   const rowCount = page.kind === "group" ? page.groups.reduce((n, group) => n + group.lenses.length, 0) : 0;
   const compact = page.kind === "group" && page.groups.length > 1;
+  const editorial = page.kind === "end" && deck.slug === "fisheye";
+  const markSize = editorial ? 42 : 52;
+  const layout = page.kind === "cover" ? (deck.scope ? `${styles.coverPoster} ${styles.scopedCover}` : styles.coverPoster)
+    : editorial ? styles.editorial : null;
   return (
-    <article className={`${styles.poster}${page.kind === "cover" ? ` ${styles.coverPoster}` : ""}`} lang="zh-CN">
+    <article className={layout ? `${styles.poster} ${layout}` : styles.poster} lang="zh-CN">
       <header className={styles.header}>
-        <span className={styles.wordmark}><Image src="/icons/icon-192.png" alt="" width={52} height={52} unoptimized loading="eager" />Atlens</span>
+        <span className={styles.wordmark}><Image src="/icons/icon-192.png" alt="" width={markSize} height={markSize} unoptimized loading="eager" />Atlens</span>
         <span>{labels.brandLine}</span>
       </header>
       {page.kind === "cover" && <>
         <div className={styles.coverKicker}>{labels.mount}</div>
         <h2 className={styles.coverTitle}>{deck.title}</h2>
-        <p className={styles.coverSubtitle}>{deck.subtitle}</p>
-        {deck.scope && <p className={styles.scope}>{deck.scope}</p>}
+        <p className={styles.coverSubtitle}>{deck.subtitle}{deck.scope && <sup> *</sup>}</p>
         <div className={styles.coverImages} style={{ gridTemplateColumns: `repeat(${deck.cover.length}, minmax(0, 1fr))` }}>
           {deck.cover.map((lens) => <figure key={lens.id}><LensPhoto lens={lens} width={248} height={320} /><figcaption>{lens.caption ?? `${lens.brand} · ${lens.name}`}</figcaption></figure>)}
         </div>
         <footer className={styles.coverFooter}>
           <span><b>{deck.lensCount}</b> {labels.lensUnit}</span><span><b>{deck.brandCount}</b> {labels.brandUnit}</span>
           <span className={styles.coverPage}>{labels.focalOrder}<br />{number}</span>
+          {deck.scope && <p className={styles.scope}>* {deck.scope}</p>}
         </footer>
       </>}
       {page.kind === "group" && <>
@@ -63,7 +67,7 @@ export function PromoPoster({ deck, page, index, labels }: {
         </section>)}
         <footer className={styles.footer}><span>{number}</span><span>{labels.focus}</span></footer>
       </>}
-      {page.kind === "end" && <PromoEnd deck={deck} labels={labels} number={number} />}
+      {page.kind === "end" && <PromoEnd deck={deck} labels={labels} number={number} editorial={editorial} />}
     </article>
   );
 }
