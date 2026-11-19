@@ -9,8 +9,10 @@ import { promoPageNumber, PROMO_WIDTH, PROMO_HEIGHT, type PromoDeck } from "@/li
 import { exportPromoZip } from "@/lib/promo-export";
 import { promoCollectionPath } from "@/lib/url/promo";
 import { ADMIN_PATH } from "@/lib/url/routes";
-import { promoPageTitle, PromoPoster, type PromoLabels } from "./PromoPoster";
+import { promoPageTitle, PromoPoster, type PromoEndStyle, type PromoLabels } from "./PromoPoster";
 import styles from "./promo-poster.module.css";
+
+const SELECT_CLS = "min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-2.5 focus-visible:outline-2 disabled:opacity-60";
 
 export function PromoStudio({ deck, options, labels }: {
   deck: PromoDeck;
@@ -19,6 +21,7 @@ export function PromoStudio({ deck, options, labels }: {
 }) {
   const router = useRouter();
   const [navigating, startTransition] = useTransition();
+  const [endStyle, setEndStyle] = useState<PromoEndStyle>("optical");
   const [selected, setSelected] = useState(0);
   const [progress, setProgress] = useState<number | null>(null);
   const [status, setStatus] = useState<"error" | "downloaded" | null>(null);
@@ -58,7 +61,7 @@ export function PromoStudio({ deck, options, labels }: {
               onChange={(event) => {
                 const path = promoCollectionPath(event.target.value);
                 startTransition(() => router.replace(path, { scroll: false }));
-              }} className="min-h-11 w-full rounded-lg border border-zinc-300 bg-white px-2.5 focus-visible:outline-2 disabled:opacity-60">
+              }} className={SELECT_CLS}>
               {options.map((option) => <option key={option.slug} value={option.slug}>{labels.mount} · {option.title}</option>)}
             </select>
             <p className="text-xs text-zinc-600">{deck.lensCount} {labels.lensUnit} · {deck.brandCount} {labels.brandUnit}</p>
@@ -67,6 +70,17 @@ export function PromoStudio({ deck, options, labels }: {
             <h3 className="mb-2 font-semibold">{labels.preset}</h3>
             <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3"><strong>{labels.presetName}</strong><p className="mt-0.5 text-xs text-zinc-600">3:4 · {PROMO_WIDTH} × {PROMO_HEIGHT}</p></div>
             <p className="mt-2 text-xs leading-relaxed text-zinc-600">{labels.rules}</p>
+          </div>
+          <div className="grid gap-2 border-t border-zinc-200 pt-4 text-sm">
+            <label htmlFor="promo-end-style" className="font-semibold">{labels.endStyle}</label>
+            <select id="promo-end-style" value={endStyle} disabled={exporting || navigating} className={SELECT_CLS}
+              onChange={(event) => {
+                setEndStyle(event.target.value === "detailed" ? "detailed" : "optical");
+                setSelected(deck.pages.length - 1);
+              }}>
+              <option value="optical">{labels.optical}</option>
+              <option value="detailed">{labels.detailed}</option>
+            </select>
           </div>
           <div className="border-t border-zinc-200 pt-4 text-center text-sm">
             <button type="button" onClick={download} disabled={exporting || navigating} className={`${ACTION_PRIMARY_CLS} min-h-11 w-full justify-center rounded-lg disabled:cursor-default disabled:opacity-60`}>
@@ -86,14 +100,14 @@ export function PromoStudio({ deck, options, labels }: {
               </button>)}
             </div>
             <div className="flex min-w-0 flex-col items-center gap-2.5 rounded-xl border border-zinc-200 bg-zinc-100 p-3 sm:p-4">
-              <div className={`${styles.viewport} bg-white shadow-sm`}><div className={styles.previewScaled}><PromoPoster deck={deck} page={deck.pages[selected]} index={selected} labels={labels} /></div></div>
+              <div className={`${styles.viewport} bg-white shadow-sm`}><div className={styles.previewScaled}><PromoPoster deck={deck} page={deck.pages[selected]} index={selected} labels={labels} endStyle={endStyle} /></div></div>
               <p aria-live="polite" className="text-xs text-zinc-600">{promoPageNumber(selected + 1)} / {promoPageNumber(deck.pages.length)} · {pageTitles[selected]}</p>
             </div>
           </div>
         </section>
       </div>
       {exporting && <div className="pointer-events-none fixed top-0 right-full" aria-hidden="true" ref={exportRoot}>
-        {deck.pages.map((page, index) => <PromoPoster key={index} deck={deck} page={page} index={index} labels={labels} />)}
+        {deck.pages.map((page, index) => <PromoPoster key={index} deck={deck} page={page} index={index} labels={labels} endStyle={endStyle} />)}
       </div>}
     </main>
   );

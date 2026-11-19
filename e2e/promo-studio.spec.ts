@@ -101,7 +101,14 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
   const upperBounds = await upperWeight.boundingBox();
   const fullBounds = await fullWeight.boundingBox();
   expect(fullBounds!.y).toBeGreaterThan(upperBounds!.y);
+  const endStyle = page.getByLabel("末页样式");
+  await expect(endStyle).toHaveValue("optical");
   await page.getByRole("button", { name: "末页" }).click();
+  await expect(fisheye.getByRole("heading", { name: "atlens.app" })).toBeVisible();
+  await expect(fisheye.getByText(/^\d+ 个品牌 · \d+ 支镜头$/)).toBeVisible();
+  await expect(fisheye.getByText(/^共 \d+ 个$/)).toBeVisible();
+  await expect(fisheye.getByRole("table")).toHaveCount(0);
+  await endStyle.selectOption("detailed");
   await expect(fisheye.getByRole("heading", { name: "不止鱼眼镜头" })).toBeVisible();
   await expect(fisheye.getByRole("heading", { name: "主题合集" })).toBeVisible();
   await expect(fisheye.getByText(/^共 \d+ 个$/)).toBeVisible();
@@ -129,7 +136,7 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
     expect(await cell.evaluate((node) => getComputedStyle(node).whiteSpace === "nowrap" && node.scrollWidth <= node.clientWidth)).toBe(true);
   }
   await expect(preview.getByRole("heading")).toHaveCSS("font-family", /Geist/);
-  await page.getByRole("button", { name: "末页" }).click();
+  await endStyle.selectOption("detailed");
   await expect(preview.getByRole("heading", { name: "不止饼干头" })).toBeVisible();
   await expect(preview.getByText("AI", { exact: true })).toBeVisible();
   await expect(preview.getByText("想找一支轻便的夜拍镜头，有推荐吗？")).toBeVisible();

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { promoPageNumber, type PromoDeck, type PromoLens, type PromoPage } from "@/lib/promo-collection";
 import type messages from "@/messages/en.json";
 import { PromoEnd } from "./PromoEnd";
+import { PromoOpticalEnd } from "./PromoOpticalEnd";
 import styles from "./promo-poster.module.css";
 
 export type PromoLabels = Record<keyof typeof messages.PromoStudio, string>;
@@ -18,8 +19,10 @@ function LensPhoto({ lens, width, height }: { lens: PromoLens; width: number; he
   return <Image src={lens.image} alt="" width={width} height={height} unoptimized loading="eager" />;
 }
 
-export function PromoPoster({ deck, page, index, labels }: {
-  deck: PromoDeck; page: PromoPage; index: number; labels: PromoLabels;
+export type PromoEndStyle = "optical" | "detailed";
+
+export function PromoPoster({ deck, page, index, labels, endStyle }: {
+  deck: PromoDeck; page: PromoPage; index: number; labels: PromoLabels; endStyle: PromoEndStyle;
 }) {
   const number = `${promoPageNumber(index + 1)} / ${promoPageNumber(deck.pages.length)}`;
   const rowCount = page.kind === "group" ? page.groups.reduce((n, group) => n + group.lenses.length, 0) : 0;
@@ -28,9 +31,10 @@ export function PromoPoster({ deck, page, index, labels }: {
   const showInlinePrice = !listing.columns.includes("referencePrice");
   const coverOrder = deck.theme.zoom ? labels.lensTypeOrder : deck.theme.groupBy === "focus" ? labels.focusOrder
     : deck.theme.groupBy === "collection" ? labels[deck.theme.order] : labels.focalOrder;
-  const editorial = page.kind === "end" && deck.slug === "fisheye";
-  const markSize = editorial ? 42 : 52;
-  const layout = page.kind === "cover" ? styles.coverPoster : editorial ? styles.editorial : null;
+  const optical = page.kind === "end" && endStyle === "optical";
+  const editorial = page.kind === "end" && !optical && deck.slug === "fisheye";
+  const markSize = optical || editorial ? 42 : 52;
+  const layout = page.kind === "cover" ? styles.coverPoster : optical ? styles.optical : editorial ? styles.editorial : null;
   return (
     <article className={layout ? `${styles.poster} ${layout}` : styles.poster} lang="zh-CN">
       <header className={styles.header}>
@@ -85,7 +89,8 @@ export function PromoPoster({ deck, page, index, labels }: {
         </section>)}
         <footer className={styles.footer}><span>{number}</span><span>{showInlinePrice ? labels.focus : labels.budgetPriceNotice}</span></footer>
       </>}
-      {page.kind === "end" && <PromoEnd deck={deck} labels={labels} number={number} editorial={editorial} />}
+      {page.kind === "end" && (optical ? <PromoOpticalEnd catalog={deck.catalog} labels={labels} number={number} />
+        : <PromoEnd deck={deck} labels={labels} number={number} editorial={editorial} />)}
     </article>
   );
 }
