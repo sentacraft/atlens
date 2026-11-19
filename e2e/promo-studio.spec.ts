@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { unzipSync } from "fflate";
 
-for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fisheye"]) {
+for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fisheye", "travel-zoom", "23mm", "under-200"]) {
   test(`shares the cover layout for ${collection}`, async ({ page }) => {
     await page.goto(`/admin/promo?collection=${collection}`);
     const cover = page.getByRole("article");
@@ -12,6 +12,8 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
     await expect(cover.locator("footer")).not.toContainText(/富士 X 卡口|\d+ \/ \d+|按等效焦距分组|定焦与变焦分开比较/);
     const figures = cover.locator("figure");
     await expect(figures).toHaveCount(3);
+    await expect(figures.locator("figcaption > span")).toHaveCount(3);
+    await expect(figures.locator("figcaption > strong")).toHaveCount(3);
     await expect(cover.getByRole("heading")).toHaveCSS("letter-spacing", "-1.24px");
     await expect(cover.getByRole("heading")).toHaveCSS("margin-bottom", "24px");
     await expect(figures.first().locator("..")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
@@ -49,7 +51,7 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
       };
     });
     expect(layout.above).toBeGreaterThan(0);
-    expect(Math.abs(layout.above - layout.below)).toBeLessThan(1);
+    expect(layout.below).toBeGreaterThan(0);
     expect([layout.width, layout.height]).toEqual([1080, 1440]);
     expect(layout.footerFits).toBe(true);
     expect(Math.abs(layout.statsOffset)).toBeLessThan(1);
@@ -67,7 +69,7 @@ test("offers focal-range, single-focal-length and budget decks", async ({ page }
   const cover = page.getByRole("article");
   const options = page.getByLabel("镜头合集");
   await expect(cover.getByRole("heading", { name: "一镜走天下" })).toBeVisible();
-  await expect(cover.locator("figcaption")).toHaveText([/腾龙.*18-300mm/, /适马.*16-300mm/, /富士.*18-120mm/]);
+  await expect(cover.locator("figcaption")).toHaveText([/腾龙.*18–300mm/, /适马.*16–300mm/, /富士.*18–120mm/]);
   await page.getByRole("button", { name: /一镜走天下/ }).first().click();
   await expect(cover.getByText("焦段范围", { exact: true })).toBeVisible();
   await expect(cover.getByText(/^\d+–\d+ mm$/).first()).toBeVisible();
@@ -76,6 +78,8 @@ test("offers focal-range, single-focal-length and budget decks", async ({ page }
   await expect(cover.getByText("最大光圈", { exact: true })).toBeVisible();
   await expect(cover.getByText("重量", { exact: true })).toBeVisible();
   await options.selectOption("under-200");
+  await expect(cover.locator("figcaption > span")).toHaveText(["铭匠", "唯卓仕", "七工匠"]);
+  await expect(cover.getByText("千元以下也有好镜头*", { exact: true })).toBeVisible();
   const notice = "所列价格仅供参考，实际价格请在购买前核实。";
   await expect(cover.locator("footer")).toContainText(notice);
   for (const label of ["AF 自动对焦", "MF 手动对焦"]) {

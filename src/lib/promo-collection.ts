@@ -55,7 +55,6 @@ const specOrder: Record<PromoSpec, (lens: Lens) => number | undefined> = {
 export interface PromoLens {
   id: string;
   name: string;
-  caption?: string;
   brand: string;
   focus: "AF" | "MF";
   focal: string;
@@ -88,7 +87,7 @@ export interface PromoDeck {
   scope?: string;
   lensCount: number;
   brandCount: number;
-  cover: PromoLens[];
+  cover: (PromoLens & { caption: string })[];
   pages: PromoPage[];
   theme: PromoTheme;
   related: { slug: string; title: string; description: string; count: number }[];
@@ -168,6 +167,12 @@ export function promoLens(lens: Lens, brand: string, image: string): PromoLens {
     referencePrice: reference === undefined ? undefined : `¥${formatReferenceAmount.format(reference)}`,
     image,
   };
+}
+
+export function promoCoverCaption(lens: PromoLens) {
+  const prefix = lens.name.match(/^(?:XF|XC|AF|MF)\s/i)?.[0] ?? "";
+  const aperture = lens.aperture === "—" ? "" : ` ${lens.aperture.replace(/^f\//, "F")}`;
+  return `${prefix}${lens.focal}mm${aperture}`;
 }
 
 export function promoPageNumber(page: number): string {

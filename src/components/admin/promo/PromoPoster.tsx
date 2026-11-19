@@ -42,9 +42,10 @@ export function PromoPoster({ deck, page, index, labels, endStyle }: {
       {page.kind === "cover" && <>
         <p className={styles.coverMount}>{labels.mount}</p>
         <h2 className={styles.coverTitle}>{deck.title}</h2>
-        <p className={styles.coverSubtitle}>{deck.subtitle}{deck.scope && <sup> *</sup>}</p>
+        <p className={styles.coverSubtitle}>{deck.subtitle}{deck.scope && <sup className={styles.coverNoteMark}>*</sup>}</p>
         <div className={styles.coverImages} style={{ gridTemplateColumns: `repeat(${deck.cover.length}, minmax(0, 1fr))` }}>
-          {deck.cover.map((lens) => <figure key={lens.id}><LensPhoto lens={lens} width={248} height={320} /><figcaption>{lens.caption ?? `${lens.brand} · ${lens.name}`}</figcaption></figure>)}
+          {deck.cover.map((lens) => <figure key={lens.id}><LensPhoto lens={lens} width={285} height={368} /><figcaption><span>{lens.brand}</span>
+            <strong className={lens.focal.includes("–") ? styles.coverZoomName : undefined}>{lens.caption}</strong></figcaption></figure>)}
         </div>
         <footer className={styles.coverFooter}>
           <div className={styles.coverStats}>

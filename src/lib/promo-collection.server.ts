@@ -4,7 +4,7 @@ import { THEME_GROUPS } from "@/lib/collections";
 import { getPresetBySlug } from "@/lib/curated-presets";
 import { getLensesByMount } from "@/lib/lens/data";
 import { getLensImageUrl } from "@/lib/lens/image";
-import { buildPromoGroupPages, promoLens, PROMO_THEMES, type PromoDeck } from "@/lib/promo-collection";
+import { buildPromoGroupPages, promoCoverCaption, promoLens, PROMO_THEMES, type PromoDeck } from "@/lib/promo-collection";
 import zh from "@/messages/zh.json";
 
 const SLUGS = Object.keys(PROMO_THEMES) as (keyof typeof PROMO_THEMES)[];
@@ -14,7 +14,7 @@ const COVER_PICKS: Record<(typeof SLUGS)[number], readonly [string, string, stri
   "fast-aperture-primes": ["sigma-contemporary-16mm-f14-dc-dn-x", "fujifilm-xf-35mmf14-r-x", "fujifilm-xf-56mmf12-r-wr-x"],
   fisheye: ["laowa-cf-4mmf28-210-circular-fisheye-x", "ttartisan-aps-c-7p5mm-f2-fisheye-x", "laowa-cf-4p5-10mmf28-fisheye-zoom-x"],
   "23mm": ["fujifilm-xf-23mmf2-r-wr-x", "sigma-contemporary-23mm-f14-dc-dn-x", "viltrox-af-23mm-f14-x"],
-  "under-200": ["viltrox-af-35mm-f17-air-x", "ttartisan-af-27mm-f28-x", "7artisans-af-25mm-f18-x"],
+  "under-200": ["ttartisan-af-27mm-f28-x", "viltrox-af-35mm-f17-air-x", "7artisans-af-25mm-f18-x"],
   "travel-zoom": [
     "tamron-18-300mm-f35-63-di-iii-a-vc-vxd-x",
     "sigma-contemporary-16-300mm-f35-67-dc-os-x",
@@ -62,13 +62,13 @@ export function getPromoCollection(slug: string | undefined) {
   const deck: PromoDeck = {
     slug: collection.slug,
     title: pancake ? promoLabels.pancakeTitle : collection.title.zh,
-    subtitle: pancake ? promoLabels.pancakeSubtitle : collection.shortDescription.zh,
+    subtitle: pancake ? promoLabels.pancakeSubtitle : source.id === "under-200" ? promoLabels.budgetSubtitle : collection.shortDescription.zh,
     scope: pancake ? promoLabels.pancakeScope : source.id === "under-200" ? promoLabels.budgetPriceNotice : undefined,
     lensCount: lenses.length,
     brandCount: new Set(lenses.map((lens) => lens.brand)).size,
     cover: picks.map((lens) => {
       const row = toRow(lens);
-      return { ...row, caption: pancake ? `${row.brand} ${row.name.split(/ F\d/)[0]}` : undefined };
+      return { ...row, caption: promoCoverCaption(row) };
     }),
     pages: [{ kind: "cover" }, ...buildPromoGroupPages(lenses, toRow, source.theme).map((page) => ({ kind: "group" as const, ...page })), { kind: "end" }],
     theme: source.theme,

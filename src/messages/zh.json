@@ -9,6 +9,7 @@
     "presetName": "小红书组图",
     "rules": "保留 Atlens 署名和参考价；不显示价格来源、购买渠道或二维码。",
     "priceLabel": "参考价",
+    "budgetSubtitle": "千元以下也有好镜头",
     "budgetPriceNotice": "所列价格仅供参考，实际价格请在购买前核实。",
     "preview": "组图预览",
     "cover": "封面",
