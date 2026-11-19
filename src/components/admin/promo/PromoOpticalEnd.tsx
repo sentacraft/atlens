@@ -5,8 +5,8 @@ import type { PromoDeck } from "@/lib/promo-collection";
 import type { PromoLabels } from "./PromoPoster";
 import styles from "./promo-poster.module.css";
 
-export function PromoOpticalEnd({ catalog, labels, number }: {
-  catalog: PromoDeck["catalog"]; labels: PromoLabels; number: string;
+export function PromoOpticalEnd({ catalog, labels }: {
+  catalog: PromoDeck["catalog"]; labels: PromoLabels;
 }) {
   return <>
     <section className={styles.opticalBody}>
@@ -32,6 +32,6 @@ export function PromoOpticalEnd({ catalog, labels, number }: {
         </div>
       </div>
     </section>
-    <footer className={styles.opticalFooter}>{number}</footer>
+    <hr className={styles.opticalFooter} aria-hidden="true" />
   </>;
 }

@@ -11,8 +11,8 @@ function Measurement({ value, unit, compact }: { value: string; unit: string; co
   return compact ? <>{value}<small>{unit}</small></> : `${value} ${unit}`;
 }
 
-export function PromoEnd({ deck, labels, number, editorial }: {
-  deck: PromoDeck; labels: PromoLabels; number: string; editorial: boolean;
+export function PromoEnd({ deck, labels, editorial }: {
+  deck: PromoDeck; labels: PromoLabels; editorial: boolean;
 }) {
   const title = editorial ? labels.moreFisheye : deck.slug === "pancake" ? labels.morePancake : labels.more;
   const stats = `${deck.catalog.brands} ${labels.brandUnit} · ${deck.catalog.lenses} ${labels.lensUnit}`;
@@ -59,7 +59,6 @@ export function PromoEnd({ deck, labels, number, editorial }: {
     </section>
     <footer className={styles.endFooter}>
       <div><p>{labels.visit}</p><strong>{SITE.host}</strong></div>
-      <span>{number}</span>
     </footer>
   </>;
 }

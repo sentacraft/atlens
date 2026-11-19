@@ -9,7 +9,7 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
     const mount = cover.getByText("富士 X 卡口", { exact: true });
     await expect(mount).toBeVisible();
     expect(await mount.evaluate((item) => item.nextElementSibling?.tagName)).toBe("H2");
-    await expect(cover.locator("footer")).not.toContainText("富士 X 卡口");
+    await expect(cover.locator("footer")).not.toContainText(/富士 X 卡口|\d+ \/ \d+|按等效焦距分组|定焦与变焦分开比较/);
     const figures = cover.locator("figure");
     await expect(figures).toHaveCount(3);
     await expect(cover.getByRole("heading")).toHaveCSS("letter-spacing", "-1.24px");
@@ -28,8 +28,8 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
       const above = row.top - photos.previousElementSibling!.getBoundingClientRect().bottom;
       const footer = poster.querySelector("footer")!;
       const below = footer.getBoundingClientRect().top - row.bottom;
-      const [lenses, brands, page, note] = [...footer.children];
-      const centers = [lenses, brands, page].map((item) => {
+      const [lenses, brands, note] = [...footer.children];
+      const centers = [lenses, brands].map((item) => {
         const { top, height } = item.getBoundingClientRect();
         return top + height / 2;
       });
@@ -38,8 +38,8 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
         above, below, height: poster.scrollHeight, width: poster.scrollWidth,
         footerFits: footer.scrollWidth === footer.clientWidth,
         footerRows: getComputedStyle(footer).gridTemplateRows,
-        footerUnwrapped: [lenses, brands, page, ...(note ? [note] : [])].every((item) => getComputedStyle(item).whiteSpace === "nowrap"),
-        noteOnOwnRow: !note || note.getBoundingClientRect().top >= Math.max(...[lenses, brands, page].map((item) => item.getBoundingClientRect().bottom)),
+        footerUnwrapped: [lenses, brands, ...(note ? [note] : [])].every((item) => getComputedStyle(item).whiteSpace === "nowrap"),
+        noteOnOwnRow: !note || note.getBoundingClientRect().top >= Math.max(...[lenses, brands].map((item) => item.getBoundingClientRect().bottom)),
       };
     });
     expect(layout.above).toBeGreaterThan(0);
@@ -108,6 +108,7 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
   await expect(fisheye.getByText(/^\d+ 个品牌 · \d+ 支镜头$/)).toBeVisible();
   await expect(fisheye.getByText(/^共 \d+ 个$/)).toBeVisible();
   await expect(fisheye.getByRole("table")).toHaveCount(0);
+  await expect(fisheye).not.toContainText("04 / 04");
   await endStyle.selectOption("detailed");
   await expect(fisheye.getByRole("heading", { name: "不止鱼眼镜头" })).toBeVisible();
   await expect(fisheye.getByRole("heading", { name: "主题合集" })).toBeVisible();
@@ -126,6 +127,7 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
   const preview = page.getByRole("article");
   await expect(preview.getByText("33.7 mm")).toBeVisible();
   await expect(preview.getByText("116 g")).toBeVisible();
+  await expect(preview.locator("footer")).toContainText("03 / 06");
   await page.getByRole("button", { name: "等效 15–21 mm" }).click();
   await expect(preview.getByText("等效 15 mm", { exact: false })).toHaveCount(0);
   await expect(preview.getByText("等效 21 mm", { exact: false })).toHaveCount(0);
@@ -147,6 +149,7 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
   await expect(comparison.getByRole("cell", { name: "77.8 mm" })).toBeVisible();
   await expect(comparison.getByRole("cell", { name: "180 g" })).toBeVisible();
   await expect(preview.getByText("atlens.app", { exact: true })).toBeVisible();
+  await expect(preview).not.toContainText("06 / 06");
   expect(await preview.evaluate((node) => node.scrollHeight)).toBe(1440);
   const downloadEvent = page.waitForEvent("download");
   await page.getByRole("button", { name: /下载整套/ }).click();
@@ -159,7 +162,7 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
     expect(png.getUint32(0)).toBe(0x89504e47);
     expect([png.getUint32(16), png.getUint32(20)]).toEqual([1080, 1440]);
   }
-  const hasRightAlignedFooter = await page.evaluate(async (base64) => {
+  const hasInkInCoverPageNumberArea = await page.evaluate(async (base64) => {
     const image = new Image();
     image.src = `data:image/png;base64,${base64}`;
     await image.decode();
@@ -171,5 +174,5 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
     const { data } = context.getImageData(990, 1270, 18, 80);
     return data.some((value, index) => index % 4 === 0 && value < 160);
   }, Buffer.from(archive["01-pancake.png"]).toString("base64"));
-  expect(hasRightAlignedFooter).toBe(true);
+  expect(hasInkInCoverPageNumberArea).toBe(false);
 });

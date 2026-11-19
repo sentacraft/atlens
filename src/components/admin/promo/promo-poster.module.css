@@ -14,8 +14,6 @@
 .coverFooter { display: grid; align-items: center; grid-template-columns: max-content max-content 1fr; grid-template-rows: max-content 28px; gap: 10px 36px; padding-top: 30px; font-size: 30px; font-weight: 600; white-space: nowrap; }
 .footer { margin-top: auto; display: flex; align-items: baseline; justify-content: space-between; }
 .coverFooter b { font: 700 64px/1 var(--font-source-serif-4), Georgia, serif; }
-/* Screenshot cloning resolves the grid item's auto margin to zero. */
-.coverPage { justify-self: end; text-align: right; font-size: 26px; font-weight: 400; color: #52525b; }
 .groupTitle { margin: 42px 0 16px; font-size: 78px; font-weight: 700; letter-spacing: -.035em; line-height: 1.12; }
 .groupSubtitle { margin: 0 0 32px; font-size: 31px; color: #52525b; }
 .row { --primary-col: 168px; --secondary-col: 164px; --column-gap: 20px; display: grid; grid-template-columns: 108px minmax(0, 1fr) var(--primary-col) var(--secondary-col); align-items: center; gap: var(--column-gap); }
@@ -100,7 +98,6 @@
 .editorial .endFooter { padding-top: 19px; border-top: 1px solid #d4d4d8; }
 .editorial .endFooter p { margin-bottom: 6px; font-size: 26px; font-weight: 550; }
 .editorial .endFooter strong { font-size: 43px; font-weight: 650; letter-spacing: .015em; }
-.editorial .endFooter > span { color: #71717a; font-size: 22px; letter-spacing: .075em; }
 .opticalBody { flex: 1; display: grid; place-items: center; }
 .opticalLayout { position: relative; width: 936px; height: 840px; }
 .opticalLines { position: absolute; inset: 0; color: #d4d4d8; }
@@ -115,6 +112,6 @@
 .opticalMtf { top: 620px; left: 13px; }
 .opticalIris { top: 682px; right: 4px; display: flex; align-items: center; gap: 8px; }
 .opticalIris .opticalAiTag { border-radius: 6px; padding: 2px 7px; font-size: 19px; }
-.opticalFooter { border-top: 1px solid #d4d4d8; padding-top: 20px; color: #71717a; text-align: right; font-size: 24px; font-variant-numeric: tabular-nums; letter-spacing: .07em; }
+.opticalFooter { margin: 0 0 49px; border: 0; border-top: 1px solid #d4d4d8; }
 .viewport { container-type: inline-size; width: 100%; max-width: 352px; aspect-ratio: 3 / 4; overflow: hidden; }
 .previewScaled { transform-origin: top left; transform: scale(tan(atan2(100cqw, 1080px))); }

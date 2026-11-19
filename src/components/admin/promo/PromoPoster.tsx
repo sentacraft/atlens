@@ -29,8 +29,6 @@ export function PromoPoster({ deck, page, index, labels, endStyle }: {
   const listing = page.kind === "group" && page.zoom ? deck.theme.zoom ?? deck.theme : deck.theme;
   const showActual = page.kind === "group" && page.groups.length === 1 && !listing.groupBy;
   const showInlinePrice = !listing.columns.includes("referencePrice");
-  const coverOrder = deck.theme.zoom ? labels.lensTypeOrder : deck.theme.groupBy === "focus" ? labels.focusOrder
-    : deck.theme.groupBy === "collection" ? labels[deck.theme.order] : labels.focalOrder;
   const optical = page.kind === "end" && endStyle === "optical";
   const editorial = page.kind === "end" && !optical && deck.slug === "fisheye";
   const markSize = optical || editorial ? 42 : 52;
@@ -50,7 +48,6 @@ export function PromoPoster({ deck, page, index, labels, endStyle }: {
         </div>
         <footer className={styles.coverFooter}>
           <span><b>{deck.lensCount}</b> {labels.lensUnit}</span><span><b>{deck.brandCount}</b> {labels.brandUnit}</span>
-          <span className={styles.coverPage}>{coverOrder}<br />{number}</span>
           {deck.scope && <p className={styles.scope}>* {deck.scope}</p>}
         </footer>
       </>}
@@ -89,8 +86,8 @@ export function PromoPoster({ deck, page, index, labels, endStyle }: {
         </section>)}
         <footer className={styles.footer}><span>{number}</span><span>{showInlinePrice ? labels.focus : labels.budgetPriceNotice}</span></footer>
       </>}
-      {page.kind === "end" && (optical ? <PromoOpticalEnd catalog={deck.catalog} labels={labels} number={number} />
-        : <PromoEnd deck={deck} labels={labels} number={number} editorial={editorial} />)}
+      {page.kind === "end" && (optical ? <PromoOpticalEnd catalog={deck.catalog} labels={labels} />
+        : <PromoEnd deck={deck} labels={labels} editorial={editorial} />)}
     </article>
   );
 }
