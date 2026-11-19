@@ -194,13 +194,9 @@ export default function LensImageViewer(props: Props) {
       const body = document.body;
       const root = document.documentElement;
       const rootOverflow = root.style.overflow;
-      const overflow = body.style.overflow;
-      const paddingRight = body.style.paddingRight;
-      const scrollbar = window.innerWidth - document.documentElement.clientWidth;
-      if (scrollbar > 0) {body.style.paddingRight = `${parseFloat(getComputedStyle(body).paddingRight) + scrollbar}px`;}
-      body.style.overflow = "hidden";
+      // Lock the viewport without making body a scroll container for sticky navigation.
       root.style.overflow = "hidden";
-      unlock = () => {root.style.overflow = rootOverflow;body.style.overflow = overflow;body.style.paddingRight = paddingRight;};
+      unlock = () => {root.style.overflow = rootOverflow;};
       pswp.init();
       const { scrollWrap } = pswp;
       if (scrollWrap && pswp.element) {

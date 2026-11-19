@@ -96,7 +96,7 @@ for (const width of [375, 1280]) {
       await trigger.click();
       const dialog = page.getByRole("dialog");
       await expectSlide(dialog, SECOND_IMAGE);
-      await expect(page.locator("body")).toHaveCSS("overflow", "hidden");
+      await expect(page.locator("html")).toHaveCSS("overflow", "hidden");
       await dialog.getByRole("button", { name: "Previous image" }).click();
       await expectSlide(dialog, PRIMARY);
       await dialog.getByRole("button", { name: "Close image viewer" }).click();
