@@ -26,6 +26,7 @@ export function PromoPoster({ deck, page, index, labels }: {
         <span>{labels.brandLine}</span>
       </header>
       {page.kind === "cover" && <>
+        <p className={styles.coverMount}>{labels.mount}</p>
         <h2 className={styles.coverTitle}>{deck.title}</h2>
         <p className={styles.coverSubtitle}>{deck.subtitle}{deck.scope && <sup> *</sup>}</p>
         <div className={styles.coverImages} style={{ gridTemplateColumns: `repeat(${deck.cover.length}, minmax(0, 1fr))` }}>
@@ -33,7 +34,7 @@ export function PromoPoster({ deck, page, index, labels }: {
         </div>
         <footer className={styles.coverFooter}>
           <span><b>{deck.lensCount}</b> {labels.lensUnit}</span><span><b>{deck.brandCount}</b> {labels.brandUnit}</span>
-          <span className={styles.coverPage}>{labels.mount} · {labels.focalOrder}<br />{number}</span>
+          <span className={styles.coverPage}>{labels.focalOrder}<br />{number}</span>
           {deck.scope && <p className={styles.scope}>* {deck.scope}</p>}
         </footer>
       </>}

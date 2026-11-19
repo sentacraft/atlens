@@ -6,6 +6,10 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
   test(`shares the cover layout for ${collection}`, async ({ page }) => {
     await page.goto(`/admin/promo?collection=${collection}`);
     const cover = page.getByRole("article");
+    const mount = cover.getByText("富士 X 卡口", { exact: true });
+    await expect(mount).toBeVisible();
+    expect(await mount.evaluate((item) => item.nextElementSibling?.tagName)).toBe("H2");
+    await expect(cover.locator("footer")).not.toContainText("富士 X 卡口");
     const figures = cover.locator("figure");
     await expect(figures).toHaveCount(3);
     await expect(cover.getByRole("heading")).toHaveCSS("letter-spacing", "-1.24px");
@@ -28,6 +32,7 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
       return {
         above, below, height: poster.scrollHeight, width: poster.scrollWidth,
         footerFits: footer.scrollWidth === footer.clientWidth,
+        footerRows: getComputedStyle(footer).gridTemplateRows,
         footerUnwrapped: [lenses, brands, page, ...(note ? [note] : [])].every((item) => getComputedStyle(item).whiteSpace === "nowrap"),
         noteOnOwnRow: !note || note.getBoundingClientRect().top >= Math.max(...[lenses, brands, page].map((item) => item.getBoundingClientRect().bottom)),
       };
@@ -36,6 +41,8 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
     expect(Math.abs(layout.above - layout.below)).toBeLessThan(1);
     expect([layout.width, layout.height]).toEqual([1080, 1440]);
     expect(layout.footerFits).toBe(true);
+    expect(layout.footerRows.split(" ")).toHaveLength(2);
+    expect(layout.footerRows).toMatch(/ 28px$/);
     expect(layout.footerUnwrapped).toBe(true);
     expect(layout.noteOnOwnRow).toBe(true);
   });
