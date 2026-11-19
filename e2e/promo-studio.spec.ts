@@ -10,6 +10,11 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
   await collection.selectOption("fisheye");
   await expect(collection).toHaveValue("fisheye");
   await expect(page.getByRole("heading", { name: "鱼眼镜头" })).toBeVisible();
+  await page.getByRole("button", { name: "等效 6–15 mm" }).click();
+  const fisheye = page.getByRole("article");
+  await expect(fisheye.getByText("视角", { exact: true })).toBeVisible();
+  await expect(fisheye.getByText("180°–175°", { exact: true })).toBeVisible();
+  await expect(fisheye.getByText("镜身长度", { exact: true })).toHaveCount(0);
   await collection.selectOption("pancake");
   await page.getByRole("button", { name: "等效 27 mm" }).click();
   const preview = page.getByRole("article");

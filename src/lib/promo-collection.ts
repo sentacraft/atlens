@@ -1,10 +1,35 @@
-import { focalEquiv, focalRangeDisplay, weightDisplay } from "@/lib/lens/format";
+import { angleOfViewDisplay, focalEquiv, focalRangeDisplay, primaryApertureDisplay, weightDisplay } from "@/lib/lens/format";
 import { pickNewEntry } from "@/lib/lens/pricing";
 import type { Lens } from "@/lib/types";
 
 export const PROMO_WIDTH = 1080;
 export const PROMO_HEIGHT = 1440;
 const MAX_ROWS = 6;
+
+type PromoSpec = "length" | "weight" | "aperture" | "angle";
+
+export const PROMO_THEMES = {
+  pancake: { columns: ["length", "weight"], order: "thinOrder", starts: [18, 23, 27] },
+  "under-200g": { columns: ["weight", "aperture"], order: "lightOrder", starts: [] },
+  "fast-aperture-primes": { columns: ["aperture", "weight"], order: "apertureOrder", starts: [] },
+  fisheye: { columns: ["angle", "weight"], order: "angleOrder", starts: [] },
+} as const satisfies Record<string, { columns: readonly [PromoSpec, PromoSpec]; order: string; starts: readonly number[] }>;
+
+export type PromoTheme = (typeof PROMO_THEMES)[keyof typeof PROMO_THEMES];
+
+function firstValue(value: number | [number, number] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+const specOrder: Record<PromoSpec, (lens: Lens) => number | undefined> = {
+  length: (lens) => lens.length?.mm,
+  weight: (lens) => firstValue(lens.weightG),
+  aperture: (lens) => firstValue(lens.maxAperture),
+  angle: (lens) => {
+    const angle = firstValue(lens.angleOfView);
+    return angle === undefined ? undefined : -angle;
+  },
+};
 
 export interface PromoLens {
   id: string;
@@ -14,6 +39,8 @@ export interface PromoLens {
   focus: "AF" | "MF";
   length: string;
   weight: string;
+  aperture: string;
+  angle: string;
   referencePrice?: string;
   image: string;
 }
@@ -39,6 +66,7 @@ export interface PromoDeck {
   brandCount: number;
   cover: PromoLens[];
   pages: PromoPage[];
+  theme: PromoTheme;
   related: { slug: string; title: string; description: string; count: number }[];
   catalog: { brands: number; lenses: number; themes: number };
   comparison: PromoLens[];
@@ -47,11 +75,13 @@ export interface PromoDeck {
 export function buildPromoGroupPages(
   lenses: readonly Lens[],
   toRow: (lens: Lens) => PromoLens,
-  starts: readonly number[] = [],
+  theme: PromoTheme,
 ): PromoGroupPage[] {
+  const { starts, columns: [primary] } = theme;
+  const order = specOrder[primary];
   const sorted = [...lenses].sort((a, b) => a.focalLengthMin - b.focalLengthMin ||
     a.focalLengthMax - b.focalLengthMax ||
-    (a.length?.mm ?? Infinity) - (b.length?.mm ?? Infinity) || a.id.localeCompare(b.id));
+    (order(a) ?? Infinity) - (order(b) ?? Infinity) || a.id.localeCompare(b.id));
   const pages: PromoGroupPage[] = [];
   let groups: FocalGroup[] = [];
   let count = 0;
@@ -93,6 +123,8 @@ export function promoLens(lens: Lens, brand: string, image: string): PromoLens {
     focus: lens.af ? "AF" : "MF",
     length: lens.length?.mm?.toString() ?? "—",
     weight: weightDisplay(lens.weightG, "") ?? "—",
+    aperture: primaryApertureDisplay(lens) ?? "—",
+    angle: angleOfViewDisplay(lens.angleOfView) ?? "—",
     referencePrice: reference?.currency === "CNY" ? `¥${formatReferenceAmount.format(reference.price)}` : undefined,
     image,
   };

@@ -4,7 +4,7 @@ import { THEME_GROUPS } from "@/lib/collections";
 import { getPresetBySlug } from "@/lib/curated-presets";
 import { getLensesByMount } from "@/lib/lens/data";
 import { getLensImageUrl } from "@/lib/lens/image";
-import { buildPromoGroupPages, promoLens, type PromoDeck } from "@/lib/promo-collection";
+import { buildPromoGroupPages, promoLens, PROMO_THEMES, type PromoDeck } from "@/lib/promo-collection";
 import zh from "@/messages/zh.json";
 
 const SLUGS = ["pancake", "under-200g", "fast-aperture-primes", "fisheye"] as const;
@@ -29,7 +29,7 @@ export function getPromoCollection(slug: string | undefined) {
     const stats = getCollectionStats(id, "zh");
     if (!stats) {return [];}
     const lenses = stats.lenses.filter((lens) => lens.mount === "X");
-    return lenses.length ? [{ collection: stats.collection, lenses }] : [];
+    return lenses.length ? [{ collection: stats.collection, lenses, theme: PROMO_THEMES[id] }] : [];
   });
   const source = sources.find(({ collection }) => collection.slug === slug) ?? sources[0];
   if (!source) {return null;}
@@ -59,7 +59,8 @@ export function getPromoCollection(slug: string | undefined) {
       const row = toRow(lens);
       return { ...row, caption: pancake ? `${row.brand} ${row.name.split(/ F\d/)[0]}` : undefined };
     }),
-    pages: [{ kind: "cover" }, ...buildPromoGroupPages(lenses, toRow, pancake ? [18, 23, 27] : []).map((page) => ({ kind: "group" as const, ...page })), { kind: "end" }],
+    pages: [{ kind: "cover" }, ...buildPromoGroupPages(lenses, toRow, source.theme).map((page) => ({ kind: "group" as const, ...page })), { kind: "end" }],
+    theme: source.theme,
     related: sources.filter((other) => other !== source).slice(0, 2).map(({ collection, lenses }) => ({
       ...(END_PAGE_COPY[collection.slug] ?? { title: collection.title.zh, description: collection.shortDescription.zh }),
       slug: collection.slug,

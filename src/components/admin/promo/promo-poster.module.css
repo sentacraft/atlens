@@ -15,10 +15,10 @@
 .coverPage { margin-left: auto; text-align: right; font-size: 26px; font-weight: 400; color: #52525b; }
 .groupTitle { margin: 36px 0 6px; font-size: 78px; font-weight: 700; letter-spacing: -.035em; line-height: 1.12; }
 .groupSubtitle { margin: 0 0 26px; font-size: 31px; color: #52525b; }
-.row { --length-col: 168px; --weight-col: 164px; --column-gap: 20px; display: grid; grid-template-columns: 108px minmax(0, 1fr) var(--length-col) var(--weight-col); align-items: center; gap: var(--column-gap); }
-.measurements { grid-column: span 2; display: grid; grid-template-columns: var(--length-col) var(--weight-col); gap: var(--column-gap); align-items: baseline; }
+.row { --primary-col: 168px; --secondary-col: 164px; --column-gap: 20px; display: grid; grid-template-columns: 108px minmax(0, 1fr) var(--primary-col) var(--secondary-col); align-items: center; gap: var(--column-gap); }
+.measurements { grid-column: span 2; display: grid; grid-template-columns: var(--primary-col) var(--secondary-col); gap: var(--column-gap); align-items: baseline; }
 .columns { padding-bottom: 16px; color: #52525b; font-size: 27px; }
-.columns span:nth-child(n+3), .length, .weight { text-align: right; font-variant-numeric: tabular-nums; }
+.columns span:nth-child(n+3), .primarySpec, .secondarySpec { text-align: right; font-variant-numeric: tabular-nums; }
 .lensRow { box-sizing: border-box; height: 152px; border-top: 2px solid #e4e4e7; }
 .thumb { display: grid; height: 104px; place-items: center; background: #fafafa; border-radius: 12px; }
 .identity { display: flex; flex-direction: column; gap: 10px; }
@@ -26,9 +26,10 @@
 .identityMeta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; color: #52525b; font-size: 27px; }
 .identityMeta b { border-radius: 8px; background: #f4f4f5; padding: 3px 9px; font-size: 25px; font-weight: 500; }
 .referencePrice { font-size: 22px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.length { font: 700 48px/1 var(--font-source-serif-4), Georgia, serif; white-space: nowrap; }
-.weight { font-size: 28px; color: #52525b; white-space: nowrap; }
-.length small, .weight small { font: 400 22px/1 var(--font-geist-sans), sans-serif; color: #52525b; }
+.primarySpec { font: 700 48px/1 var(--font-source-serif-4), Georgia, serif; white-space: nowrap; }
+.primarySpec.specRange { font-size: 30px; }
+.secondarySpec { font-size: 28px; color: #52525b; white-space: nowrap; }
+.primarySpec small, .secondarySpec small { font: 400 22px/1 var(--font-geist-sans), sans-serif; color: #52525b; }
 .footer { padding-top: 16px; color: #52525b; font-size: 26px; }
 .endTitle { margin: 40px 0 16px; font-size: 72px; line-height: 1.12; letter-spacing: -.035em; font-weight: 700; }
 .endStats { margin: 0; color: #52525b; font-size: 29px; }

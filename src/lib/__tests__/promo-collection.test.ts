@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { FILTERS } from "@/lib/collection-filters";
-import { buildPromoGroupPages, promoFileName, promoLens } from "@/lib/promo-collection";
+import { buildPromoGroupPages, promoFileName, promoLens, PROMO_THEMES } from "@/lib/promo-collection";
 import type { Lens } from "@/lib/types";
 import catalog from "@/data/lenses.json";
 
@@ -17,7 +17,7 @@ describe("collection promo pages", () => {
   });
 
   it("gives each pancake focal band its own page without dropping or duplicating a lens", () => {
-    const pages = buildPromoGroupPages(pancake, toRow, [18, 23, 27]);
+    const pages = buildPromoGroupPages(pancake, toRow, PROMO_THEMES.pancake);
     expect(pages.map(({ range }) => range)).toEqual(["15–21mm", "27mm", "35–38mm", "41–53mm"]);
     const rows = pages.flatMap((page) => page.groups.flatMap((group) => group.lenses));
     expect(rows.map((row) => row.id).sort()).toEqual(pancake.map((lens) => lens.id).sort());
@@ -26,10 +26,24 @@ describe("collection promo pages", () => {
     );
   });
 
+  it("sorts same-focal-length lenses by the theme's primary spec", () => {
+    const lens = pancake[0];
+    const lenses = [
+      { ...lens, id: "light", weightG: 60, maxAperture: 2.8, angleOfView: 170 },
+      { ...lens, id: "wide", weightG: 100, maxAperture: 1.4, angleOfView: 190 },
+      { ...lens, id: "unknown", weightG: 110, maxAperture: undefined, angleOfView: undefined },
+    ];
+    const ids = (theme: keyof typeof PROMO_THEMES) => buildPromoGroupPages(lenses, toRow, PROMO_THEMES[theme])[0].groups[0].lenses.map((row) => row.id);
+    expect(ids("under-200g")).toEqual(["light", "wide", "unknown"]);
+    expect(ids("fast-aperture-primes")).toEqual(["wide", "light", "unknown"]);
+    expect(ids("fisheye")).toEqual(["wide", "light", "unknown"]);
+    expect(toRow(lenses[2]).angle).toBe("—");
+  });
+
   it("continues an oversized group and keeps ranges and numbered filenames", () => {
     const source = pancake.find((lens) => Array.isArray(lens.weightG))!;
     const lenses = Array.from({ length: 8 }, (_, i) => ({ ...source, id: `lens-${i}` }));
-    const pages = buildPromoGroupPages(lenses, toRow);
+    const pages = buildPromoGroupPages(lenses, toRow, PROMO_THEMES["under-200g"]);
     expect(pages.map((page) => page.groups[0].lenses.length)).toEqual([6, 2]);
     expect(pages[0].groups[0].lenses[0].weight).toMatch(/^\d+–\d+$/);
     expect(promoFileName("pancake", 2)).toBe("02-pancake.png");
