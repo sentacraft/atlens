@@ -43,8 +43,10 @@ export function PromoPoster({ deck, page, index, labels }: {
           {group.lenses.map((lens) => <div key={lens.id} className={`${styles.row} ${styles.lensRow}`}>
             <span className={styles.thumb}><LensPhoto lens={lens} width={104} height={96} /></span>
             <div className={styles.identity}><strong>{lens.name}</strong><span>{lens.brand} <b>{lens.focus}</b></span></div>
-            <b className={styles.length}>{lens.length}{lens.length !== "—" && <> <small>mm</small></>}</b>
-            <span className={styles.weight}>{lens.weight}{lens.weight !== "—" && <> <small>g</small></>}</span>
+            <div className={styles.measurements}>
+              <b className={styles.length}>{lens.length}{lens.length !== "—" && <> <small>mm</small></>}</b>
+              <span className={styles.weight}>{lens.weight}{lens.weight !== "—" && <> <small>g</small></>}</span>
+            </div>
           </div>)}
         </section>)}
         <footer className={styles.footer}><span>{number}</span><span>{labels.focus}</span></footer>
@@ -53,7 +55,10 @@ export function PromoPoster({ deck, page, index, labels }: {
         <h2 className={styles.endTitle}>{deck.slug === "pancake" ? labels.morePancake : labels.more}</h2>
         <p className={styles.coverSubtitle}>{labels.moreSubtitle}</p>
         <ol className={styles.related}>
-          {deck.related.map((related, i) => <li key={related.title}><span>{promoPageNumber(i + 1)}</span><strong>{related.title}</strong><span>{related.description}</span></li>)}
+          {deck.related.map((related, i) => <li key={related.title}>
+            <span aria-hidden="true">{promoPageNumber(i + 1)}</span>
+            <div><strong>{related.title}</strong><p>{related.description}</p></div>
+          </li>)}
         </ol>
         <div className={styles.features}>{labels.reference}<br />{labels.compare}</div>
         <footer className={styles.footer}>{number}</footer>

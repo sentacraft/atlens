@@ -9,6 +9,10 @@ const PANCAKE_COVER = [
   "fujifilm-xf-18mmf2-r-x", "fujifilm-xf-23mmf28-r-wr-x", "voigtlander-27mm-f20-ultron-x",
 ];
 export const promoLabels = zh.PromoStudio;
+const END_PAGE_COPY: Record<string, PromoDeck["related"][number]> = {
+  "under-200g": { title: promoLabels.lightweightTitle, description: promoLabels.lightweightDetail },
+  "fast-aperture-primes": { title: promoLabels.fastPrimeTitle, description: promoLabels.fastPrimeDetail },
+};
 
 export function getPromoCollection(slug: string | undefined) {
   const sources = SLUGS.flatMap((id) => {
@@ -44,7 +48,9 @@ export function getPromoCollection(slug: string | undefined) {
     brandCount: new Set(lenses.map((lens) => lens.brand)).size,
     cover: picks.map(toRow),
     pages: [{ kind: "cover" }, ...buildPromoGroupPages(lenses, toRow, pancake ? [18, 23, 27] : []).map((page) => ({ kind: "group" as const, ...page })), { kind: "end" }],
-    related: sources.filter((other) => other !== source).map(({ collection }) => ({ title: collection.title.zh, description: collection.shortDescription.zh })),
+    related: sources.filter((other) => other !== source).map(({ collection }) => (
+      END_PAGE_COPY[collection.slug] ?? { title: collection.title.zh, description: collection.shortDescription.zh }
+    )),
   };
   return { deck, options: sources.map(({ collection }) => ({ slug: collection.slug, title: collection.title.zh })) };
 }
