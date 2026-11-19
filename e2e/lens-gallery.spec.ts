@@ -1,16 +1,26 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { test, expect, type CDPSession, type Locator, type Page } from "@playwright/test";
+import type { Lens } from "../src/lib/types";
 
 const publicAssets = JSON.parse(readFileSync(new URL("../src/data/public-assets.json", import.meta.url), "utf8")) as { assets: Record<string, { key: string }> };
-const LENS_PATH = "/en/lenses/x/viltrox-af-28mm-f45-x";
+const catalog = JSON.parse(readFileSync(new URL("../src/data/lenses.json", import.meta.url), "utf8")) as Lens[];
+const LENS_ID = "viltrox-af-28mm-f45-x";
+const LENS_PATH = `/en/lenses/x/${LENS_ID}`;
 const PRIMARY = /viltrox-af-28mm-f45-x\.webp/;
-const assetKey = publicAssets.assets["lens-images/viltrox-af-28mm-f45-x/001"].key;
-const SECOND_IMAGE = new RegExp(`^https://[^/]+/${assetKey.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`);
+const productImages = catalog.find(lens => lens.id === LENS_ID)!.images!.filter(image => image.role === "product");
+const GALLERY_IMAGES = [PRIMARY, ...productImages.map(image => {
+  const assetKey = publicAssets.assets[`lens-images/${LENS_ID}/${image.id}`].key;
+  return new RegExp(`^https://[^/]+/${assetKey.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`);
+})];
+const SECOND_IMAGE = GALLERY_IMAGES[1];
 const IMAGE_FIXTURE = fileURLToPath(new URL("../public/lenses/viltrox-af-28mm-f45-x.webp", import.meta.url));
 
 test.beforeEach(async ({ page }) => {
-  await page.route(SECOND_IMAGE, route => route.fulfill({ path: IMAGE_FIXTURE, contentType: "image/webp" }));
+  expect(GALLERY_IMAGES.length).toBeGreaterThan(1);
+  for (const source of GALLERY_IMAGES.slice(1)) {
+    await page.route(source, route => route.fulfill({ path: IMAGE_FIXTURE, contentType: "image/webp" }));
+  }
 });
 
 async function expectSlide(viewport: Locator, source: RegExp) {
@@ -67,10 +77,10 @@ for (const width of [375, 1280]) {
         await expect(page.getByRole("button", { name: "Main product image", exact: true }).locator("img")).toHaveCSS("padding", "4px");
         await next.click();
       } else {
-        await expect(trigger.locator('[data-slot="gallery-count"]')).toHaveText("1 / 2");
+        await expect(trigger.locator('[data-slot="gallery-count"]')).toHaveText(`1 / ${GALLERY_IMAGES.length}`);
         await expect(page.getByRole("button", { name: "Product image 2", exact: true })).toHaveCount(0);
         await mouseDrag(page, trigger);
-        await expect(trigger.locator('[data-slot="gallery-count"]')).toHaveText("2 / 2");
+        await expect(trigger.locator('[data-slot="gallery-count"]')).toHaveText(`2 / ${GALLERY_IMAGES.length}`);
       }
       await expectSlide(trigger, SECOND_IMAGE);
       await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -143,10 +153,19 @@ for (const width of [375, 1280]) {
         await expectSlide(dialog, SECOND_IMAGE);
         await expect.poll(async () => (await previous.boundingBox())!.x).toBe(previousBox.x);
         await expect.poll(async () => (await next.boundingBox())!.x).toBe(nextBox.x);
-        await expect(next).toBeDisabled();
         await expect(previous).toBeEnabled();
-        await previous.click();
-        await expectSlide(dialog, PRIMARY);
+        for (const source of GALLERY_IMAGES.slice(2)) {
+          await expect(next).toBeEnabled();
+          await next.click();
+          await expectSlide(dialog, source);
+        }
+        await expect(next).toBeDisabled();
+        for (const source of GALLERY_IMAGES.slice(0, -1).reverse()) {
+          await previous.click();
+          await expectSlide(dialog, source);
+        }
+        await expect(previous).toBeDisabled();
+        await expect(next).toBeEnabled();
       } else {
         await expect(previous).toBeHidden();
         await expect(next).toBeHidden();
