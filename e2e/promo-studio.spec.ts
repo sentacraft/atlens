@@ -2,18 +2,44 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { unzipSync } from "fflate";
 
-test("aligns cover photos and caption starts when lens names wrap differently", async ({ page }) => {
-  await page.goto("/admin/promo?collection=fast-aperture-primes");
-  const figures = page.getByRole("article").locator("figure");
-  await expect(figures).toHaveCount(3);
-  await page.evaluate(() => document.fonts.ready.then(() => undefined));
-  const positions = await figures.evaluateAll((nodes) => nodes.map((figure) => ({
-    photo: figure.querySelector("img")!.getBoundingClientRect().top,
-    caption: figure.querySelector("figcaption")!.getBoundingClientRect().top,
-  })));
-  expect(new Set(positions.map(({ photo }) => photo)).size).toBe(1);
-  expect(new Set(positions.map(({ caption }) => caption)).size).toBe(1);
-});
+for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fisheye"]) {
+  test(`shares the cover layout for ${collection}`, async ({ page }) => {
+    await page.goto(`/admin/promo?collection=${collection}`);
+    const cover = page.getByRole("article");
+    const figures = cover.locator("figure");
+    await expect(figures).toHaveCount(3);
+    await expect(cover.getByRole("heading")).toHaveCSS("letter-spacing", "-1.24px");
+    await expect(cover.getByRole("heading")).toHaveCSS("margin-bottom", "24px");
+    await expect(figures.first().locator("..")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await page.evaluate(() => document.fonts.ready.then(() => undefined));
+    const positions = await figures.evaluateAll((nodes) => nodes.map((figure) => ({
+      photo: figure.querySelector("img")!.getBoundingClientRect().top,
+      caption: figure.querySelector("figcaption")!.getBoundingClientRect().top,
+    })));
+    expect(new Set(positions.map(({ photo }) => photo)).size).toBe(1);
+    expect(new Set(positions.map(({ caption }) => caption)).size).toBe(1);
+    const layout = await cover.evaluate((poster) => {
+      const photos = poster.querySelector("figure")!.parentElement!;
+      const row = photos.getBoundingClientRect();
+      const above = row.top - photos.previousElementSibling!.getBoundingClientRect().bottom;
+      const footer = poster.querySelector("footer")!;
+      const below = footer.getBoundingClientRect().top - row.bottom;
+      const [lenses, brands, page, note] = [...footer.children];
+      return {
+        above, below, height: poster.scrollHeight, width: poster.scrollWidth,
+        footerFits: footer.scrollWidth === footer.clientWidth,
+        footerUnwrapped: [lenses, brands, page, ...(note ? [note] : [])].every((item) => getComputedStyle(item).whiteSpace === "nowrap"),
+        noteOnOwnRow: !note || note.getBoundingClientRect().top >= Math.max(...[lenses, brands, page].map((item) => item.getBoundingClientRect().bottom)),
+      };
+    });
+    expect(layout.above).toBeGreaterThan(0);
+    expect(Math.abs(layout.above - layout.below)).toBeLessThan(1);
+    expect([layout.width, layout.height]).toEqual([1080, 1440]);
+    expect(layout.footerFits).toBe(true);
+    expect(layout.footerUnwrapped).toBe(true);
+    expect(layout.noteOnOwnRow).toBe(true);
+  });
+}
 
 test("previews a collection and exports its numbered PNG deck", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "The archive assertions run on Chromium.");
