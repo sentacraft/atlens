@@ -52,7 +52,7 @@ export function PromoPoster({ deck, page, index, labels }: {
       </>}
       {page.kind === "group" && <>
         <h2 className={styles.groupTitle}>{promoPageTitle(deck, page, labels)}</h2>
-        <p className={styles.groupSubtitle}>{page.focus || page.zoom ? `${deck.title} · ` : deck.theme.zoom ? `${labels.primes} · ` : null}{showActual && `${labels.actual} ${page.groups[0].actual.replace("mm", " mm")} · `}{rowCount} {labels.lensUnit} · {labels[listing.order]}</p>
+        <p className={styles.groupSubtitle}>{page.focus || page.zoom ? `${deck.title} · ` : deck.theme.zoom ? `${labels.primes} · ` : null}{showActual && `${labels.actual} ${page.groups[0].actual.replace("mm", " mm")} · `}{rowCount} {labels.lensUnit}{listing.order && ` · ${labels[listing.order]}`}</p>
         <div className={`${styles.row} ${styles.columns}`}><span>{labels.lens}</span>{listing.columns.map((column) => <span key={column}>{column === "referencePrice" ? labels.priceLabel : labels[column]}</span>)}</div>
         {page.groups.map((group) => <section key={group.lenses[0].id}>
           {group.lenses.map((lens) => <div key={lens.id} className={`${styles.row} ${styles.lensRow}`}>

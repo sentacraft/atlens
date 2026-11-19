@@ -9,27 +9,23 @@ const MAX_ROWS = 6;
 
 type PromoSpec = "length" | "weight" | "aperture" | "angle" | "focal" | "referencePrice";
 
-type PromoOrder = "thinOrder" | "lightOrder" | "apertureOrder" | "angleOrder" | "wideEndOrder" | "wideApertureOrder" | "priceOrder" | "weightOrder";
+type PromoOrder = "wideEndOrder" | "wideApertureOrder" | "priceOrder" | "weightOrder";
 
-interface PromoListing {
+type PromoListing = {
   columns: readonly [PromoSpec, PromoSpec];
-  order: PromoOrder;
   starts?: readonly number[];
-  groupBy?: "collection" | "focus";
-}
+} & ({ groupBy?: never; order?: never } | { groupBy: "collection" | "focus"; order: PromoOrder });
 
-export interface PromoTheme extends PromoListing {
-  zoom?: PromoListing;
-}
+export type PromoTheme = PromoListing & { zoom?: PromoListing };
 
 export const PROMO_THEMES = {
-  pancake: { columns: ["length", "weight"], order: "thinOrder", starts: [18, 23, 27] },
+  pancake: { columns: ["length", "weight"], starts: [18, 23, 27] },
   "under-200g": {
-    columns: ["weight", "aperture"], order: "lightOrder",
+    columns: ["weight", "aperture"],
     zoom: { columns: ["weight", "focal"], order: "weightOrder", groupBy: "collection" },
   },
-  "fast-aperture-primes": { columns: ["aperture", "weight"], order: "apertureOrder" },
-  fisheye: { columns: ["angle", "weight"], order: "angleOrder" },
+  "fast-aperture-primes": { columns: ["aperture", "weight"] },
+  fisheye: { columns: ["angle", "weight"] },
   "travel-zoom": { columns: ["focal", "weight"], order: "wideEndOrder", groupBy: "collection" },
   "23mm": { columns: ["aperture", "weight"], order: "wideApertureOrder", groupBy: "collection" },
   "under-200": { columns: ["referencePrice", "aperture"], order: "priceOrder", groupBy: "focus" },
