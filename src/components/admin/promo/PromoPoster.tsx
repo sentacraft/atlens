@@ -41,7 +41,7 @@ export function PromoPoster({ deck, page, index, labels }: {
       {page.kind === "group" && <>
         <h2 className={styles.groupTitle}>{labels.equivalent} {page.range.replace("mm", " mm")}</h2>
         <p className={styles.groupSubtitle}>{compact ? null : `${labels.actual} ${page.groups[0].actual.replace("mm", " mm")} · `}{rowCount} {labels.lensUnit} · {labels[deck.theme.order]}</p>
-        <div className={`${styles.row} ${styles.columns}`}><span /><span>{labels.lens}</span>{deck.theme.columns.map((column) => <span key={column}>{labels[column]}</span>)}</div>
+        <div className={`${styles.row} ${styles.columns}`}><span>{labels.lens}</span>{deck.theme.columns.map((column) => <span key={column}>{labels[column]}</span>)}</div>
         {page.groups.map((group) => <section key={group.actual}>
           {group.lenses.map((lens) => <div key={lens.id} className={`${styles.row} ${styles.lensRow}`}>
             <span className={styles.thumb}><LensPhoto lens={lens} width={104} height={96} /></span>

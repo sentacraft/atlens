@@ -20,7 +20,8 @@
 .row { --primary-col: 168px; --secondary-col: 164px; --column-gap: 20px; display: grid; grid-template-columns: 108px minmax(0, 1fr) var(--primary-col) var(--secondary-col); align-items: center; gap: var(--column-gap); }
 .measurements { grid-column: span 2; display: grid; grid-template-columns: var(--primary-col) var(--secondary-col); gap: var(--column-gap); align-items: baseline; }
 .columns { padding-bottom: 16px; color: #52525b; font-size: 27px; }
-.columns span:nth-child(n+3), .primarySpec, .secondarySpec { text-align: right; font-variant-numeric: tabular-nums; }
+.columns > :first-child { grid-column: span 2; }
+.columns > :not(:first-child), .primarySpec, .secondarySpec { text-align: right; font-variant-numeric: tabular-nums; }
 .lensRow { box-sizing: border-box; height: 152px; border-top: 2px solid #e4e4e7; }
 .thumb { display: grid; height: 104px; place-items: center; background: #fafafa; border-radius: 12px; }
 .identity { display: flex; flex-direction: column; gap: 10px; }
