@@ -23,8 +23,9 @@
 .thumb { display: grid; height: 104px; place-items: center; background: #fafafa; border-radius: 12px; }
 .identity { display: flex; flex-direction: column; gap: 10px; }
 .identity strong { font-size: 34px; font-weight: 600; letter-spacing: -.015em; line-height: 1.15; overflow-wrap: anywhere; }
-.identity span { color: #52525b; font-size: 27px; }
-.identity b { margin-left: 6px; border-radius: 8px; background: #f4f4f5; padding: 3px 9px; font-size: 25px; font-weight: 500; }
+.identityMeta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; color: #52525b; font-size: 27px; }
+.identityMeta b { border-radius: 8px; background: #f4f4f5; padding: 3px 9px; font-size: 25px; font-weight: 500; }
+.referencePrice { font-size: 22px; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .length { font: 700 48px/1 var(--font-source-serif-4), Georgia, serif; white-space: nowrap; }
 .weight { font-size: 28px; color: #52525b; white-space: nowrap; }
 .length small, .weight small { font: 400 22px/1 var(--font-geist-sans), sans-serif; color: #52525b; }

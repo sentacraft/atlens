@@ -1,4 +1,5 @@
 import { focalEquiv, focalRangeDisplay, weightDisplay } from "@/lib/lens/format";
+import { pickNewEntry } from "@/lib/lens/pricing";
 import type { Lens } from "@/lib/types";
 
 export const PROMO_WIDTH = 1080;
@@ -13,6 +14,7 @@ export interface PromoLens {
   focus: "AF" | "MF";
   length: string;
   weight: string;
+  referencePrice?: string;
   image: string;
 }
 
@@ -80,7 +82,10 @@ export function buildPromoGroupPages(
   return pages;
 }
 
+const formatReferenceAmount = new Intl.NumberFormat("zh-CN");
+
 export function promoLens(lens: Lens, brand: string, image: string): PromoLens {
+  const reference = pickNewEntry(lens.pricing?.cn?.new);
   return {
     id: lens.id,
     name: lens.model,
@@ -88,6 +93,7 @@ export function promoLens(lens: Lens, brand: string, image: string): PromoLens {
     focus: lens.af ? "AF" : "MF",
     length: lens.length?.mm?.toString() ?? "—",
     weight: weightDisplay(lens.weightG, "") ?? "—",
+    referencePrice: reference?.currency === "CNY" ? `¥${formatReferenceAmount.format(reference.price)}` : undefined,
     image,
   };
 }

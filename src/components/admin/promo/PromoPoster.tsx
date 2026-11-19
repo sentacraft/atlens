@@ -42,7 +42,13 @@ export function PromoPoster({ deck, page, index, labels }: {
         {page.groups.map((group) => <section key={group.actual}>
           {group.lenses.map((lens) => <div key={lens.id} className={`${styles.row} ${styles.lensRow}`}>
             <span className={styles.thumb}><LensPhoto lens={lens} width={104} height={96} /></span>
-            <div className={styles.identity}><strong>{lens.name}</strong><span>{lens.brand} <b>{lens.focus}</b></span></div>
+            <div className={styles.identity}>
+              <strong>{lens.name}</strong>
+              <div className={styles.identityMeta}>
+                <span>{lens.brand}</span><b>{lens.focus}</b>
+                {lens.referencePrice && <span className={styles.referencePrice}>{labels.priceLabel} {lens.referencePrice}</span>}
+              </div>
+            </div>
             <div className={styles.measurements}>
               <b className={styles.length}>{lens.length}{lens.length !== "—" && <> <small>mm</small></>}</b>
               <span className={styles.weight}>{lens.weight}{lens.weight !== "—" && <> <small>g</small></>}</span>
