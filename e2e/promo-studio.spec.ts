@@ -29,7 +29,12 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
       const footer = poster.querySelector("footer")!;
       const below = footer.getBoundingClientRect().top - row.bottom;
       const [lenses, brands, page, note] = [...footer.children];
+      const centers = [lenses, brands, page].map((item) => {
+        const { top, height } = item.getBoundingClientRect();
+        return top + height / 2;
+      });
       return {
+        footerCenterSpread: Math.max(...centers) - Math.min(...centers),
         above, below, height: poster.scrollHeight, width: poster.scrollWidth,
         footerFits: footer.scrollWidth === footer.clientWidth,
         footerRows: getComputedStyle(footer).gridTemplateRows,
@@ -41,6 +46,7 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
     expect(Math.abs(layout.above - layout.below)).toBeLessThan(1);
     expect([layout.width, layout.height]).toEqual([1080, 1440]);
     expect(layout.footerFits).toBe(true);
+    expect(layout.footerCenterSpread).toBeLessThan(1);
     expect(layout.footerRows.split(" ")).toHaveLength(2);
     expect(layout.footerRows).toMatch(/ 28px$/);
     expect(layout.footerUnwrapped).toBe(true);
