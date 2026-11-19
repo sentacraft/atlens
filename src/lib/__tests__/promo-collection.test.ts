@@ -40,6 +40,38 @@ describe("collection promo pages", () => {
     expect(toRow(lenses[2]).angle).toBe("—");
   });
 
+  it("compares near-23mm lenses by aperture before focal length", () => {
+    const lens = pancake[0];
+    const pages = buildPromoGroupPages([
+      { ...lens, id: "short", focalLengthMin: 22, focalLengthMax: 22, maxAperture: 2.8 },
+      { ...lens, id: "wide", focalLengthMin: 24, focalLengthMax: 24, maxAperture: 1.4 },
+    ], toRow, PROMO_THEMES["23mm"]);
+    expect(pages).toHaveLength(1);
+    expect(pages[0].groups.flatMap((group) => group.lenses.map((row) => row.id))).toEqual(["wide", "short"]);
+  });
+
+  it("keeps AF and MF on separate pages and sorts by numeric mainland new price", () => {
+    const lens = pancake[0];
+    const priced = (id: string, af: boolean, price: number, focalLengthMin: number): Lens => ({
+      ...lens, id, af, focalLengthMin, focalLengthMax: focalLengthMin,
+      pricing: { cn: { new: [{ price, currency: "CNY", source: "Shop", url: "https://example.com", sampledAt: "2026-10-05" }] } },
+    });
+    const pages = buildPromoGroupPages([
+      priced("cheap-mf", false, 250, 18), priced("cheap-af", true, 99, 50), priced("pricey-af", true, 550, 16),
+      ...Array.from({ length: 5 }, (_, i) => priced(`af-${i}`, true, 600 + i, 18)),
+    ], toRow, PROMO_THEMES["under-200"]);
+    expect(pages.map((page) => page.focus)).toEqual(["AF", "AF", "MF"]);
+    expect(pages.map((page) => page.groups.flatMap((group) => group.lenses.map((row) => row.id)))).toEqual([
+      ["cheap-af", "pricey-af", "af-0", "af-1", "af-2", "af-3"], ["af-4"], ["cheap-mf"],
+    ]);
+  });
+
+  it("shows both ends of a travel zoom's actual focal range", () => {
+    const lens = { ...pancake[0], focalLengthMin: 18, focalLengthMax: 135 };
+    expect(toRow(lens).focal).toBe("18–135");
+    expect(PROMO_THEMES["travel-zoom"].columns).toEqual(["focal", "weight"]);
+  });
+
   it("continues an oversized group and keeps ranges and numbered filenames", () => {
     const source = pancake.find((lens) => Array.isArray(lens.weightG))!;
     const lenses = Array.from({ length: 8 }, (_, i) => ({ ...source, id: `lens-${i}` }));

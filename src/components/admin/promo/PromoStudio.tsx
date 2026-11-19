@@ -9,7 +9,7 @@ import { promoPageNumber, PROMO_WIDTH, PROMO_HEIGHT, type PromoDeck } from "@/li
 import { exportPromoZip } from "@/lib/promo-export";
 import { promoCollectionPath } from "@/lib/url/promo";
 import { ADMIN_PATH } from "@/lib/url/routes";
-import { PromoPoster, type PromoLabels } from "./PromoPoster";
+import { promoPageTitle, PromoPoster, type PromoLabels } from "./PromoPoster";
 import styles from "./promo-poster.module.css";
 
 export function PromoStudio({ deck, options, labels }: {
@@ -23,9 +23,7 @@ export function PromoStudio({ deck, options, labels }: {
   const [progress, setProgress] = useState<number | null>(null);
   const [status, setStatus] = useState<"error" | "downloaded" | null>(null);
   const exportRoot = useRef<HTMLDivElement>(null);
-  const pageTitles = deck.pages.map((page) => page.kind === "group"
-    ? `${labels.equivalent} ${page.range.replace("mm", " mm")}`
-    : labels[page.kind]);
+  const pageTitles = deck.pages.map((page) => promoPageTitle(deck, page, labels));
   const exporting = progress !== null;
 
   async function download() {

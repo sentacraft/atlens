@@ -7,7 +7,7 @@ import { getLensImageUrl } from "@/lib/lens/image";
 import { buildPromoGroupPages, promoLens, PROMO_THEMES, type PromoDeck } from "@/lib/promo-collection";
 import zh from "@/messages/zh.json";
 
-const SLUGS = ["pancake", "under-200g", "fast-aperture-primes", "fisheye"] as const;
+const SLUGS = Object.keys(PROMO_THEMES) as (keyof typeof PROMO_THEMES)[];
 const PANCAKE_COVER = [
   "fujifilm-xf-18mmf2-r-x", "fujifilm-xf-23mmf28-r-wr-x", "voigtlander-27mm-f20-ultron-x",
 ];

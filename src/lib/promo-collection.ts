@@ -6,22 +6,39 @@ export const PROMO_WIDTH = 1080;
 export const PROMO_HEIGHT = 1440;
 const MAX_ROWS = 6;
 
-type PromoSpec = "length" | "weight" | "aperture" | "angle";
+type PromoSpec = "length" | "weight" | "aperture" | "angle" | "focal" | "referencePrice";
+
+type PromoOrder = "thinOrder" | "lightOrder" | "apertureOrder" | "angleOrder" | "wideEndOrder" | "wideApertureOrder" | "priceOrder";
+
+export interface PromoTheme {
+  columns: readonly [PromoSpec, PromoSpec];
+  order: PromoOrder;
+  starts?: readonly number[];
+  groupBy?: "collection" | "focus";
+}
 
 export const PROMO_THEMES = {
   pancake: { columns: ["length", "weight"], order: "thinOrder", starts: [18, 23, 27] },
-  "under-200g": { columns: ["weight", "aperture"], order: "lightOrder", starts: [] },
-  "fast-aperture-primes": { columns: ["aperture", "weight"], order: "apertureOrder", starts: [] },
-  fisheye: { columns: ["angle", "weight"], order: "angleOrder", starts: [] },
-} as const satisfies Record<string, { columns: readonly [PromoSpec, PromoSpec]; order: string; starts: readonly number[] }>;
-
-export type PromoTheme = (typeof PROMO_THEMES)[keyof typeof PROMO_THEMES];
+  "under-200g": { columns: ["weight", "aperture"], order: "lightOrder" },
+  "fast-aperture-primes": { columns: ["aperture", "weight"], order: "apertureOrder" },
+  fisheye: { columns: ["angle", "weight"], order: "angleOrder" },
+  "travel-zoom": { columns: ["focal", "weight"], order: "wideEndOrder", groupBy: "collection" },
+  "23mm": { columns: ["aperture", "weight"], order: "wideApertureOrder", groupBy: "collection" },
+  "under-200": { columns: ["referencePrice", "aperture"], order: "priceOrder", groupBy: "focus" },
+} as const satisfies Record<string, PromoTheme>;
 
 function firstValue(value: number | [number, number] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function mainlandReference(lens: Lens) {
+  const entry = pickNewEntry(lens.pricing?.cn?.new);
+  return entry?.currency === "CNY" ? entry.price : undefined;
+}
+
 const specOrder: Record<PromoSpec, (lens: Lens) => number | undefined> = {
+  focal: (lens) => lens.focalLengthMin,
+  referencePrice: mainlandReference,
   length: (lens) => lens.length?.mm,
   weight: (lens) => firstValue(lens.weightG),
   aperture: (lens) => firstValue(lens.maxAperture),
@@ -37,6 +54,7 @@ export interface PromoLens {
   caption?: string;
   brand: string;
   focus: "AF" | "MF";
+  focal: string;
   length: string;
   weight: string;
   aperture: string;
@@ -52,6 +70,7 @@ interface FocalGroup {
 
 export interface PromoGroupPage {
   range: string;
+  focus?: PromoLens["focus"];
   groups: FocalGroup[];
 }
 
@@ -77,30 +96,37 @@ export function buildPromoGroupPages(
   toRow: (lens: Lens) => PromoLens,
   theme: PromoTheme,
 ): PromoGroupPage[] {
-  const { starts, columns: [primary] } = theme;
+  const { starts = [], groupBy, columns: [primary] } = theme;
   const order = specOrder[primary];
-  const sorted = [...lenses].sort((a, b) => a.focalLengthMin - b.focalLengthMin ||
-    a.focalLengthMax - b.focalLengthMax ||
-    (order(a) ?? Infinity) - (order(b) ?? Infinity) || a.id.localeCompare(b.id));
+  const sorted = [...lenses].sort((a, b) => {
+    const byFocus = groupBy === "focus" ? Number(b.af) - Number(a.af) : 0;
+    const bySpec = (order(a) ?? Infinity) - (order(b) ?? Infinity);
+    const byFocal = a.focalLengthMin - b.focalLengthMin || a.focalLengthMax - b.focalLengthMax;
+    return (groupBy ? byFocus || bySpec || byFocal : byFocal || bySpec) || a.id.localeCompare(b.id);
+  });
   const pages: PromoGroupPage[] = [];
   let groups: FocalGroup[] = [];
   let count = 0;
   let low = 0;
   let high = 0;
   let band = 0;
+  let focus: PromoLens["focus"] | undefined;
   function flush() {
-    if (count) {pages.push({ range: focalRangeDisplay(low, high), groups });}
+    if (count) {pages.push({ range: focalRangeDisplay(low, high), focus, groups });}
     groups = [];
     count = 0;
   }
   for (const lens of sorted) {
     const nextBand = starts.filter((start) => lens.focalLengthMin >= start).length;
-    if (count === MAX_ROWS || nextBand !== band) {flush();}
+    const nextFocus = groupBy === "focus" ? (lens.af ? "AF" : "MF") : undefined;
+    if (count === MAX_ROWS || nextBand !== band || nextFocus !== focus) {flush();}
     band = nextBand;
+    focus = nextFocus;
     const min = focalEquiv(lens.focalLengthMin, lens.mount);
     const max = focalEquiv(lens.focalLengthMax, lens.mount);
     const actual = focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax);
     if (!count) { low = min; high = max; }
+    low = Math.min(low, min);
     high = Math.max(high, max);
     const last = groups.at(-1);
     const row = toRow(lens);
@@ -115,17 +141,18 @@ export function buildPromoGroupPages(
 const formatReferenceAmount = new Intl.NumberFormat("zh-CN");
 
 export function promoLens(lens: Lens, brand: string, image: string): PromoLens {
-  const reference = pickNewEntry(lens.pricing?.cn?.new);
+  const reference = mainlandReference(lens);
   return {
     id: lens.id,
     name: lens.model,
     brand,
     focus: lens.af ? "AF" : "MF",
+    focal: focalRangeDisplay(lens.focalLengthMin, lens.focalLengthMax).replace(/mm$/, ""),
     length: lens.length?.mm?.toString() ?? "—",
     weight: weightDisplay(lens.weightG, "") ?? "—",
     aperture: primaryApertureDisplay(lens) ?? "—",
     angle: angleOfViewDisplay(lens.angleOfView) ?? "—",
-    referencePrice: reference?.currency === "CNY" ? `¥${formatReferenceAmount.format(reference.price)}` : undefined,
+    referencePrice: reference === undefined ? undefined : `¥${formatReferenceAmount.format(reference)}`,
     image,
   };
 }

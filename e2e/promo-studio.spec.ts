@@ -54,6 +54,28 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
   });
 }
 
+test("offers focal-range, single-focal-length and budget decks", async ({ page }) => {
+  await page.goto("/admin/promo?collection=travel-zoom");
+  const cover = page.getByRole("article");
+  const options = page.getByLabel("镜头合集");
+  await expect(cover.getByRole("heading", { name: "一镜走天下" })).toBeVisible();
+  await page.getByRole("button", { name: /一镜走天下/ }).first().click();
+  await expect(cover.getByText("焦段范围", { exact: true })).toBeVisible();
+  await expect(cover.getByText(/^\d+–\d+ mm$/).first()).toBeVisible();
+  await options.selectOption("23mm");
+  await page.getByRole("button", { name: /23mm 定焦镜头/ }).first().click();
+  await expect(cover.getByText("最大光圈", { exact: true })).toBeVisible();
+  await expect(cover.getByText("重量", { exact: true })).toBeVisible();
+  await options.selectOption("under-200");
+  for (const label of ["AF 自动对焦", "MF 手动对焦"]) {
+    await page.getByRole("button", { name: new RegExp(label) }).first().click();
+    await expect(cover.getByRole("heading", { name: label })).toBeVisible();
+    await expect(cover.getByText("参考价", { exact: true })).toBeVisible();
+    await expect(cover.getByText(/^¥[\d,]+$/).first()).toBeVisible();
+    await expect(cover.getByText(/^参考价 ¥/)).toHaveCount(0);
+  }
+});
+
 test("previews a collection and exports its numbered PNG deck", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "The archive assertions run on Chromium.");
   await page.goto("/admin");
