@@ -53,9 +53,9 @@
 .endCompare tbody tr:first-child { background: #fafafa; font-size: 31px; font-weight: 600; }
 .endCompare tbody tr:last-child { border-bottom: 2px solid #e4e4e7; }
 .endCompare tbody th { padding-left: 12px; text-align: left; color: #52525b; font-size: 25px; font-weight: 400; }
-.endCompare p { margin: 18px 0 0; color: #52525b; font-size: 26px; }
+.endCompare p { margin: 16px 0 24px; color: #52525b; font-size: 23px; }
 .endFooter { display: flex; align-items: end; justify-content: space-between; margin-top: auto; padding-top: 25px; border-top: 2px solid #e4e4e7; color: #52525b; font-size: 26px; }
-.endFooter p { margin: 0 0 7px; font-size: 27px; }
+.endFooter p { margin: 0 0 7px; color: #18181b; font-size: 28px; font-weight: 600; }
 .endFooter strong { color: #18181b; font: 700 49px/1.15 var(--font-source-serif-4), Georgia, serif; }
 .viewport { container-type: inline-size; width: 100%; max-width: 352px; aspect-ratio: 3 / 4; overflow: hidden; }
 .previewScaled { transform-origin: top left; transform: scale(tan(atan2(100cqw, 1080px))); }

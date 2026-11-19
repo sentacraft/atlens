@@ -1,6 +1,7 @@
 import "server-only";
 import { getCollectionStats } from "@/lib/collection-stats";
 import { THEME_GROUPS } from "@/lib/collections";
+import { getPresetBySlug } from "@/lib/curated-presets";
 import { getLensesByMount } from "@/lib/lens/data";
 import { getLensImageUrl } from "@/lib/lens/image";
 import { buildPromoGroupPages, promoLens, type PromoDeck } from "@/lib/promo-collection";
@@ -16,6 +17,7 @@ const END_PAGE_COPY: Record<string, Pick<PromoDeck["related"][number], "title" |
   "fast-aperture-primes": { title: promoLabels.fastPrimeTitle, description: promoLabels.fastPrimeDetail },
 };
 const catalogLenses = getLensesByMount("X", "zh");
+const comparisonIds = getPresetBySlug("35mm-equiv-primes")?.lensIds.slice(0, 2) ?? [];
 const catalog = {
   brands: new Set(catalogLenses.map((lens) => lens.brand)).size,
   lenses: catalogLenses.length,
@@ -64,7 +66,7 @@ export function getPromoCollection(slug: string | undefined) {
       count: lenses.length,
     })),
     catalog,
-    comparison: PANCAKE_COVER.slice(0, 2).flatMap((id) => {
+    comparison: comparisonIds.flatMap((id) => {
       const lens = catalogLenses.find((item) => item.id === id);
       return lens ? [toRow(lens)] : [];
     }),

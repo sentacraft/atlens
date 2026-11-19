@@ -30,7 +30,11 @@ test("previews a collection and exports its numbered PNG deck", async ({ page, b
   await expect(preview.getByText("AI", { exact: true })).toBeVisible();
   await expect(preview.getByText("想找一支轻便的夜拍镜头，有推荐吗？")).toBeVisible();
   await expect(preview.getByText("富士 18 和 23，哪支更适合扫街？")).toBeVisible();
-  await expect(preview.getByRole("table").getByRole("cell", { name: "33.7 mm" })).toBeVisible();
+  const comparison = preview.getByRole("table");
+  await expect(comparison.getByRole("columnheader", { name: "XF 23mm F1.4 R LM WR" })).toBeVisible();
+  await expect(comparison.getByRole("columnheader", { name: "XF 23mm F2 R WR" })).toBeVisible();
+  await expect(comparison.getByRole("cell", { name: "77.8 mm" })).toBeVisible();
+  await expect(comparison.getByRole("cell", { name: "180 g" })).toBeVisible();
   await expect(preview.getByText("atlens.app", { exact: true })).toBeVisible();
   expect(await preview.evaluate((node) => node.scrollHeight)).toBe(1440);
   const downloadEvent = page.waitForEvent("download");
