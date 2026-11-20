@@ -14,6 +14,7 @@ import {
   LENS_TABLE_COLUMNS,
 } from "@/lib/ai/recall";
 import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
+import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
 import { lensDetailImages, lensDetailImagesSchema, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
@@ -371,20 +372,29 @@ export function buildLensTools(
           }),
           displayImages,
           readRefs,
+          historical: false,
           notInData: "For field performance and opinions, use lensReviews.",
           ...(notReturned ? { notReturned } : {}),
         };
       },
       toModelOutput: ({ output }) => {
-        const { displayImages = [], readRefs = [], ...details } = output;
+        const { displayImages = [], readRefs = [], historical, ...details } = output;
         const images = displayImages.filter(({ imageRef }) => readRefs.includes(imageRef));
-        const metadata = { ...details, shown: displayImages.map(({ imageRef }) => imageRef) };
+        const presentation = {
+          scope: historical ? "history" : "currentReply",
+          galleries: groupLensImages(displayImages).map(([preview, ...rest]) => ({
+            lensRef: preview.lensRef,
+            role: preview.image.role,
+            preview: preview.imageRef,
+            imageCount: rest.length + 1,
+          })),
+        };
+        const metadata = { ...details, presentation, imagesForReading: vision ? images.map(({ imageRef }) => imageRef) : [] };
         if (!vision || !images.length) {
           return { type: "text", value: JSON.stringify({ ...metadata, ...(images.length ? { visionUnavailable: true } : {}) }) };
         }
         const reading = {
           ...metadata,
-          imagesForReading: images.map(({ imageRef }) => imageRef),
           ...(images.some(({ image }) => image.role === "mtf") ? {
             mtfNote: "Interpret only legible curves. Do not rank charts with different or unconfirmed test conditions; mention missing conditions only when they affect the answer.",
           } : {}),
@@ -518,14 +528,16 @@ export function buildLensTools(
           .optional()
           .describe("An optional short caption above the table, in the user's language."),
       }),
-      execute: ({ refs, columns, caption }) =>
-        listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs),
-      // Same as recommendLenses: refs back for linking; needs this ToolSet in convertToModelMessages.
+      execute: ({ refs, columns, caption }) => ({
+        ...listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs),
+        historical: false,
+      }),
       toModelOutput: ({ output }) => ({
         type: "text",
-        value:
-          `Rendered a table of ${output.lenses.length} lens(es) to the user, for: ` +
-          output.lenses.map((lens) => lensRef(lens.id)).join(", "),
+        value: JSON.stringify({ presentation: {
+          scope: output.historical ? "history" : "currentReply",
+          table: { lensRefs: output.lenses.map((lens) => lensRef(lens.id)), columns: output.columns },
+        } }),
       }),
     }),
 

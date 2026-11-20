@@ -10,28 +10,19 @@ import type { GalleryImage } from "@/components/lens/GalleryThumbnails";
 import { FROSTED_OVERLAY_CHROME_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { Link } from "@/i18n/navigation";
 import type { LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
+import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { getTechnicalImageConditions, technicalImageFilter, technicalImageShortLabel } from "@/lib/lens/technical-images";
 import { lensPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
 
 function collectGalleries(parts: AskIrisUIMessage["parts"]) {
-  const galleries = new Map<string, Map<string, LensDetailDisplayImage>>();
-  for (const part of parts) {
-    if (!isToolUIPart(part) || part.state !== "output-available" || getToolName(part) !== "lensDetails") {continue;}
+  const entries = parts.flatMap((part) => {
+    if (!isToolUIPart(part) || part.state !== "output-available" || getToolName(part) !== "lensDetails") {return [];}
     const output = part.output as { displayImages?: LensDetailDisplayImage[] } | null | undefined;
-    for (const entry of output?.displayImages ?? []) {
-      const key = `${entry.mount}:${entry.lensId}:${entry.image.role}`;
-      const gallery = galleries.get(key) ?? new Map<string, LensDetailDisplayImage>();
-      galleries.set(key, gallery);
-      for (const item of [entry, ...(entry.gallery ?? [])]) {
-        if (item.lensId === entry.lensId && item.mount === entry.mount && item.image.role === entry.image.role && !gallery.has(item.imageRef)) {
-          gallery.set(item.imageRef, item);
-        }
-      }
-    }
-  }
-  return Array.from(galleries.values(), (gallery) => [...gallery.values()]);
+    return output?.displayImages ?? [];
+  });
+  return groupLensImages(entries);
 }
 
 export default function LensImageGroup({ parts }: { parts: AskIrisUIMessage["parts"] }) {

@@ -49,7 +49,7 @@ import {
 } from "@/lib/askiris/conversation-repository";
 import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import { resolveTurn } from "@/lib/askiris/turn-history";
-import { normalizeLensDetailsMessage, withoutHistoricalImageReads } from "@/lib/askiris/lens-details-history";
+import { normalizeLensDetailsMessage, withHistoricalLensPresentation } from "@/lib/askiris/lens-details-history";
 import { createAuth } from "@/lib/auth";
 import {
   askIrisMessageMetadataSchema,
@@ -267,7 +267,7 @@ export async function POST(req: NextRequest) {
   // A stopped turn is stored with its unfinished tool calls, which the model cannot take back.
   let modelMessages: ModelMessage[];
   try {
-    modelMessages = await convertToModelMessages(history.map(withoutHistoricalImageReads), {
+    modelMessages = await convertToModelMessages(history.map(withHistoricalLensPresentation), {
       tools,
       ignoreIncompleteToolCalls: true,
     });

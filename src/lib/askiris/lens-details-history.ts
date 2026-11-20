@@ -19,15 +19,17 @@ export function normalizeLensDetailsMessage<T>(message: T): T {
   return changed ? { ...message, parts } : message;
 }
 
-export function withoutHistoricalImageReads(message: UIMessage): UIMessage {
+export function withHistoricalLensPresentation(message: UIMessage): UIMessage {
   if (message.role !== "assistant") {return message;}
   return {
     ...message,
     parts: message.parts.map((part) => {
-      if (!isToolUIPart(part) || getToolName(part) !== "lensDetails" || part.state !== "output-available") {return part;}
+      if (!isToolUIPart(part) || part.state !== "output-available") {return part;}
+      const name = getToolName(part);
+      if (name !== "lensDetails" && name !== "listLenses") {return part;}
       const output = part.output;
-      if (!output || typeof output !== "object" || !("readRefs" in output)) {return part;}
-      return { ...part, output: { ...output, readRefs: [] } };
+      if (!output || typeof output !== "object" || Array.isArray(output)) {return part;}
+      return { ...part, output: { ...output, historical: true, ...(name === "lensDetails" ? { readRefs: [] } : {}) } };
     }),
   };
 }

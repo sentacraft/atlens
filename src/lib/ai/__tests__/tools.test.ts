@@ -110,7 +110,9 @@ describe("lensDetails images", () => {
     const summary = projected.value[0];
     if (summary.type !== "text") {throw new Error("Expected image metadata before pixels");}
     expect(JSON.parse(summary.text)).toMatchObject({
-      shown: output.displayImages.map(({ imageRef }) => imageRef),
+      presentation: { scope: "currentReply", galleries: output.displayImages.map(({ lensRef, imageRef, image }) => ({
+        lensRef, role: image.role, preview: imageRef, imageCount: 1,
+      })) },
       imagesForReading: [output.displayImages[0].imageRef],
       mtfNote: expect.stringContaining("Do not rank charts"),
     });
@@ -144,6 +146,20 @@ describe("lensDetails images", () => {
     expect(filtered.displayImages[0].gallery).toHaveLength(3);
     expect(filtered.displayImages[0].gallery.every((entry: { image: { focalLengthMm: number } }) => entry.image.focalLengthMm === 70)).toBe(true);
     expect(filtered.readRefs).toEqual([]);
+  });
+
+  it("reports the full gallery count separately from the pixels read", async () => {
+    const zoom = lensRef("fujifilm-gf-35-70mmf45-56-wr-g");
+    const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set([zoom]), true);
+    const input = { lenses: [{ ref: zoom, images: [{ role: "mtf" as const }] }] };
+    const output = run(gfx.lensDetails, input);
+    const projected = await gfx.lensDetails.toModelOutput!({ toolCallId: "details", input, output });
+    if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
+    expect(JSON.parse(projected.value[0].text)).toMatchObject({
+      presentation: { scope: "currentReply", galleries: [{ lensRef: zoom, role: "mtf", imageCount: 6 }] },
+      imagesForReading: output.readRefs,
+    });
+    expect(projected.value.filter((part) => part.type === "file")).toHaveLength(2);
   });
 
   it("does not pass unlabeled charts off as matching a requested aperture", () => {
@@ -524,4 +540,15 @@ describe("queryBodies", () => {
     idsIn(result, "result", found);
     expect(found).toEqual([]);
   });
+});
+
+it("summarizes table columns without repeating cell values", async () => {
+  const ref = lensRef("fujifilm-xf-35mmf14-r-x");
+  const lookup = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref]));
+  const input = { refs: [ref], columns: ["lensConfiguration" as const] };
+  const output = run(lookup.listLenses, input);
+  const projected = await lookup.listLenses.toModelOutput!({ toolCallId: "table", input, output });
+  expect(projected.type).toBe("text");
+  if (projected.type !== "text") { throw new Error("Expected table summary"); }
+  expect(JSON.parse(projected.value)).toEqual({ presentation: { scope: "currentReply", table: { lensRefs: [ref], columns: ["lensConfiguration"] } } });
 });
