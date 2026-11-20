@@ -134,6 +134,18 @@ describe("lensDetails images", () => {
     expect(output.readRefs).toEqual([output.displayImages[0].imageRef]);
   });
 
+  it("includes all eligible MTF charts in the viewer without sending them all to the model", () => {
+    const zoom = lensRef("fujifilm-gf-35-70mmf45-56-wr-g");
+    const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set([zoom]), true);
+    const result = run(gfx.lensDetails, { lenses: [{ ref: zoom, images: [{ role: "mtf" }] }] });
+    expect(result.displayImages[0].gallery).toHaveLength(6);
+    expect(result.readRefs).toHaveLength(2);
+    const filtered = run(gfx.lensDetails, { lenses: [{ ref: zoom, images: [{ role: "mtf", focalLengthMm: 70, read: false }] }] });
+    expect(filtered.displayImages[0].gallery).toHaveLength(3);
+    expect(filtered.displayImages[0].gallery.every((entry: { image: { focalLengthMm: number } }) => entry.image.focalLengthMm === 70)).toBe(true);
+    expect(filtered.readRefs).toEqual([]);
+  });
+
   it("does not pass unlabeled charts off as matching a requested aperture", () => {
     const output = run(detailTool(true), { lenses: [{ ref: unknownRef, images: [{ role: "mtf", apertureFNumber: 1.4, read: true }] }] });
     expect(output.displayImages).toHaveLength(1);

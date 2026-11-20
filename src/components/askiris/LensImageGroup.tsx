@@ -15,43 +15,35 @@ import { getTechnicalImageConditions, technicalImageFilter, technicalImageShortL
 import { lensPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
 
-function collectImages(parts: AskIrisUIMessage["parts"]) {
-  const images = new Map<string, LensDetailDisplayImage>();
+function collectGalleries(parts: AskIrisUIMessage["parts"]) {
+  const galleries = new Map<string, Map<string, LensDetailDisplayImage>>();
   for (const part of parts) {
     if (!isToolUIPart(part) || part.state !== "output-available" || getToolName(part) !== "lensDetails") {continue;}
     const output = part.output as { displayImages?: LensDetailDisplayImage[] } | null | undefined;
     for (const entry of output?.displayImages ?? []) {
-      const previous = images.get(entry.imageRef);
-      if (!previous) {
-        images.set(entry.imageRef, entry);
-      } else if (entry.gallery?.length) {
-        images.set(entry.imageRef, { ...previous, gallery: [...(previous.gallery ?? []), ...entry.gallery] });
+      const key = `${entry.mount}:${entry.lensId}:${entry.image.role}`;
+      const gallery = galleries.get(key) ?? new Map<string, LensDetailDisplayImage>();
+      galleries.set(key, gallery);
+      for (const item of [entry, ...(entry.gallery ?? [])]) {
+        if (item.lensId === entry.lensId && item.mount === entry.mount && item.image.role === entry.image.role && !gallery.has(item.imageRef)) {
+          gallery.set(item.imageRef, item);
+        }
       }
     }
   }
-  return [...images.values()];
-}
-
-function productGallery(entry: LensDetailDisplayImage) {
-  if (entry.image.role !== "product" || !entry.gallery?.length) {return [];}
-  const seen = new Set([entry.imageRef]);
-  return entry.gallery.filter((item) => {
-    if (seen.has(item.imageRef) || item.image.role !== "product" || item.lensId !== entry.lensId || item.mount !== entry.mount) {return false;}
-    seen.add(item.imageRef);
-    return true;
-  });
+  return Array.from(galleries.values(), (gallery) => [...gallery.values()]);
 }
 
 export default function LensImageGroup({ parts }: { parts: AskIrisUIMessage["parts"] }) {
   const t = useTranslations("AskIris.lensImages");
   const detail = useTranslations("LensDetail");
   const trigger = useRef<HTMLButtonElement>(null);
-  const [selection, setSelection] = useState<{ images: GalleryImage[]; index: number } | null>(null);
-  const entries = collectImages(parts);
-  if (entries.length === 0) {return null;}
+  const [selection, setSelection] = useState<{ images: GalleryImage[]; title: string } | null>(null);
+  const galleries = collectGalleries(parts);
+  if (galleries.length === 0) {return null;}
 
-  const multiple = entries.length > 1;
-  const mtfGroup = multiple && entries.every((entry) => entry.image.role === "mtf");
+  const multiple = galleries.length > 1;
+  const mtfGroup = galleries.every(([entry]) => entry.image.role === "mtf");
 
   function display(entry: LensDetailDisplayImage, number?: number) {
     const { image, lensName } = entry;
@@ -63,22 +55,19 @@ export default function LensImageGroup({ parts }: { parts: AskIrisUIMessage["par
       technicalImageShortLabel(image),
       ...getTechnicalImageConditions(image, detail),
     ].filter(Boolean).join(" · ");
-    return { type, figure, label, conditions };
+    return { type, label, conditions };
   }
 
-  function open(index: number, extras: LensDetailDisplayImage[], button: HTMLButtonElement) {
-    const visibleRefs = new Set(entries.map((entry) => entry.imageRef));
-    function slide(entry: LensDetailDisplayImage, number?: number): GalleryImage {
-      const { label, conditions } = display(entry, number);
+  function open(entries: LensDetailDisplayImage[], button: HTMLButtonElement) {
+    const images = entries.map((entry, position): GalleryImage => {
+      const { label, conditions } = display(entry, entries.length > 1 ? position + 1 : undefined);
       return {
         src: entry.src, label, alt: label, filter: technicalImageFilter(entry.image.displayPreset),
         caption: { primary: label, details: conditions ? [conditions] : [] },
       };
-    }
-    const images = entries.map((entry, position) => slide(entry, multiple ? position + 1 : undefined));
-    images.splice(index + 1, 0, ...extras.filter((entry) => !visibleRefs.has(entry.imageRef)).map((entry) => slide(entry)));
+    });
     trigger.current = button;
-    setSelection({ index, images });
+    setSelection({ images, title: display(entries[0]).label });
   }
 
   const title = mtfGroup ? detail("opticalImages.mtf") : t("title");
@@ -86,17 +75,17 @@ export default function LensImageGroup({ parts }: { parts: AskIrisUIMessage["par
     <section aria-label={title} className="@container mt-2 mb-1 w-full max-w-160 px-1">
       {multiple ? <p className="mb-2 text-[13px] font-semibold">{title}</p> : null}
       <div className="grid grid-cols-1 gap-4 @lg:grid-cols-2">
-        {entries.map((entry, index) => {
-          const { type, figure, label, conditions } = display(entry, multiple ? index + 1 : undefined);
-          const extras = productGallery(entry);
-          const count = extras.length > 0 ? t("count", { count: extras.length + 1 }) : null;
+        {galleries.map((gallery) => {
+          const [entry] = gallery;
+          const { type, label, conditions } = display(entry);
+          const count = gallery.length > 1 ? t("count", { count: gallery.length }) : null;
           return (
-            <figure key={entry.imageRef} className={cn("min-w-0", entries.length === 1 && "sm:max-w-76")}>
+            <figure key={entry.imageRef} className={cn("min-w-0", !multiple && "sm:max-w-76")}>
               <button
                 type="button"
                 aria-haspopup="dialog"
                 aria-label={count ? t("openGallery", { label, count }) : detail("opticalImages.openImage", { label })}
-                onClick={(event) => open(index, extras, event.currentTarget)}
+                onClick={(event) => open(gallery, event.currentTarget)}
                 className="relative block h-33 w-full cursor-zoom-in overflow-hidden rounded-lg border border-zinc-200 bg-white hover:border-zinc-400 focus-visible:outline-2 focus-visible:outline-offset-2 @lg:h-42"
               >
                 <LensImagePreview
@@ -114,7 +103,6 @@ export default function LensImageGroup({ parts }: { parts: AskIrisUIMessage["par
               </button>
               <figcaption className="mt-1.5 grid gap-0.5 text-xs leading-snug text-zinc-600 tabular-nums">
                 <div className="font-semibold wrap-anywhere text-zinc-900">
-                  {figure ? <span>{figure} · </span> : null}
                   {!mtfGroup ? <span>{type} · </span> : null}
                   <Link href={lensPath({ mount: entry.mount, id: entry.lensId })} className={TEXT_LINK_CLS}>{entry.lensName}</Link>
                 </div>
@@ -127,8 +115,8 @@ export default function LensImageGroup({ parts }: { parts: AskIrisUIMessage["par
       {selection ? (
         <LocalizedLensImageViewer
           images={selection.images}
-          initialIndex={selection.index}
-          title={title}
+          initialIndex={0}
+          title={selection.title}
           trigger={trigger}
           onClose={() => setSelection(null)}
         />

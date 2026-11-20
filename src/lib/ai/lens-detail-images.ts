@@ -66,10 +66,13 @@ export function lensDetailImages(
       return values.includes(null) && !values.includes(false);
     });
     const fallback = matches.length === 0 && unknown.length > 0;
+    const eligible = fallback ? unknown : matches;
     const selected: string[] = [];
-    for (const candidate of (fallback ? unknown : matches).slice(0, role === "mtf" ? 2 : 1)) {
+    for (const candidate of eligible.slice(0, role === "mtf" ? 2 : 1)) {
       if (!displayImages.has(candidate.imageRef) && displayImages.size >= remaining) {continue;}
-      const gallery = role === "product" && !readPixels && !imageRef && candidates.length > 1 ? candidates : undefined;
+      const gallery = !selected.length && eligible.length > 1 && (role === "mtf" || (role === "product" && !readPixels))
+        ? eligible
+        : displayImages.get(candidate.imageRef)?.gallery;
       displayImages.set(candidate.imageRef, { ...candidate, ...(gallery ? { gallery } : {}) });
       if (readPixels) {readRefs.add(candidate.imageRef);}
       selected.push(candidate.imageRef);
