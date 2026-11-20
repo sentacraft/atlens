@@ -344,7 +344,7 @@ export function buildLensTools(
     }),
 
     lensDetails: tool({
-      description: "Return full specs and the available images for recalled lenses. Show an optical diagram when asked about optical construction. Read selected images only when the answer depends on their pixels.",
+      description: "Return full specs and the available images for recalled lenses. Use specs for element and group counts; attach an available diagram for construction questions. Attach requested images; read them only when the answer depends on their pixels.",
       inputSchema: z.object({
         lenses: z.array(z.object({
           ref: z.string().describe("Lens ref from an earlier recall result."),
@@ -376,10 +376,17 @@ export function buildLensTools(
         if (!vision || !images.length) {
           return { type: "text", value: JSON.stringify({ ...metadata, ...(images.length ? { visionUnavailable: true } : {}) }) };
         }
+        const reading = {
+          ...metadata,
+          imagesForReading: images.map(({ imageRef }) => imageRef),
+          ...(images.some(({ image }) => image.role === "mtf") ? {
+            mtfNote: "Interpret only legible curves. Do not rank charts with different or unconfirmed test conditions; mention missing conditions only when they affect the answer.",
+          } : {}),
+        };
         return {
           type: "content",
           value: [
-            { type: "text", text: JSON.stringify(metadata) },
+            { type: "text", text: JSON.stringify(reading) },
             ...images.flatMap(({ imageRef, src }) => [
               { type: "text" as const, text: `Image ${imageRef}:` },
               { type: "file" as const, mediaType: "image/webp", data: { type: "url" as const, url: new URL(src) } },

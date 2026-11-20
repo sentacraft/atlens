@@ -7,10 +7,10 @@ const imageRoles = ["product", "mtf", "optical-construction"] as const;
 
 export const lensDetailImagesSchema = z.array(z.object({
   role: z.enum(imageRoles),
-  imageRef: z.string().optional().describe("An exact image reference from this lens's image list."),
+  imageRef: z.string().optional().describe("Exact ref from this lens's image list; use it to retrieve the same image in a follow-up."),
   focalLengthMm: z.number().positive().optional().describe("The requested chart focal length, not inferred from the lens name."),
   apertureFNumber: z.number().positive().optional().describe("The requested chart aperture. Unknown conditions do not match."),
-  read: z.boolean().optional().describe("Also send pixels to the model, only when the answer depends on them."),
+  read: z.boolean().optional().describe("Send pixels as well as showing the image. Use on each turn that needs to inspect the image."),
 })).max(3).optional();
 
 type ImageRequest = NonNullable<z.infer<typeof lensDetailImagesSchema>>[number];

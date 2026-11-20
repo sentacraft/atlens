@@ -107,6 +107,13 @@ describe("lensDetails images", () => {
     const projected = await detail.toModelOutput!({ toolCallId: "details", input, output });
     expect(projected.type).toBe("content");
     if (projected.type !== "content") {throw new Error("Expected vision content");}
+    const summary = projected.value[0];
+    if (summary.type !== "text") {throw new Error("Expected image metadata before pixels");}
+    expect(JSON.parse(summary.text)).toMatchObject({
+      shown: output.displayImages.map(({ imageRef }) => imageRef),
+      imagesForReading: [output.displayImages[0].imageRef],
+      mtfNote: expect.stringContaining("Do not rank charts"),
+    });
     expect(projected.value.filter((part) => part.type === "file")).toEqual([
       expect.objectContaining({ data: { type: "url", url: new URL(output.displayImages[0].src) } }),
     ]);

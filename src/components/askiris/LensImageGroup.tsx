@@ -2,19 +2,18 @@
 
 import { getToolName, isToolUIPart } from "ai";
 import { Maximize } from "lucide-react";
-import Image from "next/image";
+import LensImagePreview from "@/components/lens/LensImagePreview";
+import LocalizedLensImageViewer from "@/components/lens/LocalizedLensImageViewer";
 import { useTranslations } from "next-intl";
-import { lazy, Suspense, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { GalleryImage } from "@/components/lens/GalleryThumbnails";
 import { FROSTED_OVERLAY_CHROME_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
 import { Link } from "@/i18n/navigation";
 import type { LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
-import { technicalImageFilter, technicalImageShortLabel } from "@/lib/lens/technical-images";
+import { getTechnicalImageConditions, technicalImageFilter, technicalImageShortLabel } from "@/lib/lens/technical-images";
 import { lensPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
-
-const LensImageViewer = lazy(() => import("@/components/lens/LensImageViewer"));
 
 function collectImages(parts: AskIrisUIMessage["parts"]) {
   const images = new Map<string, LensDetailDisplayImage>();
@@ -62,8 +61,7 @@ export default function LensImageGroup({ parts }: { parts: AskIrisUIMessage["par
     const label = figure ? `${figure} · ${description}` : description;
     const conditions = [
       technicalImageShortLabel(image),
-      image.mtfMethod && detail(`opticalImages.${image.mtfMethod}`),
-      image.depictedMount && detail("opticalImages.mount", { mount: image.depictedMount }),
+      ...getTechnicalImageConditions(image, detail),
     ].filter(Boolean).join(" · ");
     return { type, figure, label, conditions };
   }
@@ -101,15 +99,13 @@ export default function LensImageGroup({ parts }: { parts: AskIrisUIMessage["par
                 onClick={(event) => open(index, extras, event.currentTarget)}
                 className="relative block h-33 w-full cursor-zoom-in overflow-hidden rounded-lg border border-zinc-200 bg-white hover:border-zinc-400 focus-visible:outline-2 focus-visible:outline-offset-2 @lg:h-42"
               >
-                <Image
+                <LensImagePreview
                   src={entry.src}
                   alt={label}
-                  fill
-                  unoptimized
-                  data-gallery-preview
+                  preview
+                  preset={entry.image.displayPreset}
                   sizes="(max-width: 639px) 100vw, 304px"
-                  className="object-contain p-3"
-                  style={{ filter: technicalImageFilter(entry.image.displayPreset) }}
+                  className="p-3"
                 />
                 <span aria-hidden="true" className={cn(FROSTED_OVERLAY_CHROME_CLS, "absolute right-1.5 bottom-1.5 inline-flex h-6 items-center gap-1 rounded-md px-1 text-[11px] text-zinc-700 tabular-nums")}>
                   {count}
@@ -129,28 +125,13 @@ export default function LensImageGroup({ parts }: { parts: AskIrisUIMessage["par
         })}
       </div>
       {selection ? (
-        <Suspense fallback={<span role="status" className="sr-only">{detail("galleryLoading")}</span>}>
-          <LensImageViewer
-            images={selection.images}
-            initialIndex={selection.index}
-            title={title}
-            trigger={trigger}
-            onClose={() => setSelection(null)}
-            labels={{
-              close: detail("galleryClose"),
-              previous: detail("galleryPrevious"),
-              next: detail("galleryNext"),
-              loading: detail("galleryLoading"),
-              error: detail("galleryError"),
-              hint: {
-                mouse: detail("galleryHint.mouse"),
-                touch: detail("galleryHint.touch"),
-                mouseSingle: detail("galleryHint.mouseSingle"),
-                touchSingle: detail("galleryHint.touchSingle"),
-              },
-            }}
-          />
-        </Suspense>
+        <LocalizedLensImageViewer
+          images={selection.images}
+          initialIndex={selection.index}
+          title={title}
+          trigger={trigger}
+          onClose={() => setSelection(null)}
+        />
       ) : null}
     </section>
   );

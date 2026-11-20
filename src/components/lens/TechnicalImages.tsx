@@ -1,7 +1,8 @@
 "use client";
 
-import { lazy, Suspense, useRef, useState, type MouseEvent, type TouchEvent } from "react";
-import Image from "next/image";
+import { useRef, useState, type MouseEvent, type TouchEvent } from "react";
+import LensImagePreview from "./LensImagePreview";
+import LocalizedLensImageViewer from "./LocalizedLensImageViewer";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { ICON_CLOSE_BTN_CLS, IMAGE_CONTROL_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
@@ -9,7 +10,7 @@ import { Dialog, DialogClose, DialogHeader, DialogPopup, DialogTitle } from "@/c
 import { track } from "@/lib/analytics/analytics";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getLensImageUrl } from "@/lib/lens/image";
-import { getTechnicalImageReadingNote, TECHNICAL_IMAGE_PREVIEW_LIMIT, technicalImageFilter, technicalImageShortLabel, type TechnicalImageRole } from "@/lib/lens/technical-images";
+import { getTechnicalImageConditions, getTechnicalImageReadingNote, TECHNICAL_IMAGE_PREVIEW_LIMIT, technicalImageFilter, technicalImageShortLabel, type TechnicalImageRole } from "@/lib/lens/technical-images";
 import type { LensImageAsset } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -18,8 +19,6 @@ export interface TechnicalImageSet {
   model: string;
   images: LensImageAsset[];
 }
-
-const LensImageViewer = lazy(() => import("./LensImageViewer"));
 
 const IMAGE_FRAME = "relative isolate overflow-hidden";
 const IMAGE_BUTTON = "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2";
@@ -35,17 +34,14 @@ function TechnicalImage({ set, image, preview = false }: {
   preview?: boolean;
 }) {
   const t = useTranslations("LensDetail");
-  const filter = technicalImageFilter(image.displayPreset);
   return (
-    <Image
+    <LensImagePreview
       src={getLensImageUrl(set.id, image.id)}
       alt={technicalImageAlt(t, set.model, image)}
-      fill
-      data-gallery-preview={preview || undefined}
-      unoptimized
+      preset={image.displayPreset}
+      preview={preview}
       sizes={preview ? "144px" : "(max-width: 639px) 100vw, 600px"}
-      className="object-contain p-2"
-      style={{ filter }}
+      className="p-2"
     />
   );
 }
@@ -133,35 +129,19 @@ function TechnicalGallery({ set, role, index, viewer }: {
     };
   });
   return (
-    <Suspense fallback={<span role="status" className="sr-only">{t("galleryLoading")}</span>}>
-      <LensImageViewer
-        images={images}
-        initialIndex={index}
-        title={`${t(role === "mtf" ? "opticalImages.mtf" : "opticalImages.structure")} · ${set.model}`}
-        labels={{
-          close: t("galleryClose"),
-          previous: t("galleryPrevious"),
-          next: t("galleryNext"),
-          loading: t("galleryLoading"),
-          error: t("galleryError"),
-          hint: {
-            mouse: t("galleryHint.mouse"),
-            touch: t("galleryHint.touch"),
-            mouseSingle: t("galleryHint.mouseSingle"),
-            touchSingle: t("galleryHint.touchSingle"),
-          },
-        }}
-        trigger={viewer.trigger}
-        onClose={viewer.close}
-      />
-    </Suspense>
+    <LocalizedLensImageViewer
+      images={images}
+      initialIndex={index}
+      title={`${t(role === "mtf" ? "opticalImages.mtf" : "opticalImages.structure")} · ${set.model}`}
+      trigger={viewer.trigger}
+      onClose={viewer.close}
+    />
   );
 }
 
 function imageNotes(image: LensImageAsset, t: ReturnType<typeof useTranslations<"LensDetail">>) {
   return [
-    image.mtfMethod && t(`opticalImages.${image.mtfMethod}`),
-    image.depictedMount && t("opticalImages.mount", { mount: image.depictedMount }),
+    ...getTechnicalImageConditions(image, t),
     getTechnicalImageReadingNote(image.conditionsNote),
   ].filter((line): line is string => !!line);
 }
