@@ -27,3 +27,11 @@ export function technicalImageFilter(preset: LensImageAsset["displayPreset"]) {
   if (preset === "white-background") {return "saturate(0.6)";}
   return undefined;
 }
+
+export function technicalImageShortLabel(image: LensImageAsset) {
+  return [
+    image.focalLengthMm !== undefined ? `${image.focalLengthMm}mm` : undefined,
+    image.spatialFrequency ? `${image.spatialFrequency.values.join(", ")} ${image.spatialFrequency.unit}` : undefined,
+    image.apertureFNumbers?.map((n) => `f/${n}`).join(", "),
+  ].filter(Boolean).join(" · ");
+}
