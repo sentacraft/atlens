@@ -1,5 +1,5 @@
 .poster { box-sizing: border-box; display: flex; flex-direction: column; width: 1080px; height: 1440px; padding: 72px 72px 56px; background: white; color: #18181b; font-family: var(--font-geist-sans), "PingFang SC", sans-serif; line-height: 1.2; }
-.coverPoster { padding-bottom: 100px; }
+.coverPoster { padding-bottom: 132px; }
 .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #e4e4e7; padding-bottom: 28px; font-size: 30px; color: #52525b; letter-spacing: .1em; }
 .wordmark { display: flex; align-items: center; gap: 12px; color: #18181b; font: 700 40px/1 var(--font-source-serif-4), Georgia, serif; letter-spacing: normal; }
 .coverMount { align-self: start; margin: 36px 0 0; padding: 6px 15px; border-radius: 999px; background: #f4f4f5; font-size: 31px; font-weight: 600; letter-spacing: .04em; }
