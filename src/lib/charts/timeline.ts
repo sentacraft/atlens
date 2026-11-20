@@ -48,6 +48,15 @@ export function buildTimeline(lenses: Lens[]): Timeline {
   return { entries, years, brands, brandsWithoutYear };
 }
 
+/** The timeline's lenses grouped by release year, the newest year first. */
+export function lensesByYear(timeline: Timeline): { year: number; lenses: ChartLens[] }[] {
+  const groups = new Map<number, ChartLens[]>();
+  for (const { year, lens } of timeline.entries) {
+    groups.set(year, [...(groups.get(year) ?? []), lens]);
+  }
+  return [...groups].sort(([a], [b]) => b - a).map(([year, lenses]) => ({ year, lenses }));
+}
+
 /**
  * Greedy lane packing: each item takes the first lane where it sits at least `minGap` from every
  * item already there. Returns the lane index of each item, in input order.
