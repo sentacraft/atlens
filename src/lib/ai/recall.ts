@@ -71,6 +71,14 @@ export const LENS_TABLE_COLUMNS = [
   "length",
   "ois",
   "releaseYear",
+  "lensConfiguration",
+  "apertureBladeCount",
+  "minAperture",
+  "maxTStop",
+  "minTStop",
+  "dimensions",
+  "focusMotor",
+  "lensMaterial",
 ] as const;
 export type LensTableColumn = (typeof LENS_TABLE_COLUMNS)[number];
 

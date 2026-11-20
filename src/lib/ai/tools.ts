@@ -500,7 +500,7 @@ export function buildLensTools(
     listLenses: tool({
       description:
         "Lay out already-recalled lenses as a spec table; their names link to each lens's " +
-        "page. Pass refs from a prior queryLenses/searchLensByName/myFavorites/myGear result.",
+        "page. Use lensConfiguration for element and group counts or special glass. Pass recalled refs.",
       inputSchema: z.object({
         refs: z
           .array(z.string())
@@ -511,7 +511,7 @@ export function buildLensTools(
           .optional()
           .describe(
             "Spec columns to place beside the name, in order — the ones that answer the " +
-              "user's question. Defaults to focal, aperture, weight, and price.",
+              "user's question. Defaults to equivalent focal length, weight, and price.",
           ),
         caption: z
           .string()
