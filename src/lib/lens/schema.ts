@@ -290,6 +290,9 @@ const lensObjectSchema = z.strictObject({
   images: z.array(lensImageAssetSchema).min(1).refine(
     (images) => new Set(images.map((image) => image.id)).size === images.length,
     "Image IDs must be unique",
+  ).refine(
+    (images) => images.filter((image) => image.role === "optical-construction").length <= 1,
+    "A lens may have at most one optical construction image",
   ).optional(),
   translations: z.strictObject({ zh: localeTranslationsSchema.optional() }).optional(),
 });

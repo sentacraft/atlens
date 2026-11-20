@@ -288,6 +288,30 @@ describe("lensSchema classified image assets", () => {
     expect(lensSchema.parse({ ...prime35, images }).images).toEqual(images);
   });
 
+  it("rejects multiple optical construction images at both validation entry points", () => {
+    const record = {
+      ...prime35,
+      images: [{ id: "001", role: "optical-construction" }, { id: "002", role: "optical-construction" }],
+    };
+    const result = lensSchema.safeParse(record);
+    expect(result.success).toBe(false);
+    expect(lensCatalogSchema.safeParse([record]).success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(expect.objectContaining({ path: ["images"] }));
+    }
+  });
+
+  it("allows no optical diagram and keeps multiple MTF and product images", () => {
+    expect(lensSchema.safeParse(prime35).success).toBe(true);
+    const images = [
+      { id: "001", role: "product" }, { id: "002", role: "product" },
+      { id: "003", role: "mtf" }, { id: "004", role: "mtf" },
+    ];
+    expect(lensSchema.parse({ ...prime35, images }).images).toEqual(images);
+    const withDiagram = [...images, { id: "005", role: "optical-construction" }];
+    expect(lensSchema.parse({ ...prime35, images: withDiagram }).images).toEqual(withDiagram);
+  });
+
   it.each([{ images: [] }, { images: [{ id: "001", role: "mtf" }, { id: "001", role: "product" }] }])("rejects empty lists and duplicate image IDs", ({ images }) => {
     expect(lensSchema.safeParse({ ...prime35, images }).success).toBe(false);
   });
