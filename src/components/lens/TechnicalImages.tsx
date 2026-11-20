@@ -9,7 +9,7 @@ import { Dialog, DialogClose, DialogHeader, DialogPopup, DialogTitle } from "@/c
 import { track } from "@/lib/analytics/analytics";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getLensImageUrl } from "@/lib/lens/image";
-import { getTechnicalImageReadingNote, TECHNICAL_IMAGE_PREVIEW_LIMIT, technicalImageFilter, type TechnicalImageRole } from "@/lib/lens/technical-images";
+import { getTechnicalImageReadingNote, TECHNICAL_IMAGE_PREVIEW_LIMIT, technicalImageFilter, technicalImageShortLabel, type TechnicalImageRole } from "@/lib/lens/technical-images";
 import type { LensImageAsset } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ const IMAGE_FRAME = "relative isolate overflow-hidden";
 const IMAGE_BUTTON = "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2";
 
 function technicalImageAlt(t: ReturnType<typeof useTranslations<"LensDetail">>, model: string, image: LensImageAsset) {
-  const label = imageShortLabel(image);
+  const label = technicalImageShortLabel(image);
   return t("opticalImages.imageAlt", { model, role: image.role, conditions: label ? ` — ${label}` : "" });
 }
 
@@ -71,7 +71,7 @@ export function InlineTechnicalImages({ set, role }: { set: TechnicalImageSet; r
     <>
       <div className="flex flex-wrap gap-2.5">
         {set.images.slice(0, previewLimit).map((image, index) => {
-          const label = imageShortLabel(image) || t("imageNumber", { number: String(index + 1) });
+          const label = technicalImageShortLabel(image) || t("imageNumber", { number: String(index + 1) });
           return (
             <figure key={image.id} className="w-36 max-w-full">
               <button
@@ -113,14 +113,6 @@ export function CompareTechnicalImages({ sets, activeId, role }: { sets: Technic
   );
 }
 
-function imageShortLabel(image: LensImageAsset) {
-  return [
-    image.focalLengthMm !== undefined ? `${image.focalLengthMm}mm` : undefined,
-    image.spatialFrequency ? `${image.spatialFrequency.values.join(", ")} ${image.spatialFrequency.unit}` : undefined,
-    image.apertureFNumbers?.map((n) => `f/${n}`).join(", "),
-  ].filter(Boolean).join(" · ");
-}
-
 function TechnicalGallery({ set, role, index, viewer }: {
   set: TechnicalImageSet;
   role: TechnicalImageRole;
@@ -129,7 +121,7 @@ function TechnicalGallery({ set, role, index, viewer }: {
 }) {
   const t = useTranslations("LensDetail");
   const images = set.images.map((image, position) => {
-    const short = imageShortLabel(image);
+    const short = technicalImageShortLabel(image);
     const details = imageNotes(image, t);
     const label = short || t("opticalImages.imageNumber", { number: String(position + 1) });
     return {
@@ -241,11 +233,11 @@ function ImagePanel({ set }: { set: TechnicalImageSet }) {
   const [index, setIndex] = useState(0);
   const touch = useRef<{ x: number; y: number } | null>(null);
   const image = set.images[index];
-  const label = imageShortLabel(image);
+  const label = technicalImageShortLabel(image);
   const notes = imageNotes(image, t);
   const count = set.images.length;
   const multiple = count > 1;
-  const optionLabels = multiple ? set.images.map(imageShortLabel) : [];
+  const optionLabels = multiple ? set.images.map(technicalImageShortLabel) : [];
   function move(offset: number) {
     setIndex((current) => Math.max(0, Math.min(count - 1, current + offset)));
   }

@@ -130,6 +130,7 @@ function features(locale: string): string[] {
       named(m.Nav.getApp, "install Atlens as a web app"),
     ])}.`,
     "Lens pages show product photos in a swipeable gallery. Opening a photo shows a zoomable lightbox, full-screen on phones and centered on desktop, with thumbnails for multiple images. Close with the close button, Escape, or a vertical drag while not zoomed in.",
+    "When available, MTF charts and optical construction diagrams appear in the lens specifications. The comparison page opens the same types of images side by side when more than one compared lens has them.",
     `The site is available in ${list(routing.locales.map(languageName))}.`,
     withLinks(
       locale,

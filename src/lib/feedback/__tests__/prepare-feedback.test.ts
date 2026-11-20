@@ -30,6 +30,29 @@ describe("prepareFeedback", () => {
     expect(draft.wantsReply).toBe(true);
   });
 
+  it("offers image categories even when a lens has no supplemental images", () => {
+    const lens = { ...getLensesByMount("X", "en")[0], images: undefined };
+    const draft = prepareFeedback({ ...input, type: "data_issue", field: "mtf" }, lens, "en", "FUJIFILM");
+    expect(draft.fields.filter((field) => field.group === "Media & Links").map((field) => field.label)).toEqual(
+      expect.arrayContaining(["Lens Photos", "MTF Charts", "Optical Construction Diagram"]),
+    );
+    expect(draft.context).toMatchObject({ field: "MTF Charts", currentValue: undefined });
+  });
+
+  it("keeps actual MTF assets distinct without adding selectors for photos or diagrams", () => {
+    const lens = getLensesByMount("G", "en").find((entry) => entry.id === "fujifilm-gf-35-70mmf45-56-wr-g")!;
+    const fields = buildFeedbackFields(lens, "en").filter((field) => field.group === "Media & Links");
+    expect(fields.filter((field) => field.label.startsWith("MTF Charts · "))).toHaveLength(6);
+    expect(fields).toContainEqual(expect.objectContaining({
+      label: "MTF Charts · 35mm · 10 lines/mm",
+      currentValue: expect.stringContaining(`${lens.id}/002.`),
+      hideCurrentValue: true,
+    }));
+    expect(fields.filter((field) => /^(Optical Construction Diagram|Lens Photos)/.test(field.label)).map((field) => field.label)).toEqual(
+      ["Lens Photos", "Optical Construction Diagram"],
+    );
+  });
+
   it("keeps a missing spec field available in the editor without inventing a current value", () => {
     const lens = { ...getLensesByMount("X", "en")[0], pricing: undefined };
     const draft = prepareFeedback({ ...input, type: "data_issue", field: "price" }, lens, "en", "FUJIFILM");

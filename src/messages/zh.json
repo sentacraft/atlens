@@ -622,7 +622,9 @@
     "nudgeText": "发现数据有误？",
     "feedbackLink": "告诉我",
     "fieldOfficialLink": "官方链接",
-    "fieldLensImage": "镜头图片",
+    "fieldLensPhotos": "镜头照片",
+    "fieldMtf": "MTF 曲线",
+    "fieldOpticalDiagram": "光学结构图",
     "fieldGroupMedia": "媒体与链接",
     "collectionsTitle": "所属合集",
     "notFoundTitle": "未找到这支镜头"

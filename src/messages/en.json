@@ -622,7 +622,9 @@
     "nudgeText": "Spotted an error in the data?",
     "feedbackLink": "Tell me",
     "fieldOfficialLink": "Official Link",
-    "fieldLensImage": "Lens Image",
+    "fieldLensPhotos": "Lens Photos",
+    "fieldMtf": "MTF Charts",
+    "fieldOpticalDiagram": "Optical Construction Diagram",
     "fieldGroupMedia": "Media & Links",
     "collectionsTitle": "Featured In",
     "notFoundTitle": "Lens Not Found"
