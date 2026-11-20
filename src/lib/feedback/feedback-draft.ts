@@ -4,6 +4,7 @@ export interface FeedbackField {
   label: string;
   currentValue?: string;
   group?: string;
+  description?: string;
   imageOptions?: { label: string; value: string }[];
 }
 

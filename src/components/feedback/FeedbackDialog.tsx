@@ -83,6 +83,7 @@ export default function FeedbackDialog({ open, onOpenChange, feedback, mode }: {
             )}
             {edited.type === "data_issue" && context?.field && (
               <div className="flex flex-col gap-2 text-xs text-zinc-600">
+                {selected?.description && <p>{selected.description}</p>}
                 {context.currentValue && !imageOptions && <p>{t("currentValueLabel")} <span className="font-medium text-zinc-900">{context.currentValue}</span></p>}
                 <label className="flex flex-col gap-2">{t("suggestedCorrectionLabel")}
                   <Textarea rows={1} disabled={feedback.locked} value={context.suggestedCorrection ?? ""} onChange={(event) => setContext({ suggestedCorrection: event.target.value })} maxLength={200} placeholder={t("suggestedCorrectionPlaceholder")} />

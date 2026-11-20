@@ -37,7 +37,7 @@ import { pickPriceEntry } from "@/lib/lens/pricing";
 import { lensDisplayName, lensSubtitleLine, brandLabel } from "@/lib/lens/format";
 import { lensPath } from "@/lib/url/routes";
 import { DataSourceBar } from "@/components/lens/DataSource";
-import { buildImageFeedbackFields } from "@/lib/feedback/image-feedback-fields";
+import { addLensFeedbackFields } from "@/lib/feedback/lens-feedback-fields";
 import { CompareTechnicalImages } from "@/components/lens/TechnicalImages";
 import { getTechnicalImages } from "@/lib/lens/technical-images";
 
@@ -760,7 +760,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                       <FeedbackTrigger
                         type="data_issue"
                         context={{ lensId: lens.id, lensModel: lens.model, lensBrand: brandLabel(tBrand, lens.brand) }}
-                        fields={[...fields, ...buildImageFeedbackFields(lens, td)]}
+                        fields={addLensFeedbackFields(fields, lens, url ?? undefined, td)}
                         className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
                       >
                         <Flag className="h-3 w-3 shrink-0" />
