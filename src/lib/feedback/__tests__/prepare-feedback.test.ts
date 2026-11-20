@@ -42,15 +42,14 @@ describe("prepareFeedback", () => {
   it("keeps actual MTF assets distinct without adding selectors for photos or diagrams", () => {
     const lens = getLensesByMount("G", "en").find((entry) => entry.id === "fujifilm-gf-35-70mmf45-56-wr-g")!;
     const fields = buildFeedbackFields(lens, "en").filter((field) => field.group === "Media & Links");
-    expect(fields.filter((field) => field.label.startsWith("MTF Charts · "))).toHaveLength(6);
-    expect(fields).toContainEqual(expect.objectContaining({
-      label: "MTF Charts · 35mm · 10 lines/mm",
-      currentValue: expect.stringContaining(`${lens.id}/002.`),
-      hideCurrentValue: true,
-    }));
-    expect(fields.filter((field) => /^(Optical Construction Diagram|Lens Photos)/.test(field.label)).map((field) => field.label)).toEqual(
-      ["Lens Photos", "Optical Construction Diagram"],
-    );
+    const mtf = fields.find((field) => field.label === "MTF Charts");
+    expect(mtf?.imageOptions).toHaveLength(6);
+    expect(mtf?.imageOptions).toContainEqual({
+      label: "35mm · 10 lines/mm",
+      value: expect.stringContaining(`${lens.id}/002.`),
+    });
+    expect(fields.filter((field) => field.label.startsWith("MTF Charts"))).toEqual([mtf]);
+    expect(fields.filter((field) => field.imageOptions?.length)).toEqual([mtf]);
   });
 
   it("keeps a missing spec field available in the editor without inventing a current value", () => {

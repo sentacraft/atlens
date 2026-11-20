@@ -994,6 +994,8 @@
     "affectedLensLabel": "反馈对象",
     "fieldPickerLabel": "问题类型",
     "fieldPickerPlaceholder": "请选择类型…",
+    "fieldImagePickerLabel": "具体哪张图（可选）",
+    "fieldImagePickerNone": "不指定图片",
     "fieldOther": "其他",
     "fieldGroupOther": "其他",
     "currentValueLabel": "当前值：",

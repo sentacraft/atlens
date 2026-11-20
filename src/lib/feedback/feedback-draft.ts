@@ -4,7 +4,7 @@ export interface FeedbackField {
   label: string;
   currentValue?: string;
   group?: string;
-  hideCurrentValue?: boolean;
+  imageOptions?: { label: string; value: string }[];
 }
 
 export interface FeedbackDraft {

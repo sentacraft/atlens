@@ -9,15 +9,15 @@ export function buildImageFeedbackFields(lens: Pick<Lens, "id" | "images">, t: N
   const mtfLabel = t("fieldMtf");
   const charts = getTechnicalImages(lens, "mtf");
   const captions = charts.map(technicalImageShortLabel);
+  const imageOptions = charts.map((image, index) => {
+    const caption = captions[index];
+    const number = t("opticalImages.imageNumber", { number: String(index + 1) });
+    const label = !caption ? number : captions.indexOf(caption) !== captions.lastIndexOf(caption) ? `${caption} (${number})` : caption;
+    return { label, value: getLensImageUrl(lens.id, image.id) };
+  });
   return [
     { label: t("fieldLensPhotos"), group },
     { label: t("fieldOpticalDiagram"), group },
-    { label: mtfLabel, group },
-    ...charts.map((image, index) => {
-      const caption = captions[index];
-      const number = t("opticalImages.imageNumber", { number: String(index + 1) });
-      const name = !caption ? number : captions.indexOf(caption) !== captions.lastIndexOf(caption) ? `${caption} (${number})` : caption;
-      return { label: `${mtfLabel} · ${name}`, group, currentValue: getLensImageUrl(lens.id, image.id), hideCurrentValue: true };
-    }),
+    { label: mtfLabel, group, imageOptions },
   ];
 }

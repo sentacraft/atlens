@@ -994,6 +994,8 @@
     "affectedLensLabel": "Reporting on",
     "fieldPickerLabel": "Issue type",
     "fieldPickerPlaceholder": "Choose a type…",
+    "fieldImagePickerLabel": "Specific chart (optional)",
+    "fieldImagePickerNone": "No specific chart",
     "fieldOther": "Other",
     "fieldGroupOther": "Other",
     "currentValueLabel": "Current value:",
