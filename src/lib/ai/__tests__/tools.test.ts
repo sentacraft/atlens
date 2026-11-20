@@ -95,9 +95,9 @@ describe("lensDetails images", () => {
     expect(output.readRefs).toEqual([]);
   });
 
-  it("shows per-lens selections but sends only explicitly requested pixels to supported models", async () => {
+  it("reads an explicitly requested MTF by default and respects a display-only request", async () => {
     const input = { lenses: [
-      { ref, images: [{ role: "mtf" as const, apertureFNumber: 1.4, read: true }, { role: "optical-construction" as const }] },
+      { ref, images: [{ role: "mtf" as const, apertureFNumber: 1.4 }, { role: "optical-construction" as const, read: false }] },
       { ref: unknownRef },
     ] };
     const detail = detailTool(true);
@@ -115,11 +115,23 @@ describe("lensDetails images", () => {
       mtfNote: expect.stringContaining("Do not rank charts"),
     });
     expect(projected.value.filter((part) => part.type === "file")).toEqual([
-      expect.objectContaining({ data: { type: "url", url: new URL(output.displayImages[0].src) } }),
+      expect.objectContaining({ data: { type: "url", url: new URL(output.displayImages[0].src) }, providerOptions: { deepseek: { imageDetail: "original" } } }),
     ]);
     const plain = await detailTool(false).toModelOutput!({ toolCallId: "details", input, output });
     expect(plain).toMatchObject({ type: "text", value: expect.stringContaining('"visionUnavailable":true') });
     expect(JSON.stringify(plain)).not.toContain(output.displayImages[0].src);
+  });
+
+  it("reads only the explicitly selected diagram and does not add it to MTF-only requests", () => {
+    const output = run(detailTool(true), { lenses: [
+      { ref, images: [{ role: "optical-construction" }] },
+      { ref: unknownRef, images: [{ role: "mtf", read: false }] },
+    ] });
+    expect(output.displayImages).toMatchObject([
+      { lensRef: ref, image: { role: "optical-construction" } },
+      { lensRef: unknownRef, image: { role: "mtf" } },
+    ]);
+    expect(output.readRefs).toEqual([output.displayImages[0].imageRef]);
   });
 
   it("does not pass unlabeled charts off as matching a requested aperture", () => {

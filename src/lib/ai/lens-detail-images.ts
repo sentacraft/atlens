@@ -10,7 +10,7 @@ export const lensDetailImagesSchema = z.array(z.object({
   imageRef: z.string().optional().describe("Exact ref from this lens's image list; use it to retrieve the same image in a follow-up."),
   focalLengthMm: z.number().positive().optional().describe("The requested chart focal length, not inferred from the lens name."),
   apertureFNumber: z.number().positive().optional().describe("The requested chart aperture. Unknown conditions do not match."),
-  read: z.boolean().optional().describe("Send pixels as well as showing the image. Use on each turn that needs to inspect the image."),
+  read: z.boolean().optional().describe("Requested MTF charts and optical diagrams are read by default. Set false to show without reading; set true to read a product photo."),
 })).max(3).optional();
 
 type ImageRequest = NonNullable<z.infer<typeof lensDetailImagesSchema>>[number];
@@ -54,6 +54,7 @@ export function lensDetailImages(
   const displayImages = new Map<string, LensDetailDisplayImage>();
   const readRefs = new Set<string>();
   const results = requests.map(({ role, imageRef, focalLengthMm, apertureFNumber, read }) => {
+    const readPixels = read ?? role !== "product";
     const candidates = entries.filter((entry) => entry.image.role === role && (!imageRef || entry.imageRef === imageRef));
     const conditions = (entry: LensDetailDisplayImage) => [
       focalLengthMm === undefined ? true : entry.image.focalLengthMm === undefined ? null : entry.image.focalLengthMm === focalLengthMm,
@@ -65,11 +66,11 @@ export function lensDetailImages(
       return values.includes(null) && !values.includes(false);
     });
     const selected: string[] = [];
-    for (const candidate of matches.slice(0, role === "mtf" && !read ? 2 : 1)) {
+    for (const candidate of matches.slice(0, role === "mtf" ? 2 : 1)) {
       if (!displayImages.has(candidate.imageRef) && displayImages.size >= remaining) {continue;}
-      const gallery = role === "product" && !read && !imageRef && candidates.length > 1 ? candidates : undefined;
+      const gallery = role === "product" && !readPixels && !imageRef && candidates.length > 1 ? candidates : undefined;
       displayImages.set(candidate.imageRef, { ...candidate, ...(gallery ? { gallery } : {}) });
-      if (read) {readRefs.add(candidate.imageRef);}
+      if (readPixels) {readRefs.add(candidate.imageRef);}
       selected.push(candidate.imageRef);
     }
     return {

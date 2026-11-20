@@ -350,11 +350,11 @@ export function buildLensTools(
     }),
 
     lensDetails: tool({
-      description: "Return full specs and the available images for recalled lenses. Use specs for element and group counts; attach an available diagram for construction questions. Attach requested images; read them only when the answer depends on their pixels.",
+      description: "Look up specs and images for recalled lenses. For lens construction or special elements, answer from specs and show an optical diagram without reading it unless asked to interpret it.",
       inputSchema: z.object({
         lenses: z.array(z.object({
           ref: z.string().describe("Lens ref from an earlier recall result."),
-          images: lensDetailImagesSchema.describe("Images to show for this lens. Omit for specs and an image list only."),
+          images: lensDetailImagesSchema.describe("Images to show for this lens. Omit for specs and an image list only. Request the same image again by ref to inspect it in a follow-up."),
         })).min(1).describe(`At most ${MAX_DETAIL_REFS} lenses are returned per call.`),
       }),
       execute: ({ lenses }) => {
@@ -395,7 +395,7 @@ export function buildLensTools(
             { type: "text", text: JSON.stringify(reading) },
             ...images.flatMap(({ imageRef, src }) => [
               { type: "text" as const, text: `Image ${imageRef}:` },
-              { type: "file" as const, mediaType: "image/webp", data: { type: "url" as const, url: new URL(src) } },
+              { type: "file" as const, mediaType: "image/webp", data: { type: "url" as const, url: new URL(src) }, providerOptions: { deepseek: { imageDetail: "original" } } },
             ]),
           ],
         };
