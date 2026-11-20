@@ -136,8 +136,18 @@ describe("lensDetails images", () => {
 
   it("does not pass unlabeled charts off as matching a requested aperture", () => {
     const output = run(detailTool(true), { lenses: [{ ref: unknownRef, images: [{ role: "mtf", apertureFNumber: 1.4, read: true }] }] });
+    expect(output.displayImages).toHaveLength(1);
+    const image = output.displayImages[0].imageRef;
+    expect(output.readRefs).toEqual([image]);
+    expect(output.lenses[0].imageResults).toEqual([expect.objectContaining({
+      status: "conditions-unconfirmed", selected: [image], unconfirmed: [image], note: expect.stringContaining("do not present them as matching"),
+    })]);
+  });
+
+  it("does not substitute a chart with a known different aperture", () => {
+    const output = run(detailTool(true), { lenses: [{ ref, images: [{ role: "mtf", apertureFNumber: 16 }] }] });
     expect(output.displayImages).toEqual([]);
-    expect(output.lenses[0].imageResults).toEqual([expect.objectContaining({ status: "conditions-unconfirmed", unconfirmed: [expect.any(String)] })]);
+    expect(output.lenses[0].imageResults).toMatchObject([{ status: "no-match" }]);
   });
 });
 

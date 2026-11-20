@@ -354,7 +354,7 @@ export function buildLensTools(
       inputSchema: z.object({
         lenses: z.array(z.object({
           ref: z.string().describe("Lens ref from an earlier recall result."),
-          images: lensDetailImagesSchema.describe("Images to show for this lens. Omit for specs and an image list only. Request the same image again by ref to inspect it in a follow-up."),
+          images: lensDetailImagesSchema.describe("Images to show for this lens. Request images when the user asks to find or see them. Lens search constraints are not chart test conditions. Omit for specs only; use the image ref to revisit an exact image."),
         })).min(1).describe(`At most ${MAX_DETAIL_REFS} lenses are returned per call.`),
       }),
       execute: ({ lenses }) => {
