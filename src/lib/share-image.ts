@@ -1,4 +1,4 @@
-import { createContext, domToPng } from "modern-screenshot";
+import { createContext, destroyContext, domToPng } from "modern-screenshot";
 
 interface RasterizeOptions {
   // 1280 is the long-axis threshold of the most aggressive IM compressors.
@@ -36,7 +36,11 @@ export async function rasterizePoster(
       context.drawImageCount = Math.min(context.drawImageCount, MAX_REDRAWS);
     },
   });
-  return domToPng(context);
+  try {
+    return await domToPng(context);
+  } finally {
+    destroyContext(context);
+  }
 }
 
 /**

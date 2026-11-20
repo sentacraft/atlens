@@ -10,6 +10,7 @@ const lib = vi.hoisted(() => ({
     lib.context = { ...options, drawImageCount: 0 };
     return lib.context;
   }),
+  destroyContext: vi.fn(),
   domToPng: vi.fn(async (context: Context) => {
     // As on WebKit: the library counts one redraw per embedded image, then calls the hook.
     context.drawImageCount = 179;
@@ -17,7 +18,7 @@ const lib = vi.hoisted(() => ({
     return "data:image/png;base64,";
   }),
 }));
-vi.mock("modern-screenshot", () => ({ createContext: lib.createContext, domToPng: lib.domToPng }));
+vi.mock("modern-screenshot", () => ({ createContext: lib.createContext, destroyContext: lib.destroyContext, domToPng: lib.domToPng }));
 
 import { rasterizePoster } from "@/lib/share-image";
 

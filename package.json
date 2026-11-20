@@ -47,6 +47,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "8.6.0",
+    "fflate": "0.8.2",
     "geist": "^1.7.0",
     "kysely": "^0.29.6",
     "kysely-d1": "^0.4.0",
