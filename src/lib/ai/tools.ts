@@ -232,6 +232,7 @@ export function buildLensTools(
   recalledRefs: Set<string>,
   vision = false,
 ) {
+  const mountLabel = mount === "G" ? "Fujifilm GFX" : "Fujifilm X";
   const contextRefs = buildRefIndex(getLensesByMount(mount, locale));
   const recalledLenses = (refs: string[]) => {
     const byRef = contextRefs;
@@ -253,10 +254,8 @@ export function buildLensTools(
   return {
     queryLenses: tool({
       description:
-        "Recall lenses by spec. Every parameter is a hard constraint, so set one only for a " +
-        "requirement the request makes; leave the rest out or null, which leaves that axis unrestricted. " +
-        "Independent recalls — say a standard zoom and a telephoto for a two-lens kit — go together in " +
-        "one call, one query each.",
+        "Find lenses by spec in the current mount only. Set hard constraints only for user requirements; " +
+        "omit or use null for unrestricted fields. Batch independent searches in one call, one query each.",
       inputSchema: z.object({
         queries: z
           .array(recallConstraintsSchema)
@@ -273,7 +272,12 @@ export function buildLensTools(
           for (const { lens } of result.maybe) {
             recalledRefs.add(lens.ref);
           }
-          return result;
+          return result.totalMatched === 0 && result.totalMaybe === 0
+            ? {
+                ...result,
+                note: `No catalogue lenses meet these constraints in ${mountLabel}. Say so. Do not relax explicit requirements without the user's agreement. If the user appears to mean a different mount, confirm that instead of searching wider.`,
+              }
+            : result;
         }),
         note: QUERY_LENSES_NOTE,
       }),
@@ -281,8 +285,7 @@ export function buildLensTools(
 
     searchLensByName: tool({
       description:
-        "Look up a lens the user named, by model or brand (e.g. '18-55', 'XF35', 'Viltrox 27'). " +
-        "Only for names the user gave, not for lenses you thought of yourself; recall those with queryLenses.",
+        "Look up a model or brand the user named, in the current mount only. Use queryLenses for spec searches.",
       inputSchema: z.object({
         query: z
           .string()
@@ -301,7 +304,10 @@ export function buildLensTools(
         for (const lens of results) {
           recalledRefs.add(lens.ref);
         }
-        return { results };
+        return results.length ? { results } : {
+          results,
+          note: `No name match in ${mountLabel}. This lookup does not search across mounts. If the name points to a different mount, confirm which one the user means.`,
+        };
       },
     }),
 

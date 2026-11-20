@@ -455,6 +455,25 @@ describe("lists longer than one call returns", () => {
 });
 
 describe("queryLenses result note", () => {
+  it("explains an empty search per query without telling the model to relax requirements", async () => {
+    const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set());
+    const result = await run(gfx.queryLenses, { queries: [
+      { brands: ["fujifilm"], type: "prime", focalWithin: { min: 33, max: 37 }, maxApertureF: { wide: 1.4, tele: 1.4 } },
+      { brands: ["fujifilm"], type: "prime", focalWithin: { min: 30, max: 30 } },
+    ] });
+    expect(result.results[0]).toMatchObject({ totalMatched: 0, totalMaybe: 0, note: expect.stringContaining("GFX") });
+    expect(result.results[0].note).toMatch(/Do not relax/);
+    expect(result.results[1].totalMatched).toBeGreaterThan(0);
+    expect(result.results[1]).not.toHaveProperty("note");
+  });
+
+  it("keeps a failed XF lookup scoped to the current GFX catalogue", async () => {
+    const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set());
+    const result = await run(gfx.searchLensByName, { query: "XF 35mm" });
+    expect(result.results).toEqual([]);
+    expect(result.note).toMatch(/GFX.*different mount/);
+  });
+
   it("carries the rules for reading maybe and the cap with the data", async () => {
     const result = await run(tools.queryLenses, { queries: [{ type: "prime" }] });
     expect(result.note).toMatch(/`maybe`[\s\S]*never drop them/);
