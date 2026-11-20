@@ -78,8 +78,47 @@ describe("a recall tool's gate accepts exactly what it returned", () => {
 
     // lensDetails throws on a ref the turn never recalled, so resolving every one of
     // them is the gate asserting it holds what the payload advertised.
-    const details = await run(tools.lensDetails, { refs: refs.slice(0, 6) });
+    const details = await run(tools.lensDetails, { lenses: refs.slice(0, 6).map((ref) => ({ ref })) });
     expect(details.lenses.map((lens: { ref: string }) => lens.ref)).toEqual(refs.slice(0, 6));
+  });
+});
+
+describe("lensDetails images", () => {
+  const ref = lensRef("sgimage-af-35mmf14-x");
+  const unknownRef = lensRef("brightinstar-mf-35mm-f14-x");
+  const detailTool = (vision: boolean) => buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref, unknownRef]), vision).lensDetails;
+
+  it("lists images without showing them for an ordinary detail lookup", () => {
+    const output = run(detailTool(true), { lenses: [{ ref }] });
+    expect(output.lenses[0].images).toEqual(expect.arrayContaining([expect.objectContaining({ role: "mtf" })]));
+    expect(output.displayImages).toEqual([]);
+    expect(output.readRefs).toEqual([]);
+  });
+
+  it("shows per-lens selections but sends only explicitly requested pixels to supported models", async () => {
+    const input = { lenses: [
+      { ref, images: [{ role: "mtf" as const, apertureFNumber: 1.4, read: true }, { role: "optical-construction" as const }] },
+      { ref: unknownRef },
+    ] };
+    const detail = detailTool(true);
+    const output = await detail.execute!(input, {} as never);
+    if (!("displayImages" in output)) {throw new Error("Expected a synchronous detail result");}
+    expect(output.displayImages.map(({ lensRef, image }) => [lensRef, image.role])).toEqual([[ref, "mtf"], [ref, "optical-construction"]]);
+    const projected = await detail.toModelOutput!({ toolCallId: "details", input, output });
+    expect(projected.type).toBe("content");
+    if (projected.type !== "content") {throw new Error("Expected vision content");}
+    expect(projected.value.filter((part) => part.type === "file")).toEqual([
+      expect.objectContaining({ data: { type: "url", url: new URL(output.displayImages[0].src) } }),
+    ]);
+    const plain = await detailTool(false).toModelOutput!({ toolCallId: "details", input, output });
+    expect(plain).toMatchObject({ type: "text", value: expect.stringContaining('"visionUnavailable":true') });
+    expect(JSON.stringify(plain)).not.toContain(output.displayImages[0].src);
+  });
+
+  it("does not pass unlabeled charts off as matching a requested aperture", () => {
+    const output = run(detailTool(true), { lenses: [{ ref: unknownRef, images: [{ role: "mtf", apertureFNumber: 1.4, read: true }] }] });
+    expect(output.displayImages).toEqual([]);
+    expect(output.lenses[0].imageResults).toEqual([expect.objectContaining({ status: "conditions-unconfirmed", unconfirmed: [expect.any(String)] })]);
   });
 });
 
@@ -90,7 +129,7 @@ describe("lensDetails hands the model refs, never ids", () => {
     const refs = recall.results[0].matches.slice(0, 3).map((lens: { ref: string }) => lens.ref);
     expect(refs.length).toBeGreaterThan(0);
 
-    const details = await run(tools.lensDetails, { refs });
+    const details = await run(tools.lensDetails, { lenses: refs.map((ref: string) => ({ ref })) });
 
     expect(details.lenses.map((lens: { ref?: string }) => lens.ref)).toEqual(refs);
 
@@ -104,7 +143,7 @@ describe("lensDetails hands the model refs, never ids", () => {
     const recall = await run(tools.queryLenses, { queries: [{ type: "prime" }] });
     const [ref] = recall.results[0].matches.map((lens: { ref: string }) => lens.ref);
 
-    const details = await run(tools.lensDetails, { refs: [ref] });
+    const details = await run(tools.lensDetails, { lenses: [{ ref }] });
 
     expect(details.notInData).toMatch(/lensReviews/);
   });
@@ -112,7 +151,7 @@ describe("lensDetails hands the model refs, never ids", () => {
   it("still carries the long-tail specs a recall result leaves out", async () => {
     const recall = await run(tools.queryLenses, { queries: [{ type: "prime" }] });
     const [ref] = recall.results[0].matches.map((lens: { ref: string }) => lens.ref);
-    const details = await run(tools.lensDetails, { refs: [ref] });
+    const details = await run(tools.lensDetails, { lenses: [{ ref }] });
 
     // Dropping the id must not turn into dropping the payload: these are exactly what
     // the tool exists to fetch, and none of them appears in a recall result.
@@ -146,7 +185,7 @@ describe("myFavorites", () => {
     expect(out.total).toBe(2);
     expect(out.otherMounts).toEqual([{ mount: "G", count: 1 }]);
     const refs = out.results.map((lens: { ref: string }) => lens.ref);
-    const details = await run(withFavorites.lensDetails, { refs });
+    const details = await run(withFavorites.lensDetails, { lenses: refs.map((ref: string) => ({ ref })) });
     expect(details.lenses.map((lens: { name: string }) => lens.name)).toEqual([
       expect.stringContaining("23mm"),
       expect.stringContaining("33mm"),
@@ -173,7 +212,7 @@ describe("queryLenses with several constraint sets", () => {
     expect(zooms.matches.every(({ focalNativeMm: [wide, tele] }) => wide < tele && tele >= 200)).toBe(true);
     expect(primes.matches.every(({ focalNativeMm: [wide, tele] }) => wide === tele)).toBe(true);
     const refs = [zooms.matches[0].ref, primes.matches[0].ref];
-    const details = await run(tools.lensDetails, { refs });
+    const details = await run(tools.lensDetails, { lenses: refs.map((ref: string) => ({ ref })) });
     expect(details.lenses.map((lens: { ref: string }) => lens.ref)).toEqual(refs);
   });
 });
@@ -209,7 +248,7 @@ describe("refs recalled earlier in the conversation", () => {
     const { history, recalled } = await priorTurn();
     const tools = toolsSeededFrom(history);
 
-    const details = await run(tools.lensDetails, { refs: recalled });
+    const details = await run(tools.lensDetails, { lenses: recalled.map((ref) => ({ ref })) });
     expect(details.lenses.map((lens: { ref: string }) => lens.ref)).toEqual(recalled);
     const cards = await run(tools.recommendLenses, { picks: [{ ref: recalled[0], reason: "r" }] });
     expect(cards.recommendations).toHaveLength(1);
@@ -226,7 +265,7 @@ describe("refs recalled earlier in the conversation", () => {
     const slug = getLensesByMount("X", "zh")[0].id;
 
     for (const ref of [slug, unrecalled!]) {
-      expect(() => run(tools.lensDetails, { refs: [ref] })).toThrow(/was not returned/);
+      expect(() => run(tools.lensDetails, { lenses: [{ ref }] })).toThrow(/was not returned/);
       expect(() => run(tools.recommendLenses, { picks: [{ ref, reason: "r" }] })).toThrow(/was not returned/);
       expect(() => run(tools.listLenses, { refs: [ref] })).toThrow(/was not returned/);
     }
@@ -241,7 +280,7 @@ describe("refs recalled earlier in the conversation", () => {
     ) as UIMessage[];
     const tools = toolsSeededFrom(pending);
 
-    expect(() => run(tools.lensDetails, { refs: [recalled[0]] })).toThrow(/was not returned/);
+    expect(() => run(tools.lensDetails, { lenses: [{ ref: recalled[0] }] })).toThrow(/was not returned/);
   });
 });
 
@@ -259,10 +298,10 @@ describe("myGear", () => {
     }, new Set());
     expect(tools).not.toHaveProperty("askToSignIn");
     expect(reads).toBe(0);
-    expect(() => run(tools.lensDetails, { refs: [ref] })).toThrow(/was not returned/);
+    expect(() => run(tools.lensDetails, { lenses: [{ ref }] })).toThrow(/was not returned/);
     expect(await run(tools.myGear, {})).toMatchObject({ bodies: [{ name: "Fujifilm X-T5" }], lenses: [{ ref }] });
     expect(reads).toBe(1);
-    expect((await run(tools.lensDetails, { refs: [ref] })).lenses).toHaveLength(1);
+    expect((await run(tools.lensDetails, { lenses: [{ ref }] })).lenses).toHaveLength(1);
   });
 
   it("returns an empty profile without invoking an editor", async () => {
@@ -374,7 +413,7 @@ describe("lists longer than one call returns", () => {
 
   it("lensDetails takes the first 6 and names the rest instead of rejecting the call", async () => {
     const { lookup, refs } = await recalledRefs(9);
-    const out = await run(lookup.lensDetails, { refs });
+    const out = await run(lookup.lensDetails, { lenses: refs.map((ref: string) => ({ ref })) });
 
     expect(out.lenses.map((lens: { ref: string }) => lens.ref)).toEqual(refs.slice(0, 6));
     expect(out.notReturned.refs).toEqual(refs.slice(6));
@@ -392,7 +431,7 @@ describe("lists longer than one call returns", () => {
   it("adds no notReturned field when everything fits", async () => {
     const { lookup, refs } = await recalledRefs(6);
 
-    expect((await run(lookup.lensDetails, { refs })).notReturned).toBeUndefined();
+    expect((await run(lookup.lensDetails, { lenses: refs.map((ref: string) => ({ ref })) })).notReturned).toBeUndefined();
     expect((await run(lookup.lensReviews, { refs })).notReturned).toBeUndefined();
   });
 
@@ -400,7 +439,7 @@ describe("lists longer than one call returns", () => {
     const { lookup, refs } = await recalledRefs(12);
     const many = Array.from({ length: 20 }, (_, i) => refs[i % refs.length]);
 
-    for (const tool of [lookup.lensDetails, lookup.lensReviews]) {
+    for (const tool of [lookup.lensReviews]) {
       const schema = tool.inputSchema as { safeParse: (value: unknown) => { success: boolean } };
       expect(schema.safeParse({ refs: many }).success).toBe(true);
       expect(schema.safeParse({ refs: [] }).success).toBe(false);

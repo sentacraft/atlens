@@ -14,6 +14,7 @@ import {
   LENS_TABLE_COLUMNS,
 } from "@/lib/ai/recall";
 import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
+import { lensDetailImages, lensDetailImagesSchema, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
@@ -229,6 +230,7 @@ export function buildLensTools(
   tBrand: (brand: string) => string,
   data: ToolData,
   recalledRefs: Set<string>,
+  vision = false,
 ) {
   const contextRefs = buildRefIndex(getLensesByMount(mount, locale));
   const recalledLenses = (refs: string[]) => {
@@ -342,26 +344,47 @@ export function buildLensTools(
     }),
 
     lensDetails: tool({
-      description:
-        "Return the full spec record for lenses already in hand, by ref — every field the " +
-        "catalogue holds, including the long tail a recall result leaves out (optical " +
-        "construction, filter thread, aperture blades, minimum aperture, T-stops, focus " +
-        "motor, internal focusing, barrel diameter, materials, zoom mechanics, generation, " +
-        "bundled accessories). Renders nothing to the user.",
+      description: "Return full specs and the available images for recalled lenses. Show an optical diagram when asked about optical construction. Read selected images only when the answer depends on their pixels.",
       inputSchema: z.object({
-        refs: z
-          .array(z.string())
-          .min(1)
-          .describe(
-            `Lens refs, each from a prior queryLenses/searchLensByName/myFavorites/myGear result. At most ${MAX_DETAIL_REFS} are returned per call.`,
-          ),
+        lenses: z.array(z.object({
+          ref: z.string().describe("Lens ref from an earlier recall result."),
+          images: lensDetailImagesSchema.describe("Images to show for this lens. Omit for specs and an image list only."),
+        })).min(1).describe(`At most ${MAX_DETAIL_REFS} lenses are returned per call.`),
       }),
-      execute: ({ refs }) => {
-        const { kept, notReturned } = capRefs(refs, MAX_DETAIL_REFS);
+      execute: ({ lenses }) => {
+        const { kept, notReturned } = capRefs(lenses.map(({ ref }) => ref), MAX_DETAIL_REFS);
+        const displayImages: LensDetailDisplayImage[] = [];
+        const readRefs: string[] = [];
         return {
-          lenses: recalledLenses(kept).map((lens) => toDetailed(resolveLens(lens, locale, tBrand))),
-          notInData: "No test results or opinions: for image quality, focusing, handling and build, call lensReviews.",
+          lenses: recalledLenses(kept).map((lens, index) => {
+            const resolved = resolveLens(lens, locale, tBrand);
+            const { images, results, displayImages: selected, readRefs: read } = lensDetailImages(lens, kept[index], resolved.name, lenses.find(({ ref }) => ref === kept[index])?.images, 4 - displayImages.length);
+            displayImages.push(...selected);
+            readRefs.push(...read);
+            return { ...toDetailed(resolved), images, ...(results.length ? { imageResults: results } : {}) };
+          }),
+          displayImages,
+          readRefs,
+          notInData: "For field performance and opinions, use lensReviews.",
           ...(notReturned ? { notReturned } : {}),
+        };
+      },
+      toModelOutput: ({ output }) => {
+        const { displayImages = [], readRefs = [], ...details } = output;
+        const images = displayImages.filter(({ imageRef }) => readRefs.includes(imageRef));
+        const metadata = { ...details, shown: displayImages.map(({ imageRef }) => imageRef) };
+        if (!vision || !images.length) {
+          return { type: "text", value: JSON.stringify({ ...metadata, ...(images.length ? { visionUnavailable: true } : {}) }) };
+        }
+        return {
+          type: "content",
+          value: [
+            { type: "text", text: JSON.stringify(metadata) },
+            ...images.flatMap(({ imageRef, src }) => [
+              { type: "text" as const, text: `Image ${imageRef}:` },
+              { type: "file" as const, mediaType: "image/webp", data: { type: "url" as const, url: new URL(src) } },
+            ]),
+          ],
         };
       },
     }),

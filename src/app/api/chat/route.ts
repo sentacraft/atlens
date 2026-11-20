@@ -49,6 +49,7 @@ import {
 } from "@/lib/askiris/conversation-repository";
 import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import { resolveTurn } from "@/lib/askiris/turn-history";
+import { normalizeLensDetailsMessage } from "@/lib/askiris/lens-details-history";
 import { createAuth } from "@/lib/auth";
 import {
   askIrisMessageMetadataSchema,
@@ -161,6 +162,7 @@ export async function POST(req: NextRequest) {
         },
       },
       recalledRefs,
+      model.provider === "deepseek" && model.modelId === "deepseek-flash",
     ),
   );
   const validate = (messages: unknown) =>
@@ -171,7 +173,7 @@ export async function POST(req: NextRequest) {
       tools,
     });
 
-  const incoming = await validate([message]);
+  const incoming = await validate([normalizeLensDetailsMessage(message)]);
   if (!incoming.success) {
     console.warn("[askiris] invalid message", incoming.error.message.slice(0, 500));
     return chatErrorResponse("unavailable", 400);
@@ -179,7 +181,7 @@ export async function POST(req: NextRequest) {
 
   let stored: AskIrisUIMessage[];
   try {
-    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId })) as AskIrisUIMessage[];
+    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId }) as AskIrisUIMessage[]).map(normalizeLensDetailsMessage);
     // validateUIMessages rejects an empty list, which a new conversation has.
     const checked = stored.length > 0 ? await validate(stored) : undefined;
     // Stored turns that no longer match the tool schemas are still replayed: dropping
@@ -265,7 +267,19 @@ export async function POST(req: NextRequest) {
   // A stopped turn is stored with its unfinished tool calls, which the model cannot take back.
   let modelMessages: ModelMessage[];
   try {
-    modelMessages = await convertToModelMessages(history, { tools, ignoreIncompleteToolCalls: true });
+    modelMessages = await convertToModelMessages(history, {
+      tools: {
+        ...tools,
+        lensDetails: {
+          ...tools.lensDetails,
+          toModelOutput: (options: Parameters<NonNullable<typeof tools.lensDetails.toModelOutput>>[0]) => tools.lensDetails.toModelOutput!({
+            ...options,
+            output: { ...options.output, readRefs: [] },
+          }),
+        },
+      },
+      ignoreIncompleteToolCalls: true,
+    });
   } catch (error) {
     console.error("[askiris] failed to convert messages", error);
     persistTrace(traceCollector.finalizeError("message_conversion_failed"));

@@ -284,6 +284,13 @@
     "stop": "Stop",
     "gathering": "Searching lenses…",
     "composing": "Putting it together…",
+    "lensImages": {
+      "title": "Lens images",
+      "type": "{role, select, product {Product photo} mtf {MTF chart} structure {Optical diagram} other {Lens image}}",
+      "imageLabel": "{lens} — {type}",
+      "count": "{count, plural, one {# photo} other {# photos}}",
+      "openGallery": "Open image: {label} ({count})"
+    },
     "table": {
       "lensHeader": "Lens",
       "length": "Length",

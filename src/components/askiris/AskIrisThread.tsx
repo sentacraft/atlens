@@ -15,6 +15,7 @@ import Markdown from "@/components/askiris/Markdown";
 import { CitationsProvider, SourceList } from "@/components/askiris/ReviewSources";
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
 import LensTable from "@/components/askiris/LensTable";
+import LensImageGroup from "@/components/askiris/LensImageGroup";
 import ResponseFeedback from "@/components/askiris/ResponseFeedback";
 import FeedbackCard from "@/components/feedback/FeedbackCard";
 import type { FeedbackDraft } from "@/lib/feedback/feedback-draft";
@@ -272,6 +273,7 @@ export default function AskIrisThread({
               return null;
             })}
             </CitationsProvider>
+            {message.role === "assistant" && !isStreamingResponse ? <LensImageGroup parts={message.parts} /> : null}
             {citations && !isStreamingResponse ? <SourceList list={citations.list} catalog={usedCatalog(message)} /> : null}
             {!isUser && turnId && !isStreamingResponse && !awaitingUser ? (
               <ResponseFeedback responseMessageId={message.id} />
