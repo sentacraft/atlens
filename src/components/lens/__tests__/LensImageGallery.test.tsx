@@ -101,6 +101,17 @@ it("starts on the primary image and opens the selected supplemental image", asyn
   expect(within(trigger).getByRole("img").getAttribute("src")).toContain(encodeURIComponent("/r2-assets/example/001.webp"));
 });
 
+it("does not use the opening image as a placeholder for the next slide", async () => {
+  vi.spyOn(HTMLImageElement.prototype, "currentSrc", "get").mockImplementation(function (this: HTMLImageElement) {return this.src;});
+  render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }] }} labels={labels} />);
+  const trigger = screen.getByRole("button", { name: labels.open });
+  const thumbnail = (within(trigger).getByRole("img") as HTMLImageElement).currentSrc;
+  fireEvent.click(trigger);
+  const dialog = await screen.findByRole("dialog");
+  await waitFor(() => expect(dialog.querySelector('.pswp__item[aria-hidden="false"] img.pswp__img--placeholder')).toHaveAttribute("src", thumbnail));
+  expect(dialog.querySelector('.pswp__item[aria-hidden="true"] img.pswp__img--placeholder')).toBeNull();
+});
+
 it("uses native side arrows and disables them at the gallery boundaries", async () => {
   render(<LensImageGallery lens={{ id: "example", model: "Example", images: [{ id: "003", role: "product" }] }} labels={labels} />);
   fireEvent.click(screen.getByRole("button", { name: labels.open }));
