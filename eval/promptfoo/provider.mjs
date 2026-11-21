@@ -207,7 +207,7 @@ function digest(msg) {
       });
     }
     if (name === "lensDetails") {
-      details.push(...(part.input?.refs ?? []));
+      details.push(...(part.input?.lenses ?? []).map(({ ref }) => ref));
     }
     if (name === "lensReviews") {
       for (const lens of part.output?.lenses ?? []) {

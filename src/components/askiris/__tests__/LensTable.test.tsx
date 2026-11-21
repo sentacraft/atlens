@@ -70,3 +70,10 @@ describe("LensTable length and OIS columns", () => {
     expect(screen.getByText("no")).toBeTruthy();
   });
 });
+
+it("renders element counts and special glass in the construction column", () => {
+  const lens = { ...lenses[0], lensConfiguration: { groups: 10, elements: 15, aspherical: 2, ed: 3 } };
+  render(<LensTable lenses={[lens]} columns={["lensConfiguration"]} caption={null} />);
+  expect(screen.getByRole("columnheader", { name: "lensConfiguration" })).toBeInTheDocument();
+  expect(screen.getByRole("cell")).toHaveTextContent("10 lcGroups / 15 lcElements 2 lcAspherical · 3 lcEd");
+});

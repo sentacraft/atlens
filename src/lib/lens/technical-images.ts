@@ -1,3 +1,4 @@
+import type { NamespaceTranslator } from "@/i18n/translator";
 import missingNoteClauses from "@/data/technical-image-missing-notes.json";
 import type { Lens, LensImageAsset } from "@/lib/types";
 
@@ -34,4 +35,11 @@ export function technicalImageShortLabel(image: LensImageAsset) {
     image.spatialFrequency ? `${image.spatialFrequency.values.join(", ")} ${image.spatialFrequency.unit}` : undefined,
     image.apertureFNumbers?.map((n) => `f/${n}`).join(", "),
   ].filter(Boolean).join(" · ");
+}
+
+export function getTechnicalImageConditions(image: LensImageAsset, t: NamespaceTranslator<"LensDetail">): string[] {
+  return [
+    image.mtfMethod && t(`opticalImages.${image.mtfMethod}`),
+    image.depictedMount && t("opticalImages.mount", { mount: image.depictedMount }),
+  ].filter((line): line is string => Boolean(line));
 }

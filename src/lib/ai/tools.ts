@@ -14,6 +14,8 @@ import {
   LENS_TABLE_COLUMNS,
 } from "@/lib/ai/recall";
 import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
+import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
+import { lensDetailImages, lensDetailImagesSchema, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
@@ -229,7 +231,9 @@ export function buildLensTools(
   tBrand: (brand: string) => string,
   data: ToolData,
   recalledRefs: Set<string>,
+  vision = false,
 ) {
+  const mountLabel = mount === "G" ? "Fujifilm GFX" : "Fujifilm X";
   const contextRefs = buildRefIndex(getLensesByMount(mount, locale));
   const recalledLenses = (refs: string[]) => {
     const byRef = contextRefs;
@@ -251,10 +255,8 @@ export function buildLensTools(
   return {
     queryLenses: tool({
       description:
-        "Recall lenses by spec. Every parameter is a hard constraint, so set one only for a " +
-        "requirement the request makes; leave the rest out or null, which leaves that axis unrestricted. " +
-        "Independent recalls — say a standard zoom and a telephoto for a two-lens kit — go together in " +
-        "one call, one query each.",
+        "Find lenses by spec in the current mount only. Set hard constraints only for user requirements; " +
+        "omit or use null for unrestricted fields. Batch independent searches in one call, one query each.",
       inputSchema: z.object({
         queries: z
           .array(recallConstraintsSchema)
@@ -271,7 +273,12 @@ export function buildLensTools(
           for (const { lens } of result.maybe) {
             recalledRefs.add(lens.ref);
           }
-          return result;
+          return result.totalMatched === 0 && result.totalMaybe === 0
+            ? {
+                ...result,
+                note: `No catalogue lenses meet these constraints in ${mountLabel}. Say so. Do not relax explicit requirements without the user's agreement. If the user appears to mean a different mount, confirm that instead of searching wider.`,
+              }
+            : result;
         }),
         note: QUERY_LENSES_NOTE,
       }),
@@ -279,8 +286,7 @@ export function buildLensTools(
 
     searchLensByName: tool({
       description:
-        "Look up a lens the user named, by model or brand (e.g. '18-55', 'XF35', 'Viltrox 27'). " +
-        "Only for names the user gave, not for lenses you thought of yourself; recall those with queryLenses.",
+        "Look up a model or brand the user named, in the current mount only. Use queryLenses for spec searches.",
       inputSchema: z.object({
         query: z
           .string()
@@ -299,7 +305,10 @@ export function buildLensTools(
         for (const lens of results) {
           recalledRefs.add(lens.ref);
         }
-        return { results };
+        return results.length ? { results } : {
+          results,
+          note: `No name match in ${mountLabel}. This lookup does not search across mounts. If the name points to a different mount, confirm which one the user means.`,
+        };
       },
     }),
 
@@ -342,26 +351,63 @@ export function buildLensTools(
     }),
 
     lensDetails: tool({
-      description:
-        "Return the full spec record for lenses already in hand, by ref — every field the " +
-        "catalogue holds, including the long tail a recall result leaves out (optical " +
-        "construction, filter thread, aperture blades, minimum aperture, T-stops, focus " +
-        "motor, internal focusing, barrel diameter, materials, zoom mechanics, generation, " +
-        "bundled accessories). Renders nothing to the user.",
+      description: "Look up specs and images for recalled lenses. For lens construction or special elements, answer from specs and show an optical diagram without reading it unless asked to interpret it.",
       inputSchema: z.object({
-        refs: z
-          .array(z.string())
-          .min(1)
-          .describe(
-            `Lens refs, each from a prior queryLenses/searchLensByName/myFavorites/myGear result. At most ${MAX_DETAIL_REFS} are returned per call.`,
-          ),
+        lenses: z.array(z.object({
+          ref: z.string().describe("Lens ref from an earlier recall result."),
+          images: lensDetailImagesSchema.describe("Images to show for this lens. Request images when the user asks to find or see them. Lens search constraints are not chart test conditions. Omit for specs only; use the image ref to revisit an exact image."),
+        })).min(1).describe(`At most ${MAX_DETAIL_REFS} lenses are returned per call.`),
       }),
-      execute: ({ refs }) => {
-        const { kept, notReturned } = capRefs(refs, MAX_DETAIL_REFS);
+      execute: ({ lenses }) => {
+        const { kept, notReturned } = capRefs(lenses.map(({ ref }) => ref), MAX_DETAIL_REFS);
+        const displayImages: LensDetailDisplayImage[] = [];
+        const readRefs: string[] = [];
         return {
-          lenses: recalledLenses(kept).map((lens) => toDetailed(resolveLens(lens, locale, tBrand))),
-          notInData: "No test results or opinions: for image quality, focusing, handling and build, call lensReviews.",
+          lenses: recalledLenses(kept).map((lens, index) => {
+            const resolved = resolveLens(lens, locale, tBrand);
+            const { images, results, displayImages: selected, readRefs: read } = lensDetailImages(lens, kept[index], resolved.name, lenses.find(({ ref }) => ref === kept[index])?.images, 4 - displayImages.length);
+            displayImages.push(...selected);
+            readRefs.push(...read);
+            return { ...toDetailed(resolved), images, ...(results.length ? { imageResults: results } : {}) };
+          }),
+          displayImages,
+          readRefs,
+          historical: false,
+          notInData: "For field performance and opinions, use lensReviews.",
           ...(notReturned ? { notReturned } : {}),
+        };
+      },
+      toModelOutput: ({ output }) => {
+        const { displayImages = [], readRefs = [], historical, ...details } = output;
+        const images = displayImages.filter(({ imageRef }) => readRefs.includes(imageRef));
+        const presentation = {
+          scope: historical ? "history" : "currentReply",
+          galleries: groupLensImages(displayImages).map(([preview, ...rest]) => ({
+            lensRef: preview.lensRef,
+            role: preview.image.role,
+            preview: preview.imageRef,
+            imageCount: rest.length + 1,
+          })),
+        };
+        const metadata = { ...details, presentation, imagesForReading: vision ? images.map(({ imageRef }) => imageRef) : [] };
+        if (!vision || !images.length) {
+          return { type: "text", value: JSON.stringify({ ...metadata, ...(images.length ? { visionUnavailable: true } : {}) }) };
+        }
+        const reading = {
+          ...metadata,
+          ...(images.some(({ image }) => image.role === "mtf") ? {
+            mtfNote: "Interpret only legible curves. Do not rank charts with different or unconfirmed test conditions; mention missing conditions only when they affect the answer.",
+          } : {}),
+        };
+        return {
+          type: "content",
+          value: [
+            { type: "text", text: JSON.stringify(reading) },
+            ...images.flatMap(({ imageRef, src }) => [
+              { type: "text" as const, text: `Image ${imageRef}:` },
+              { type: "file" as const, mediaType: "image/webp", data: { type: "url" as const, url: new URL(src) }, providerOptions: { deepseek: { imageDetail: "original" } } },
+            ]),
+          ],
         };
       },
     }),
@@ -464,7 +510,7 @@ export function buildLensTools(
     listLenses: tool({
       description:
         "Lay out already-recalled lenses as a spec table; their names link to each lens's " +
-        "page. Pass refs from a prior queryLenses/searchLensByName/myFavorites/myGear result.",
+        "page. Use lensConfiguration for element and group counts or special glass. Pass recalled refs.",
       inputSchema: z.object({
         refs: z
           .array(z.string())
@@ -475,21 +521,23 @@ export function buildLensTools(
           .optional()
           .describe(
             "Spec columns to place beside the name, in order — the ones that answer the " +
-              "user's question. Defaults to focal, aperture, weight, and price.",
+              "user's question. Defaults to equivalent focal length, weight, and price.",
           ),
         caption: z
           .string()
           .optional()
           .describe("An optional short caption above the table, in the user's language."),
       }),
-      execute: ({ refs, columns, caption }) =>
-        listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs),
-      // Same as recommendLenses: refs back for linking; needs this ToolSet in convertToModelMessages.
+      execute: ({ refs, columns, caption }) => ({
+        ...listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs),
+        historical: false,
+      }),
       toModelOutput: ({ output }) => ({
         type: "text",
-        value:
-          `Rendered a table of ${output.lenses.length} lens(es) to the user, for: ` +
-          output.lenses.map((lens) => lensRef(lens.id)).join(", "),
+        value: JSON.stringify({ presentation: {
+          scope: output.historical ? "history" : "currentReply",
+          table: { lensRefs: output.lenses.map((lens) => lensRef(lens.id)), columns: output.columns },
+        } }),
       }),
     }),
 

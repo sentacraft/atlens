@@ -8,6 +8,10 @@ import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import {
   apertureDisplay,
+  dimensionsPrimaryDisplay,
+  lensConfigurationDisplay,
+  tStopDisplay,
+  type LensConfigurationLabels,
   filterSizeDisplay,
   focalRangeDisplay,
   mfdHeroValue,
@@ -15,6 +19,8 @@ import {
   weightDisplay,
   wrDisplay,
 } from "@/lib/lens/format";
+import { buildSpecGroupLabels } from "@/lib/lens/spec-groups";
+import { SPEC_NA } from "@/lib/types";
 import { formatPrice, type PricingTranslator } from "@/lib/lens/pricing";
 import type { LensTableColumn, ResolvedLens } from "@/lib/ai/recall";
 import { lensPath } from "@/lib/url/routes";
@@ -27,6 +33,7 @@ type Labels = {
   manual: string;
   used: string;
   na: string;
+  construction: LensConfigurationLabels;
   pricing: PricingTranslator;
 };
 
@@ -42,6 +49,14 @@ const DETAIL_HEADER_KEY = {
   filterThread: "filterSize",
   ois: "ois",
   releaseYear: "releaseYear",
+  lensConfiguration: "lensConfiguration",
+  apertureBladeCount: "apertureBladeCount",
+  minAperture: "minAperture",
+  maxTStop: "maxTStop",
+  minTStop: "minTStop",
+  dimensions: "dimensions",
+  focusMotor: "focusMotor",
+  lensMaterial: "lensMaterial",
 } as const satisfies Record<Exclude<LensTableColumn, "price" | "focus" | "length">, string>;
 
 function priceCell(price: NonNullable<ResolvedLens["price"]>, l: Labels): string {
@@ -65,6 +80,14 @@ const RENDERERS: Record<LensTableColumn, (lens: ResolvedLens, l: Labels) => stri
   length: (lens) => (lens.length?.mm != null ? `${lens.length.mm}mm` : null),
   ois: (lens, l) => oisDisplay(lens.ois, lens.oisStops, { yes: l.yes, no: l.no }),
   releaseYear: (lens) => (lens.releaseYear != null ? String(lens.releaseYear) : null),
+  lensConfiguration: (lens, l) => lensConfigurationDisplay(lens.lensConfiguration, l.construction) ?? null,
+  apertureBladeCount: (lens) => lens.apertureBladeCount === SPEC_NA ? SPEC_NA : lens.apertureBladeCount?.toString() ?? null,
+  minAperture: (lens) => lens.minAperture == null ? null : apertureDisplay(lens.minAperture),
+  maxTStop: (lens) => tStopDisplay(lens.maxTStop) ?? null,
+  minTStop: (lens) => tStopDisplay(lens.minTStop) ?? null,
+  dimensions: (lens) => dimensionsPrimaryDisplay(lens.diameterMm, lens.length) ?? null,
+  focusMotor: (lens) => lens.focusMotor ?? null,
+  lensMaterial: (lens) => lens.lensMaterial ?? null,
 };
 
 // Opaque, unlike the row's own hover: the pinned name column covers cells scrolling under it.
@@ -97,6 +120,7 @@ export default function LensTable({
     manual: t("manual"),
     used: t("used"),
     na: td("missing"),
+    construction: buildSpecGroupLabels(td).lc,
     pricing: tp,
   };
 
@@ -168,7 +192,7 @@ export default function LensTable({
                   </Link>
                 </th>
                 {columns.map((col) => (
-                  <td key={col} className="text-foreground px-3.5 py-2 whitespace-nowrap tabular-nums">
+                  <td key={col} className={`text-foreground px-3.5 py-2 tabular-nums ${col === "lensConfiguration" ? "whitespace-pre" : "whitespace-nowrap"}`}>
                     {RENDERERS[col](lens, labels) ?? (
                       <span className="text-muted-foreground">{labels.na}</span>
                     )}

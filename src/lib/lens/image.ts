@@ -6,11 +6,15 @@ export const lensImageStyle = {
   objectPosition: "center",
 } as const;
 
+export function hasPrimaryLensImage(id: string): boolean {
+  return Object.hasOwn(LENS_IMAGE_HASHES, id);
+}
+
 export function getLensImageUrl(id: string, imageId?: string): string {
   if (imageId !== undefined) {
     return getPublicAssetUrl(`lens-images/${id}/${imageId}`);
   }
-  const hash = Object.hasOwn(LENS_IMAGE_HASHES, id) ? LENS_IMAGE_HASHES[id] : undefined;
+  const hash = hasPrimaryLensImage(id) ? LENS_IMAGE_HASHES[id] : undefined;
   return `/lenses/${id}.webp${hash ? `?v=${hash}` : ""}`;
 }
 
