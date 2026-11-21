@@ -72,7 +72,7 @@ export default function LensImageGallery({ lens, labels }: {
             {images.map((id, i) => (
               <div key={id ?? "primary"} data-slot="gallery-slide" aria-hidden={index !== i} className="h-full min-w-0 shrink-0 basis-full p-8">
                 <div className="relative h-full w-full">
-                  <Image src={items[i].src} alt={lens.model} fill sizes="192px" style={lensImageStyle} className="pointer-events-none object-contain" preload={i === 0} draggable={false} />
+                  <Image src={items[i].src} data-gallery-preview={index === i ? items[i].src : undefined} alt={lens.model} fill sizes="192px" style={lensImageStyle} className="pointer-events-none object-contain" preload={i === 0} draggable={false} />
                 </div>
               </div>
             ))}

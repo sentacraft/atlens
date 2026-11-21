@@ -59,10 +59,8 @@ export default function LensImageViewer(props: Props) {
     let unlock: (() => void) | undefined;
     const data: SlideData[] = initial.images.map(image => ({ src: image.src, alt: image.alt ?? initial.title, width: 0, height: 0 }));
     function thumbnail(item: SlideData) {
-      const button = initial.trigger.current;
-      const image = button?.querySelector<HTMLImageElement>('[aria-hidden="false"] img, img[data-gallery-preview]');
-      if (!image) {return undefined;}
-      return !image.hasAttribute("data-gallery-preview") || image.src === new URL(item.src ?? "", document.baseURI).href ? image : undefined;
+      const image = initial.trigger.current?.querySelector<HTMLImageElement>("img[data-gallery-preview]");
+      return image?.dataset.galleryPreview === item.src ? image : undefined;
     }
     const loads = initial.images.map((image, i) => loadGalleryImage(image.src).then(size => {
       Object.assign(data[i], size.width ? size : { width: 1, height: 1 });

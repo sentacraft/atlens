@@ -13,7 +13,7 @@ export default function LensImagePreview({ src, alt, preset, preview, sizes, cla
 }) {
   return (
     <Image src={src} alt={alt} fill unoptimized sizes={sizes}
-      data-gallery-preview={preview || undefined}
+      data-gallery-preview={preview ? src : undefined}
       className={cn("object-contain", className)} style={{ filter: technicalImageFilter(preset) }} />
   );
 }
