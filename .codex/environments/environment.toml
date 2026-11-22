@@ -1,0 +1,5 @@
+version = 1
+name = "Atlens"
+
+[setup]
+script = "node scripts/worktree-setup.mjs"

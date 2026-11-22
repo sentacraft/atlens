@@ -5,7 +5,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$(git rev-parse --show-toplevel)/scripts/worktree-setup.sh\""
+            "command": "bash \"$(git rev-parse --show-toplevel)/scripts/worktree-setup.sh\" --claude-hook",
+            "timeout": 600,
+            "statusMessage": "Checking worktree dependencies"
           }
         ]
       }

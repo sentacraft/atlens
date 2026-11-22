@@ -23,6 +23,10 @@ must not exist here.
 
 `pnpm run lint` must pass before committing.
 
+Worktree dependency setup is shared by Claude and Codex in `scripts/worktree-setup.mjs`.
+See [docs/worktree-setup.md](docs/worktree-setup.md) for runtime checks and recovery.
+Use separate worktrees for macOS and Linux; never share their dependencies or build caches.
+
 Run `pnpm run preview` before merging any change to routing, rendering mode, or
 `next.config.ts`: some regressions appear only on workerd. See the `//preview` and `//start`
 entries in `package.json` for why `next start` is not a substitute.
