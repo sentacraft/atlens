@@ -3,6 +3,8 @@
 Fujifilm lens comparison tool — X mount, with GF (medium format) coverage under way.
 Next.js App Router + TypeScript, Tailwind, next-intl, deployed to Cloudflare Workers via OpenNext.
 
+Project instructions live in `AGENTS.md`; `CLAUDE.md` is a relative symlink to this file.
+
 ## Commands
 
 pnpm only. The repo has no `package-lock.json` and `package.json`'s own scripts call `pnpm`.
@@ -48,17 +50,22 @@ call it, and its main error statuses. `docs/api.md` is generated from them, and 
 when it is stale. A request body or payload shared by a client module and its route is one Zod
 schema in `src/lib/`, imported by both.
 
+A new page, user-facing feature, or API route goes through `docs/launch-checklist.md`: the places
+outside its own code that it may need to change. The PR description says which items changed and
+which do not apply.
+
 Pure helpers and UI state used by a single component stay in its file; extract when the code does
 I/O, carries testable logic, or gains a second consumer.
 
 When a shared component or helper gains a caller, redesign its props around every caller as equals
 and update the existing call sites, rather than adding optional props so old calls stay unchanged.
 
-Mockups and design explorations go in a Claude artifact built on the Atlens design system (see
-Code style), not in the repo. Demos and UX experiments that need the app's own code or data
-belong under `src/app/[locale]/design-lab/`, never in production code. Pages and components there — and all Test Hook pages and components —
-hardcode English strings, do not use `next-intl`, and must not add keys to `en.json` or
-`zh.json`.
+Mockups and design explorations use Open Artifacts and the Atlens design system (see Code style).
+Use the canvas configured in `.open-artifacts.json`; keep design sources in their mapped directories,
+not in production application code or a parallel native Claude Artifact. Demos and UX experiments
+that need the app's own code or data belong under `src/app/[locale]/design-lab/`, never in production
+code. Pages and components there — and all Test Hook pages and components — hardcode English
+strings, do not use `next-intl`, and must not add keys to `en.json` or `zh.json`.
 
 ## Code style
 
@@ -70,18 +77,45 @@ exported from `src/config/ui-tokens.ts` and imported by components. Do not inlin
 style strings across components. Inline only genuinely one-off local styles.
 
 A dialog with something to fill in or pick puts its Cancel in `DialogCancel`, which phone drawers
-leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps its Cancel.
+leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps its Cancel. A
+centered dialog blocks outside presses by default and always shows a close button or a Cancel.
+Only dialogs without inputs, pending choices, confirmations, or in-progress work may opt into
+`dismissOnOutsidePress`. This does not affect drawers.
 
-The Atlens design system (https://claude.ai/artifact/B71r29pU5DfmVSWxybdApP) mirrors the theme,
-fonts, `ui-tokens.ts` and a set of components; `scripts/hooks/ui-token-review.mjs` lists those
-files. It is re-synced on demand, not per change: a PR that alters how any of them looks says
-which part of the design system it affects. Before building mockups on it, diff those files
-between the commit its `tokens.json` records (`meta.ref`) and `main`, and re-sync what changed.
+A menu's popup is `MenuPopup` from `components/ui/menu.tsx`, never `Menu.Popup` composed by hand: it
+clears the vertical padding that leaves a white strip beside a row's hover, and ESLint rejects the
+bare form.
+
+A lens shown as an item to browse gets favorite and compare from `LensActions`, in the tier that
+matches how the lens is shown (its own panel, one card or row among many, spare room in a card, a
+chart tile). Don't build these buttons anywhere else; `e2e/lens-actions.spec.ts` checks that list
+pages carry both. Compare appears only where the page shows the compare bar; Ask Iris has none, so
+its cards carry favorite alone and comparing is Iris's job there.
+
+The Atlens design system lives in `design/system/`, with native manifest
+`design/system/project/design-system.json`. The shared `open-artifacts` skill locates the canvas
+and design system through `.open-artifacts.json`. Keep these files as the project's design source;
+do not maintain a second editable version in native Claude Artifacts.
+Reuse the on-demand Hub; never start a separate `artifact.mjs open` service. For browsing, use
+`artifacts connect --view --target system` through the current environment's Open Artifacts entry
+point, and open the URL it returns rather than a copied local URL. Follow the shared skill for
+comments; do not claim listeners on ordinary session startup. See [design/README.md](design/README.md)
+for the imported snapshot, missing assets and opening instructions.
+
+The system mirrors the theme, fonts, `ui-tokens.ts` and a set of components;
+`scripts/hooks/ui-token-review.mjs` lists those files. It is re-synced on demand, not per change:
+a PR that alters how any of them looks says which part of the design system it affects. Before
+building mockups on it, diff those files between the commit its `tokens.json` records (`meta.ref`)
+and `main`, and re-sync what changed.
 
 Device insets (iOS notch, home indicator, Window Controls Overlay) are consumed through the
 `--safe-inset-*` and `--titlebar-height` variables declared in `src/app/theme.css`. Never call
 `env(safe-area-inset-*)` directly in a component. Cover any new inset in
 `e2e/pwa-safe-area.spec.ts`.
+
+The on-screen keyboard reaches layouts the same way: `KeyboardInsets` sets `data-keyboard` and
+`--page-height` (one screen of content, above the keyboard while it is up). Size one-screen pages
+with `--page-height`; never read `visualViewport` in a component.
 
 Chinese text belongs only in the files `scripts/hooks/cjk-guard.mjs` allows: UI copy in `zh.json`,
 model-facing wording in `system-prompt.ts`, data, tests, and a few listed exceptions.
@@ -104,14 +138,16 @@ message or PR description, not in the source.
 - Branch previews (`<branch>.preview.atlens.app`) inherit nothing from production. Declare every
   new var or binding again under `[previews]` in `wrangler.toml`, pointing storage at a preview
   copy; `--prod` on `secret:add` also sets the preview secret.
-- Google sign-in works locally only on ports 3000 (`dev`) and 8787 (`preview`).
+- Google sign-in works locally only on ports 3000 (`dev`) and 8787 (`preview`). GitHub's OAuth App has only the
+  production callback, which previews reach through `oAuthProxy`; Google One Tap runs on production only.
 
 ## Data
 
 - `src/data/lenses.json` and `src/data/lenses-gfx.json` come from the data pipeline at the commit
   pinned in `src/data/catalog-source.json` (`pnpm run catalog:fetch`). Never edit them; data
   corrections go through the pipeline.
-- `src/data/collections.json` is hand-authored and may be edited directly.
+- `src/data/collections.json` and `src/data/brands.json` are hand-authored and may be edited
+  directly; their copy follows `src/data/collections.md`.
 - The `Lens` JSDoc in `src/lib/types.ts` is the pipeline's field-extraction spec. Do not trim it.
 
 ## Testing
@@ -132,6 +168,10 @@ in its README before running it.
 
 Visual verification must cover desktop and mobile. Use a 375px viewport for mobile. A
 desktop-only screenshot is not evidence that a UI change works.
+
+Text must fit in both locales: don't give a text container a fixed width that only the Chinese copy
+fits. A PR that reworks layout gets the `text-fit-check` label, which runs the text-fit sweep
+(`e2e/text-fit.spec.ts`: text spilling out of its box or over other text); it also runs weekly.
 
 ## Git workflow
 
