@@ -92,15 +92,15 @@ chart tile). Don't build these buttons anywhere else; `e2e/lens-actions.spec.ts`
 pages carry both. Compare appears only where the page shows the compare bar; Ask Iris has none, so
 its cards carry favorite alone and comparing is Iris's job there.
 
-The Atlens design system lives in `design/system/`, with native manifest
-`design/system/project/design-system.json`. The shared `open-artifacts` skill locates the canvas
-and design system through `.open-artifacts.json`. Keep these files as the project's design source;
-do not maintain a second editable version in native Claude Artifacts.
-Reuse the on-demand Hub; never start a separate `artifact.mjs open` service. For browsing, use
-`artifacts connect --view --target system` through the current environment's Open Artifacts entry
-point, and open the URL it returns rather than a copied local URL. Follow the shared skill for
-comments; do not claim listeners on ordinary session startup. See [design/README.md](design/README.md)
-for the imported snapshot, missing assets and opening instructions.
+The Atlens design canvas and design system live in a separate private asset store. This public
+repository declares their logical paths in `.open-artifacts.json`; ignored `.design` bindings
+resolve them in each worktree. Never commit private design files or bindings here, and do not
+maintain a second editable version in native Claude Artifacts. See
+[docs/design-assets.md](docs/design-assets.md) for optional setup, privacy checks, and worktree rules.
+Reuse the on-demand Hub through the current environment's `open-artifacts` skill; never start a
+separate `artifact.mjs open` service. For browsing, use `artifacts connect --view --target system`
+and the URL it returns rather than a copied local URL. Follow the shared skill for comments;
+do not claim listeners on ordinary session startup.
 
 The system mirrors the theme, fonts, `ui-tokens.ts` and a set of components;
 `scripts/hooks/ui-token-review.mjs` lists those files. It is re-synced on demand, not per change:
