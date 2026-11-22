@@ -162,7 +162,6 @@ export async function POST(req: NextRequest) {
         },
       },
       recalledRefs,
-      model.provider === "deepseek" && model.modelId === "deepseek-flash",
     ),
   );
   const validate = (messages: unknown) =>

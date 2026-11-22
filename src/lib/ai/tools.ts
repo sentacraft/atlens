@@ -225,13 +225,16 @@ function capRefs(refs: string[], limit: number): { kept: string[]; notReturned?:
  * `recalledRefs` gates every tool that takes a ref; the recall tools add to it, and
  * `seedRecalledRefs` adds the refs they returned earlier in the conversation.
  */
+// Options are keyed by provider, and a provider reads only its own key: the OpenAI-compatible
+// providers (Qwen, GLM, OpenRouter) take no per-image option and fetch the URL as is.
+const IMAGE_READING_OPTIONS = { deepseek: { imageDetail: "original" }, openai: { imageDetail: "high" } };
+
 export function buildLensTools(
   mount: Mount,
   locale: string,
   tBrand: (brand: string) => string,
   data: ToolData,
   recalledRefs: Set<string>,
-  vision = false,
 ) {
   const mountLabel = mount === "G" ? "Fujifilm GFX" : "Fujifilm X";
   const contextRefs = buildRefIndex(getLensesByMount(mount, locale));
@@ -389,9 +392,9 @@ export function buildLensTools(
             imageCount: rest.length + 1,
           })),
         };
-        const metadata = { ...details, presentation, imagesForReading: vision ? images.map(({ imageRef }) => imageRef) : [] };
-        if (!vision || !images.length) {
-          return { type: "text", value: JSON.stringify({ ...metadata, ...(images.length ? { visionUnavailable: true } : {}) }) };
+        const metadata = { ...details, presentation, imagesForReading: images.map(({ imageRef }) => imageRef) };
+        if (!images.length) {
+          return { type: "text", value: JSON.stringify(metadata) };
         }
         const reading = {
           ...metadata,
@@ -405,7 +408,7 @@ export function buildLensTools(
             { type: "text", text: JSON.stringify(reading) },
             ...images.flatMap(({ imageRef, src }) => [
               { type: "text" as const, text: `Image ${imageRef}:` },
-              { type: "file" as const, mediaType: "image/webp", data: { type: "url" as const, url: new URL(src) }, providerOptions: { deepseek: { imageDetail: "original" } } },
+              { type: "file" as const, mediaType: "image/webp", data: { type: "url" as const, url: new URL(src) }, providerOptions: IMAGE_READING_OPTIONS },
             ]),
           ],
         };

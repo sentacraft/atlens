@@ -86,10 +86,10 @@ describe("a recall tool's gate accepts exactly what it returned", () => {
 describe("lensDetails images", () => {
   const ref = lensRef("sgimage-af-35mmf14-x");
   const unknownRef = lensRef("brightinstar-mf-35mm-f14-x");
-  const detailTool = (vision: boolean) => buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref, unknownRef]), vision).lensDetails;
+  const detailTool = () => buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref, unknownRef])).lensDetails;
 
   it("lists images without showing them for an ordinary detail lookup", () => {
-    const output = run(detailTool(true), { lenses: [{ ref }] });
+    const output = run(detailTool(), { lenses: [{ ref }] });
     expect(output.lenses[0].images).toEqual(expect.arrayContaining([expect.objectContaining({ role: "mtf" })]));
     expect(output.displayImages).toEqual([]);
     expect(output.readRefs).toEqual([]);
@@ -100,7 +100,7 @@ describe("lensDetails images", () => {
       { ref, images: [{ role: "mtf" as const, apertureFNumber: 1.4 }, { role: "optical-construction" as const, read: false }] },
       { ref: unknownRef },
     ] };
-    const detail = detailTool(true);
+    const detail = detailTool();
     const output = await detail.execute!(input, {} as never);
     if (!("displayImages" in output)) {throw new Error("Expected a synchronous detail result");}
     expect(output.displayImages.map(({ lensRef, image }) => [lensRef, image.role])).toEqual([[ref, "mtf"], [ref, "optical-construction"]]);
@@ -117,15 +117,12 @@ describe("lensDetails images", () => {
       mtfNote: expect.stringContaining("Do not rank charts"),
     });
     expect(projected.value.filter((part) => part.type === "file")).toEqual([
-      expect.objectContaining({ data: { type: "url", url: new URL(output.displayImages[0].src) }, providerOptions: { deepseek: { imageDetail: "original" } } }),
+      expect.objectContaining({ data: { type: "url", url: new URL(output.displayImages[0].src) }, providerOptions: { deepseek: { imageDetail: "original" }, openai: { imageDetail: "high" } } }),
     ]);
-    const plain = await detailTool(false).toModelOutput!({ toolCallId: "details", input, output });
-    expect(plain).toMatchObject({ type: "text", value: expect.stringContaining('"visionUnavailable":true') });
-    expect(JSON.stringify(plain)).not.toContain(output.displayImages[0].src);
   });
 
   it("reads only the explicitly selected diagram and does not add it to MTF-only requests", () => {
-    const output = run(detailTool(true), { lenses: [
+    const output = run(detailTool(), { lenses: [
       { ref, images: [{ role: "optical-construction" }] },
       { ref: unknownRef, images: [{ role: "mtf", read: false }] },
     ] });
@@ -138,7 +135,7 @@ describe("lensDetails images", () => {
 
   it("includes all eligible MTF charts in the viewer without sending them all to the model", () => {
     const zoom = lensRef("fujifilm-gf-35-70mmf45-56-wr-g");
-    const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set([zoom]), true);
+    const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set([zoom]));
     const result = run(gfx.lensDetails, { lenses: [{ ref: zoom, images: [{ role: "mtf" }] }] });
     expect(result.displayImages[0].gallery).toHaveLength(6);
     expect(result.readRefs).toHaveLength(2);
@@ -150,7 +147,7 @@ describe("lensDetails images", () => {
 
   it("reports the full gallery count separately from the pixels read", async () => {
     const zoom = lensRef("fujifilm-gf-35-70mmf45-56-wr-g");
-    const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set([zoom]), true);
+    const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set([zoom]));
     const input = { lenses: [{ ref: zoom, images: [{ role: "mtf" as const }] }] };
     const output = run(gfx.lensDetails, input);
     const projected = await gfx.lensDetails.toModelOutput!({ toolCallId: "details", input, output });
@@ -163,7 +160,7 @@ describe("lensDetails images", () => {
   });
 
   it("does not pass unlabeled charts off as matching a requested aperture", () => {
-    const output = run(detailTool(true), { lenses: [{ ref: unknownRef, images: [{ role: "mtf", apertureFNumber: 1.4, read: true }] }] });
+    const output = run(detailTool(), { lenses: [{ ref: unknownRef, images: [{ role: "mtf", apertureFNumber: 1.4, read: true }] }] });
     expect(output.displayImages).toHaveLength(1);
     const image = output.displayImages[0].imageRef;
     expect(output.readRefs).toEqual([image]);
@@ -173,7 +170,7 @@ describe("lensDetails images", () => {
   });
 
   it("does not substitute a chart with a known different aperture", () => {
-    const output = run(detailTool(true), { lenses: [{ ref, images: [{ role: "mtf", apertureFNumber: 16 }] }] });
+    const output = run(detailTool(), { lenses: [{ ref, images: [{ role: "mtf", apertureFNumber: 16 }] }] });
     expect(output.displayImages).toEqual([]);
     expect(output.lenses[0].imageResults).toMatchObject([{ status: "no-match" }]);
   });
