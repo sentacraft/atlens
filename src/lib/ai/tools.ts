@@ -15,6 +15,7 @@ import {
 } from "@/lib/ai/recall";
 import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
 import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
+import { compareMtfCharts } from "@/lib/ai/mtf-comparison";
 import { lensDetailImages, lensDetailImagesSchema, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
@@ -396,11 +397,19 @@ export function buildLensTools(
         if (!images.length) {
           return { type: "text", value: JSON.stringify(metadata) };
         }
+        const mtfImages = images.filter(({ image }) => image.role === "mtf");
+        const mtfComparison = historical ? undefined : compareMtfCharts(mtfImages.map(({ lensRef, image }) => {
+          const lens = details.lenses?.find((entry) => entry.ref === lensRef);
+          return { lensRef, image, maxAperture: lens?.maxAperture ?? null, zoom: lens ? lens.focalNativeMm[0] !== lens.focalNativeMm[1] : false };
+        }));
         const reading = {
           ...metadata,
-          ...(images.some(({ image }) => image.role === "mtf") ? {
-            mtfNote: "Interpret only legible curves. Do not rank charts with different or unconfirmed test conditions; mention missing conditions only when they affect the answer.",
+          ...(mtfImages.length ? {
+            mtfNote: mtfComparison
+              ? "Interpret only legible curves. mtfComparison governs how the charts may be compared."
+              : "Interpret only legible curves. If a chart does not state its test conditions, say so when it affects the answer.",
           } : {}),
+          ...(mtfComparison ? { mtfComparison } : {}),
         };
         return {
           type: "content",
