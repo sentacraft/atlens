@@ -603,14 +603,13 @@ export function buildLensTools(
       }),
       execute: ({ refs, columns, caption }) => {
         const table = listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs);
-        return markOwned(table.lenses).then((lenses) => ({ ...table, lenses, historical: false }));
+        return markOwned(table.lenses).then((lenses) => ({ ...table, lenses }));
       },
       toModelOutput: ({ output }) => {
         const labels = tableLabelsForLocale(locale);
         return {
         type: "text",
         value: JSON.stringify({ presentation: {
-          scope: output.historical ? "history" : "currentReply",
           ...(output.caption ? { caption: output.caption } : {}),
           table: {
             lensRefs: output.lenses.map((lens) => lensRef(lens.id)),

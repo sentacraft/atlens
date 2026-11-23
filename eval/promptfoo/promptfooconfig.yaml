@@ -1494,6 +1494,23 @@ tests:
         metric: programmatic
         value: "context.metadata.tables.at(-1).rows.map((r) => r.weightG).filter((w) => w != null).every((w, i, a) => i === 0 || a[i - 1] <= w)"
 
+  # Table: a second table request after an earlier table in the same conversation still gets a fresh table.
+  - description: table-second-request
+    metadata:
+      area: table
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "把 XF 23mm F1.4 R LM WR、XF 33mm F1.4 R LM WR 的重量和滤镜口径列个表"
+          - "再把 XF 56mm F1.2 R WR 和 XF 90mm F2 R LM WR 也列一个"
+    assert:
+      - type: javascript # the last turn (the only one the metadata holds) put out a table holding the second pair
+        metric: programmatic
+        value: "context.metadata.tables.length > 0 && ['56mm F1\\.2', '90mm F2'].every((m) => context.metadata.tables.at(-1).names.some((n) => new RegExp(m).test(n ?? '')))"
+
   # Gear: a focal-gap question works from the owned lenses' equivalents, and gets them right.
   - description: gear-gap
     metadata:
