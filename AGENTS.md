@@ -9,17 +9,7 @@ pnpm only. The repo has no `package-lock.json` and `package.json`'s own scripts 
 Never run `npm` or `yarn` — they resolve dependencies differently and write a lockfile that
 must not exist here.
 
-| Command | Purpose |
-|---|---|
-| `pnpm run lint` | ESLint (`lint:fix` to autofix) |
-| `pnpm run typecheck` | `wrangler types` + `tsc --noEmit` |
-| `pnpm run check` | lint + typecheck |
-| `pnpm run test` | Vitest |
-| `pnpm run test:e2e` | Playwright |
-| `pnpm run build` | production build |
-| `pnpm run preview` | production build served on the real workerd runtime |
-
-`pnpm run lint` must pass before committing.
+Scripts are in `package.json`. `pnpm run lint` must pass before committing.
 
 Run `pnpm run preview` before merging any change to routing, rendering mode, or
 `next.config.ts`: some regressions appear only on workerd. See the `//preview` and `//start`
@@ -43,10 +33,9 @@ word sign-in themselves.
 
 Internal page paths come from `src/lib/url/routes.ts` (and `buildComparePath` in `src/lib/url/compare.ts`); the site's domain, repository, and contact address come from `SITE` in `src/config/site.ts`. Don't spell them out in components.
 
-Each exported route handler under `src/app/api/` carries a one-line JSDoc: what it does, who may
-call it, and its main error statuses. `docs/api.md` is generated from them, and the build fails
-when it is stale. A request body or payload shared by a client module and its route is one Zod
-schema in `src/lib/`, imported by both.
+Each exported route handler under `src/app/api/` carries a one-line JSDoc (what it does, who may
+call it, main error statuses); `docs/api.md` is generated from them. A request body or payload
+shared by a client module and its route is one Zod schema in `src/lib/`, imported by both.
 
 A new page, user-facing feature, or API route goes through `docs/launch-checklist.md`: the places
 outside its own code that it may need to change. The PR description says which items changed and
@@ -74,21 +63,13 @@ Reusable visual language — interaction colors, button styles, selected states 
 exported from `src/config/ui-tokens.ts` and imported by components. Do not inline duplicate
 style strings across components. Inline only genuinely one-off local styles.
 
-A dialog with something to fill in or pick puts its Cancel in `DialogCancel`, which phone drawers
-leave out (they close by swipe or the backdrop); a yes-or-no confirmation keeps its Cancel. A
-centered dialog blocks outside presses by default and always shows a close button or a Cancel.
-Only dialogs without inputs, pending choices, confirmations, or in-progress work may opt into
-`dismissOnOutsidePress`. This does not affect drawers.
+A dialog with something to fill in or pick puts its Cancel in `DialogCancel` (phone drawers leave
+it out); a yes-or-no confirmation keeps its Cancel. A centered dialog blocks outside presses and
+always shows a close button or a Cancel; only dialogs without inputs, pending choices,
+confirmations, or in-progress work may opt into `dismissOnOutsidePress`.
 
-A menu's popup is `MenuPopup` from `components/ui/menu.tsx`, never `Menu.Popup` composed by hand: it
-clears the vertical padding that leaves a white strip beside a row's hover, and ESLint rejects the
-bare form.
-
-A lens shown as an item to browse gets favorite and compare from `LensActions`, in the tier that
-matches how the lens is shown (its own panel, one card or row among many, spare room in a card, a
-chart tile). Don't build these buttons anywhere else; `e2e/lens-actions.spec.ts` checks that list
-pages carry both. Compare appears only where the page shows the compare bar; Ask Iris has none, so
-its cards carry favorite alone and comparing is Iris's job there.
+A lens shown as an item to browse gets favorite and compare only from `LensActions`; don't build
+those buttons anywhere else.
 
 The Atlens design canvas and design system live in a separate private asset store. This public
 repository declares their logical paths in `.open-artifacts.json`; ignored `.design` bindings
@@ -96,20 +77,17 @@ resolve them in each worktree. Never commit private design files or bindings her
 on designs through the `open-artifacts` skill, not a separate service or a native Claude Artifact
 copy.
 
-The design system mirrors the theme, fonts, `ui-tokens.ts` and a set of components;
-`scripts/hooks/ui-token-review.mjs` lists those files. It is re-synced on demand, not per change:
-a PR that alters how any of them looks says which part of the design system it affects. Before
-building mockups on it, diff those files between the commit its `tokens.json` records (`meta.ref`)
-and `main`, and re-sync what changed.
+The design system mirrors the theme, fonts, `ui-tokens.ts` and the components listed in
+`scripts/hooks/ui-token-review.mjs`; a PR that changes how any of them looks says which part of the
+design system it affects.
 
 Device insets (iOS notch, home indicator, Window Controls Overlay) are consumed through the
 `--safe-inset-*` and `--titlebar-height` variables declared in `src/app/theme.css`. Never call
 `env(safe-area-inset-*)` directly in a component. Cover any new inset in
 `e2e/pwa-safe-area.spec.ts`.
 
-The on-screen keyboard reaches layouts the same way: `KeyboardInsets` sets `data-keyboard` and
-`--page-height` (one screen of content, above the keyboard while it is up). Size one-screen pages
-with `--page-height`; never read `visualViewport` in a component.
+Size one-screen pages with `--page-height` (set by `KeyboardInsets`, above the on-screen keyboard);
+never read `visualViewport` in a component.
 
 Chinese text belongs only in the files `scripts/hooks/cjk-guard.mjs` allows: UI copy in `zh.json`,
 model-facing wording in `system-prompt.ts`, data, tests, and a few listed exceptions.
@@ -132,8 +110,7 @@ message or PR description, not in the source.
 - Branch previews (`<branch>.preview.atlens.app`) inherit nothing from production. Declare every
   new var or binding again under `[previews]` in `wrangler.toml`, pointing storage at a preview
   copy; `--prod` on `secret:add` also sets the preview secret.
-- Google sign-in works locally only on ports 3000 (`dev`) and 8787 (`preview`). GitHub's OAuth App has only the
-  production callback, which previews reach through `oAuthProxy`; Google One Tap runs on production only.
+- Google sign-in works locally only on ports 3000 (`dev`) and 8787 (`preview`).
 
 ## Data
 
@@ -164,8 +141,7 @@ Visual verification must cover desktop and mobile. Use a 375px viewport for mobi
 desktop-only screenshot is not evidence that a UI change works.
 
 Text must fit in both locales: don't give a text container a fixed width that only the Chinese copy
-fits. A PR that reworks layout gets the `text-fit-check` label, which runs the text-fit sweep
-(`e2e/text-fit.spec.ts`: text spilling out of its box or over other text); it also runs weekly.
+fits. A PR that reworks layout gets the `text-fit-check` label.
 
 ## Git workflow
 
