@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import { buildTableLabels, LENS_TABLE_RENDERERS } from "@/lib/ai/lens-table-cells";
 import type { LensTableColumn, ResolvedLens } from "@/lib/ai/recall";
+import OwnedMark from "@/components/lens/OwnedMark";
 import { lensPath } from "@/lib/url/routes";
 
 const DETAIL_HEADER_KEY = {
@@ -41,7 +42,7 @@ export default function LensTable({
   caption,
   onExpand,
 }: {
-  lenses: ResolvedLens[];
+  lenses: (ResolvedLens & { owned?: boolean })[];
   columns: LensTableColumn[];
   caption: string | null;
   /** Widens the chat so the table fits; offered only while the table scrolls sideways. */
@@ -108,6 +109,7 @@ export default function LensTable({
                 className="group border-border cursor-pointer border-b transition-colors last:border-b-0 hover:bg-zinc-50"
               >
                 <th scope="row" className={`${NAME_CELL_CLS} font-normal transition-colors group-hover:bg-zinc-50`}>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <Link
                     href={lensPath(lens)}
                     prefetch={false}
@@ -122,6 +124,8 @@ export default function LensTable({
                   >
                     {lens.name}
                   </Link>
+                  {lens.owned ? <OwnedMark form="inline" /> : null}
+                  </div>
                 </th>
                 {columns.map((col) => (
                   <td key={col} className={`text-foreground px-3.5 py-2 tabular-nums ${col === "lensConfiguration" ? "whitespace-pre" : "whitespace-nowrap"}`}>

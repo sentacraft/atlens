@@ -163,7 +163,7 @@ function ToolPart({
       }
       case "listLenses": {
         const { lenses, columns, caption } = part.output as {
-          lenses: ResolvedLens[];
+          lenses: (ResolvedLens & { owned?: boolean })[];
           columns: LensTableColumn[];
           caption: string | null;
         };
