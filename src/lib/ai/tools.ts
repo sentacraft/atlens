@@ -34,6 +34,9 @@ import type { LensReviews } from "@/lib/lens/reviews-repository";
 
 const RECALL_LIMIT = 20;
 
+// A model fills an unset bound with 0, which no requirement ever means; the message tells it to retry with null.
+const bound = () => z.number().positive("A bound must be a positive number. Use null, not 0, for an unrestricted bound.");
+
 const recallConstraintsSchema = z.object({
   brands: z
     .array(z.string())
@@ -64,7 +67,7 @@ const recallConstraintsSchema = z.object({
         "appear only when named here; macro always appears.",
     ),
   coversFocals: z
-    .array(z.number())
+    .array(bound())
     .nullish()
     .describe(
       "Native focal lengths in mm (the number printed on the lens, not the full-frame " +
@@ -75,52 +78,44 @@ const recallConstraintsSchema = z.object({
   // Not a [min, max] tuple: it compiles to prefixItems, which Google's function
   // declarations reject.
   focalWithin: z
-    .object({ min: z.number().nullish(), max: z.number().nullish() })
+    .object({ min: bound().nullish(), max: bound().nullish() })
     .nullish()
     .describe(
       "Native focal window in mm (the number printed on the lens, not the full-frame " +
         "equivalent); an omitted end is open. The lens's ENTIRE focal range must lie inside it.",
     ),
-  minReach: z
-    .number()
+  minReach: bound()
     .nullish()
     .describe("Native mm; a hard lower bound on the lens's longest focal length (its tele end)."),
-  maxWide: z
-    .number()
+  maxWide: bound()
     .nullish()
     .describe("Native mm; a hard upper bound on the lens's shortest focal length (its wide end)."),
-  maxWeightG: z
-    .number()
+  maxWeightG: bound()
     .nullish()
     .describe("Grams; a hard upper bound on lens weight."),
-  maxLengthMm: z
-    .number()
+  maxLengthMm: bound()
     .nullish()
     .describe("Barrel length ceiling in mm; a hard upper bound."),
   maxApertureF: z
-    .object({ wide: z.number().nullish(), tele: z.number().nullish() })
+    .object({ wide: bound().nullish(), tele: bound().nullish() })
     .nullish()
     .describe(
       "f-number ceiling at each zoom end (smaller = wider); a hard bound.",
     ),
-  maxPrice: z
-    .number()
+  maxPrice: bound()
     .nullish()
     .describe("Price ceiling in the user's currency (CNY for zh, USD for en)."),
-  minMagnification: z
-    .number()
+  minMagnification: bound()
     .nullish()
     .describe(
       "Minimum magnification ratio (1 = life-size); a hard lower bound.",
     ),
-  minApertureBladeCount: z
-    .number()
+  minApertureBladeCount: bound()
     .nullish()
     .describe(
       "Minimum aperture blade count; a hard lower bound.",
     ),
-  minReleaseYear: z
-    .number()
+  minReleaseYear: bound()
     .nullish()
     .describe("Only lenses released in or after this year; a hard lower bound."),
   sortBy: z

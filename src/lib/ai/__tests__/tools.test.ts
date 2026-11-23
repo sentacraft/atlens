@@ -600,3 +600,22 @@ describe("listLenses tells the model the values it shows", () => {
     }
   });
 });
+
+describe("queryLenses bounds", () => {
+  const parse = (query: unknown) => (tools.queryLenses.inputSchema as unknown as { safeParse: (value: unknown) => { success: boolean; error?: { message: string } } }).safeParse({ queries: [query] });
+
+  it.each([
+    { maxWide: 0 }, { maxWeightG: 0 }, { maxLengthMm: 0 }, { maxPrice: 0 }, { minReach: 0 },
+    { minMagnification: 0 }, { minApertureBladeCount: 0 }, { minReleaseYear: 0 },
+    { maxApertureF: { wide: 0 } }, { maxApertureF: { tele: 0 } },
+    { focalWithin: { min: 0 } }, { focalWithin: { max: 0 } }, { coversFocals: [0] },
+  ])("rejects a zero bound %o and says null means unrestricted", (query) => {
+    const result = parse(query);
+    expect(result.success).toBe(false);
+    expect(result.error?.message).toContain("null");
+  });
+
+  it("still accepts null and positive bounds", () => {
+    expect(parse({ maxWide: null, maxWeightG: 400, maxApertureF: { wide: 2.8, tele: null }, focalWithin: { min: 35, max: null } }).success).toBe(true);
+  });
+});
