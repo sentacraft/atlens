@@ -206,6 +206,33 @@ export function toRecalled(lens: ResolvedLens): RecalledLens {
   };
 }
 
+type OmittedFromRecall = Exclude<keyof ResolvedLens, keyof RecalledLens | "id">;
+
+// Listed by hand because types cannot be enumerated; the type argument fails to compile if a field
+// joins or leaves the gap between ResolvedLens and RecalledLens without this list following.
+const OMITTED_FROM_RECALL = (<L extends OmittedFromRecall[]>(fields: L & ([Exclude<OmittedFromRecall, L[number]>] extends [never] ? unknown : never)) => fields)([
+  "generation",
+  "minAperture",
+  "maxTStop",
+  "minTStop",
+  "apertureBladeCount",
+  "focusMotor",
+  "internalFocusing",
+  "powerZoom",
+  "internalZoom",
+  "diameterMm",
+  "filterMm",
+  "lensMaterial",
+  "lensConfiguration",
+  "accessories",
+  "fieldNotes",
+]);
+
+/** Sent with every recall result: a key missing from a recalled lens is not a gap in the catalogue. */
+export const RECALL_OMITTED_NOTE =
+  `Recalled lenses leave out these detail specs: ${[...OMITTED_FROM_RECALL].sort().join(", ")}. ` +
+  "Get them with lensDetails. In any record, null means the catalogue holds no value.";
+
 export type DetailedLens = Omit<ResolvedLens, "id"> & { ref: string };
 
 export function toDetailed(lens: ResolvedLens): DetailedLens {

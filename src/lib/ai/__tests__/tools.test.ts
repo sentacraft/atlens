@@ -542,13 +542,61 @@ describe("queryBodies", () => {
   });
 });
 
-it("summarizes table columns without repeating cell values", async () => {
+it("sends the model the cell values a table shows, with the caption", async () => {
   const ref = lensRef("fujifilm-xf-35mmf14-r-x");
   const lookup = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref]));
-  const input = { refs: [ref], columns: ["lensConfiguration" as const] };
+  const input = { refs: [ref], columns: ["lensConfiguration" as const], caption: "Construction" };
   const output = run(lookup.listLenses, input);
   const projected = await lookup.listLenses.toModelOutput!({ toolCallId: "table", input, output });
-  expect(projected.type).toBe("text");
   if (projected.type !== "text") { throw new Error("Expected table summary"); }
-  expect(JSON.parse(projected.value)).toEqual({ presentation: { scope: "currentReply", table: { lensRefs: [ref], columns: ["lensConfiguration"] } } });
+  const { presentation } = JSON.parse(projected.value);
+  expect(presentation).toMatchObject({ scope: "currentReply", caption: "Construction", table: { lensRefs: [ref], columns: ["lensConfiguration"] } });
+  expect(presentation.table.lenses).toEqual([{ ref, name: expect.any(String), values: { lensConfiguration: expect.stringMatching(/\d/) } }]);
+});
+
+describe("recall results name the specs they leave out", () => {
+  const OMITTED_NOTE = /leave out these detail specs: ([^.]+)\./;
+
+  it("lists exactly the ResolvedLens fields toRecalled drops, on every recall result", async () => {
+    const recall = await run(tools.searchLensByName, { query: "35" });
+    const recalled = Object.keys(recall.results[0]);
+    const lensRefFound = recall.results[0].ref as string;
+    const seeded = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set([lensRefFound]));
+    const detailed = Object.keys((await run(seeded.lensDetails, { lenses: [{ ref: lensRefFound }] })).lenses[0]);
+    const expected = detailed.filter((key) => !recalled.includes(key)).sort();
+    expect(expected.length).toBeGreaterThan(5);
+
+    const results = [
+      recall,
+      await run(tools.queryLenses, { queries: [{ type: "prime" }] }),
+    ];
+    for (const result of results) {
+      const text = JSON.stringify(result);
+      const listed = JSON.parse(`"${(text.match(OMITTED_NOTE) ?? [])[1] ?? ""}"`).split(", ").sort();
+      expect(listed).toEqual(expected);
+      expect(text).toContain("lensDetails");
+      expect(text).toContain("null means the catalogue holds no value");
+    }
+  });
+});
+
+describe("listLenses tells the model the values it shows", () => {
+  it("sends each tabled lens with the chosen columns' values, formed as the table forms them", async () => {
+    const found = await run(tools.searchLensByName, { query: "35mm F1.4" });
+    const refs = found.results.slice(0, 2).map((lens: { ref: string }) => lens.ref);
+    const input = { refs, columns: ["lensConfiguration", "weight"] as ("lensConfiguration" | "weight")[] };
+    const output = await run(tools.listLenses, input);
+    const projected = await tools.listLenses.toModelOutput!({ toolCallId: "table", input, output });
+    if (projected.type !== "text") {throw new Error("Expected text output");}
+    const { presentation } = JSON.parse(projected.value);
+    expect(presentation.scope).toBe("currentReply");
+    expect(presentation.table.columns).toEqual(["lensConfiguration", "weight"]);
+    expect(presentation.table.lensRefs).toEqual(refs);
+    expect(presentation.table.lenses).toHaveLength(refs.length);
+    for (const row of presentation.table.lenses) {
+      expect(row).toMatchObject({ ref: expect.any(String), name: expect.any(String) });
+      expect(row.values.lensConfiguration).toMatch(/\d/);
+      expect(row.values.weight).toMatch(/\d\s?g/);
+    }
+  });
 });

@@ -6,36 +6,9 @@ import { useRef } from "react";
 import { useScrollAffordance } from "@/hooks/useScrollAffordance";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
-import {
-  apertureDisplay,
-  dimensionsPrimaryDisplay,
-  lensConfigurationDisplay,
-  tStopDisplay,
-  type LensConfigurationLabels,
-  filterSizeDisplay,
-  focalRangeDisplay,
-  mfdHeroValue,
-  oisDisplay,
-  weightDisplay,
-  wrDisplay,
-} from "@/lib/lens/format";
-import { buildSpecGroupLabels } from "@/lib/lens/spec-groups";
-import { SPEC_NA } from "@/lib/types";
-import { formatPrice, type PricingTranslator } from "@/lib/lens/pricing";
+import { buildTableLabels, LENS_TABLE_RENDERERS } from "@/lib/ai/lens-table-cells";
 import type { LensTableColumn, ResolvedLens } from "@/lib/ai/recall";
 import { lensPath } from "@/lib/url/routes";
-
-type Labels = {
-  yes: string;
-  no: string;
-  partial: string;
-  auto: string;
-  manual: string;
-  used: string;
-  na: string;
-  construction: LensConfigurationLabels;
-  pricing: PricingTranslator;
-};
 
 const DETAIL_HEADER_KEY = {
   focalNative: "focalLength",
@@ -59,37 +32,6 @@ const DETAIL_HEADER_KEY = {
   lensMaterial: "lensMaterial",
 } as const satisfies Record<Exclude<LensTableColumn, "price" | "focus" | "length">, string>;
 
-function priceCell(price: NonNullable<ResolvedLens["price"]>, l: Labels): string {
-  const amount = formatPrice(l.pricing, price.amount, price.currency);
-  return price.condition === "used" ? `${amount} ${l.used}` : amount;
-}
-
-// EVAL MIRROR: eval/promptfoo/provider.mjs hand-writes what the judges read from this table.
-const RENDERERS: Record<LensTableColumn, (lens: ResolvedLens, l: Labels) => string | null> = {
-  focalEquiv: (lens) => focalRangeDisplay(lens.focalEquivMm[0], lens.focalEquivMm[1]),
-  focalNative: (lens) => focalRangeDisplay(lens.focalNativeMm[0], lens.focalNativeMm[1]),
-  aperture: (lens) => (lens.maxAperture != null ? apertureDisplay(lens.maxAperture) : null),
-  weight: (lens) => weightDisplay(lens.weightG ?? undefined, "g") ?? null,
-  price: (lens, l) => (lens.price ? priceCell(lens.price, l) : null),
-  magnification: (lens) => (lens.magnification != null ? `${lens.magnification}×` : null),
-  minFocusDistance: (lens) => mfdHeroValue(lens.minFocusDistance) ?? null,
-  focus: (lens, l) => (lens.af ? l.auto : l.manual),
-  apertureRing: (lens, l) => (lens.apertureRing ? l.yes : l.no),
-  wr: (lens, l) => wrDisplay(lens.wr, { yes: l.yes, no: l.no, partial: l.partial }),
-  filterThread: (lens) => filterSizeDisplay(lens.filterMm) ?? null,
-  length: (lens) => (lens.length?.mm != null ? `${lens.length.mm}mm` : null),
-  ois: (lens, l) => oisDisplay(lens.ois, lens.oisStops, { yes: l.yes, no: l.no }),
-  releaseYear: (lens) => (lens.releaseYear != null ? String(lens.releaseYear) : null),
-  lensConfiguration: (lens, l) => lensConfigurationDisplay(lens.lensConfiguration, l.construction) ?? null,
-  apertureBladeCount: (lens) => lens.apertureBladeCount === SPEC_NA ? SPEC_NA : lens.apertureBladeCount?.toString() ?? null,
-  minAperture: (lens) => lens.minAperture == null ? null : apertureDisplay(lens.minAperture),
-  maxTStop: (lens) => tStopDisplay(lens.maxTStop) ?? null,
-  minTStop: (lens) => tStopDisplay(lens.minTStop) ?? null,
-  dimensions: (lens) => dimensionsPrimaryDisplay(lens.diameterMm, lens.length) ?? null,
-  focusMotor: (lens) => lens.focusMotor ?? null,
-  lensMaterial: (lens) => lens.lensMaterial ?? null,
-};
-
 // Opaque, unlike the row's own hover: the pinned name column covers cells scrolling under it.
 const NAME_CELL_CLS = "sticky left-0 z-[1] min-w-36 max-w-48 border-r border-zinc-100 bg-white px-3.5 py-2 text-left";
 
@@ -112,17 +54,7 @@ export default function LensTable({
   const { canScrollLeft, canScrollRight } = useScrollAffordance(scrollRef, [lenses, columns]);
   const expandable = onExpand !== undefined && (canScrollLeft || canScrollRight);
 
-  const labels: Labels = {
-    yes: td("yes"),
-    no: td("no"),
-    partial: td("partial"),
-    auto: t("auto"),
-    manual: t("manual"),
-    used: t("used"),
-    na: td("missing"),
-    construction: buildSpecGroupLabels(td).lc,
-    pricing: tp,
-  };
+  const labels = buildTableLabels({ detail: td, table: t, pricing: tp });
 
   const headerFor = (col: LensTableColumn): string => {
     if (col === "price") {
@@ -193,7 +125,7 @@ export default function LensTable({
                 </th>
                 {columns.map((col) => (
                   <td key={col} className={`text-foreground px-3.5 py-2 tabular-nums ${col === "lensConfiguration" ? "whitespace-pre" : "whitespace-nowrap"}`}>
-                    {RENDERERS[col](lens, labels) ?? (
+                    {LENS_TABLE_RENDERERS[col](lens, labels) ?? (
                       <span className="text-muted-foreground">{labels.na}</span>
                     )}
                   </td>

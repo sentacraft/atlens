@@ -11,10 +11,12 @@ import {
   toDetailed,
   toRecalled,
   RECALL_SORT_NAMES,
+  RECALL_OMITTED_NOTE,
   LENS_TABLE_COLUMNS,
 } from "@/lib/ai/recall";
 import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
 import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
+import { LENS_TABLE_RENDERERS, tableLabelsForLocale } from "@/lib/ai/lens-table-cells";
 import { compareMtfCharts } from "@/lib/ai/mtf-comparison";
 import { lensDetailImages, lensImageRequestsSchema, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
@@ -285,6 +287,7 @@ export function buildLensTools(
             : result;
         }),
         note: QUERY_LENSES_NOTE,
+        detailSpecsNote: RECALL_OMITTED_NOTE,
       }),
     }),
 
@@ -309,7 +312,7 @@ export function buildLensTools(
         for (const lens of results) {
           recalledRefs.add(lens.ref);
         }
-        return results.length ? { results } : {
+        return results.length ? { results, detailSpecsNote: RECALL_OMITTED_NOTE } : {
           results,
           note: `No name match in ${mountLabel}. This lookup does not search across mounts. If the name points to a different mount, confirm which one the user means.`,
         };
@@ -332,7 +335,7 @@ export function buildLensTools(
         for (const lens of results) {
           recalledRefs.add(lens.ref);
         }
-        return { results, total: lenses.length, otherMounts };
+        return { results, total: lenses.length, otherMounts, detailSpecsNote: RECALL_OMITTED_NOTE };
       },
     }),
 
@@ -565,13 +568,26 @@ export function buildLensTools(
         ...listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs),
         historical: false,
       }),
-      toModelOutput: ({ output }) => ({
+      toModelOutput: ({ output }) => {
+        const labels = tableLabelsForLocale(locale);
+        return {
         type: "text",
         value: JSON.stringify({ presentation: {
           scope: output.historical ? "history" : "currentReply",
-          table: { lensRefs: output.lenses.map((lens) => lensRef(lens.id)), columns: output.columns },
+          ...(output.caption ? { caption: output.caption } : {}),
+          table: {
+            lensRefs: output.lenses.map((lens) => lensRef(lens.id)),
+            columns: output.columns,
+            // What each cell shows the user, so the model never writes prose that contradicts the table.
+            lenses: output.lenses.map((lens) => ({
+              ref: lensRef(lens.id),
+              name: lens.name,
+              values: Object.fromEntries(output.columns.map((column) => [column, LENS_TABLE_RENDERERS[column](lens, labels) ?? labels.na])),
+            })),
+          },
         } }),
-      }),
+        };
+      },
     }),
 
     prepareFeedback: tool({

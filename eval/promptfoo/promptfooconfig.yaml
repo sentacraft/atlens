@@ -429,6 +429,23 @@ tests:
         metric: programmatic
         value: "/187/.test(output)"
 
+  # Guard: a spec that recall results leave out is looked up with lensDetails, not called unknown.
+  - description: guard-detail-spec
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 35mm F1.4 R 的滤镜口径多大？"
+    assert:
+      - *no_deck
+      - type: javascript # the 52mm comes from the catalogue's detail record
+        metric: programmatic
+        value: "context.metadata.toolsCalled.includes('lensDetails') && /52/.test(output)"
+
   # Guard: a broad query matches more than the deck can show — say how many, offer to narrow.
   - description: guard-over-match
     metadata:
