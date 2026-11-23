@@ -23,9 +23,9 @@ must not exist here.
 
 `pnpm run lint` must pass before committing.
 
-Worktree dependency setup is shared by Claude and Codex in `scripts/worktree-setup.mjs`.
-See [docs/worktree-setup.md](docs/worktree-setup.md) for runtime checks and recovery.
-Use separate worktrees for macOS and Linux; never share their dependencies or build caches.
+A new worktree installs dependencies with `node scripts/worktree-setup.mjs` (`--check` inspects
+without installing). Use separate worktrees for macOS and Linux; never share their dependencies or
+build caches.
 
 Run `pnpm run preview` before merging any change to routing, rendering mode, or
 `next.config.ts`: some regressions appear only on workerd. See the `//preview` and `//start`
@@ -98,15 +98,11 @@ its cards carry favorite alone and comparing is Iris's job there.
 
 The Atlens design canvas and design system live in a separate private asset store. This public
 repository declares their logical paths in `.open-artifacts.json`; ignored `.design` bindings
-resolve them in each worktree. Never commit private design files or bindings here, and do not
-maintain a second editable version in native Claude Artifacts. See
-[docs/design-assets.md](docs/design-assets.md) for optional setup, privacy checks, and worktree rules.
-Reuse the on-demand Hub through the current environment's `open-artifacts` skill; never start a
-separate `artifact.mjs open` service. For browsing, use `artifacts connect --view --target system`
-and the URL it returns rather than a copied local URL. Follow the shared skill for comments;
-do not claim listeners on ordinary session startup.
+resolve them in each worktree. Never commit private design files or bindings here. Open or comment
+on designs through the `open-artifacts` skill, not a separate service or a native Claude Artifact
+copy.
 
-The system mirrors the theme, fonts, `ui-tokens.ts` and a set of components;
+The design system mirrors the theme, fonts, `ui-tokens.ts` and a set of components;
 `scripts/hooks/ui-token-review.mjs` lists those files. It is re-synced on demand, not per change:
 a PR that alters how any of them looks says which part of the design system it affects. Before
 building mockups on it, diff those files between the commit its `tokens.json` records (`meta.ref`)
