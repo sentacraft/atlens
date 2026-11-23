@@ -1865,3 +1865,141 @@ tests:
           from manufacturers' official sources through a data pipeline, with a caveat that errors
           are possible and key specs should be confirmed with the manufacturer before buying. It
           fails if it claims the data is guaranteed accurate or official on behalf of the brands.
+
+  # Images: what Iris shows and reads from MTF charts and optical diagrams. `context.metadata.images`
+  # lists the images the latest turn displayed and whether their pixels reached the model; the
+  # judge sees the same as an `[images]` block, since it cannot see the pixels itself.
+  - description: images-mtf-unconfirmed-aperture
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 35mm F1.4 在 f/2 的 MTF 怎么样？"
+    assert:
+      - *no_deck
+      - type: javascript # the MTF charts were shown and read
+        metric: images
+        value: "context.metadata.images.some((i) => i.lensId === 'fujifilm-xf-35mmf14-r-x' && i.role === 'mtf' && i.read)"
+      - type: javascript # the lens's maximum aperture is not a test-aperture filter
+        metric: images
+        value: "context.metadata.imageRequests.every((r) => r.apertureFNumber !== 1.4)"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The user asked about f/2, but these charts do not state the aperture they were
+          measured at. The reply must not present what it reads from them as the lens's
+          performance at f/2, and must make clear the charts' test aperture is not stated.
+          Describing the curves themselves is fine. It fails if it says or implies the charts
+          show f/2, or if it states f/2 performance as a reading of the charts.
+
+  - description: images-mtf-compare-unmatched
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "对比 XF 16-55mm F2.8 和 XF 16-80mm F4 的 MTF，哪个边缘更好？"
+    assert:
+      - type: javascript # both lenses' MTF charts reached the model, not just the screen
+        metric: images
+        value: "context.metadata.images.some((i) => i.role === 'mtf' && i.read && i.lensId.startsWith('fujifilm-xf-16-55mmf28')) && context.metadata.images.some((i) => i.role === 'mtf' && i.read && i.lensId === 'fujifilm-xf-16-80mmf4-r-ois-wr-x')"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The two lenses' charts do not share confirmed test conditions: neither states its
+          test aperture, and the lenses open to different apertures. The reply must say that
+          this limits the comparison, and must not hand down a flat verdict that one lens has
+          better edges as if the charts settled it. Describing what each chart shows, or a
+          hedged reading tied to that caveat, is fine. It fails on a confident edge ranking
+          drawn from the charts without the caveat, or if it never refers to what the charts
+          show at all.
+
+  # The follow-up runs on a different provider and asks about a chart the first turn did not
+  # read: history replays no pixels, so answering needs that chart fetched. Restating what the
+  # first reply already said is fair and is not what this checks.
+  - description: images-followup-history
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        models: [null, "qwen3.8-flash"]
+        turns:
+          - "给我看看 XF 16-80mm F4 广角端的 MTF 曲线"
+          - "那 80mm 端 45 线对的图呢？边缘大概掉到多少？"
+    assert:
+      - *no_deck
+      - type: javascript # the follow-up read the 16-80's 80mm MTF chart
+        metric: images
+        value: "context.metadata.images.some((i) => i.lensId === 'fujifilm-xf-16-80mmf4-r-ois-wr-x' && i.role === 'mtf' && i.read && /:image-00[45]$/.test(i.imageRef))"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The follow-up asks about the 80mm, 45 lp/mm chart, which the first reply did not
+          describe. If the latest reply has no [images] block marked "read", it has not seen
+          that chart: it must not give values or a description of its curves, and may offer
+          to look. If it did read an 80mm chart, it answers about the 45 lp/mm one with a
+          rough edge figure or description. It fails on curve readings for the 80mm chart
+          without one being read, or on answering about a different chart than asked.
+
+  - description: images-missing
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "Sigma 18-50mm F2.8 DC DN 的 MTF 曲线能给我看看吗？"
+    assert:
+      - *no_deck
+      - type: javascript # there is no MTF chart for this lens to show
+        metric: images
+        value: "context.metadata.images.every((i) => i.role !== 'mtf')"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          Atlens has no MTF chart for this lens. The reply must tell the user it has none to
+          show, in any wording ("no chart available here" is enough), and must not describe
+          curves, quote MTF values, or characterize the chart as if it had one. Pointing to
+          specs, reviews, or the maker's site is fine. It fails only if it implies a chart was
+          shown or describes an MTF chart for this lens.
+
+  - description: images-trap-sharpest
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "富士 X 卡口哪支镜头最锐？"
+    assert:
+      - *card_quality
+      - type: javascript # MTF charts of different lenses are not pulled up to rank them
+        metric: images
+        value: "new Set(context.metadata.images.filter((i) => i.role === 'mtf').map((i) => i.lensId)).size <= 1"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          There is no single sharpest lens to read off manufacturers' MTF charts: they are
+          measured under different, often unstated, conditions. The reply must not crown one
+          lens as the sharpest on the strength of MTF charts or a chart-based ranking. Naming
+          lenses widely known for sharpness, with the trade-offs or the user's use case in
+          view, or asking what they shoot, is fine. It fails on a ranking or a single winner
+          presented as read from MTF charts.

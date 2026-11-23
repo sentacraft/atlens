@@ -29,7 +29,7 @@ every LLM-graded assertion is a paid judge call. Run as little as answers the qu
 - Batch prompt edits and evaluate them together, not after each tweak.
 - While iterating, run only the area the change touches, once:
   `--filter-metadata area=<area>`, where each case's `metadata.area` is one of `recommend`, `english`, `vague`,
-  `guard`, `gear`, `site`, `links`, `favorites`, `terms`, `table`, `reviews`, `handoff`, `bodies`, `feedback`
+  `guard`, `gear`, `site`, `links`, `favorites`, `terms`, `table`, `reviews`, `handoff`, `bodies`, `feedback`, `images`
   (`--filter-pattern` still picks single cases by name).
 - Run the full suite once per PR when prompt or tool work is done, and when switching models.
 - After a run, rerun only what failed (`--filter-failing <eval id or results file>`), not the
@@ -62,6 +62,8 @@ By default the dev server's model is under test (`AGENT_MODEL` if set, read at s
 run the suite on another candidate without restarting, prefix the command with
 `ASKIRIS_MODEL=<preset id>` from `src/lib/ai/model-presets.ts`; the provider sends it as the
 development-only `x-askiris-model` header, so a run per preset compares models side by side.
+A case can also switch models mid-conversation with `dialog.models`, one preset id per turn (`null`
+keeps the run's model): `images-followup-history` uses it to check a follow-up on another provider.
 
 ## How it's built
 

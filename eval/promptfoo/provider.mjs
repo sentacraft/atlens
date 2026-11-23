@@ -69,11 +69,13 @@ const EVAL_GEAR_HEADER = "x-askiris-eval-gear";
 const EVAL_FAVORITES_HEADER = "x-askiris-eval-favorites";
 
 // ASKIRIS_MODEL names a Test Hook model preset (src/lib/ai/model-presets.ts) for the whole run;
-// unset, the dev server's default model answers.
+// unset, the dev server's default model answers. A case's `dialog.models` (one preset id per
+// turn, `null` for the run's model) switches models mid-conversation.
 const MODEL_PRESET = process.env.ASKIRIS_MODEL;
 
-function profileHeaders(vars) {
-  const headers = MODEL_PRESET ? { [MODEL_PRESET_HEADER]: MODEL_PRESET } : {};
+function profileHeaders(vars, turn) {
+  const preset = vars?.dialog?.models?.[turn] ?? MODEL_PRESET;
+  const headers = preset ? { [MODEL_PRESET_HEADER]: preset } : {};
   if (vars?.gear) {
     headers[EVAL_GEAR_HEADER] = JSON.stringify(vars.gear);
   }
@@ -84,13 +86,13 @@ function profileHeaders(vars) {
   return headers;
 }
 
-async function postTurn(messages, mount, locale, conversationId, vars, continuing) {
+async function postTurn(messages, mount, locale, conversationId, vars, turn, continuing) {
   const stream = await transport.sendMessages({
     chatId: conversationId,
     messages,
     trigger: "submit-message",
     body: { mount, locale },
-    headers: profileHeaders(vars),
+    headers: profileHeaders(vars, turn),
   });
   let msg = null;
   for await (const m of readUIMessageStream({ stream, message: continuing, onError: () => {} })) {
@@ -153,6 +155,9 @@ function digest(msg) {
   const queries = [];
   const searches = [];
   const details = [];
+  const imageRequests = [];
+  const images = [];
+  const imageResults = [];
   const reviews = [];
   const recalledRefs = new Set();
   const toolsCalled = [];
@@ -208,6 +213,26 @@ function digest(msg) {
     }
     if (name === "lensDetails") {
       details.push(...(part.input?.lenses ?? []).map(({ ref }) => ref));
+      for (const lens of part.input?.lenses ?? []) {
+        imageRequests.push(...(lens.images ?? []).map((request) => ({ ...request, lensId: REF_TO_ID.get(lens.ref) ?? lens.ref })));
+      }
+      for (const lens of part.output?.lenses ?? []) {
+        imageResults.push(...(lens.imageResults ?? []).map((result) => ({ ...result, lensId: REF_TO_ID.get(lens.ref) ?? lens.ref })));
+      }
+      const read = new Set(part.output?.readRefs ?? []);
+      const shown = (part.output?.displayImages ?? []).map((image) => ({
+        lensId: image.lensId,
+        lensName: image.lensName,
+        imageRef: image.imageRef,
+        role: image.image?.role ?? null,
+        read: read.has(image.imageRef),
+        galleryCount: image.gallery?.length ?? 1,
+      }));
+      images.push(...shown);
+      // The judge cannot see pixels; this line tells it what was on screen and what Iris read.
+      if (shown.length) {
+        transcript.push(`[images]\n${shown.map((image) => `- ${image.lensName} ${image.role}${image.galleryCount > 1 ? ` (gallery of ${image.galleryCount})` : ""}, ${image.read ? "read" : "shown only"}`).join("\n")}`);
+      }
     }
     if (name === "lensReviews") {
       for (const lens of part.output?.lenses ?? []) {
@@ -301,6 +326,9 @@ function digest(msg) {
     queries,
     searches,
     details,
+    imageRequests,
+    imageResults,
+    images,
     reviews,
     recalledRefs: [...recalledRefs],
     steps,
@@ -336,13 +364,13 @@ export default class AskIrisProvider {
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: turns[i] }] });
       convo.push(`[User] ${turns[i]}`);
-      let assistant = await postTurn(messages, mount, locale, conversationId, context?.vars);
+      let assistant = await postTurn(messages, mount, locale, conversationId, context?.vars, i);
       const answered = assistant && answerCards(assistant, context?.vars?.gearCardAnswer ?? "not_signed_in");
       if (answered) {
         gearCardShown ||= answered.shown.gear;
         signInCardShown ||= answered.shown.signIn;
         if (!(answered.shown.gear && context?.vars?.stopAtGearCard)) {
-          assistant = await postTurn([...messages, answered.message], mount, locale, conversationId, context?.vars, answered.message);
+          assistant = await postTurn([...messages, answered.message], mount, locale, conversationId, context?.vars, i, answered.message);
         }
       }
       if (assistant) {
@@ -384,6 +412,9 @@ export default class AskIrisProvider {
         queries: d.queries,
         searches: d.searches,
         details: d.details,
+        imageRequests: d.imageRequests,
+        imageResults: d.imageResults,
+        images: d.images,
         reviews: d.reviews,
         recalledRefs: d.recalledRefs,
         steps: d.steps,
