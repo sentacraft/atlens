@@ -240,7 +240,8 @@ export function toDetailed(lens: ResolvedLens): DetailedLens {
   return { ref: lensRef(id), ...rest };
 }
 
-export type Recommendation = ResolvedLens & { reason: string };
+/** `owned` marks a lens in the user's saved gear; the cards and tables do not render it yet. */
+export type Recommendation = ResolvedLens & { reason: string; owned?: boolean };
 
 // A "56" request still catches a 55mm lens.
 const FOCAL_MATCH_TOLERANCE = 0.1;
@@ -601,7 +602,7 @@ export function listLenses(
   caption: string | undefined,
   tBrand: (brand: string) => string,
   recalledRefs: Set<string>,
-): { lenses: ResolvedLens[]; columns: LensTableColumn[]; caption: string | null } {
+): { lenses: (ResolvedLens & { owned?: boolean })[]; columns: LensTableColumn[]; caption: string | null } {
   const byRef = buildRefIndex(getLensesByMount(mount, locale));
   const seen = new Set<string>();
   const lenses: ResolvedLens[] = [];

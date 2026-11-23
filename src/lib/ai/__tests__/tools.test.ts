@@ -546,7 +546,7 @@ it("sends the model the cell values a table shows, with the caption", async () =
   const ref = lensRef("fujifilm-xf-35mmf14-r-x");
   const lookup = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref]));
   const input = { refs: [ref], columns: ["lensConfiguration" as const], caption: "Construction" };
-  const output = run(lookup.listLenses, input);
+  const output = await run(lookup.listLenses, input);
   const projected = await lookup.listLenses.toModelOutput!({ toolCallId: "table", input, output });
   if (projected.type !== "text") { throw new Error("Expected table summary"); }
   const { presentation } = JSON.parse(projected.value);
@@ -617,5 +617,41 @@ describe("queryLenses bounds", () => {
 
   it("still accepts null and positive bounds", () => {
     expect(parse({ maxWide: null, maxWeightG: 400, maxApertureF: { wide: 2.8, tele: null }, focalWithin: { min: 35, max: null } }).success).toBe(true);
+  });
+});
+
+describe("owned lenses", () => {
+  const ref = lensRef("fujifilm-xf-35mmf14-r-x");
+  const other = lensRef("fujifilm-xf-56mmf12-r-wr-x");
+  const ownerData = (gear: ToolData["gear"]): ToolData => ({ ...GUEST, gear });
+  const owner = ownerData(async () => ({ known: true, bodies: [], lenses: [{ name: "XF 35mm F1.4 R", ref, manual: false, adapted: false }] }));
+  const build = (data: ToolData) => buildLensTools("X", "en", (brand) => brand, data, new Set([ref, other]));
+
+  it("flags a lens the signed-in user owns in the card, table and model output, and no other", async () => {
+    const lookup = build(owner);
+    const cards = await run(lookup.recommendLenses, { picks: [{ ref, reason: "r" }, { ref: other, reason: "r" }] });
+    expect(cards.recommendations.map((rec: { owned?: boolean }) => rec.owned)).toEqual([true, undefined]);
+    const cardText = await lookup.recommendLenses.toModelOutput!({ toolCallId: "c", input: { picks: [] }, output: cards });
+    expect(JSON.stringify(cardText)).toMatch(new RegExp(`${ref}[^,]*already owned`));
+    expect(JSON.stringify(cardText)).not.toMatch(new RegExp(`${other}[^,]*already owned`));
+
+    const input = { refs: [ref, other], columns: ["weight" as const] };
+    const table = await run(lookup.listLenses, input);
+    expect(table.lenses.map((lens: { owned?: boolean }) => lens.owned)).toEqual([true, undefined]);
+    const projected = await lookup.listLenses.toModelOutput!({ toolCallId: "t", input, output: table });
+    if (projected.type !== "text") {throw new Error("Expected text");}
+    expect(JSON.parse(projected.value).presentation.table.lenses.map((row: { owned?: boolean }) => row.owned)).toEqual([true, undefined]);
+  });
+
+  it.each([
+    ["a guest", GUEST],
+    ["a failed gear read", ownerData(async () => { throw new Error("db down"); })],
+    ["an unavailable profile", ownerData(async () => ({ known: false, reason: "unavailable" }))],
+  ])("marks nothing, without an error, for %s", async (_name, data) => {
+    const lookup = build(data);
+    const cards = await run(lookup.recommendLenses, { picks: [{ ref, reason: "r" }] });
+    expect(cards.recommendations[0]).not.toHaveProperty("owned");
+    const table = await run(lookup.listLenses, { refs: [ref] });
+    expect(table.lenses[0]).not.toHaveProperty("owned");
   });
 });

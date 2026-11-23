@@ -253,6 +253,13 @@ export function buildLensTools(
     });
   };
 
+  // One gear snapshot per request; a guest or a failed read marks nothing and never raises.
+  const markOwned = async <T extends { id: string }>(lenses: T[]): Promise<(T & { owned?: true })[]> => {
+    const gear = await data.gear().catch(() => null);
+    const owned = new Set(gear?.known ? gear.lenses.flatMap((lens) => lens.ref ? [lens.ref] : []) : []);
+    return lenses.map((lens) => owned.has(lensRef(lens.id)) ? { ...lens, owned: true } : lens);
+  };
+
   return {
     queryLenses: tool({
       description:
@@ -526,14 +533,17 @@ export function buildLensTools(
           .min(1)
           .max(6),
       }),
-      execute: ({ picks }) => recommendLenses(mount, locale, picks, tBrand, recalledRefs),
+      execute: ({ picks }) => {
+        const { recommendations } = recommendLenses(mount, locale, picks, tBrand, recalledRefs);
+        return markOwned(recommendations).then((marked) => ({ recommendations: marked }));
+      },
       // The model already has these specs; it gets the refs back so its prose can link them.
       // Requires passing this same ToolSet to convertToModelMessages.
       toModelOutput: ({ output }) => ({
         type: "text",
         value:
           `Rendered ${output.recommendations.length} recommendation card(s) to the user, for: ` +
-          output.recommendations.map((rec) => lensRef(rec.id)).join(", ") +
+          output.recommendations.map((rec) => lensRef(rec.id) + (rec.owned ? " (already owned)" : "")).join(", ") +
           ". The user reads each card's reason there; your text frames the choice rather than restating each card.",
       }),
     }),
@@ -559,10 +569,10 @@ export function buildLensTools(
           .optional()
           .describe("An optional short caption above the table, in the user's language."),
       }),
-      execute: ({ refs, columns, caption }) => ({
-        ...listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs),
-        historical: false,
-      }),
+      execute: ({ refs, columns, caption }) => {
+        const table = listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs);
+        return markOwned(table.lenses).then((lenses) => ({ ...table, lenses, historical: false }));
+      },
       toModelOutput: ({ output }) => {
         const labels = tableLabelsForLocale(locale);
         return {
@@ -577,6 +587,7 @@ export function buildLensTools(
             lenses: output.lenses.map((lens) => ({
               ref: lensRef(lens.id),
               name: lens.name,
+              ...(lens.owned ? { owned: true } : {}),
               values: Object.fromEntries(output.columns.map((column) => [column, LENS_TABLE_RENDERERS[column](lens, labels) ?? labels.na])),
             })),
           },
