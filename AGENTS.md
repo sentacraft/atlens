@@ -150,6 +150,7 @@ fits. A PR that reworks layout gets the `text-fit-check` label.
 - PR titles follow Conventional Commits. Titles and descriptions are written in English.
 - Describe what the diff does not make obvious. Do not restate the changes.
 - Do not merge. Wait for CI, report the result, and leave the merge decision to the maintainer.
+- A session works in one worktree. Switch branches inside it for separate topics, and open one PR per topic rather than accumulating unrelated changes in one PR. Don't create extra worktrees for a session's own work.
 
 ## Compatibility
 
