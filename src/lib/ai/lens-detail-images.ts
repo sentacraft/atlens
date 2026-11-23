@@ -5,15 +5,14 @@ import type { Lens, LensImageAsset, Mount } from "@/lib/types";
 
 const imageRoles = ["product", "mtf", "optical-construction"] as const;
 
-export const lensDetailImagesSchema = z.array(z.object({
+export const lensImageRequestsSchema = z.array(z.object({
   role: z.enum(imageRoles),
   imageRef: z.string().optional().describe("Exact ref from this lens's image list; use it to retrieve the same image in a follow-up."),
   focalLengthMm: z.number().positive().optional().describe("Chart test focal length, only if requested separately from the lens model or search."),
   apertureFNumber: z.number().positive().optional().describe("Chart test aperture, only if requested. Never copy the lens maximum aperture into this filter."),
-  read: z.boolean().optional().describe("Requested MTF charts and optical diagrams are read by default. Set false to show without reading; set true to read a product photo."),
-})).max(3).optional();
+})).max(3);
 
-type ImageRequest = NonNullable<z.infer<typeof lensDetailImagesSchema>>[number];
+type ImageRequest = z.infer<typeof lensImageRequestsSchema>[number];
 
 export interface LensDetailDisplayImage {
   lensRef: string;
@@ -52,9 +51,7 @@ export function lensDetailImages(
     image,
   }));
   const displayImages = new Map<string, LensDetailDisplayImage>();
-  const readRefs = new Set<string>();
-  const results = requests.map(({ role, imageRef, focalLengthMm, apertureFNumber, read }) => {
-    const readPixels = read ?? role !== "product";
+  const results = requests.map(({ role, imageRef, focalLengthMm, apertureFNumber }) => {
     const candidates = entries.filter((entry) => entry.image.role === role && (!imageRef || entry.imageRef === imageRef));
     const conditions = (entry: LensDetailDisplayImage) => [
       focalLengthMm === undefined ? true : entry.image.focalLengthMm === undefined ? null : entry.image.focalLengthMm === focalLengthMm,
@@ -70,11 +67,10 @@ export function lensDetailImages(
     const selected: string[] = [];
     for (const candidate of eligible.slice(0, role === "mtf" ? 2 : 1)) {
       if (!displayImages.has(candidate.imageRef) && displayImages.size >= remaining) {continue;}
-      const gallery = !selected.length && eligible.length > 1 && (role === "mtf" || (role === "product" && !readPixels))
+      const gallery = !selected.length && eligible.length > 1 && (role === "mtf" || role === "product")
         ? eligible
         : displayImages.get(candidate.imageRef)?.gallery;
       displayImages.set(candidate.imageRef, { ...candidate, ...(gallery ? { gallery } : {}) });
-      if (readPixels) {readRefs.add(candidate.imageRef);}
       selected.push(candidate.imageRef);
     }
     return {
@@ -93,6 +89,5 @@ export function lensDetailImages(
     images: entries.map(({ imageRef, image }) => ({ imageRef, ...imageMetadata(image).metadata })),
     results,
     displayImages: [...displayImages.values()],
-    readRefs: [...readRefs],
   };
 }

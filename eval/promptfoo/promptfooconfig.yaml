@@ -1923,8 +1923,8 @@ tests:
           identical or confirmed test conditions, if it gives an edge verdict with no such
           caveat, or if it never refers to what the charts show at all.
 
-  # The follow-up asks about a chart the first turn did not read: history replays no pixels, so
-  # answering needs that chart fetched. Restating what the
+  # The follow-up asks about a chart the first turn did not show, so answering needs that chart
+  # fetched; history keeps the earlier pixels but not this chart. Restating what the
   # first reply already said is fair and is not what this checks.
   - description: images-followup-history
     metadata:
@@ -1947,10 +1947,10 @@ tests:
         provider: *behavior_grader
         value: >-
           The follow-up asks about the 80mm, 45 lp/mm chart, which the first reply did not
-          describe. If the latest reply has no [images] block marked "read", it has not seen
-          that chart: it must not give values or a description of its curves, and may offer
-          to look. If it did read an 80mm chart, it answers about the 45 lp/mm one with a
-          rough edge figure or description. It fails on curve readings for the 80mm chart
+          describe. If the latest reply has no [images] block listing an 80mm chart, it has not
+          seen that chart: it must not give values or a description of its curves, and may
+          offer to look. If it did read an 80mm chart, it answers about the 45 lp/mm one with
+          a rough edge figure or description. It fails on curve readings for the 80mm chart
           without one being read, or on answering about a different chart than asked.
 
   - description: images-missing

@@ -16,9 +16,14 @@ import { getTechnicalImageConditions, technicalImageFilter, technicalImageShortL
 import { lensPath } from "@/lib/url/routes";
 import { cn } from "@/lib/utils";
 
+// Compatibility: replies saved after #763 (2026-11-21) and before the showLensImages split keep their galleries in
+// lensDetails outputs, and stored conversations have no retention limit, so those replies live as long as their
+// conversations do. Remove "lensDetails" here once a migration has rewritten them or conversations expire.
+const IMAGE_TOOLS = new Set(["showLensImages", "lensDetails"]);
+
 function collectGalleries(parts: AskIrisUIMessage["parts"]) {
   const entries = parts.flatMap((part) => {
-    if (!isToolUIPart(part) || part.state !== "output-available" || getToolName(part) !== "lensDetails") {return [];}
+    if (!isToolUIPart(part) || part.state !== "output-available" || !IMAGE_TOOLS.has(getToolName(part))) {return [];}
     const output = part.output as { displayImages?: LensDetailDisplayImage[] } | null | undefined;
     return output?.displayImages ?? [];
   });
