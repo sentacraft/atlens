@@ -285,11 +285,10 @@
     "gathering": "Searching lenses…",
     "composing": "Putting it together…",
     "lensImages": {
+      "figure": "Fig. {number}",
       "title": "Lens images",
       "type": "{role, select, product {Product photo} mtf {MTF chart} structure {Optical diagram} other {Lens image}}",
-      "imageLabel": "{lens} — {type}",
-      "count": "{count, plural, one {# photo} other {# photos}}",
-      "openGallery": "Open image: {label} ({count})"
+      "imageLabel": "{lens} — {type}"
     },
     "table": {
       "lensHeader": "Lens",

@@ -37,27 +37,25 @@ const structure: LensDetailDisplayImage = {
   lensRef: "g:lens-b", lensName: "Lens B", lensId: "lens-b", mount: "G",
   imageRef: "b:001", src: "/b-optical.png", image: { id: "001", role: "optical-construction" },
 };
-const product: LensDetailDisplayImage = {
-  ...chart, imageRef: "a:002", src: "/a-front.jpg", image: { id: "002", role: "product" },
+const second: LensDetailDisplayImage = {
+  ...chart, imageRef: "a:002", src: "/a-mtf-2.png", image: { ...chart.image, id: "002", apertureFNumbers: [1.4], conditionsNote: undefined },
 };
-const alternate: LensDetailDisplayImage = {
-  ...product, imageRef: "a:003", src: "/a-side.jpg", image: { id: "003", role: "product" },
-};
+const third: LensDetailDisplayImage = { ...chart, imageRef: "a:003", src: "/a-mtf-3.png", image: { ...chart.image, id: "003", focalLengthMm: 50 } };
+const numbered = (entries: LensDetailDisplayImage[], from: number, locale: "en" | "zh" = "en") =>
+  entries.map((entry, i) => ({ ...entry, figure: from + i, figureLabel: locale === "en" ? `Fig. ${from + i}` : `图 ${from + i}` }));
 
 function tool(toolCallId: string, displayImages?: LensDetailDisplayImage[], type: "tool-showLensImages" | "tool-lensDetails" = "tool-showLensImages"): AskIrisUIMessage["parts"][number] {
   return { type, toolCallId, state: "output-available", input: {}, output: { displayImages } } as AskIrisUIMessage["parts"][number];
 }
 
 const MESSAGES = { en, zh: zh as unknown as typeof en };
+const text = (value: string): AskIrisUIMessage["parts"][number] => ({ type: "text", text: value });
 
-function renderReply(parts: AskIrisUIMessage["parts"], locale: "en" | "zh" = "en") {
-  const reply: AskIrisUIMessage = {
-    id: "answer", role: "assistant", metadata: { traceId: "trace", turnId: "turn" },
-    parts: [{ type: "text", text: "Answer body" }, ...parts, { type: "text", text: "Last paragraph" }],
-  };
-  render(
+function renderParts(parts: AskIrisUIMessage["parts"], { locale = "en", busy = false }: { locale?: "en" | "zh"; busy?: boolean } = {}) {
+  const reply: AskIrisUIMessage = { id: "answer", role: "assistant", metadata: { traceId: "trace", turnId: "turn" }, parts };
+  return render(
     <NextIntlClientProvider locale={locale} timeZone="UTC" messages={MESSAGES[locale]}>
-      <AskIrisThread messages={[reply]} />
+      <AskIrisThread messages={[reply]} busy={busy} />
     </NextIntlClientProvider>,
   );
 }
@@ -76,62 +74,56 @@ function slides(dialog: HTMLElement) {
 }
 
 describe("lens images in Iris replies", () => {
-  it("aggregates each tool result once by ref, after the text and before sources and feedback", async () => {
-    renderReply([tool("read-a", [chart]), tool("legacy"), tool("read-b", [chart, structure])]);
-
-    const group = screen.getByRole("region", { name: "Lens images" });
+  it("renders the images where their tool part is, between the texts around it", () => {
+    renderParts([text("Before"), tool("a", numbered([chart, second], 1)), text("After")]);
+    const group = screen.getByRole("region", { name: /MTF/ });
+    expectBefore(screen.getByText("Before"), group);
+    expectBefore(group, screen.getByText("After"));
     expect(within(group).getAllByRole("img")).toHaveLength(2);
     expect(within(group).getByRole("link", { name: "Lens A" })).toHaveAttribute("href", "/lenses/x/lens-a");
-    expect(within(group).getByRole("link", { name: "Lens B" })).toHaveAttribute("href", "/lenses/gfx/lens-b");
-    expect(within(group).getByText("35mm · f/1.4, f/8")).toBeInTheDocument();
-    expect(within(group).queryByText(/not specified/i)).not.toBeInTheDocument();
-    expectBefore(screen.getByText("Last paragraph"), group);
-    expectBefore(group, screen.getByText(en.AskIris.sources.title));
-    expectBefore(group, screen.getByRole("button", { name: "Feedback" }));
-
-    const dialog = await openImage(/Lens B/);
-    expect(within(dialog).getAllByText("/b-optical.png")[0].tagName).toBe("DIV");
-    expect(slides(dialog)).toEqual([structure.src]);
   });
 
-  it("expands only the selected product gallery and never adds unshown technical images", async () => {
-    const unreadChart = { ...chart, imageRef: "a:099", src: "/a-unread.png" };
-    renderReply([tool("read-a", [{ ...product, gallery: [product, alternate, alternate, unreadChart] }, chart]), tool("read-again", [product])], "zh");
-
-    expect(screen.getAllByRole("img")).toHaveLength(2);
-    expect(screen.getByText("共 2 张")).toBeInTheDocument();
-    const technical = await openImage(/MTF/);
-    expect(slides(technical)).toEqual([chart.src]);
-    fireEvent.click(within(technical).getByRole("button", { name: "Close viewer" }));
-
-    const appearance = await openImage(/外观/);
-    expect(within(appearance).getAllByText(product.src)[0].tagName).toBe("DIV");
-    expect(slides(appearance)).toEqual([product.src, alternate.src]);
+  it("renders them while the reply is still streaming", () => {
+    renderParts([text("Before"), tool("a", numbered([chart], 1))], { busy: true });
+    expect(screen.getAllByRole("img")).toHaveLength(1);
   });
 
-  it.each([["en", "MTF charts"], ["zh", "MTF 曲线"]] as const)("keeps one preview and a separate viewer per lens in %s", async (locale, title) => {
-    const second = { ...chart, imageRef: "a:005", src: "/a-mtf-2.png" };
-    const third = { ...chart, imageRef: "a:006", src: "/a-mtf-3.png" };
-    const other = { ...chart, lensId: "lens-b", lensRef: "x:lens-b", lensName: "Lens B", imageRef: "b:005", src: "/b-mtf.png" };
-    renderReply([tool("read-a", [{ ...chart, gallery: [chart, second, third] }, second, other]), tool("read-again", [second])], locale);
-    const group = screen.getByRole("region", { name: title });
-    expect(within(group).getAllByRole("img")).toHaveLength(2);
-    const dialog = await openImage(/Lens A/);
+  it("gives every image its own tile with its figure label and conditions, numbered across calls", () => {
+    renderParts([tool("a", numbered([chart, second], 1)), text("Between"), tool("b", numbered([structure, third], 3))]);
+    for (const label of ["Fig. 1", "Fig. 2", "Fig. 3", "Fig. 4"]) {
+      expect(screen.getByText(label)).toBeInTheDocument();
+    }
+    expect(screen.getAllByRole("img")).toHaveLength(4);
+    expect(screen.getByText("35mm · f/1.4, f/8")).toBeInTheDocument();
+    expectBefore(screen.getByText("Fig. 2"), screen.getByText("Between"));
+    expectBefore(screen.getByText("Between"), screen.getByText("Fig. 3"));
+  });
+
+  it("opens the viewer at the clicked tile and steps through every image of that call", async () => {
+    renderParts([tool("a", numbered([chart, second, third], 1))]);
+    const dialog = await openImage(/Fig\. 3/);
+    expect(within(dialog).getAllByText(third.src)[0].tagName).toBe("DIV");
     expect(slides(dialog)).toEqual([chart.src, second.src, third.src]);
-    expect(within(dialog).getAllByText(chart.src)[0].tagName).toBe("DIV");
   });
 
-  it("still renders galleries saved by the retired lensDetails image output", () => {
-    renderReply([tool("saved", [chart, structure], "tool-lensDetails")]);
-    expect(within(screen.getByRole("region", { name: "Lens images" })).getAllByRole("img")).toHaveLength(2);
+  it("labels figures in the reply's locale", () => {
+    renderParts([tool("a", numbered([chart], 1, "zh"))], { locale: "zh" });
+    expect(screen.getByText("图 1")).toBeInTheDocument();
+  });
+
+  it("still renders images saved in the retired lensDetails output, without figure labels", () => {
+    renderParts([text("Before"), tool("saved", [chart, structure], "tool-lensDetails"), text("After")]);
+    expect(screen.getAllByRole("img")).toHaveLength(2);
+    expect(screen.queryByText(/Fig\./)).not.toBeInTheDocument();
+    expectBefore(screen.getByText("Before"), screen.getAllByRole("img")[0]);
+    expectBefore(screen.getAllByRole("img")[1], screen.getByText("After"));
   });
 
   it("renders no image controls for old results or unfinished calls", () => {
-    renderReply([
+    renderParts([
       tool("legacy"),
       { type: "tool-showLensImages", toolCallId: "pending", state: "input-available", input: {} },
     ]);
-    expect(screen.queryByRole("region", { name: "Lens images" })).not.toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 });

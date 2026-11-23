@@ -25,6 +25,9 @@ export interface LensDetailDisplayImage {
   imageRef: string;
   src: string;
   image: LensImageAsset;
+  /** Position among the images shown in the assistant message, and its label in the reply's locale; absent in replies saved before numbering. */
+  figure?: number;
+  figureLabel?: string;
   /** Compatibility: replies saved before every requested image was displayed carry the lens's wider gallery here; groupLensImages still reads it. Remove with the lensDetails branch in LensImageGroup. */
   gallery?: LensDetailDisplayImage[];
 }

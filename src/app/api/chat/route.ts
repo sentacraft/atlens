@@ -26,7 +26,7 @@ import { ASK_CHOICES } from "@/lib/ai/choice-request";
 import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
 import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval, signInDeclined } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
-import { buildLensTools, seedRecalledRefs } from "@/lib/ai/tools";
+import { buildLensTools, countShownFigures, seedRecalledRefs } from "@/lib/ai/tools";
 import { loadLensReviews } from "@/lib/lens/reviews-repository";
 import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
 import { checkIrisQuota, recordIrisTurn, type IrisQuotaUser } from "@/lib/ai/iris-quota";
@@ -146,6 +146,7 @@ export async function POST(req: NextRequest) {
     process.env.NODE_ENV === "production" ? undefined : evalFavorites(req.headers.get(EVAL_FAVORITES_HEADER));
   // Filled once the history is resolved below; validate needs the tools before that.
   const recalledRefs = new Set<string>();
+  const figures = { next: 1 };
   const tools = withRepeatedFailureNotice(
     buildLensTools(
       mount,
@@ -162,6 +163,7 @@ export async function POST(req: NextRequest) {
         },
       },
       recalledRefs,
+      figures,
     ),
   );
   const validate = (messages: unknown) =>
@@ -220,6 +222,7 @@ export async function POST(req: NextRequest) {
   }
   const { history, userMessage, historyChanged } = turn;
   seedRecalledRefs(recalledRefs, history);
+  figures.next = countShownFigures(history) + 1;
   const gearDeclined = gearCardDecline(history);
   const declinedSignIn = signInDeclined(history);
   const activeTools = Object.keys(tools).filter((name) =>
