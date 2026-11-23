@@ -62,8 +62,6 @@ By default the dev server's model is under test (`AGENT_MODEL` if set, read at s
 run the suite on another candidate without restarting, prefix the command with
 `ASKIRIS_MODEL=<preset id>` from `src/lib/ai/model-presets.ts`; the provider sends it as the
 development-only `x-askiris-model` header, so a run per preset compares models side by side.
-A case can also switch models mid-conversation with `dialog.models`, one preset id per turn (`null`
-keeps the run's model): `images-followup-history` uses it to check a follow-up on another provider.
 
 ## How it's built
 

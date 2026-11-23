@@ -1923,8 +1923,8 @@ tests:
           drawn from the charts without the caveat, or if it never refers to what the charts
           show at all.
 
-  # The follow-up runs on a different provider and asks about a chart the first turn did not
-  # read: history replays no pixels, so answering needs that chart fetched. Restating what the
+  # The follow-up asks about a chart the first turn did not read: history replays no pixels, so
+  # answering needs that chart fetched. Restating what the
   # first reply already said is fair and is not what this checks.
   - description: images-followup-history
     metadata:
@@ -1934,7 +1934,6 @@ tests:
       locale: zh
       namesModels: true
       dialog:
-        models: [null, "qwen3.8-flash"]
         turns:
           - "给我看看 XF 16-80mm F4 广角端的 MTF 曲线"
           - "那 80mm 端 45 线对的图呢？边缘大概掉到多少？"

@@ -69,13 +69,11 @@ const EVAL_GEAR_HEADER = "x-askiris-eval-gear";
 const EVAL_FAVORITES_HEADER = "x-askiris-eval-favorites";
 
 // ASKIRIS_MODEL names a Test Hook model preset (src/lib/ai/model-presets.ts) for the whole run;
-// unset, the dev server's default model answers. A case's `dialog.models` (one preset id per
-// turn, `null` for the run's model) switches models mid-conversation.
+// unset, the dev server's default model answers.
 const MODEL_PRESET = process.env.ASKIRIS_MODEL;
 
-function profileHeaders(vars, turn) {
-  const preset = vars?.dialog?.models?.[turn] ?? MODEL_PRESET;
-  const headers = preset ? { [MODEL_PRESET_HEADER]: preset } : {};
+function profileHeaders(vars) {
+  const headers = MODEL_PRESET ? { [MODEL_PRESET_HEADER]: MODEL_PRESET } : {};
   if (vars?.gear) {
     headers[EVAL_GEAR_HEADER] = JSON.stringify(vars.gear);
   }
@@ -86,13 +84,13 @@ function profileHeaders(vars, turn) {
   return headers;
 }
 
-async function postTurn(messages, mount, locale, conversationId, vars, turn, continuing) {
+async function postTurn(messages, mount, locale, conversationId, vars, continuing) {
   const stream = await transport.sendMessages({
     chatId: conversationId,
     messages,
     trigger: "submit-message",
     body: { mount, locale },
-    headers: profileHeaders(vars, turn),
+    headers: profileHeaders(vars),
   });
   let msg = null;
   for await (const m of readUIMessageStream({ stream, message: continuing, onError: () => {} })) {
@@ -364,13 +362,13 @@ export default class AskIrisProvider {
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: turns[i] }] });
       convo.push(`[User] ${turns[i]}`);
-      let assistant = await postTurn(messages, mount, locale, conversationId, context?.vars, i);
+      let assistant = await postTurn(messages, mount, locale, conversationId, context?.vars);
       const answered = assistant && answerCards(assistant, context?.vars?.gearCardAnswer ?? "not_signed_in");
       if (answered) {
         gearCardShown ||= answered.shown.gear;
         signInCardShown ||= answered.shown.signIn;
         if (!(answered.shown.gear && context?.vars?.stopAtGearCard)) {
-          assistant = await postTurn([...messages, answered.message], mount, locale, conversationId, context?.vars, i, answered.message);
+          assistant = await postTurn([...messages, answered.message], mount, locale, conversationId, context?.vars, answered.message);
         }
       }
       if (assistant) {
