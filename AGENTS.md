@@ -3,8 +3,6 @@
 Fujifilm lens comparison tool — X mount, with GF (medium format) coverage under way.
 Next.js App Router + TypeScript, Tailwind, next-intl, deployed to Cloudflare Workers via OpenNext.
 
-Project instructions live in `AGENTS.md`; `CLAUDE.md` is a relative symlink to this file.
-
 ## Commands
 
 pnpm only. The repo has no `package-lock.json` and `package.json`'s own scripts call `pnpm`.
@@ -22,10 +20,6 @@ must not exist here.
 | `pnpm run preview` | production build served on the real workerd runtime |
 
 `pnpm run lint` must pass before committing.
-
-A new worktree installs dependencies with `node scripts/worktree-setup.mjs` (`--check` inspects
-without installing). Use separate worktrees for macOS and Linux; never share their dependencies or
-build caches.
 
 Run `pnpm run preview` before merging any change to routing, rendering mode, or
 `next.config.ts`: some regressions appear only on workerd. See the `//preview` and `//start`
