@@ -1915,13 +1915,13 @@ tests:
         metric: images
         provider: *behavior_grader
         value: >-
-          The two lenses' charts do not share confirmed test conditions: neither states its
-          test aperture, and the lenses open to different apertures. The reply must say that
-          this limits the comparison, and must not hand down a flat verdict that one lens has
-          better edges as if the charts settled it. Describing what each chart shows, or a
-          hedged reading tied to that caveat, is fine. It fails on a confident edge ranking
-          drawn from the charts without the caveat, or if it never refers to what the charts
-          show at all.
+          The charts of the two lenses can be compared, but only with caveats: neither states
+          its test aperture, and the lenses open to different apertures (f/2.8 and f/4). The
+          reply may give a leaning on which lens has better edges, but must say the test
+          aperture is not stated and that the comparison assumes something such as both
+          charts being measured wide open (f/2.8 vs f/4). It fails if it says the charts share
+          identical or confirmed test conditions, if it gives an edge verdict with no such
+          caveat, or if it never refers to what the charts show at all.
 
   # The follow-up asks about a chart the first turn did not read: history replays no pixels, so
   # answering needs that chart fetched. Restating what the

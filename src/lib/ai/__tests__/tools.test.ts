@@ -114,7 +114,7 @@ describe("lensDetails images", () => {
         lensRef, role: image.role, preview: imageRef, imageCount: 1,
       })) },
       imagesForReading: [output.displayImages[0].imageRef],
-      mtfNote: expect.stringContaining("Do not rank charts"),
+      mtfNote: expect.stringContaining("Interpret only legible curves"),
     });
     expect(projected.value.filter((part) => part.type === "file")).toEqual([
       expect.objectContaining({ data: { type: "url", url: new URL(output.displayImages[0].src) }, providerOptions: { deepseek: { imageDetail: "original" }, openai: { imageDetail: "high" } } }),
@@ -157,6 +157,25 @@ describe("lensDetails images", () => {
       imagesForReading: output.readRefs,
     });
     expect(projected.value.filter((part) => part.type === "file")).toHaveLength(2);
+  });
+
+  it("adds an MTF comparability grade for two lenses' charts, and not for a historical output", async () => {
+    const a = lensRef("fujifilm-xf-16-55mmf28-r-lm-wr-x");
+    const b = lensRef("fujifilm-xf-16-80mmf4-r-ois-wr-x");
+    const both = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([a, b])).lensDetails;
+    const input = { lenses: [{ ref: a, images: [{ role: "mtf" as const }] }, { ref: b, images: [{ role: "mtf" as const }] }] };
+    const output = await both.execute!(input, {} as never);
+    if (!("displayImages" in output)) {throw new Error("Expected a synchronous detail result");}
+    const summary = async (value: typeof output) => {
+      const projected = await both.toModelOutput!({ toolCallId: "details", input, output: value });
+      if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
+      return JSON.parse(projected.value[0].text);
+    };
+    expect((await summary(output)).mtfComparison).toMatchObject({ level: expect.any(String), caveats: expect.any(Array), rule: expect.any(String) });
+    // A historical output carries no pixels, so there is nothing to compare.
+    const historical = { ...output, historical: true, readRefs: [] };
+    const projected = await both.toModelOutput!({ toolCallId: "details", input, output: historical });
+    expect(JSON.stringify(projected)).not.toContain("mtfComparison");
   });
 
   it("does not pass unlabeled charts off as matching a requested aperture", () => {
