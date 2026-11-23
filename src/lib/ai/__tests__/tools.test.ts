@@ -123,27 +123,28 @@ describe("showLensImages", () => {
     })));
   });
 
-  it("shows and reads a requested product photo", () => {
+  it("shows and reads every product photo of a requested lens", () => {
     const output = run(imageTool(), { lenses: [{ ref, images: [{ role: "product" }] }] });
-    expect(output.displayImages.map(({ image }: { image: { role: string } }) => image.role)).toEqual(["product"]);
+    expect(output.displayImages.length).toBeGreaterThan(0);
+    expect(output.displayImages.every(({ image }: { image: { role: string } }) => image.role === "product")).toBe(true);
   });
 
-  it("includes all eligible MTF charts in the viewer, and reads those displayed", async () => {
+  it("displays and reads every eligible MTF chart", async () => {
     const zoom = lensRef("fujifilm-gf-35-70mmf45-56-wr-g");
     const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set([zoom]));
     const input = { lenses: [{ ref: zoom, images: [{ role: "mtf" as const }] }] };
     const result = run(gfx.showLensImages, input);
-    expect(result.displayImages[0].gallery).toHaveLength(6);
-    expect(result.displayImages).toHaveLength(2);
+    expect(result.displayImages).toHaveLength(6);
     const filtered = run(gfx.showLensImages, { lenses: [{ ref: zoom, images: [{ role: "mtf", focalLengthMm: 70 }] }] });
-    expect(filtered.displayImages[0].gallery).toHaveLength(3);
-    expect(filtered.displayImages[0].gallery.every((entry: { image: { focalLengthMm: number } }) => entry.image.focalLengthMm === 70)).toBe(true);
+    expect(filtered.displayImages).toHaveLength(3);
+    expect(filtered.displayImages.every((entry: { image: { focalLengthMm: number } }) => entry.image.focalLengthMm === 70)).toBe(true);
     const projected = await gfx.showLensImages.toModelOutput!({ toolCallId: "images", input, output: result });
     if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
     expect(JSON.parse(projected.value[0].text)).toMatchObject({
       presentation: { galleries: [{ lensRef: zoom, role: "mtf", imageCount: 6 }] },
+      imagesForReading: result.displayImages.map(({ imageRef }: { imageRef: string }) => imageRef),
     });
-    expect(projected.value.filter((part) => part.type === "file")).toHaveLength(2);
+    expect(projected.value.filter((part) => part.type === "file")).toHaveLength(6);
   });
 
   it("does not pass unlabeled charts off as matching a requested aperture", () => {

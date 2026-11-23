@@ -18,7 +18,7 @@ import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
 import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
 import { LENS_TABLE_RENDERERS, tableLabelsForLocale } from "@/lib/ai/lens-table-cells";
 import { compareMtfCharts } from "@/lib/ai/mtf-comparison";
-import { lensDetailImages, lensImageRequestsSchema, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
+import { lensDetailImages, lensImageRequestsSchema, MAX_IMAGES_PER_CALL, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
@@ -400,7 +400,7 @@ export function buildLensTools(
     }),
 
     showLensImages: tool({
-      description: "Show the user product photos, MTF charts or optical diagrams of recalled lenses, and read them. Use the image ref to revisit an exact image.",
+      description: "Show the user product photos, MTF charts or optical diagrams of recalled lenses, and read them. Show images when the user asks to see or interpret them, and attach the optical diagram when answering how many elements or groups or which special elements a lens has. Otherwise do not show images unasked; MTF charts are not a way to answer which lens is sharper. Use the image ref to revisit an exact image.",
       inputSchema: z.object({
         lenses: z.array(z.object({
           ref: z.string().describe("Lens ref from an earlier recall result."),
@@ -413,9 +413,13 @@ export function buildLensTools(
         return {
           lenses: recalledLenses(kept).map((lens, index) => {
             const { name, maxAperture, focalNativeMm } = resolveLens(lens, locale, tBrand);
-            const { images, results, displayImages: selected } = lensDetailImages(lens, kept[index], name, lenses.find(({ ref }) => ref === kept[index])?.images, 4 - displayImages.length);
+            const { images, results, displayImages: selected, unservedImages } = lensDetailImages(lens, kept[index], name, lenses.find(({ ref }) => ref === kept[index])?.images, MAX_IMAGES_PER_CALL - displayImages.length);
             displayImages.push(...selected);
-            return { ref: kept[index], name, maxAperture, focalNativeMm, images, ...(results.length ? { imageResults: results } : {}) };
+            return {
+              ref: kept[index], name, maxAperture, focalNativeMm, images,
+              ...(results.length ? { imageResults: results } : {}),
+              ...(unservedImages.length ? { unservedImages, unservedNote: "These image types exist for this lens but are not served here; they are on the lens's page. Never say the lens has no such image." } : {}),
+            };
           }),
           displayImages,
           ...(notReturned ? { notReturned } : {}),
