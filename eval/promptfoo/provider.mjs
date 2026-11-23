@@ -153,6 +153,9 @@ function digest(msg) {
   const queries = [];
   const searches = [];
   const details = [];
+  const imageRequests = [];
+  const images = [];
+  const imageResults = [];
   const reviews = [];
   const recalledRefs = new Set();
   const toolsCalled = [];
@@ -208,6 +211,26 @@ function digest(msg) {
     }
     if (name === "lensDetails") {
       details.push(...(part.input?.lenses ?? []).map(({ ref }) => ref));
+      for (const lens of part.input?.lenses ?? []) {
+        imageRequests.push(...(lens.images ?? []).map((request) => ({ ...request, lensId: REF_TO_ID.get(lens.ref) ?? lens.ref })));
+      }
+      for (const lens of part.output?.lenses ?? []) {
+        imageResults.push(...(lens.imageResults ?? []).map((result) => ({ ...result, lensId: REF_TO_ID.get(lens.ref) ?? lens.ref })));
+      }
+      const read = new Set(part.output?.readRefs ?? []);
+      const shown = (part.output?.displayImages ?? []).map((image) => ({
+        lensId: image.lensId,
+        lensName: image.lensName,
+        imageRef: image.imageRef,
+        role: image.image?.role ?? null,
+        read: read.has(image.imageRef),
+        galleryCount: image.gallery?.length ?? 1,
+      }));
+      images.push(...shown);
+      // The judge cannot see pixels; this line tells it what was on screen and what Iris read.
+      if (shown.length) {
+        transcript.push(`[images]\n${shown.map((image) => `- ${image.lensName} ${image.role}${image.galleryCount > 1 ? ` (gallery of ${image.galleryCount})` : ""}, ${image.read ? "read" : "shown only"}`).join("\n")}`);
+      }
     }
     if (name === "lensReviews") {
       for (const lens of part.output?.lenses ?? []) {
@@ -301,6 +324,9 @@ function digest(msg) {
     queries,
     searches,
     details,
+    imageRequests,
+    imageResults,
+    images,
     reviews,
     recalledRefs: [...recalledRefs],
     steps,
@@ -384,6 +410,9 @@ export default class AskIrisProvider {
         queries: d.queries,
         searches: d.searches,
         details: d.details,
+        imageRequests: d.imageRequests,
+        imageResults: d.imageResults,
+        images: d.images,
         reviews: d.reviews,
         recalledRefs: d.recalledRefs,
         steps: d.steps,
