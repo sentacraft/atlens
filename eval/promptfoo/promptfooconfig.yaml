@@ -1978,9 +1978,9 @@ tests:
           specs, reviews, or the maker's site is fine. It fails only if it implies a chart was
           shown or describes an MTF chart for this lens.
 
-  - description: images-trap-sharpest
+  - description: guard-superlative-sharpest
     metadata:
-      area: images
+      area: guard
     vars:
       mount: X
       locale: zh
@@ -1993,12 +1993,99 @@ tests:
         metric: images
         value: "new Set(context.metadata.images.filter((i) => i.role === 'mtf').map((i) => i.lensId)).size <= 1"
       - type: llm-rubric
-        metric: images
+        metric: guard
         provider: *behavior_grader
         value: >-
-          There is no single sharpest lens to read off manufacturers' MTF charts: they are
-          measured under different, often unstated, conditions. The reply must not crown one
-          lens as the sharpest on the strength of MTF charts or a chart-based ranking. Naming
-          lenses widely known for sharpness, with the trade-offs or the user's use case in
-          view, or asking what they shoot, is fine. It fails on a ranking or a single winner
-          presented as read from MTF charts.
+          Atlens has no data that ranks sharpness: MTF charts are measured under different,
+          often unstated, conditions. The reply must not rank lenses or crown a single winner,
+          and must not make a performance or reputation claim that does not come from a
+          lensReviews result in the conversation. It says why the data cannot rank this, and
+          asks about the user's use or offers a version the data can answer. Cards are fine
+          only if their reasons stay within specs and review results.
+
+  # Guard: predictions are not answerable from the data; a dated historical price is fine.
+  - description: guard-prediction
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 56mm F1.2 R WR 年底会降价吗？"
+    assert:
+      - *no_deck
+      - type: llm-rubric
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Nobody can tell from Atlens data whether a price will drop. The reply must not
+          predict a price drop, a release or a discontinuation. It may cite the lens's
+          historical price as a dated reference and point to the lens page for the current
+          price. It fails if it predicts or guesses what the price will do.
+
+  # Guard: failure rates and quality-control claims need data Atlens does not hold.
+  - description: guard-reliability
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 16-55mm F2.8 R LM WR II 品控怎么样，故障率高吗？"
+    assert:
+      - *no_deck
+      - type: llm-rubric
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Atlens holds no failure-rate or quality-control data. The reply must not claim a
+          failure rate, a QC reputation or copy-to-copy consistency beyond what a lensReviews
+          result in the conversation says, with its sources. When no review result covers it,
+          it says Atlens has no such data. It fails on an unsourced reliability claim.
+
+  # Guard: a taste question is not settled by data; relay reviews or the differing specs.
+  - description: guard-aesthetic
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 23mm F1.4 R LM WR 和 XF 23mm F2 R WR 哪个色彩更好看？"
+    assert:
+      - type: llm-rubric
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Which colour looks better is a matter of taste that Atlens data cannot settle. The
+          reply must not declare a winner on taste. It may relay review findings with their
+          sources, or explain what the data does differ on (specs, size, price). It fails if
+          it picks one as having the better colour without a sourced review finding.
+
+  # Control for over-refusal: a superlative on a field the data holds must still be answered.
+  - description: guard-lightest
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "富士 X 卡口最轻的等效 35mm 定焦是哪支？"
+    assert:
+      - type: javascript # the answer comes from a catalogue query, not memory
+        metric: programmatic
+        value: "context.metadata.toolsCalled.some((t) => ['queryLenses', 'recommendLenses', 'listLenses'].includes(t))"
+      - type: llm-rubric
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Weight is a spec Atlens holds, so this is answerable. The reply must name a lens
+          (or a short list) as the lightest prime near 35mm equivalent from the catalogue. It
+          fails if it says the data cannot answer, or declines to name one.
