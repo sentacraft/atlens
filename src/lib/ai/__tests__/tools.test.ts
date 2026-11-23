@@ -69,7 +69,7 @@ describe("a recall tool's gate accepts exactly what it returned", () => {
       { queries: [{ type: "prime" }] },
       (out: { results: { matches: { ref: string }[] }[] }) => out.results[0].matches,
     ],
-    ["searchLensByName", { query: "35" }, (out: { results: { ref: string }[] }) => out.results],
+    ["searchLensByName", { queries: ["35"] }, (out: { results: { matches: { ref: string }[] }[] }) => out.results[0].matches],
   ])("%s", async (name, input, pick) => {
     const tools = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -519,9 +519,9 @@ describe("queryLenses result note", () => {
 
   it("keeps a failed XF lookup scoped to the current GFX catalogue", async () => {
     const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set());
-    const result = await run(gfx.searchLensByName, { query: "XF 35mm" });
-    expect(result.results).toEqual([]);
-    expect(result.note).toMatch(/GFX.*different mount/);
+    const result = await run(gfx.searchLensByName, { queries: ["XF 35mm"] });
+    expect(result.results).toMatchObject([{ query: "XF 35mm", matches: [] }]);
+    expect(result.results[0].note).toMatch(/GFX.*different mount/);
   });
 
   it("carries the rules for reading maybe and the cap with the data", async () => {
@@ -558,9 +558,9 @@ describe("recall results name the specs they leave out", () => {
   const OMITTED_NOTE = /leave out these detail specs: ([^.]+)\./;
 
   it("lists exactly the ResolvedLens fields toRecalled drops, on every recall result", async () => {
-    const recall = await run(tools.searchLensByName, { query: "35" });
-    const recalled = Object.keys(recall.results[0]);
-    const lensRefFound = recall.results[0].ref as string;
+    const recall = await run(tools.searchLensByName, { queries: ["35"] });
+    const recalled = Object.keys(recall.results[0].matches[0]);
+    const lensRefFound = recall.results[0].matches[0].ref as string;
     const seeded = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set([lensRefFound]));
     const detailed = Object.keys((await run(seeded.lensDetails, { lenses: [{ ref: lensRefFound }] })).lenses[0]);
     const expected = detailed.filter((key) => !recalled.includes(key)).sort();
@@ -582,8 +582,8 @@ describe("recall results name the specs they leave out", () => {
 
 describe("listLenses tells the model the values it shows", () => {
   it("sends each tabled lens with the chosen columns' values, formed as the table forms them", async () => {
-    const found = await run(tools.searchLensByName, { query: "35mm F1.4" });
-    const refs = found.results.slice(0, 2).map((lens: { ref: string }) => lens.ref);
+    const found = await run(tools.searchLensByName, { queries: ["35mm F1.4"] });
+    const refs = found.results[0].matches.slice(0, 2).map((lens: { ref: string }) => lens.ref);
     const input = { refs, columns: ["lensConfiguration", "weight"] as ("lensConfiguration" | "weight")[] };
     const output = await run(tools.listLenses, input);
     const projected = await tools.listLenses.toModelOutput!({ toolCallId: "table", input, output });
@@ -653,5 +653,38 @@ describe("owned lenses", () => {
     expect(cards.recommendations[0]).not.toHaveProperty("owned");
     const table = await run(lookup.listLenses, { refs: [ref] });
     expect(table.lenses[0]).not.toHaveProperty("owned");
+  });
+});
+
+describe("searchLensByName with several names", () => {
+  it("groups matches per query in input order and recalls every ref", async () => {
+    const recalledRefs = new Set<string>();
+    const lookup = buildLensTools("X", "zh", (brand) => brand, GUEST, recalledRefs);
+    const result = await run(lookup.searchLensByName, { queries: ["XF 56mm", "no-such-lens-zzz", "XF 35mm F1.4"] });
+    expect(result.results.map((group: { query: string }) => group.query)).toEqual(["XF 56mm", "no-such-lens-zzz", "XF 35mm F1.4"]);
+    expect(result.results[1].matches).toEqual([]);
+    expect(result.results[1].note).toMatch(/No name match/);
+    expect(result.results[0]).not.toHaveProperty("note");
+    for (const group of result.results) {
+      for (const lens of group.matches) {expect(recalledRefs.has(lens.ref)).toBe(true);}
+    }
+    expect(result.detailSpecsNote).toContain("lensDetails");
+  });
+
+  it("caps the names at four", () => {
+    const schema = tools.searchLensByName.inputSchema as unknown as { safeParse: (value: unknown) => { success: boolean } };
+    expect(schema.safeParse({ queries: ["a", "b", "c", "d"] }).success).toBe(true);
+    expect(schema.safeParse({ queries: ["a", "b", "c", "d", "e"] }).success).toBe(false);
+    expect(schema.safeParse({ queries: [] }).success).toBe(false);
+  });
+
+  // Compatibility: replies saved before the multi-name input hold `results` as a flat lens list.
+  it("still seeds refs from a saved turn in the old flat output shape", () => {
+    const recalledRefs = new Set<string>();
+    seedRecalledRefs(recalledRefs, [{
+      id: "a", role: "assistant",
+      parts: [{ type: "tool-searchLensByName", toolCallId: "c", state: "output-available", input: { query: "56" }, output: { results: [{ ref: "old1" }, { ref: "old2" }] } }],
+    } as UIMessage]);
+    expect([...recalledRefs]).toEqual(["old1", "old2"]);
   });
 });

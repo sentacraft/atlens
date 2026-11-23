@@ -138,7 +138,11 @@ const RECALL_OUTPUT_REFS: Record<string, (output: never) => unknown[]> = {
       ...(result.matches ?? []).map((lens) => lens.ref),
       ...(result.maybe ?? []).map((entry) => entry.lens?.ref),
     ]),
-  searchLensByName: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
+  // Compatibility: replies saved before searchLensByName took several names hold `results` as a flat
+  // list of lenses. Drop the `ref` branch once no saved conversation predates that change (stored
+  // conversations have no retention limit, so until a migration rewrites them).
+  searchLensByName: (output: { results?: ({ matches?: RefList; ref?: unknown })[] }) =>
+    (output.results ?? []).flatMap((entry) => entry.matches ? entry.matches.map((lens) => lens.ref) : [entry.ref]),
   myFavorites: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
   myGear: (output: { lenses?: RefList }) => (output.lenses ?? []).map((lens) => lens.ref),
 };
@@ -295,28 +299,36 @@ export function buildLensTools(
 
     searchLensByName: tool({
       description:
-        "Look up a model or brand the user named, in the current mount only. Use queryLenses for spec searches.",
+        "Look up the models or brands the user named, in the current mount only: one call for all of them. " +
+        "Use queryLenses for spec searches.",
       inputSchema: z.object({
-        query: z
-          .string()
+        queries: z
+          .array(z.string())
+          .min(1)
+          .max(4)
           .describe(
-            "One lens's model or brand identifier, extracted from the request — a short " +
-              "name or number token, matched against a name index. Not a full sentence, and " +
-              "not several lenses at once; to look up more than one, call once per lens.",
+            "One identifier per lens or brand, extracted from the request — a short name or number " +
+              "token each, matched against a name index. Not a full sentence. Results come back in the same order.",
           ),
-        limit: z.number().optional().describe("Max results (default 8)."),
+        limit: z.number().optional().describe("Max results per query (default 8)."),
       }),
-      execute: ({ query, limit }) => {
+      execute: ({ queries, limit }) => {
         const index = buildLensSearchIndex(getLensesByMount(mount, locale));
-        const results = searchLensIndex(index, query, limit ?? 8).map((lens) =>
-          toRecalled(resolveLens(lens, locale, tBrand)),
-        );
-        for (const lens of results) {
-          recalledRefs.add(lens.ref);
-        }
-        return results.length ? { results, detailSpecsNote: RECALL_OMITTED_NOTE } : {
-          results,
-          note: `No name match in ${mountLabel}. This lookup does not search across mounts. If the name points to a different mount, confirm which one the user means.`,
+        return {
+          results: queries.map((query) => {
+            const matches = searchLensIndex(index, query, limit ?? 8).map((lens) =>
+              toRecalled(resolveLens(lens, locale, tBrand)),
+            );
+            for (const lens of matches) {
+              recalledRefs.add(lens.ref);
+            }
+            return matches.length ? { query, matches } : {
+              query,
+              matches,
+              note: `No name match in ${mountLabel}. This lookup does not search across mounts. If the name points to a different mount, confirm which one the user means.`,
+            };
+          }),
+          detailSpecsNote: RECALL_OMITTED_NOTE,
         };
       },
     }),
