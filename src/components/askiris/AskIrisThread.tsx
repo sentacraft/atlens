@@ -8,6 +8,7 @@ import {
 } from "ai";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import Iris from "@/components/iris/Iris";
 import AiTag from "@/components/iris/AiTag";
 import { IRIS_NAV } from "@/config/iris-config";
@@ -197,10 +198,32 @@ function activityKey(messages: AskIrisUIMessage[], busy: boolean, debug: boolean
   if (last.role !== "user" && lastPart?.type === "text") {
     return null;
   }
-  if (lastPart && isToolUIPart(lastPart) && (lastPart.state === "input-streaming" || lastPart.state === "input-available")) {
-    return toolLabelKey(getToolName(lastPart));
-  }
-  return "thinking";
+  // Between tool steps the last tool's label stays; only the start of a turn, before any tool, thinks.
+  const lastTool = last.role === "user" ? undefined : last.parts.findLast(isToolUIPart);
+  return lastTool ? toolLabelKey(getToolName(lastTool)) : "thinking";
+}
+
+const MIN_LABEL_MS = 500;
+
+// A label stays up at least MIN_LABEL_MS before another replaces it; hiding and first showing are immediate.
+function useHeldKey(key: ActivityKey | null): ActivityKey | null {
+  const [held, setHeld] = useState<{ key: ActivityKey | null; since: number }>({ key, since: 0 });
+  useEffect(() => {
+    if (key === held.key) {
+      // The first label's clock starts once it is on screen.
+      if (key !== null && held.since === 0) {setHeld({ key, since: Date.now() });}
+      return;
+    }
+    const wait = key === null || held.key === null ? 0 : held.since + MIN_LABEL_MS - Date.now();
+    const apply = () => setHeld({ key, since: Date.now() });
+    if (wait <= 0) {
+      apply();
+      return;
+    }
+    const timer = setTimeout(apply, wait);
+    return () => clearTimeout(timer);
+  }, [key, held]);
+  return held.key;
 }
 
 const NO_CITATIONS = { byKey: new Map(), list: [] };
@@ -220,7 +243,7 @@ export default function AskIrisThread({
   onExpand?: () => void;
 }) {
   const t = useTranslations("AskIris");
-  const activeKey = activityKey(messages, busy, debug);
+  const activeKey = useHeldKey(activityKey(messages, busy, debug));
   const activity = activeKey ? t(activeKey) : null;
 
   return (
