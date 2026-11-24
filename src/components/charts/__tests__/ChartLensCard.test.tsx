@@ -21,20 +21,14 @@ afterEach(() => {
 });
 
 describe("ChartLensSummary owned label", () => {
-  it("names an owned lens on the sheet's brand line", () => {
+  it.each(["card", "sheet"] as const)("names an owned lens on the %s's brand line", (size) => {
     owned.ids.add(lens.id);
-    render(<ChartLensSummary lens={lens} size="sheet" />);
+    render(<ChartLensSummary lens={lens} size={size} />);
     expect(screen.getByText("owned")).toBeInTheDocument();
   });
 
   it("leaves a lens the user does not own unlabeled", () => {
     render(<ChartLensSummary lens={lens} size="sheet" />);
-    expect(screen.queryByText("owned")).toBeNull();
-  });
-
-  it("keeps the hover card free of the label", () => {
-    owned.ids.add(lens.id);
-    render(<ChartLensSummary lens={lens} size="card" />);
     expect(screen.queryByText("owned")).toBeNull();
   });
 });

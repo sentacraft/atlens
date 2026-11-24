@@ -58,7 +58,7 @@ export function ChartLensSummary({ lens, size }: { lens: ChartLens; size: keyof 
       <div className="flex min-w-0 flex-col gap-1">
         <span className="flex items-center gap-1.5">
           <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
-          {size === "sheet" && <OwnedLensMark lensId={lens.id} form="inline" />}
+          <OwnedLensMark lensId={lens.id} form="inline" />
         </span>
         <Model className={cn("font-semibold leading-snug text-zinc-900", cls.model)}>{lens.model}</Model>
         <span className={cn("flex flex-col whitespace-nowrap text-zinc-600", cls.facts)}>
