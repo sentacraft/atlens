@@ -376,6 +376,86 @@ describe("lensSchema classified image assets", () => {
   });
 });
 
+describe("lensCatalogSchema public MTF samples", () => {
+  const sm = {
+    axis: { kind: "image-height-mm" },
+    focalLengthMm: 18,
+    apertureFNumber: 2.8,
+    spatialFrequency: { value: 10, unit: "lines/mm" },
+    points: [{ position: 0, s: 0.9, m: 0.9, estimate: "shared" }, { position: 10, s: null, m: 0 }],
+  };
+  const labeled = {
+    axis: { kind: "normalized-image-height" },
+    focalLengthMm: 55,
+    apertureFNumber: 5.6,
+    spatialFrequency: { value: 30, unit: "lp/mm" },
+    label: "Yellow trace",
+    points: [{ position: 0.4, value: 0.82 }, { position: 1, value: null }],
+    limitations: ["The legend does not identify the direction or normalization reference."],
+  };
+  const chartScale = {
+    axis: { kind: "chart-scale", ticks: [0, 45, 90] },
+    points: [{ position: 45, s: 0.8, m: null }],
+  };
+  const samples = {
+    source: "manufacturer-chart",
+    humanReviewed: true,
+    limitations: ["One panel has an undefined horizontal scale and omits the frequency unit."],
+    series: [sm, labeled, chartScale, { axis: { kind: "field-angle-deg" }, points: [{ position: 10, s: 1, m: 0.8 }] }],
+  };
+  const chart = { id: "002", role: "mtf", conditionsNote: "At infinity.", mtfMethod: "geometrical" };
+  const parseChart = (mtfSamples: unknown) => lensCatalogSchema.safeParse([
+    { ...zoom1835, images: [{ ...chart, mtfSamples }] },
+  ]);
+
+  it("round-trips reviewed readings, original units and limitations without filling unknown conditions", () => {
+    const images = [{ ...chart, mtfSamples: samples }, { id: "003", role: "mtf" }];
+    expect(lensCatalogSchema.parse([{ ...zoom1835, images }])[0].images).toEqual(images);
+  });
+
+  it.each([
+    ["different source", { source: "independent-test" }],
+    ["missing review", { humanReviewed: undefined }],
+    ["unreviewed", { humanReviewed: false }],
+    ["empty series", { series: [] }],
+    ["private fingerprint", { sha256: "a".repeat(64) }],
+    ["blank limitation", { limitations: [" "] }],
+  ])("rejects %s in the public block", (_, patch) => {
+    expect(parseChart({ ...samples, ...patch }).success).toBe(false);
+  });
+
+  it("restricts valid samples to MTF images", () => {
+    const result = lensCatalogSchema.safeParse([{ ...zoom1835, images: [{ id: "002", role: "product", mtfSamples: samples }] }]);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toContainEqual(expect.objectContaining({ path: [0, "images", 0, "mtfSamples"] }));
+    }
+  });
+
+  it.each([
+    ["unknown axis", { ...sm, axis: { kind: "mm" } }],
+    ["no chart ticks", { ...chartScale, axis: { kind: "chart-scale" } }],
+    ["unlabeled frequency unit", { ...sm, spatialFrequency: { value: 10 } }],
+    ["non-positive aperture", { ...sm, apertureFNumber: 0 }],
+    ["empty points", { ...sm, points: [] }],
+    ["nonfinite position", { ...sm, points: [{ position: Infinity, s: 0.8, m: 0.8 }] }],
+    ["out-of-range MTF", { ...sm, points: [{ position: 0, s: 1.01, m: 0.8 }] }],
+    ["out-of-range labeled MTF", { ...labeled, points: [{ position: 0.4, value: -0.1 }] }],
+    ["shared without both readings", { ...sm, points: [{ position: 0, s: 0.8, m: null, estimate: "shared" }] }],
+    ["different shared readings", { ...sm, points: [{ position: 0, s: 0.8, m: 0.9, estimate: "shared" }] }],
+    ["unlabeled trace", { ...labeled, label: undefined }],
+    ["labeled trace with directional fields", { ...labeled, points: [{ position: 0.4, value: 0.8, s: 0.8 }] }],
+    ["private series metadata", { ...sm, review: { notes: "Internal" } }],
+  ])("rejects %s in a series", (_, series) => {
+    expect(parseChart({ ...samples, series: [series] }).success).toBe(false);
+  });
+
+  it("requires a chart-scale limitation at chart or series level", () => {
+    expect(parseChart({ ...samples, limitations: undefined, series: [chartScale] }).success).toBe(false);
+    expect(parseChart({ ...samples, limitations: undefined, series: [{ ...chartScale, limitations: samples.limitations }] }).success).toBe(true);
+  });
+});
+
 describe("lensSchema aperture business rules", () => {
   it("accepts matching wide and tele aperture comparisons", () => {
     const result = lensSchema.safeParse(
