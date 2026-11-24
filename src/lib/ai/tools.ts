@@ -19,7 +19,7 @@ import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
 import { figureLabel } from "@/lib/ai/figure-label";
 import { LENS_TABLE_RENDERERS, tableLabelsForLocale } from "@/lib/ai/lens-table-cells";
 import { compareMtfCharts } from "@/lib/ai/mtf-comparison";
-import { lensDetailImages, lensImageRequestsSchema, MAX_IMAGES_PER_CALL, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
+import { lensDetailImages, lensImageRequestsSchema, MAX_IMAGES_PER_CALL, type LensImageEntry } from "@/lib/ai/lens-detail-images";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
@@ -402,17 +402,6 @@ export function buildLensTools(
           ...(notReturned ? { notReturned } : {}),
         };
       },
-      // Saved replies can still carry the image fields of the retired lensDetails output; none of them belong in the model's context.
-      toModelOutput: ({ output }) => {
-        const without = (value: object, keys: string[]) => Object.fromEntries(Object.entries(value).filter(([key]) => !keys.includes(key)));
-        return {
-          type: "text",
-          value: JSON.stringify({
-            ...without(output, ["displayImages", "readRefs", "historical"]),
-            lenses: output.lenses.map((lens) => without(lens, ["images", "imageResults"])),
-          }),
-        };
-      },
     }),
 
     showLensImages: tool({
@@ -425,7 +414,7 @@ export function buildLensTools(
       }),
       execute: ({ lenses }) => {
         const { kept, notReturned } = capRefs(lenses.map(({ ref }) => ref), MAX_DETAIL_REFS);
-        const displayImages: LensDetailDisplayImage[] = [];
+        const displayImages: LensImageEntry[] = [];
         return {
           lenses: recalledLenses(kept).map((lens, index) => {
             const { name, maxAperture, focalNativeMm } = resolveLens(lens, locale, tBrand);

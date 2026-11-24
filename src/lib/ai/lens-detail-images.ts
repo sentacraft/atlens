@@ -17,7 +17,7 @@ export const lensImageRequestsSchema = z.array(z.object({
 
 type ImageRequest = z.infer<typeof lensImageRequestsSchema>[number];
 
-export interface LensDetailDisplayImage {
+export interface LensImageEntry {
   lensRef: string;
   lensName: string;
   lensId: string;
@@ -25,12 +25,10 @@ export interface LensDetailDisplayImage {
   imageRef: string;
   src: string;
   image: LensImageAsset;
-  /** Position among the images shown in the assistant message, and its label in the reply's locale; absent in replies saved before numbering. */
-  figure?: number;
-  figureLabel?: string;
-  /** Compatibility: replies saved before every requested image was displayed carry the lens's wider gallery here; groupLensImages still reads it. Remove with the lensDetails branch in LensImageGroup. */
-  gallery?: LensDetailDisplayImage[];
 }
+
+/** A displayed image: the entry plus its position among the images shown in the assistant message and that position's label in the reply's locale. */
+export type LensDetailDisplayImage = LensImageEntry & { figure: number; figureLabel: string };
 
 function imageMetadata(asset: LensImageAsset) {
   const { id, ...metadata } = asset;
@@ -57,10 +55,10 @@ export function lensDetailImages(
     src: image.id === "primary" ? new URL(getLensImageUrl(lens.id), SITE.url).href : getLensImageUrl(lens.id, image.id),
     image,
   }));
-  const displayImages = new Map<string, LensDetailDisplayImage>();
+  const displayImages = new Map<string, LensImageEntry>();
   const results = requests.map(({ role, imageRef, focalLengthMm, apertureFNumber }) => {
     const candidates = entries.filter((entry) => entry.image.role === role && (!imageRef || entry.imageRef === imageRef));
-    const conditions = (entry: LensDetailDisplayImage) => [
+    const conditions = (entry: LensImageEntry) => [
       focalLengthMm === undefined ? true : entry.image.focalLengthMm === undefined ? null : entry.image.focalLengthMm === focalLengthMm,
       apertureFNumber === undefined ? true : !entry.image.apertureFNumbers ? null : entry.image.apertureFNumbers.includes(apertureFNumber),
     ];

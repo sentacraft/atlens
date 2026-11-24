@@ -156,10 +156,6 @@ function ToolPart({
           </div>
         );
       }
-      // Compatibility: replies saved after #763 (2026-11-21) and before showLensImages keep their images in
-      // lensDetails outputs, and stored conversations have no retention limit. Remove this case once a
-      // migration has rewritten them or conversations expire.
-      case "lensDetails":
       case "showLensImages": {
         const { displayImages } = part.output as { displayImages?: LensDetailDisplayImage[] };
         if (displayImages?.length) {return <LensImageBlock images={displayImages} />;}

@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import type { ComponentProps, ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type LensImageViewer from "@/components/lens/LensImageViewer";
-import type { LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
+import type { LensDetailDisplayImage, LensImageEntry } from "@/lib/ai/lens-detail-images";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
@@ -28,24 +28,24 @@ vi.mock("@/components/lens/LensImageViewer", () => ({
 
 afterEach(cleanup);
 
-const chart: LensDetailDisplayImage = {
+const chart: LensImageEntry = {
   lensRef: "x:lens-a", lensName: "Lens A", lensId: "lens-a", mount: "X",
   imageRef: "a:001", src: "/a-mtf.png",
   image: { id: "001", role: "mtf", focalLengthMm: 35, apertureFNumbers: [1.4, 8], displayPreset: "invert-on-white", conditionsNote: "The test distance is not specified." },
 };
-const structure: LensDetailDisplayImage = {
+const structure: LensImageEntry = {
   lensRef: "g:lens-b", lensName: "Lens B", lensId: "lens-b", mount: "G",
   imageRef: "b:001", src: "/b-optical.png", image: { id: "001", role: "optical-construction" },
 };
-const second: LensDetailDisplayImage = {
+const second: LensImageEntry = {
   ...chart, imageRef: "a:002", src: "/a-mtf-2.png", image: { ...chart.image, id: "002", apertureFNumbers: [1.4], conditionsNote: undefined },
 };
-const third: LensDetailDisplayImage = { ...chart, imageRef: "a:003", src: "/a-mtf-3.png", image: { ...chart.image, id: "003", focalLengthMm: 50 } };
-const numbered = (entries: LensDetailDisplayImage[], from: number, locale: "en" | "zh" = "en") =>
+const third: LensImageEntry = { ...chart, imageRef: "a:003", src: "/a-mtf-3.png", image: { ...chart.image, id: "003", focalLengthMm: 50 } };
+const numbered = (entries: LensImageEntry[], from: number, locale: "en" | "zh" = "en"): LensDetailDisplayImage[] =>
   entries.map((entry, i) => ({ ...entry, figure: from + i, figureLabel: locale === "en" ? `Fig. ${from + i}` : `图 ${from + i}` }));
 
-function tool(toolCallId: string, displayImages?: LensDetailDisplayImage[], type: "tool-showLensImages" | "tool-lensDetails" = "tool-showLensImages"): AskIrisUIMessage["parts"][number] {
-  return { type, toolCallId, state: "output-available", input: {}, output: { displayImages } } as AskIrisUIMessage["parts"][number];
+function tool(toolCallId: string, displayImages?: LensDetailDisplayImage[]): AskIrisUIMessage["parts"][number] {
+  return { type: "tool-showLensImages", toolCallId, state: "output-available", input: {}, output: { displayImages } } as AskIrisUIMessage["parts"][number];
 }
 
 const MESSAGES = { en, zh: zh as unknown as typeof en };
@@ -109,14 +109,6 @@ describe("lens images in Iris replies", () => {
   it("labels figures in the reply's locale", () => {
     renderParts([tool("a", numbered([chart], 1, "zh"))], { locale: "zh" });
     expect(screen.getByText("图 1")).toBeInTheDocument();
-  });
-
-  it("still renders images saved in the retired lensDetails output, without figure labels", () => {
-    renderParts([text("Before"), tool("saved", [chart, structure], "tool-lensDetails"), text("After")]);
-    expect(screen.getAllByRole("img")).toHaveLength(2);
-    expect(screen.queryByText(/Fig\./)).not.toBeInTheDocument();
-    expectBefore(screen.getByText("Before"), screen.getAllByRole("img")[0]);
-    expectBefore(screen.getAllByRole("img")[1], screen.getByText("After"));
   });
 
   it("renders no image controls for old results or unfinished calls", () => {

@@ -49,7 +49,7 @@ import {
 } from "@/lib/askiris/conversation-repository";
 import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import { resolveTurn } from "@/lib/askiris/turn-history";
-import { normalizeLensDetailsMessage, withHistoricalTablePresentation } from "@/lib/askiris/lens-details-history";
+import { withHistoricalTablePresentation } from "@/lib/askiris/lens-details-history";
 import { createAuth } from "@/lib/auth";
 import {
   askIrisMessageMetadataSchema,
@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
       tools,
     });
 
-  const incoming = await validate([normalizeLensDetailsMessage(message)]);
+  const incoming = await validate([message]);
   if (!incoming.success) {
     console.warn("[askiris] invalid message", incoming.error.message.slice(0, 500));
     return chatErrorResponse("unavailable", 400);
@@ -182,7 +182,7 @@ export async function POST(req: NextRequest) {
 
   let stored: AskIrisUIMessage[];
   try {
-    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId }) as AskIrisUIMessage[]).map(normalizeLensDetailsMessage);
+    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId }) as AskIrisUIMessage[]);
     // validateUIMessages rejects an empty list, which a new conversation has.
     const checked = stored.length > 0 ? await validate(stored) : undefined;
     // Stored turns that no longer match the tool schemas are still replayed: dropping

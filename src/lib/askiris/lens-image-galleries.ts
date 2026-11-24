@@ -6,11 +6,7 @@ export function groupLensImages(entries: LensDetailDisplayImage[]) {
     const key = `${entry.mount}:${entry.lensId}:${entry.image.role}`;
     const gallery = galleries.get(key) ?? new Map<string, LensDetailDisplayImage>();
     galleries.set(key, gallery);
-    for (const item of [entry, ...(entry.gallery ?? [])]) {
-      if (item.lensId === entry.lensId && item.mount === entry.mount && item.image.role === entry.image.role && !gallery.has(item.imageRef)) {
-        gallery.set(item.imageRef, item);
-      }
-    }
+    if (!gallery.has(entry.imageRef)) {gallery.set(entry.imageRef, entry);}
   }
   return Array.from(galleries.values(), (gallery) => [...gallery.values()]);
 }

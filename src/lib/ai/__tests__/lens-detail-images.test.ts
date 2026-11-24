@@ -13,14 +13,13 @@ const pad = (n: number) => String(n).padStart(3, "0");
 const many = (count: number, role: LensImageAsset["role"], start = 1) => Array.from({ length: count }, (_, i) => asset(pad(start + i), role));
 
 describe("lensDetailImages selection", () => {
-  it("displays every eligible image of a requested role, with no gallery beyond what is displayed", () => {
+  it("displays every eligible image of a requested role", () => {
     const out = lensDetailImages(lens([...many(6, "mtf"), ...many(7, "product", 10), asset("030", "optical-construction")]), "r", "Lens", [
       { role: "mtf" }, { role: "product" }, { role: "optical-construction" },
     ]);
     expect(out.displayImages.filter(({ image }) => image.role === "mtf")).toHaveLength(6);
     expect(out.displayImages.filter(({ image }) => image.role === "product")).toHaveLength(7);
     expect(out.displayImages).toHaveLength(14);
-    expect(out.displayImages.every((entry) => entry.gallery === undefined)).toBe(true);
     expect(out.results.map(({ status }) => status)).toEqual(["selected", "selected", "selected"]);
   });
 
