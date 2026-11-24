@@ -9,6 +9,9 @@
 --    imageRef), and every image gets a figure number (1-based across the message) and a figureLabel
 --    ("图 n" for zh, "Fig. n" otherwise). The label's locale is the message's own context_json locale,
 --    else the conversation's most recent context locale, else zh.
+-- 3. A tool-lensDetails part whose output has an empty displayImages array keeps its specs and loses the
+--    same image-only fields (displayImages, readRefs, historical, each lens's images and imageResults);
+--    no showLensImages part is added.
 
 UPDATE askiris_messages
 SET message_json = json_set(
@@ -173,4 +176,33 @@ WHERE m.message_json LIKE '%"tool-lensDetails"%'
   AND EXISTS (
     SELECT 1 FROM json_each(m.message_json, '$.parts') AS legacy
     WHERE legacy.value ->> '$.type' = 'tool-lensDetails' AND json_array_length(legacy.value, '$.output.displayImages') > 0
+  );
+
+UPDATE askiris_messages
+SET message_json = json_set(
+  message_json,
+  '$.parts',
+  (
+    SELECT json_group_array(
+      json(
+        CASE
+          WHEN part.value ->> '$.type' = 'tool-lensDetails'
+            AND json_array_length(part.value, '$.output.displayImages') = 0
+            THEN json_set(
+              json_remove(part.value, '$.output.displayImages', '$.output.readRefs', '$.output.historical'),
+              '$.output.lenses',
+              (SELECT json_group_array(json_remove(l.value, '$.images', '$.imageResults') ORDER BY l.key) FROM json_each(part.value, '$.output.lenses') AS l)
+            )
+          ELSE part.value
+        END
+      )
+      ORDER BY part.key
+    )
+    FROM json_each(message_json, '$.parts') AS part
+  )
+)
+WHERE message_json LIKE '%"tool-lensDetails"%'
+  AND EXISTS (
+    SELECT 1 FROM json_each(message_json, '$.parts') AS legacy
+    WHERE legacy.value ->> '$.type' = 'tool-lensDetails' AND json_array_length(legacy.value, '$.output.displayImages') = 0
   );

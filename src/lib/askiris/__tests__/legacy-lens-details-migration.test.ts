@@ -65,6 +65,29 @@ describe("0009_migrate_legacy_lens_details", () => {
     expect(read(bare, "m").parts[2].output.displayImages[0].figureLabel).toBe("图 1");
   });
 
+  it("strips the image fields from a lensDetails part with an empty displayImages and adds no showLensImages part", async () => {
+    const db = database();
+    const message = legacyAssistant({ displayImages: [] });
+    insert(db, "m", message, { mount: "X", locale: "zh" });
+    db.exec(LEGACY);
+    const { parts } = read(db, "m");
+    expect(parts.map((part: { type: string }) => part.type)).toEqual(["text", "tool-lensDetails", "text"]);
+    expect(parts[1].output).toEqual({
+      lenses: [{ ref: "lensA", name: "Lens A", maxAperture: 2.8, focalNativeMm: [16, 55], weightG: 655 }],
+      notInData: "For field performance and opinions, use lensReviews.",
+    });
+    const once = JSON.stringify(read(db, "m"));
+    db.exec(LEGACY);
+    expect(JSON.stringify(read(db, "m"))).toBe(once);
+
+    const tools = buildLensTools("X", "zh", (brand) => brand, { favorites: async () => null, gear: async () => ({ known: false, reason: "guest" }), reviews: async () => new Map() }, new Set());
+    const result = await safeValidateUIMessages({
+      messages: [{ id: "u", role: "user", parts: [{ type: "text", text: "q" }] }, read(db, "m"), { id: "u2", role: "user", parts: [{ type: "text", text: "next" }] }],
+      tools,
+    });
+    expect(result.success, result.success ? "" : String(result.error)).toBe(true);
+  });
+
   it("is idempotent and leaves other messages alone", () => {
     const db = database();
     insert(db, "m", legacyAssistant(), { mount: "X", locale: "zh" }, 0);
