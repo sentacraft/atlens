@@ -199,7 +199,7 @@ export const MENU_ITEM_DANGER_CLS =
 // thumbnail inside a `relative` box; the inline badge follows a name where there is no thumbnail.
 export const OWNED_MARK_CHECK_CLS = "size-3 shrink-0";
 export const OWNED_MARK_CORNER_CLS =
-  "absolute top-1.5 left-1.5 z-10 inline-flex h-5 items-center gap-[3px] rounded-full border border-zinc-200 bg-white/90 px-[7px] " +
+  "pointer-events-none absolute top-1.5 left-1.5 z-10 inline-flex h-5 items-center gap-[3px] rounded-full border border-zinc-200 bg-white/90 px-[7px] " +
   "text-[11px] leading-none font-semibold whitespace-nowrap text-zinc-900";
 export const OWNED_MARK_DOT_CLS =
   "absolute top-[3px] left-[3px] z-10 grid size-[18px] place-items-center rounded-full border border-zinc-200 bg-white/90 text-zinc-900";

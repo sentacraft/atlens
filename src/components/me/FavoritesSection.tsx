@@ -9,6 +9,7 @@ import { equivalentFocal } from "@/lib/me/coverage";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useCompareToggle } from "@/hooks/useCompareToggle";
 import LensActions from "@/components/lens/LensActions";
+import OwnedLensMark from "@/components/lens/OwnedLensMark";
 import { LensSilhouette } from "@/components/ui/lens-silhouette";
 import { lensPath } from "@/lib/url/routes";
 import { brandLabel } from "@/lib/lens/format";
@@ -89,13 +90,15 @@ export default function FavoritesSection({
 function FavoriteImage({ lensId }: { lensId: string }) {
   const [failed, setFailed] = useState(false);
   return (
-    <div className="flex h-[52px] w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-zinc-100 md:aspect-[3/2] md:h-auto md:w-full md:rounded-none md:border-b md:border-zinc-100 md:bg-zinc-50/40 md:p-4">
+    <div className="relative flex h-[52px] w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-zinc-100 md:aspect-[3/2] md:h-auto md:w-full md:rounded-none md:border-b md:border-zinc-100 md:bg-zinc-50/40 md:p-4">
       {failed ? (
         <LensSilhouette className="h-9 w-9" />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element -- catalog webp; images are unoptimized on Workers
         <img src={getLensImageUrl(lensId)} alt="" onError={() => setFailed(true)} className="h-full w-full object-contain p-1" />
       )}
+      <OwnedLensMark lensId={lensId} form="dot" className="md:hidden" />
+      <OwnedLensMark lensId={lensId} form="corner" className="max-md:hidden" />
     </div>
   );
 }

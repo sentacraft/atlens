@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useRef } from "react";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import ChartLensCard from "@/components/charts/ChartLensCard";
+import ChartLensThumb from "@/components/charts/ChartLensThumb";
 import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import ChartChips from "@/components/charts/ChartChips";
@@ -19,7 +19,6 @@ import { assignLanes, fitItemSize, LANE_GAP, LANE_STEP, laneOffset, type Timelin
 import { isChartZoom, type BrandCount, type ChartLens } from "@/lib/charts/catalog";
 import { logFrac, pct } from "@/lib/charts/scale";
 import { brandLabel } from "@/lib/lens/format";
-import { getLensImageUrl } from "@/lib/lens/image";
 import { SITE } from "@/config/site";
 import { TEXT_LINK_CLS } from "@/config/ui-tokens";
 import type { Mount } from "@/lib/types";
@@ -333,7 +332,7 @@ function TimelinePlot({
             opacity: dimmed(e.lens),
           }}
         >
-          <Image src={getLensImageUrl(e.lens.id)} alt="" width={size} height={size} loading={eager ? "eager" : "lazy"} className="size-full object-contain drop-shadow-sm" />
+          <ChartLensThumb lensId={e.lens.id} size={size} interactive={Boolean(handlers(e.lens))} loading={eager ? "eager" : "lazy"} className="size-full" imageClassName="drop-shadow-sm" />
         </ChartLensItem>
       ))}
       {layout.placed.map(({ e, col, lane, y }) =>

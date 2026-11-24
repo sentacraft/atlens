@@ -17,6 +17,7 @@ vi.mock("@/i18n/navigation", () => ({
   Link: ({ href, ...props }: { href: string }) => <a href={href} {...props} />,
 }));
 vi.mock("@/components/lens/LensActions", () => ({ default: () => null }));
+vi.mock("@/hooks/useIsOwnedLens", () => ({ useIsOwnedLens: (id: string) => id === "xf-18-55" }));
 vi.mock("@/hooks/useCompareToggle", () => ({ useCompareToggle: () => null }));
 
 const lenses: LensSummary[] = [
@@ -60,5 +61,14 @@ describe("FavoritesSection", () => {
 
     expect(screen.getByText("XF 18-55mm")).toBeInTheDocument();
     expect(screen.getByText("count 1")).toBeInTheDocument();
+  });
+
+  it("marks a favorite the user also owns on its thumbnail", () => {
+    favorites.isPending = false;
+    favorites.lensIds = ["xf-18-55"];
+    renderSection();
+
+    expect(screen.getByRole("img", { name: "owned", hidden: true })).toBeInTheDocument();
+    expect(screen.getByText("owned")).toBeInTheDocument();
   });
 });

@@ -38,6 +38,7 @@ import { lensDisplayName, lensSubtitleLine, brandLabel } from "@/lib/lens/format
 import { lensPath } from "@/lib/url/routes";
 import { DataSourceBar } from "@/components/lens/DataSource";
 import { addLensFeedbackFields } from "@/lib/feedback/lens-feedback-fields";
+import OwnedLensMark from "@/components/lens/OwnedLensMark";
 import { CompareTechnicalImages } from "@/components/lens/TechnicalImages";
 import { getTechnicalImages } from "@/lib/lens/technical-images";
 
@@ -60,6 +61,7 @@ function LensHeaderContent({ lens }: { lens: Lens }) {
             className="object-contain"
             loading="eager"
           />
+          <OwnedLensMark lensId={lens.id} form="dot" className="top-0 left-0" />
         </div>
       </div>
 

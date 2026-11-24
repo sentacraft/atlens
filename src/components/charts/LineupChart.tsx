@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import ChartLensCard from "@/components/charts/ChartLensCard";
+import ChartLensThumb from "@/components/charts/ChartLensThumb";
 import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import { useChartCard } from "@/hooks/useChartCard";
@@ -11,7 +11,6 @@ import type { ChartLens } from "@/lib/charts/catalog";
 import type { Lineup } from "@/lib/charts/lineup";
 import { logFrac, pct } from "@/lib/charts/scale";
 import { apertureDisplay, focalRangeDisplay } from "@/lib/lens/format";
-import { getLensImageUrl } from "@/lib/lens/image";
 import { cn } from "@/lib/utils";
 
 const ZOOM_TICKS = [10, 16, 23, 35, 56, 90, 135, 200, 400, 600];
@@ -96,7 +95,7 @@ export default function LineupChart({ lineup, mode }: { lineup: Lineup; mode: { 
                       handlers={handlers(lens)}
                       className={cn("flex flex-col items-center gap-0.5 transition-transform", active === lens.id && "scale-110")}
                     >
-                      <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} loading={cls.loading} className={cn("object-contain drop-shadow-sm", cls.image)} />
+                      <ChartLensThumb lensId={lens.id} size={76} interactive={mode.kind !== "poster"} loading={cls.loading} className={cls.image} imageClassName="drop-shadow-sm" />
                       {lens.aperture !== undefined && <span className={LABEL_CLS}>{apertureDisplay(lens.aperture)}</span>}
                     </ChartLensItem>
                   ))}
@@ -125,7 +124,7 @@ export default function LineupChart({ lineup, mode }: { lineup: Lineup; mode: { 
               {lineup.zooms.map((lens) => (
                 <li key={lens.id}>
                   <ChartLensItem lens={lens} handlers={handlers(lens)} className={cn("flex items-center gap-2", cls.zoomRow)}>
-                    <Image src={getLensImageUrl(lens.id)} alt="" width={76} height={76} loading={cls.loading} className={cn("shrink-0 object-contain drop-shadow-sm", cls.image)} />
+                    <ChartLensThumb lensId={lens.id} size={76} interactive={mode.kind !== "poster"} loading={cls.loading} className={cls.image} imageClassName="drop-shadow-sm" />
                     <span className="relative h-full flex-1">
                       <span
                         className={cn("absolute whitespace-nowrap bg-zinc-50 pr-1", LABEL_CLS, cls.zoomLabel)}

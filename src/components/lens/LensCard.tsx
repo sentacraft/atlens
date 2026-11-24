@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { FEATURE_ICONS } from "@/lib/feature-icons";
 import { CARD_SELECTED_BORDER_CLS } from "@/config/ui-tokens";
 import LensActions from "@/components/lens/LensActions";
+import OwnedLensMark from "@/components/lens/OwnedLensMark";
 import type { Lens } from "@/lib/types";
 import { lensImageStyle, getLensImageUrl } from "@/lib/lens/image";
 import { useUiHookAttr } from "@/context/TestHookProvider";
@@ -98,6 +99,7 @@ export default memo(function LensCard({
               />
             </div>
           </div>
+          <OwnedLensMark lensId={lens.id} form="corner" />
         </div>
 
         <div
