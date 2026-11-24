@@ -4,7 +4,7 @@ import { gearPrompt, systemPrompt } from "../system-prompt";
 import { lensRef } from "../lens-ref";
 import type { GearItem } from "@/lib/me/gear-schema";
 
-const brandName = (slug: string) => (slug === "fujifilm" ? "富士" : slug);
+const brandName = (slug: string) => (slug === "fujifilm" ? "Fujifilm" : slug);
 
 describe("gear prompt", () => {
   it.each(["guest", "account", "unavailable"] as const)("provides only %s access state, not a profile", (state) => {
@@ -40,9 +40,9 @@ describe("describeGear", () => {
     const gear = evalGear(JSON.stringify({ bodies: ["fujifilm-x-t5"], lenses: ["fujifilm-xf-18-55mmf28-4-r-lm-ois-x"] }))!;
     expect(describeGear({ kind: "account", gear }, brandName)).toEqual({
       known: true,
-      bodies: [{ name: "富士 X-T5", sensor: "X", megapixels: 40.2, ibis: true }],
+      bodies: [{ name: "Fujifilm X-T5", sensor: "X", megapixels: 40.2, ibis: true }],
       lenses: [{
-        name: "富士 XF 18-55mm F2.8-4 R LM OIS",
+        name: "Fujifilm XF 18-55mm F2.8-4 R LM OIS",
         ref: lensRef("fujifilm-xf-18-55mmf28-4-r-lm-ois-x"),
         focal: "18–55mm", equivalent: "27–83mm", aperture: "f/2.8–4", manual: false, adapted: false,
       }],

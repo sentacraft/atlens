@@ -67,7 +67,7 @@ const LOCKED_GROUPS = [
 
 const LOCKED = {
   sources: [DATA_SOURCES()[0]],
-  claims: [claim("overall", "positive", "整体表现扎实", ["a"])],
+  claims: [claim("overall", "positive", "Solid overall", ["a"])],
   locked: { groups: LOCKED_GROUPS },
 } as LensReviewsView;
 
@@ -84,24 +84,24 @@ const DATA = {
     { id: "b", url: "https://example.com/b", site: "Site B", kind: "hands_on" },
   ],
   claims: [
-    claim("bokeh", "positive", "背景虚化讨喜", ["a", "b"]),
-    claim("autofocus", "negative", "对焦偏慢", ["b"]),
-    claim("vignetting", "mixed", "全开有暗角", ["a"]),
-    { ...claim("manual_focus", "mixed", "两家看法相反", ["a", "b"]), agreement: "conflict" },
+    claim("bokeh", "positive", "Pleasing background blur", ["a", "b"]),
+    claim("autofocus", "negative", "Autofocus is slow", ["b"]),
+    claim("vignetting", "mixed", "Vignetting wide open", ["a"]),
+    { ...claim("manual_focus", "mixed", "The two reviews disagree", ["a", "b"]), agreement: "conflict" },
   ],
 } as LensReviewsView;
 
 describe("LensReviewSummary", () => {
   it("shows strengths and weaknesses first and the mixed findings only once expanded", async () => {
     renderWith(DATA);
-    expect(await screen.findByText("背景虚化讨喜")).toBeTruthy();
-    expect(screen.getByText("对焦偏慢")).toBeTruthy();
-    expect(screen.queryByText("全开有暗角")).toBeNull();
+    expect(await screen.findByText("Pleasing background blur")).toBeTruthy();
+    expect(screen.getByText("Autofocus is slow")).toBeTruthy();
+    expect(screen.queryByText("Vignetting wide open")).toBeNull();
 
     expect(screen.getByText("disagree(aspects.manual_focus)")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "expand(4)" }));
-    expect(screen.getByText("全开有暗角")).toBeTruthy();
+    expect(screen.getByText("Vignetting wide open")).toBeTruthy();
     expect(screen.getByText("groups.image")).toBeTruthy();
     expect(screen.queryByText(/^count\(/)).toBeNull();
   });
@@ -120,9 +120,9 @@ describe("LensReviewSummary", () => {
     renderWith({
       sources,
       claims: [
-        claim("bokeh", "positive", "背景虚化讨喜", ["a", "b"]),
-        claim("autofocus", "negative", "对焦偏慢", ["a", "b", "c", "d"]),
-        claim("build", "positive", "做工扎实", ["d"]),
+        claim("bokeh", "positive", "Pleasing background blur", ["a", "b"]),
+        claim("autofocus", "negative", "Autofocus is slow", ["a", "b", "c", "d"]),
+        claim("build", "positive", "Solid build", ["d"]),
       ],
     } as LensReviewsView);
     expect(await screen.findByRole("button", { name: "reviewSources(2,aspects.bokeh)" })).toHaveProperty("textContent", "Site A & Site B");
@@ -135,25 +135,25 @@ describe("LensReviewSummary", () => {
       { id: "a", url: "https://example.com/a", site: "Site A", kind: "measured" },
       { id: "a2", url: "https://example.com/a2", site: "Site A", kind: "hands_on" },
     ];
-    renderWith({ sources, claims: [claim("bokeh", "positive", "背景虚化讨喜", ["a", "a2"])] } as LensReviewsView);
+    renderWith({ sources, claims: [claim("bokeh", "positive", "Pleasing background blur", ["a", "a2"])] } as LensReviewsView);
     expect((await screen.findByRole("button", { name: "reviewSources(2,aspects.bokeh)" })).textContent).toBe("Site A");
   });
 
   it("falls back to the review count when none of a finding's sources is known", async () => {
-    renderWith({ sources: [], claims: [claim("bokeh", "positive", "背景虚化讨喜", ["gone"])] } as LensReviewsView);
+    renderWith({ sources: [], claims: [claim("bokeh", "positive", "Pleasing background blur", ["gone"])] } as LensReviewsView);
     expect((await screen.findByRole("button", { name: "reviewSources(1,aspects.bokeh)" })).textContent).toBe("reviewCount(1)");
   });
 
   it("leaves the aspect off collapsed findings, whose sentences already name it", async () => {
     renderWith(DATA);
-    expect(await screen.findByText("背景虚化讨喜")).toBeTruthy();
+    expect(await screen.findByText("Pleasing background blur")).toBeTruthy();
     expect(screen.queryByText("aspects.bokeh")).toBeNull();
   });
 
   it("cites a finding by the sites behind it in the full view, keeping numbered markers for each review's own points", async () => {
     renderWith({
       ...DATA,
-      claims: [...DATA.claims, { ...claim("focus_breathing", "negative", "有呼吸效应", ["a"]), details: [{ id: "b", text: "视频里明显" }] }],
+      claims: [...DATA.claims, { ...claim("focus_breathing", "negative", "Shows focus breathing", ["a"]), details: [{ id: "b", text: "Noticeable in video" }] }],
     } as LensReviewsView);
     fireEvent.click(await screen.findByRole("button", { name: "expand(5)" }));
     expect(screen.getByRole("button", { name: "reviewSources(1,aspects.focus_breathing)" })).toBeTruthy();
@@ -161,26 +161,26 @@ describe("LensReviewSummary", () => {
     fireEvent.click(screen.getByRole("button", { name: "showDetails(1)" }));
     expect(screen.getAllByRole("button", { name: /^marker\(/ })).toHaveLength(1);
     // A detail names the site it comes from, before its marker.
-    expect(screen.getByText("视频里明显").textContent).toBe("视频里明显Site B2");
+    expect(screen.getByText("Noticeable in video").textContent).toBe("Noticeable in videoSite B2");
   });
 
   it("explains a technical aspect from its label", async () => {
-    renderWith({ ...DATA, claims: [...DATA.claims, claim("focus_breathing", "negative", "有呼吸效应", ["a"])] } as LensReviewsView);
+    renderWith({ ...DATA, claims: [...DATA.claims, claim("focus_breathing", "negative", "Shows focus breathing", ["a"])] } as LensReviewsView);
     fireEvent.click(await screen.findByRole("button", { name: "expand(5)" }));
     fireEvent.click(screen.getByRole("button", { name: "aspects.focus_breathing" }));
     expect(await screen.findByText("aspectHint.focus_breathing")).toBeTruthy();
   });
 
   it("leads with the overall verdict, labelled by how reviewers lean", async () => {
-    renderWith({ ...DATA, claims: [claim("overall", "positive", "值得推荐", ["a", "b"]), ...DATA.claims] } as LensReviewsView);
-    expect(await screen.findByText("值得推荐")).toBeTruthy();
+    renderWith({ ...DATA, claims: [claim("overall", "positive", "Worth recommending", ["a", "b"]), ...DATA.claims] } as LensReviewsView);
+    expect(await screen.findByText("Worth recommending")).toBeTruthy();
     expect(screen.getByText("summary")).toBeTruthy();
     expect(screen.getByText("verdict.positive")).toBeTruthy();
   });
 
   it("labels a disputed overall verdict as disputed rather than by its lean", async () => {
-    renderWith({ ...DATA, claims: [{ ...claim("overall", "mixed", "两家结论相反", ["a", "b"]), agreement: "conflict" }, ...DATA.claims] } as LensReviewsView);
-    expect(await screen.findByText("两家结论相反")).toBeTruthy();
+    renderWith({ ...DATA, claims: [{ ...claim("overall", "mixed", "The reviews reach opposite conclusions", ["a", "b"]), agreement: "conflict" }, ...DATA.claims] } as LensReviewsView);
+    expect(await screen.findByText("The reviews reach opposite conclusions")).toBeTruthy();
     expect(screen.getByText("conflict")).toBeTruthy();
     expect(screen.queryByText("verdict.mixed")).toBeNull();
   });
@@ -188,14 +188,14 @@ describe("LensReviewSummary", () => {
   it("explains why a finding may not hold on the reader's body in one sentence", async () => {
     renderWith({
       ...DATA,
-      claims: [{ ...claim("autofocus", "positive", "对焦快", ["a", "b"]), staleness: ["pre_x_trans_iv_body", "unknown_body"], otherMount: true }],
+      claims: [{ ...claim("autofocus", "positive", "Fast autofocus", ["a", "b"]), staleness: ["pre_x_trans_iv_body", "unknown_body"], otherMount: true }],
     } as LensReviewsView);
     expect(await screen.findByRole("button", { name: "staleNote(staleCause.pre_x_trans_iv_body, staleCause.unknown_body, staleCause.other_mount)" })).toBeTruthy();
   });
 
   it("shows a guest only the overall verdict, and counts what signing in adds per group", async () => {
     renderWith(LOCKED);
-    expect(await screen.findByText("整体表现扎实")).toBeTruthy();
+    expect(await screen.findByText("Solid overall")).toBeTruthy();
     expect(screen.getByText("lockedTitle(4)")).toBeTruthy();
     expect(screen.getByText("groupCount(groups.image,2)")).toBeTruthy();
     expect(screen.getByText("groupCount(groups.focus,2)")).toBeTruthy();
@@ -222,22 +222,22 @@ describe("LensReviewSummary", () => {
     fireEvent.click(await screen.findByRole("button", { name: "signIn" }));
 
     act(() => client.setQueryData(["lens-reviews", "lens"], DATA));
-    expect(await screen.findByText("全开有暗角")).toBeTruthy();
+    expect(await screen.findByText("Vignetting wide open")).toBeTruthy();
     expect(scrollIntoView).toHaveBeenCalled();
   });
 
   it("opens the findings when a sign-in comes back to them by link", async () => {
     window.history.replaceState(null, "", "/#reviews");
     renderWith(DATA);
-    expect(await screen.findByText("全开有暗角")).toBeTruthy();
+    expect(await screen.findByText("Vignetting wide open")).toBeTruthy();
     expect(scrollIntoView).toHaveBeenCalled();
   });
 
   it("leaves a guest's findings collapsed even when linked to them", async () => {
     window.history.replaceState(null, "", "/#reviews");
     renderWith(LOCKED);
-    expect(await screen.findByText("整体表现扎实")).toBeTruthy();
-    expect(screen.queryByText("全开有暗角")).toBeNull();
+    expect(await screen.findByText("Solid overall")).toBeTruthy();
+    expect(screen.queryByText("Vignetting wide open")).toBeNull();
     expect(scrollIntoView).not.toHaveBeenCalled();
   });
 

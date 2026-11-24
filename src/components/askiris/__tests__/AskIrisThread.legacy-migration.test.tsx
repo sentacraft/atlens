@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { afterEach, expect, it, vi } from "vitest";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { migrated } from "@/lib/askiris/__tests__/support/legacy-lens-details";
-import zh from "@/messages/zh.json";
+import en from "@/messages/en.json";
 import AskIrisThread from "../AskIrisThread";
 
 vi.mock("@/i18n/navigation", () => ({
@@ -20,12 +20,12 @@ afterEach(cleanup);
 it("renders the images of a migrated legacy reply with their figure labels, in place", () => {
   const message = migrated() as AskIrisUIMessage;
   render(
-    <NextIntlClientProvider locale="zh" timeZone="UTC" messages={zh as never}>
+    <NextIntlClientProvider locale="en" timeZone="UTC" messages={en}>
       <AskIrisThread messages={[message]} />
     </NextIntlClientProvider>,
   );
   expect(screen.getAllByRole("img")).toHaveLength(3);
-  for (const label of ["图 1", "图 2", "图 3"]) {
+  for (const label of ["Fig. 1", "Fig. 2", "Fig. 3"]) {
     expect(screen.getByText(label)).toBeInTheDocument();
   }
   const [first] = screen.getAllByRole("img");

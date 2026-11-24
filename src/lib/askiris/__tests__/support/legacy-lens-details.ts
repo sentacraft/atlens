@@ -58,7 +58,7 @@ export const read = (db: DatabaseSync, id: string) =>
 
 
 /** A message in the legacy shape, as the migration leaves it. */
-export function migrated(message: object = legacyAssistant(), context: object = { mount: "X", locale: "zh" }) {
+export function migrated(message: object = legacyAssistant(), context: object = { mount: "X", locale: "en" }) {
   const db = database();
   insert(db, "m", message, context);
   db.exec(LEGACY);

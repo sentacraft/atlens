@@ -727,15 +727,15 @@ describe("figure numbers", () => {
   });
 
   it("labels each image the model receives and tells it to refer to figures by label", async () => {
-    const { tool } = figures("zh");
+    const { tool } = figures("en");
     const output = await run(tool, input);
     const projected = await tool.toModelOutput!({ toolCallId: "i", input, output });
     if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
     const summary = JSON.parse(projected.value[0].text);
     expect(summary.figureNote).toMatch(/label/i);
-    expect(summary.shownImages[0]).toMatchObject({ figure: "图 1", imageRef: output.displayImages[0].imageRef });
+    expect(summary.shownImages[0]).toMatchObject({ figure: "Fig. 1", imageRef: output.displayImages[0].imageRef });
     const captions = projected.value.filter((part) => part.type === "text").slice(1).map((part) => (part as { text: string }).text);
-    expect(captions[0]).toBe(`Image 图 1 (${output.displayImages[0].imageRef}):`);
+    expect(captions[0]).toBe(`Image Fig. 1 (${output.displayImages[0].imageRef}):`);
   });
 });
 

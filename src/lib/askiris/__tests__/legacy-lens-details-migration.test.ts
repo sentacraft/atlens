@@ -13,7 +13,7 @@ describe("0009_migrate_legacy_lens_details", () => {
 
   it("splits a lensDetails part with images into specs and a showLensImages part, flattening galleries and numbering figures", () => {
     const db = database();
-    insert(db, "m", legacyAssistant(), { mount: "X", locale: "zh" });
+    insert(db, "m", legacyAssistant(), { mount: "X", locale: "en" });
     db.exec(LEGACY);
     const { parts } = read(db, "m");
     expect(parts.map((part: { type: string }) => part.type)).toEqual(["text", "tool-lensDetails", "tool-showLensImages", "text"]);
@@ -33,7 +33,7 @@ describe("0009_migrate_legacy_lens_details", () => {
       imageResults: [{ role: "mtf", status: "selected", selected: ["lensA:image-001"] }],
     }]);
     expect(images.output.displayImages.map((entry: { imageRef: string; figure: number; figureLabel: string }) => [entry.imageRef, entry.figure, entry.figureLabel])).toEqual([
-      ["lensA:image-001", 1, "图 1"], ["lensA:image-002", 2, "图 2"], ["lensA:image-010", 3, "图 3"],
+      ["lensA:image-001", 1, "Fig. 1"], ["lensA:image-002", 2, "Fig. 2"], ["lensA:image-010", 3, "Fig. 3"],
     ]);
     expect(images.output.displayImages.every((entry: object) => !("gallery" in entry))).toBe(true);
   });
@@ -68,7 +68,7 @@ describe("0009_migrate_legacy_lens_details", () => {
   it("strips the image fields from a lensDetails part with an empty displayImages and adds no showLensImages part", async () => {
     const db = database();
     const message = legacyAssistant({ displayImages: [] });
-    insert(db, "m", message, { mount: "X", locale: "zh" });
+    insert(db, "m", message, { mount: "X", locale: "en" });
     db.exec(LEGACY);
     const { parts } = read(db, "m");
     expect(parts.map((part: { type: string }) => part.type)).toEqual(["text", "tool-lensDetails", "text"]);
@@ -90,7 +90,7 @@ describe("0009_migrate_legacy_lens_details", () => {
 
   it("is idempotent and leaves other messages alone", () => {
     const db = database();
-    insert(db, "m", legacyAssistant(), { mount: "X", locale: "zh" }, 0);
+    insert(db, "m", legacyAssistant(), { mount: "X", locale: "en" }, 0);
     const plain = { id: "p", role: "assistant", parts: [{ type: "tool-lensDetails", toolCallId: "x", state: "output-available", input: { lenses: [{ ref: "r" }] }, output: { lenses: [] } }] };
     insert(db, "plain", plain, undefined, 1);
     db.exec(LEGACY);
