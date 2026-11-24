@@ -211,25 +211,29 @@ function digest(msg) {
     }
     if (name === "lensDetails") {
       details.push(...(part.input?.lenses ?? []).map(({ ref }) => ref));
+    }
+    if (name === "showLensImages") {
       for (const lens of part.input?.lenses ?? []) {
         imageRequests.push(...(lens.images ?? []).map((request) => ({ ...request, lensId: REF_TO_ID.get(lens.ref) ?? lens.ref })));
       }
       for (const lens of part.output?.lenses ?? []) {
         imageResults.push(...(lens.imageResults ?? []).map((result) => ({ ...result, lensId: REF_TO_ID.get(lens.ref) ?? lens.ref })));
       }
-      const read = new Set(part.output?.readRefs ?? []);
+      // Every displayed image reaches the model, so `read` is always true.
       const shown = (part.output?.displayImages ?? []).map((image) => ({
         lensId: image.lensId,
         lensName: image.lensName,
         imageRef: image.imageRef,
         role: image.image?.role ?? null,
-        read: read.has(image.imageRef),
+        read: true,
         galleryCount: image.gallery?.length ?? 1,
+        focalLengthMm: image.image?.focalLengthMm ?? null,
+        apertureFNumbers: image.image?.apertureFNumbers ?? null,
       }));
       images.push(...shown);
-      // The judge cannot see pixels; this line tells it what was on screen and what Iris read.
+      // The judge cannot see pixels; this line tells it what was on screen and read.
       if (shown.length) {
-        transcript.push(`[images]\n${shown.map((image) => `- ${image.lensName} ${image.role}${image.galleryCount > 1 ? ` (gallery of ${image.galleryCount})` : ""}, ${image.read ? "read" : "shown only"}`).join("\n")}`);
+        transcript.push(`[images]\n${shown.map((image) => `- ${image.lensName} ${image.role}${image.focalLengthMm ? ` ${image.focalLengthMm}mm` : ""}${image.apertureFNumbers ? ` f/${image.apertureFNumbers.join(", f/")}` : ""}${image.galleryCount > 1 ? ` (gallery of ${image.galleryCount})` : ""}, read`).join("\n")}`);
       }
     }
     if (name === "lensReviews") {

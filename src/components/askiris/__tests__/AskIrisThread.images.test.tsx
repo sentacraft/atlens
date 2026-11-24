@@ -44,8 +44,8 @@ const alternate: LensDetailDisplayImage = {
   ...product, imageRef: "a:003", src: "/a-side.jpg", image: { id: "003", role: "product" },
 };
 
-function tool(toolCallId: string, displayImages?: LensDetailDisplayImage[]): AskIrisUIMessage["parts"][number] {
-  return { type: "tool-lensDetails", toolCallId, state: "output-available", input: {}, output: { displayImages } };
+function tool(toolCallId: string, displayImages?: LensDetailDisplayImage[], type: "tool-showLensImages" | "tool-lensDetails" = "tool-showLensImages"): AskIrisUIMessage["parts"][number] {
+  return { type, toolCallId, state: "output-available", input: {}, output: { displayImages } } as AskIrisUIMessage["parts"][number];
 }
 
 const MESSAGES = { en, zh: zh as unknown as typeof en };
@@ -121,10 +121,15 @@ describe("lens images in Iris replies", () => {
     expect(within(dialog).getAllByText(chart.src)[0].tagName).toBe("DIV");
   });
 
+  it("still renders galleries saved by the retired lensDetails image output", () => {
+    renderReply([tool("saved", [chart, structure], "tool-lensDetails")]);
+    expect(within(screen.getByRole("region", { name: "Lens images" })).getAllByRole("img")).toHaveLength(2);
+  });
+
   it("renders no image controls for old results or unfinished calls", () => {
     renderReply([
       tool("legacy"),
-      { type: "tool-lensDetails", toolCallId: "pending", state: "input-available", input: {} },
+      { type: "tool-showLensImages", toolCallId: "pending", state: "input-available", input: {} },
     ]);
     expect(screen.queryByRole("region", { name: "Lens images" })).not.toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();

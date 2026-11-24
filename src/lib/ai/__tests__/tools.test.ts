@@ -83,115 +83,99 @@ describe("a recall tool's gate accepts exactly what it returned", () => {
   });
 });
 
-describe("lensDetails images", () => {
+describe("showLensImages", () => {
   const ref = lensRef("sgimage-af-35mmf14-x");
   const unknownRef = lensRef("brightinstar-mf-35mm-f14-x");
-  const detailTool = () => buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref, unknownRef])).lensDetails;
+  const imageTool = () => buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref, unknownRef])).showLensImages;
 
-  it("lists images without showing them for an ordinary detail lookup", () => {
-    const output = run(detailTool(), { lenses: [{ ref }] });
-    expect(output.lenses[0].images).toEqual(expect.arrayContaining([expect.objectContaining({ role: "mtf" })]));
-    expect(output.displayImages).toEqual([]);
-    expect(output.readRefs).toEqual([]);
+  it("keeps lensDetails to specs: no images input and no image output", () => {
+    const lookup = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref]));
+    const output = run(lookup.lensDetails, { lenses: [{ ref, images: [{ role: "mtf" }] }] });
+    expect(output).not.toHaveProperty("displayImages");
+    expect(output).not.toHaveProperty("readRefs");
+    expect(output.lenses[0]).not.toHaveProperty("images");
+    expect(JSON.stringify(lookup.lensDetails.inputSchema)).not.toContain("images");
   });
 
-  it("reads an explicitly requested MTF by default and respects a display-only request", async () => {
+  it("sends the pixels of every displayed image to the model", async () => {
     const input = { lenses: [
-      { ref, images: [{ role: "mtf" as const, apertureFNumber: 1.4 }, { role: "optical-construction" as const, read: false }] },
-      { ref: unknownRef },
+      { ref, images: [{ role: "mtf" as const, apertureFNumber: 1.4 }, { role: "optical-construction" as const }] },
+      { ref: unknownRef, images: [] },
     ] };
-    const detail = detailTool();
-    const output = await detail.execute!(input, {} as never);
-    if (!("displayImages" in output)) {throw new Error("Expected a synchronous detail result");}
+    const tool = imageTool();
+    const output = await tool.execute!(input, {} as never);
+    if (!("displayImages" in output)) {throw new Error("Expected a synchronous result");}
+    expect(output).not.toHaveProperty("readRefs");
     expect(output.displayImages.map(({ lensRef, image }) => [lensRef, image.role])).toEqual([[ref, "mtf"], [ref, "optical-construction"]]);
-    const projected = await detail.toModelOutput!({ toolCallId: "details", input, output });
-    expect(projected.type).toBe("content");
+    const projected = await tool.toModelOutput!({ toolCallId: "images", input, output });
     if (projected.type !== "content") {throw new Error("Expected vision content");}
     const summary = projected.value[0];
     if (summary.type !== "text") {throw new Error("Expected image metadata before pixels");}
     expect(JSON.parse(summary.text)).toMatchObject({
-      presentation: { scope: "currentReply", galleries: output.displayImages.map(({ lensRef, imageRef, image }) => ({
+      presentation: { galleries: output.displayImages.map(({ lensRef, imageRef, image }) => ({
         lensRef, role: image.role, preview: imageRef, imageCount: 1,
       })) },
-      imagesForReading: [output.displayImages[0].imageRef],
+      imagesForReading: output.displayImages.map(({ imageRef }) => imageRef),
       mtfNote: expect.stringContaining("Interpret only legible curves"),
     });
-    expect(projected.value.filter((part) => part.type === "file")).toEqual([
-      expect.objectContaining({ data: { type: "url", url: new URL(output.displayImages[0].src) }, providerOptions: { deepseek: { imageDetail: "original" }, openai: { imageDetail: "high" } } }),
-    ]);
+    expect(projected.value.filter((part) => part.type === "file")).toEqual(output.displayImages.map(({ src }) => expect.objectContaining({
+      data: { type: "url", url: new URL(src) }, providerOptions: { deepseek: { imageDetail: "original" }, openai: { imageDetail: "high" } },
+    })));
   });
 
-  it("reads only the explicitly selected diagram and does not add it to MTF-only requests", () => {
-    const output = run(detailTool(), { lenses: [
-      { ref, images: [{ role: "optical-construction" }] },
-      { ref: unknownRef, images: [{ role: "mtf", read: false }] },
-    ] });
-    expect(output.displayImages).toMatchObject([
-      { lensRef: ref, image: { role: "optical-construction" } },
-      { lensRef: unknownRef, image: { role: "mtf" } },
-    ]);
-    expect(output.readRefs).toEqual([output.displayImages[0].imageRef]);
+  it("shows and reads a requested product photo", () => {
+    const output = run(imageTool(), { lenses: [{ ref, images: [{ role: "product" }] }] });
+    expect(output.displayImages.map(({ image }: { image: { role: string } }) => image.role)).toEqual(["product"]);
   });
 
-  it("includes all eligible MTF charts in the viewer without sending them all to the model", () => {
-    const zoom = lensRef("fujifilm-gf-35-70mmf45-56-wr-g");
-    const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set([zoom]));
-    const result = run(gfx.lensDetails, { lenses: [{ ref: zoom, images: [{ role: "mtf" }] }] });
-    expect(result.displayImages[0].gallery).toHaveLength(6);
-    expect(result.readRefs).toHaveLength(2);
-    const filtered = run(gfx.lensDetails, { lenses: [{ ref: zoom, images: [{ role: "mtf", focalLengthMm: 70, read: false }] }] });
-    expect(filtered.displayImages[0].gallery).toHaveLength(3);
-    expect(filtered.displayImages[0].gallery.every((entry: { image: { focalLengthMm: number } }) => entry.image.focalLengthMm === 70)).toBe(true);
-    expect(filtered.readRefs).toEqual([]);
-  });
-
-  it("reports the full gallery count separately from the pixels read", async () => {
+  it("includes all eligible MTF charts in the viewer, and reads those displayed", async () => {
     const zoom = lensRef("fujifilm-gf-35-70mmf45-56-wr-g");
     const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set([zoom]));
     const input = { lenses: [{ ref: zoom, images: [{ role: "mtf" as const }] }] };
-    const output = run(gfx.lensDetails, input);
-    const projected = await gfx.lensDetails.toModelOutput!({ toolCallId: "details", input, output });
+    const result = run(gfx.showLensImages, input);
+    expect(result.displayImages[0].gallery).toHaveLength(6);
+    expect(result.displayImages).toHaveLength(2);
+    const filtered = run(gfx.showLensImages, { lenses: [{ ref: zoom, images: [{ role: "mtf", focalLengthMm: 70 }] }] });
+    expect(filtered.displayImages[0].gallery).toHaveLength(3);
+    expect(filtered.displayImages[0].gallery.every((entry: { image: { focalLengthMm: number } }) => entry.image.focalLengthMm === 70)).toBe(true);
+    const projected = await gfx.showLensImages.toModelOutput!({ toolCallId: "images", input, output: result });
     if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
     expect(JSON.parse(projected.value[0].text)).toMatchObject({
-      presentation: { scope: "currentReply", galleries: [{ lensRef: zoom, role: "mtf", imageCount: 6 }] },
-      imagesForReading: output.readRefs,
+      presentation: { galleries: [{ lensRef: zoom, role: "mtf", imageCount: 6 }] },
     });
     expect(projected.value.filter((part) => part.type === "file")).toHaveLength(2);
   });
 
-  it("adds an MTF comparability grade for two lenses' charts, and not for a historical output", async () => {
-    const a = lensRef("fujifilm-xf-16-55mmf28-r-lm-wr-x");
-    const b = lensRef("fujifilm-xf-16-80mmf4-r-ois-wr-x");
-    const both = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([a, b])).lensDetails;
-    const input = { lenses: [{ ref: a, images: [{ role: "mtf" as const }] }, { ref: b, images: [{ role: "mtf" as const }] }] };
-    const output = await both.execute!(input, {} as never);
-    if (!("displayImages" in output)) {throw new Error("Expected a synchronous detail result");}
-    const summary = async (value: typeof output) => {
-      const projected = await both.toModelOutput!({ toolCallId: "details", input, output: value });
-      if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
-      return JSON.parse(projected.value[0].text);
-    };
-    expect((await summary(output)).mtfComparison).toMatchObject({ level: expect.any(String), caveats: expect.any(Array), rule: expect.any(String) });
-    // A historical output carries no pixels, so there is nothing to compare.
-    const historical = { ...output, historical: true, readRefs: [] };
-    const projected = await both.toModelOutput!({ toolCallId: "details", input, output: historical });
-    expect(JSON.stringify(projected)).not.toContain("mtfComparison");
-  });
-
   it("does not pass unlabeled charts off as matching a requested aperture", () => {
-    const output = run(detailTool(), { lenses: [{ ref: unknownRef, images: [{ role: "mtf", apertureFNumber: 1.4, read: true }] }] });
+    const output = run(imageTool(), { lenses: [{ ref: unknownRef, images: [{ role: "mtf", apertureFNumber: 1.4 }] }] });
     expect(output.displayImages).toHaveLength(1);
     const image = output.displayImages[0].imageRef;
-    expect(output.readRefs).toEqual([image]);
     expect(output.lenses[0].imageResults).toEqual([expect.objectContaining({
       status: "conditions-unconfirmed", selected: [image], unconfirmed: [image], note: expect.stringContaining("do not present them as matching"),
     })]);
   });
 
   it("does not substitute a chart with a known different aperture", () => {
-    const output = run(detailTool(), { lenses: [{ ref, images: [{ role: "mtf", apertureFNumber: 16 }] }] });
+    const output = run(imageTool(), { lenses: [{ ref, images: [{ role: "mtf", apertureFNumber: 16 }] }] });
     expect(output.displayImages).toEqual([]);
     expect(output.lenses[0].imageResults).toMatchObject([{ status: "no-match" }]);
+  });
+
+  it("lists a lens's available images and refuses a ref the turn never recalled", () => {
+    const output = run(imageTool(), { lenses: [{ ref, images: [{ role: "mtf" }] }] });
+    expect(output.lenses[0].images).toEqual(expect.arrayContaining([expect.objectContaining({ role: "mtf" })]));
+    expect(() => run(imageTool(), { lenses: [{ ref: lensRef("fujifilm-xf-56mmf12-r-wr-x"), images: [{ role: "mtf" }] }] })).toThrow(/was not returned/);
+  });
+
+  it("adds an MTF comparability grade for two lenses' charts", async () => {
+    const a = lensRef("fujifilm-xf-16-55mmf28-r-lm-wr-x");
+    const b = lensRef("fujifilm-xf-16-80mmf4-r-ois-wr-x");
+    const both = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([a, b])).showLensImages;
+    const input = { lenses: [{ ref: a, images: [{ role: "mtf" as const }] }, { ref: b, images: [{ role: "mtf" as const }] }] };
+    const output = run(both, input);
+    const projected = await both.toModelOutput!({ toolCallId: "images", input, output });
+    if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
+    expect(JSON.parse(projected.value[0].text).mtfComparison).toMatchObject({ level: expect.any(String), caveats: expect.any(Array), rule: expect.any(String) });
   });
 });
 

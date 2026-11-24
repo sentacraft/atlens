@@ -181,6 +181,7 @@ const TOOL_ACTIVITY: Record<string, ActivityKey> = {
   lensReviews: "gathering",
   recommendLenses: "composing",
   listLenses: "composing",
+  showLensImages: "composing",
 };
 
 function toolLabelKey(name: string): ActivityKey {

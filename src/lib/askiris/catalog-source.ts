@@ -1,7 +1,7 @@
 import { getToolName, isToolUIPart, type UIMessage } from "ai";
 
 // The tools whose results are specs or prices read from the catalog; reviews have their own sources.
-const CATALOG_TOOLS = new Set(["queryLenses", "searchLensByName", "lensDetails", "listLenses", "recommendLenses", "myFavorites"]);
+const CATALOG_TOOLS = new Set(["queryLenses", "searchLensByName", "lensDetails", "showLensImages", "listLenses", "recommendLenses", "myFavorites"]);
 
 /** Whether a reply shows data it read from the lens catalog in this turn. */
 export function usedCatalog(message: UIMessage): boolean {

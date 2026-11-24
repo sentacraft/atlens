@@ -16,7 +16,7 @@ import {
 import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
 import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
 import { compareMtfCharts } from "@/lib/ai/mtf-comparison";
-import { lensDetailImages, lensDetailImagesSchema, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
+import { lensDetailImages, lensImageRequestsSchema, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
@@ -355,37 +355,58 @@ export function buildLensTools(
     }),
 
     lensDetails: tool({
-      description: "Look up specs and images for recalled lenses. For lens construction or special elements, answer from specs and show an optical diagram without reading it unless asked to interpret it.",
+      description: "Look up specs for recalled lenses. Element counts and special elements come from specs; images never override them.",
       inputSchema: z.object({
         lenses: z.array(z.object({
           ref: z.string().describe("Lens ref from an earlier recall result."),
-          images: lensDetailImagesSchema.describe("Images to show for this lens. Request images when the user asks to find or see them. Lens search constraints are not chart test conditions. Omit for specs only; use the image ref to revisit an exact image."),
+        })).min(1).describe(`At most ${MAX_DETAIL_REFS} lenses are returned per call.`),
+      }),
+      execute: ({ lenses }) => {
+        const { kept, notReturned } = capRefs(lenses.map(({ ref }) => ref), MAX_DETAIL_REFS);
+        return {
+          lenses: recalledLenses(kept).map((lens) => toDetailed(resolveLens(lens, locale, tBrand))),
+          notInData: "For field performance and opinions, use lensReviews.",
+          ...(notReturned ? { notReturned } : {}),
+        };
+      },
+      // Saved replies can still carry the image fields of the retired lensDetails output; none of them belong in the model's context.
+      toModelOutput: ({ output }) => {
+        const without = (value: object, keys: string[]) => Object.fromEntries(Object.entries(value).filter(([key]) => !keys.includes(key)));
+        return {
+          type: "text",
+          value: JSON.stringify({
+            ...without(output, ["displayImages", "readRefs", "historical"]),
+            lenses: output.lenses.map((lens) => without(lens, ["images", "imageResults"])),
+          }),
+        };
+      },
+    }),
+
+    showLensImages: tool({
+      description: "Show the user product photos, MTF charts or optical diagrams of recalled lenses, and read them. Use the image ref to revisit an exact image.",
+      inputSchema: z.object({
+        lenses: z.array(z.object({
+          ref: z.string().describe("Lens ref from an earlier recall result."),
+          images: lensImageRequestsSchema.describe("Images to show for this lens. Lens search constraints are not chart test conditions."),
         })).min(1).describe(`At most ${MAX_DETAIL_REFS} lenses are returned per call.`),
       }),
       execute: ({ lenses }) => {
         const { kept, notReturned } = capRefs(lenses.map(({ ref }) => ref), MAX_DETAIL_REFS);
         const displayImages: LensDetailDisplayImage[] = [];
-        const readRefs: string[] = [];
         return {
           lenses: recalledLenses(kept).map((lens, index) => {
-            const resolved = resolveLens(lens, locale, tBrand);
-            const { images, results, displayImages: selected, readRefs: read } = lensDetailImages(lens, kept[index], resolved.name, lenses.find(({ ref }) => ref === kept[index])?.images, 4 - displayImages.length);
+            const { name, maxAperture, focalNativeMm } = resolveLens(lens, locale, tBrand);
+            const { images, results, displayImages: selected } = lensDetailImages(lens, kept[index], name, lenses.find(({ ref }) => ref === kept[index])?.images, 4 - displayImages.length);
             displayImages.push(...selected);
-            readRefs.push(...read);
-            return { ...toDetailed(resolved), images, ...(results.length ? { imageResults: results } : {}) };
+            return { ref: kept[index], name, maxAperture, focalNativeMm, images, ...(results.length ? { imageResults: results } : {}) };
           }),
           displayImages,
-          readRefs,
-          historical: false,
-          notInData: "For field performance and opinions, use lensReviews.",
           ...(notReturned ? { notReturned } : {}),
         };
       },
       toModelOutput: ({ output }) => {
-        const { displayImages = [], readRefs = [], historical, ...details } = output;
-        const images = displayImages.filter(({ imageRef }) => readRefs.includes(imageRef));
+        const { displayImages, ...details } = output;
         const presentation = {
-          scope: historical ? "history" : "currentReply",
           galleries: groupLensImages(displayImages).map(([preview, ...rest]) => ({
             lensRef: preview.lensRef,
             role: preview.image.role,
@@ -393,13 +414,13 @@ export function buildLensTools(
             imageCount: rest.length + 1,
           })),
         };
-        const metadata = { ...details, presentation, imagesForReading: images.map(({ imageRef }) => imageRef) };
-        if (!images.length) {
+        const metadata = { ...details, presentation, imagesForReading: displayImages.map(({ imageRef }) => imageRef) };
+        if (!displayImages.length) {
           return { type: "text", value: JSON.stringify(metadata) };
         }
-        const mtfImages = images.filter(({ image }) => image.role === "mtf");
-        const mtfComparison = historical ? undefined : compareMtfCharts(mtfImages.map(({ lensRef, image }) => {
-          const lens = details.lenses?.find((entry) => entry.ref === lensRef);
+        const mtfImages = displayImages.filter(({ image }) => image.role === "mtf");
+        const mtfComparison = compareMtfCharts(mtfImages.map(({ lensRef, image }) => {
+          const lens = details.lenses.find((entry) => entry.ref === lensRef);
           return { lensRef, image, maxAperture: lens?.maxAperture ?? null, zoom: lens ? lens.focalNativeMm[0] !== lens.focalNativeMm[1] : false };
         }));
         const reading = {
@@ -415,7 +436,7 @@ export function buildLensTools(
           type: "content",
           value: [
             { type: "text", text: JSON.stringify(reading) },
-            ...images.flatMap(({ imageRef, src }) => [
+            ...displayImages.flatMap(({ imageRef, src }) => [
               { type: "text" as const, text: `Image ${imageRef}:` },
               { type: "file" as const, mediaType: "image/webp", data: { type: "url" as const, url: new URL(src) }, providerOptions: IMAGE_READING_OPTIONS },
             ]),
