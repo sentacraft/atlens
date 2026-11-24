@@ -7,96 +7,119 @@ export interface MtfChart {
   /** Whether the lens zooms, so an unstated chart focal length matters. */
   zoom?: boolean;
   image: LensImageAsset;
+  /** How the model names this chart: its figure label in this reply, or its imageRef for an earlier reply. */
+  name: string;
 }
 
-type Condition = "spatialFrequency" | "testAperture" | "focalLength" | "mtfMethod";
-type Status = "same" | "differs" | "unstated";
-type Level = "values" | "values-with-caveats" | "shape-only";
+type Level = "values" | "values-with-caveats" | "alone";
 
-export interface MtfComparison {
+export interface MtfLensGroup {
+  lenses: { lens: string; charts: string[] }[];
   level: Level;
-  conditions: { condition: Condition; status: Status; values: Record<string, string | null> }[];
   caveats: string[];
   rule: string;
+}
+
+export interface MtfGrouping {
+  mtfGroups: MtfLensGroup[];
+  /** Present when the lenses fall into more than one group. */
+  betweenGroups?: string;
 }
 
 const RULES: Record<Level, string> = {
   values: "The chart conditions match, so chart values can be compared directly.",
   "values-with-caveats": "Compare values and give a leaning, but state every caveat and never call the conditions identical.",
-  "shape-only": "Compare only curve shapes (centre-to-edge falloff, S/M separation), not values, and say which condition prevents it.",
+  alone: "No other shown lens shares this chart scale; compare it with the others by curve shape only.",
 };
 
 const fNumber = (value: number) => `f/${value}`;
 const maxApertureLabel = (value: ApertureValue | null) =>
   value === null ? "unknown" : Array.isArray(value) ? `${fNumber(value[0])}–${fNumber(value[1])}` : fNumber(value);
 
-// Per lens, the set of values its read charts state, as a sorted list of labels; null when any chart is silent.
-function labelsByLens(charts: MtfChart[], pick: (image: LensImageAsset) => string[] | undefined) {
-  const byLens = new Map<string, string[] | null>();
-  for (const { lensRef, image } of charts) {
-    const labels = pick(image);
-    const current = byLens.get(lensRef);
-    if (current === null || (current === undefined && byLens.has(lensRef))) {continue;}
-    if (!labels?.length) {
-      byLens.set(lensRef, null);
-    } else {
-      byLens.set(lensRef, [...new Set([...(current ?? []), ...labels])].sort());
-    }
+interface LensFacts {
+  lens: string;
+  charts: MtfChart[];
+  frequency: string | null;
+  methods: string[];
+  aperture: string | null;
+  focal: string | null;
+}
+
+// The values a lens's charts state, as one sorted label; null when any of its charts is silent.
+function stated(charts: MtfChart[], pick: (image: LensImageAsset) => string[] | undefined): string | null {
+  const labels = new Set<string>();
+  for (const { image } of charts) {
+    const own = pick(image);
+    if (!own?.length) {return null;}
+    own.forEach((label) => labels.add(label));
   }
-  return byLens;
+  return [...labels].sort().join(", ");
 }
 
-function classify(byLens: Map<string, string[] | null>, ignoreUnstated = false) {
-  const entries = [...byLens.entries()];
-  const values = Object.fromEntries(entries.map(([ref, labels]) => [ref, labels?.join(", ") ?? null]));
-  const stated = entries.filter(([, labels]) => labels !== null);
-  const unstated = stated.length < entries.length;
-  const differs = new Set(stated.map(([, labels]) => labels!.join("|"))).size > 1;
-  const status: Status = differs ? "differs" : unstated && !ignoreUnstated ? "unstated" : "same";
-  return { status, values };
-}
-
-/** Grades how far MTF charts read this turn can be compared; undefined unless they cover at least two lenses. */
-export function compareMtfCharts(charts: MtfChart[]): MtfComparison | undefined {
-  if (new Set(charts.map(({ lensRef }) => lensRef)).size < 2) {return undefined;}
-
-  const frequency = classify(labelsByLens(charts, ({ spatialFrequency }) =>
-    spatialFrequency && [`${spatialFrequency.values.join("/")} ${spatialFrequency.unit}`]));
-  const aperture = classify(labelsByLens(charts, ({ apertureFNumbers }) => apertureFNumbers?.map(fNumber)));
-  const focalByLens = labelsByLens(charts, ({ focalLengthMm }) => focalLengthMm === undefined ? undefined : [`${focalLengthMm}mm`]);
-  for (const { lensRef, zoom } of charts) {
+function factsFor(charts: MtfChart[]): LensFacts[] {
+  const byLens = new Map<string, MtfChart[]>();
+  for (const chart of charts) {byLens.set(chart.lensRef, [...(byLens.get(chart.lensRef) ?? []), chart]);}
+  return [...byLens].map(([lens, own]) => ({
+    lens,
+    charts: own,
+    frequency: stated(own, ({ spatialFrequency }) => spatialFrequency && [`${spatialFrequency.values.join("/")} ${spatialFrequency.unit}`]),
+    methods: [...new Set(own.flatMap(({ image }) => image.mtfMethod ? [image.mtfMethod] : []))],
+    aperture: stated(own, ({ apertureFNumbers }) => apertureFNumbers?.map(fNumber)),
     // A prime's single focal length needs no statement on the chart.
-    if (!zoom) {focalByLens.set(lensRef, focalByLens.get(lensRef) ?? ["prime"]);}
-  }
-  const focal = classify(focalByLens);
-  const method = classify(labelsByLens(charts, ({ mtfMethod }) => mtfMethod && [mtfMethod]), true);
+    focal: own[0].zoom ? stated(own, ({ focalLengthMm }) => focalLengthMm === undefined ? undefined : [`${focalLengthMm}mm`]) : "prime",
+  }));
+}
 
-  const conditions: MtfComparison["conditions"] = [
-    { condition: "spatialFrequency", ...frequency },
-    { condition: "testAperture", ...aperture },
-    { condition: "focalLength", ...focal },
-    { condition: "mtfMethod", ...method },
-  ];
+const methodsConflict = (a: string[], b: string[]) => a.length > 0 && b.length > 0 && !a.some((method) => b.includes(method));
+
+// Lenses share a group when their stated spatial frequencies match and no stated MTF method conflicts;
+// a lens that states no frequency has no known scale and stands alone.
+function partition(facts: LensFacts[]): LensFacts[][] {
+  const groups: LensFacts[][] = [];
+  for (const lens of facts) {
+    const home = lens.frequency === null ? undefined : groups.find((group) =>
+      group[0].frequency === lens.frequency && group.every((member) => !methodsConflict(member.methods, lens.methods)));
+    if (home) {home.push(lens);} else {groups.push([lens]);}
+  }
+  return groups;
+}
+
+function describeGroup(group: LensFacts[]): MtfLensGroup {
+  const lenses = group.map(({ lens, charts }) => ({ lens, charts: charts.map(({ name }) => name) }));
+  if (group.length === 1) {return { lenses, level: "alone", caveats: [], rule: RULES.alone };}
 
   const caveats: string[] = [];
-  const hard = frequency.status !== "same" || method.status === "differs";
-  if (frequency.status !== "same") {
-    caveats.push(`The charts' spatial frequencies ${frequency.status === "differs" ? "differ" : "are not all stated"}, so their values are on different or unknown scales.`);
-  }
-  if (method.status === "differs") {
-    caveats.push("The charts use different MTF calculation methods, so their values are not on the same footing.");
-  }
-  if (aperture.status === "unstated") {
-    const wide = [...new Set(charts.map(({ lensRef }) => lensRef))]
-      .map((ref) => maxApertureLabel(charts.find((chart) => chart.lensRef === ref)!.maxAperture));
+  const apertures = group.map(({ aperture }) => aperture);
+  if (apertures.some((value) => value === null)) {
+    const wide = group.map(({ charts }) => maxApertureLabel(charts[0].maxAperture));
     caveats.push(`The test aperture is not stated on every chart. If they were measured wide open (a common manufacturer convention, an assumption, not a fact), they sit at each lens's maximum aperture: ${wide.join(" vs ")}.`);
-  } else if (aperture.status === "differs") {
-    caveats.push(`The charts were measured at different test apertures (${Object.values(aperture.values).join(" vs ")}).`);
+  } else if (new Set(apertures).size > 1) {
+    caveats.push(`The charts were measured at different test apertures (${apertures.join(" vs ")}).`);
   }
-  if (focal.status !== "same") {
-    caveats.push(`The chart focal length ${focal.status === "differs" ? "differs between the lenses" : "is not stated for a zoom"}; a conditions note such as "Wide-angle end" may describe it.`);
+  const focals = group.map(({ focal }) => focal);
+  if (focals.some((value) => value === null) || new Set(focals).size > 1) {
+    caveats.push(`The chart focal length ${focals.some((value) => value === null) ? "is not stated for a zoom" : "differs between the lenses"}; a conditions note such as "Wide-angle end" may describe it.`);
   }
+  const level: Level = caveats.length ? "values-with-caveats" : "values";
+  return { lenses, level, caveats, rule: RULES[level] };
+}
 
-  const level: Level = hard ? "shape-only" : caveats.length ? "values-with-caveats" : "values";
-  return { level, conditions, caveats, rule: RULES[level] };
+function scaleOf(group: LensFacts[]): string {
+  return group[0].frequency ?? "frequency not stated";
+}
+
+/**
+ * Groups the lenses of the given MTF charts by comparable test conditions and grades each group.
+ * Undefined unless the charts cover at least two lenses.
+ */
+export function groupMtfCharts(charts: MtfChart[]): MtfGrouping | undefined {
+  const facts = factsFor(charts);
+  if (facts.length < 2) {return undefined;}
+  const groups = partition(facts);
+  return {
+    mtfGroups: groups.map(describeGroup),
+    ...(groups.length > 1 ? {
+      betweenGroups: `Lenses in different groups sit on different or unknown chart scales (${groups.map(scaleOf).join(" vs ")}): compare them only by curve shape (centre-to-edge falloff, S/M separation), not values, and say what prevents it.`,
+    } : {}),
+  };
 }

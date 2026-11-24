@@ -3,7 +3,7 @@ import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { systemPrompt } from "../system-prompt";
 import { convertToModelMessages, type UIMessage } from "ai";
-import { buildLensTools, countShownFigures, type ToolData, seedRecalledRefs } from "../tools";
+import { buildLensTools, countShownFigures, earlierMtfCharts, type ToolData, seedRecalledRefs } from "../tools";
 import { getLensesByMount } from "@/lib/lens/data";
 import { lensRef, sourceRef } from "../lens-ref";
 
@@ -176,7 +176,7 @@ describe("showLensImages", () => {
     const output = run(both, input);
     const projected = await both.toModelOutput!({ toolCallId: "images", input, output });
     if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
-    expect(JSON.parse(projected.value[0].text).mtfComparison).toMatchObject({ level: expect.any(String), caveats: expect.any(Array), rule: expect.any(String) });
+    expect(JSON.parse(projected.value[0].text).mtfGroups).toMatchObject([{ level: expect.any(String), caveats: expect.any(Array), rule: expect.any(String) }]);
   });
 });
 
@@ -756,5 +756,87 @@ describe("a past table reaches the model as it was", () => {
     if (direct.type !== "text") {throw new Error("Expected text output");}
     expect(result).toContain(JSON.stringify(direct.value).slice(1, -1));
     expect(result).not.toContain("history");
+  });
+});
+
+describe("MTF grouping across calls and replies", () => {
+  const refs = {
+    a: lensRef("fujifilm-xf-16-55mmf28-r-lm-wr-x"),
+    b: lensRef("fujifilm-xf-16-80mmf4-r-ois-wr-x"),
+    c: lensRef("fujifilm-xf-35mmf14-r-x"),
+    d: lensRef("fujifilm-xf-8mmf35-r-wr-x"),
+    e: lensRef("7artisans-25mm-f095-x"),
+  };
+  const all = new Set(Object.values(refs));
+  const build = (figures: { next: number; mtfShown: unknown[] } = { next: 1, mtfShown: [] }) =>
+    ({ figures, tools: buildLensTools("X", "zh", (brand) => brand, GUEST, all, figures as never) });
+  const show = (tool: ReturnType<typeof build>["tools"]["showLensImages"], ...lenses: string[]) =>
+    run(tool, { lenses: lenses.map((ref) => ({ ref, images: [{ role: "mtf" as const }] })) });
+  const message = (id: string, role: "user" | "assistant", ...outputs: unknown[]) => ({
+    id, role, parts: outputs.length
+      ? outputs.map((output, i) => ({ type: "tool-showLensImages", toolCallId: `${id}${i}`, state: "output-available", input: {}, output }))
+      : [{ type: "text", text: "q" }],
+  }) as UIMessage;
+  const lensesIn = (output: { mtfGroups?: { lenses: { lens: string }[] }[] }) => output.mtfGroups?.flatMap(({ lenses }) => lenses.map(({ lens }) => lens));
+
+  it("groups two lenses shown in one call", async () => {
+    const { tools: t } = build();
+    expect(lensesIn(await show(t.showLensImages, refs.a, refs.b))).toEqual([refs.a, refs.b]);
+  });
+
+  it("grades a second call in the same reply against the first, and nothing for a lone lens", async () => {
+    const { tools: t } = build();
+    const first = await show(t.showLensImages, refs.a);
+    expect(first.mtfGroups).toBeUndefined();
+    const second = await show(t.showLensImages, refs.b);
+    expect(lensesIn(second)).toEqual([refs.a, refs.b]);
+    // The earlier chart of this reply is named by its figure label.
+    expect(JSON.stringify(second.mtfGroups)).toContain("图 1");
+  });
+
+  it("grades a chart against ones shown in an earlier reply, naming them by imageRef", async () => {
+    const earlier = await show(build().tools.showLensImages, refs.a);
+    const history = [message("u", "user"), message("a", "assistant", earlier), message("u2", "user")];
+    const { tools: t, figures } = build();
+    figures.mtfShown = earlierMtfCharts(history);
+    const out = await show(t.showLensImages, refs.b);
+    expect(lensesIn(out)).toEqual([refs.a, refs.b]);
+    const text = JSON.stringify(out.mtfGroups);
+    expect(text).toContain("shown in an earlier reply");
+    expect(text).toContain(earlier.displayImages[0].imageRef);
+  });
+
+  it("keeps only the 3 most recently shown earlier lenses", async () => {
+    const shown = [];
+    for (const ref of [refs.a, refs.b, refs.c, refs.d]) {shown.push(await show(build().tools.showLensImages, ref));}
+    const history = [message("u", "user"), message("a", "assistant", ...shown)];
+    const { tools: t, figures } = build();
+    figures.mtfShown = earlierMtfCharts(history);
+    const out = await show(t.showLensImages, refs.e);
+    expect(new Set(lensesIn(out))).toEqual(new Set([refs.b, refs.c, refs.d, refs.e]));
+  });
+
+  it("splits a lens on another scale into its own group with a shapes-only line", async () => {
+    const { tools: t } = build();
+    const out = await show(t.showLensImages, refs.a, refs.b, refs.e);
+    expect(out.mtfGroups.length).toBeGreaterThan(1);
+    expect(out.betweenGroups).toMatch(/shape/);
+  });
+
+  it("does not touch history and puts the groups in the model's reading", async () => {
+    const earlier = await show(build().tools.showLensImages, refs.a);
+    const history = [message("u", "user"), message("a", "assistant", earlier), message("u2", "user")];
+    const snapshot = JSON.stringify(history);
+    const { tools: t, figures } = build();
+    figures.mtfShown = earlierMtfCharts(history);
+    expect(JSON.stringify(history)).toBe(snapshot);
+    const input = { lenses: [{ ref: refs.b, images: [{ role: "mtf" as const }] }] };
+    const out = await run(t.showLensImages, input);
+    const projected = await t.showLensImages.toModelOutput!({ toolCallId: "i", input, output: out });
+    if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
+    const reading = JSON.parse(projected.value[0].text);
+    expect(reading.mtfGroups).toEqual(out.mtfGroups);
+    expect(reading.mtfNote).toContain("mtfGroups");
+    expect(reading).not.toHaveProperty("mtfComparison");
   });
 });
