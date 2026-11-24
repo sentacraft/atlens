@@ -1,0 +1,40 @@
+{
+  "antigravity-posttooluse": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "out=$(node \"$(git rev-parse --show-toplevel)/scripts/hooks/ui-token-review.mjs\"); printf '%s' \"${out:-{}}\"",
+            "timeout": 10,
+            "type": "command"
+          },
+          {
+            "command": "out=$(node \"$(git rev-parse --show-toplevel)/scripts/hooks/site-facts-review.mjs\"); printf '%s' \"${out:-{}}\"",
+            "timeout": 10,
+            "type": "command"
+          },
+          {
+            "command": "out=$(node \"$(git rev-parse --show-toplevel)/scripts/hooks/cjk-guard.mjs\"); printf '%s' \"${out:-{}}\"",
+            "timeout": 10,
+            "type": "command"
+          },
+          {
+            "command": "out=$(node \"$(git rev-parse --show-toplevel)/scripts/hooks/launch-review.mjs\"); printf '%s' \"${out:-{}}\"",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "edit_file|write_file|write_to_file|replace_file_content|multi_replace_file_content"
+      }
+    ]
+  },
+  "antigravity-sessionstart": {
+    "SessionStart": [
+      {
+        "command": "bash \"$(git rev-parse --show-toplevel)/scripts/worktree-setup.sh\" --antigravity-hook",
+        "timeout": 600,
+        "type": "command"
+      }
+    ]
+  }
+}
