@@ -228,13 +228,15 @@ function digest(msg) {
         read: true,
         galleryCount: image.gallery?.length ?? 1,
         figure: image.figureLabel ?? null,
+        id: image.image?.id ?? null,
+        spatialFrequency: image.image?.spatialFrequency ?? null,
         focalLengthMm: image.image?.focalLengthMm ?? null,
         apertureFNumbers: image.image?.apertureFNumbers ?? null,
       }));
       images.push(...shown);
       // The judge cannot see pixels; this line tells it what was on screen and read.
       if (shown.length) {
-        transcript.push(`[images]\n${shown.map((image) => `- ${image.figure ? `${image.figure}: ` : ""}${image.lensName} ${image.role}${image.focalLengthMm ? ` ${image.focalLengthMm}mm` : ""}${image.apertureFNumbers ? ` f/${image.apertureFNumbers.join(", f/")}` : ""}${image.galleryCount > 1 ? ` (gallery of ${image.galleryCount})` : ""}, read`).join("\n")}`);
+        transcript.push(`[images]\n${shown.map((image) => `- ${image.figure ? `${image.figure}: ` : ""}${image.lensName} ${image.role}${image.id ? ` image ${image.id}` : ""}${image.focalLengthMm ? ` ${image.focalLengthMm}mm` : ""}${image.spatialFrequency ? ` ${image.spatialFrequency.values.join("/")} ${image.spatialFrequency.unit}` : ""}${image.apertureFNumbers ? ` f/${image.apertureFNumbers.join(", f/")}` : ""}${image.galleryCount > 1 ? ` (gallery of ${image.galleryCount})` : ""}, read`).join("\n")}`);
       }
     }
     if (name === "lensReviews") {

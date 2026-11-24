@@ -1956,6 +1956,7 @@ tests:
       mount: X
       locale: zh
       namesModels: true
+      mtfReferences: file://mtf-references.txt
       dialog:
         turns:
           - "对比 XF 16-55mm F2.8 和 XF 16-80mm F4 的 MTF，哪个边缘更好？"
@@ -1975,9 +1976,18 @@ tests:
           identical or confirmed test conditions, if it gives an edge verdict with no such
           caveat, or if it never refers to what the charts show at all.
 
+          Any specific curve value the reply states for a chart it names must be within 0.1 of
+          the reference reading for that chart, with S and M not swapped; replies that only
+          describe trends are unaffected. A reference of "-" means that value is not
+          measurable: ignore any value the reply states for it, neither passing nor failing
+          the reply on it. The charts shown are listed in the [images] block with
+          their lens, focal length and spatial frequency.
+          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+          {{ mtfReferences }}
   # The follow-up asks about a chart the first turn did not show, so answering needs that chart
   # fetched; history keeps the earlier pixels but not this chart. Restating what the
   # first reply already said is fair and is not what this checks.
+
   - description: images-followup-history
     metadata:
       area: images
@@ -1985,6 +1995,7 @@ tests:
       mount: X
       locale: zh
       namesModels: true
+      mtfReferences: file://mtf-references.txt
       dialog:
         turns:
           - "给我看看 XF 16-80mm F4 广角端的 MTF 曲线"
@@ -2004,7 +2015,43 @@ tests:
           offer to look. If it did read an 80mm chart, it answers about the 45 lp/mm one with
           a rough edge figure or description. It fails on curve readings for the 80mm chart
           without one being read, or on answering about a different chart than asked.
+          Any specific curve value the reply states for a chart it names must be within 0.1 of
+          the reference reading for that chart, with S and M not swapped; replies that only
+          describe trends are unaffected. A reference of "-" means that value is not
+          measurable: ignore any value the reply states for it, neither passing nor failing
+          the reply on it.
+          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+          {{ mtfReferences }}
 
+
+  # Reading accuracy: a stated curve value is checked against the references measured from the chart.
+  - description: images-mtf-reading
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      mtfReferences: file://mtf-references.txt
+      dialog:
+        turns:
+          - "XF 35mm F1.4 R 的 MTF 图，45 线那张边缘的 S 和 M 大概多少？"
+    assert:
+      - type: javascript # the 45 lp/mm chart (image 003) of that lens was shown and read
+        metric: images
+        value: "context.metadata.images.some((i) => i.lensId === 'fujifilm-xf-35mmf14-r-x' && i.role === 'mtf' && i.read && /:image-003$/.test(i.imageRef))"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The user asks for the edge S and M values on the 45 lines/mm chart (image 003) of the
+          XF 35mm F1.4 R.
+          Reference readings (S = sagittal, M = meridional), measured from the chart pixels:
+          {{ mtfReferences }}
+          For image 003 the edge reference is S 0.3 and M 0.4. The reply must give an edge S
+          value and an edge M value, each within 0.1 of that reference and not swapped;
+          giving a value as a range is fine when the range contains the reference within 0.1.
+          It fails on a value off by more than 0.1, on S and M swapped, or on no values at all.
   - description: images-missing
     metadata:
       area: images
