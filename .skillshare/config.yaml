@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/runkids/skillshare/main/schemas/project-config.schema.json
+
+targets:
+  - claude
+  - codex
+  - antigravity
+audit:
+  block_threshold: CRITICAL
+hooks:
+  entries:
+    claude-posttooluse:
+      bindings:
+        claude:
+          events:
+            PostToolUse:
+              - hooks:
+                  - command: node "$(git rev-parse --show-toplevel)/scripts/hooks/ui-token-review.mjs"
+                    statusMessage: Checking shared UI tokens
+                    timeout: 10
+                    type: command
+                  - command: node "$(git rev-parse --show-toplevel)/scripts/hooks/site-facts-review.mjs"
+                    statusMessage: Checking site facts
+                    timeout: 10
+                    type: command
+                  - command: node "$(git rev-parse --show-toplevel)/scripts/hooks/cjk-guard.mjs"
+                    statusMessage: Checking for misplaced Chinese text
+                    timeout: 10
+                    type: command
+                  - command: node "$(git rev-parse --show-toplevel)/scripts/hooks/launch-review.mjs"
+                    statusMessage: Checking launch checklist
+                    timeout: 10
+                    type: command
+                matcher: Edit|Write
+    claude-sessionstart:
+      bindings:
+        claude:
+          events:
+            SessionStart:
+              - hooks:
+                  - command: bash "$(git rev-parse --show-toplevel)/scripts/worktree-setup.sh" --claude-hook
+                    statusMessage: Checking worktree dependencies
+                    timeout: 600
+                    type: command
