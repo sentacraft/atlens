@@ -1984,6 +1984,42 @@ tests:
           their lens, focal length and spatial frequency.
           Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
           {{ mtfReferences }}
+  # Sharpness of two named lenses, without asking for charts: their MTF charts are shown and read
+  # unprompted.
+  - description: images-mtf-proactive
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      mtfReferences: file://mtf-references.txt
+      dialog:
+        turns:
+          - "XF 16-55mm F2.8 和 XF 16-80mm F4 在广角端，边缘画质哪个更好？"
+    assert:
+      - type: javascript # both lenses' MTF charts were shown and read without being asked for
+        metric: images
+        value: "context.metadata.images.some((i) => i.role === 'mtf' && i.read && i.lensId.startsWith('fujifilm-xf-16-55mmf28')) && context.metadata.images.some((i) => i.role === 'mtf' && i.read && i.lensId === 'fujifilm-xf-16-80mmf4-r-ois-wr-x')"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The reply should draw on what the two lenses' wide-end MTF charts show about the
+          edges. Neither chart states its test aperture and the lenses open to different
+          apertures, so a leaning is fine only with that caveat; it fails if it calls the
+          conditions identical or confirmed. It also fails if it judges the edges on
+          reputation alone without referring to the charts.
+
+          Any specific curve value the reply states for a chart it names must be within 0.1 of
+          the reference reading for that chart, with S and M not swapped; replies that only
+          describe trends are unaffected. A reference of "-" means that value is not
+          measurable: ignore any value the reply states for it, neither passing nor failing
+          the reply on it. The charts shown are listed in the [images] block with
+          their lens, focal length and spatial frequency.
+          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+          {{ mtfReferences }}
+
   # The follow-up asks about a chart the first turn did not show, so answering needs that chart
   # fetched; history keeps the earlier pixels but not this chart. Restating what the
   # first reply already said is fair and is not what this checks.
