@@ -1,13 +1,13 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Apple, Banana, Check, CupSoda, Egg, GlassWater, Milk, SoapDispenserDroplet, Star, type LucideIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import ChartChips from "@/components/charts/ChartChips";
 import ChartFocusPill from "@/components/charts/ChartFocusPill";
-import ChartLensThumb from "@/components/charts/ChartLensThumb";
 import ChartLensItem from "@/components/charts/ChartLensItem";
 import ChartLensSheet from "@/components/charts/ChartLensSheet";
 import LensActions from "@/components/lens/LensActions";
@@ -21,6 +21,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { matchesChartSelection, type BrandCount } from "@/lib/charts/catalog";
 import { weightBarPct, type LadderRow, type WeightReference, type WeightTier } from "@/lib/charts/weight";
 import { brandLabel } from "@/lib/lens/format";
+import { getLensImageUrl } from "@/lib/lens/image";
 import type { Mount } from "@/lib/types";
 import { brandPath } from "@/lib/url/routes";
 import { readChartSelectionFromSearch, type ChartSelection } from "@/lib/url/charts";
@@ -255,7 +256,7 @@ function LensRow({
     <div className={cn("group relative grid items-center border-b border-zinc-100", focused && "rounded-md bg-zinc-100 ring-1 ring-zinc-900", cls.row)}>
       {handlers && <ChartLensItem lens={lens} handlers={handlers} focused={focused} className="absolute inset-0 z-0 rounded-md hover:bg-zinc-50" />}
       <span className={cn("pointer-events-none relative text-right tabular-nums text-zinc-400", cls.rank)}>{rank}</span>
-      <ChartLensThumb lensId={lens.id} size={48} interactive={Boolean(handlers)} loading={handlers ? "lazy" : "eager"} className={cn("pointer-events-none", cls.image)} />
+      <Image src={getLensImageUrl(lens.id)} alt="" width={48} height={48} loading={handlers ? "lazy" : "eager"} className={cn("pointer-events-none relative object-contain", cls.image)} />
       <span className="pointer-events-none relative col-start-3 row-start-1 flex min-w-0 flex-col">
         <span className={cn("truncate uppercase tracking-[0.12em] text-zinc-500", cls.brand)}>{brandLabel(tBrand, lens.brand)}</span>
         <span className={cn("truncate text-zinc-900", cls.model)}>{lens.model}</span>

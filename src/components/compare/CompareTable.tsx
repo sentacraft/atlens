@@ -61,7 +61,6 @@ function LensHeaderContent({ lens }: { lens: Lens }) {
             className="object-contain"
             loading="eager"
           />
-          <OwnedLensMark lensId={lens.id} form="dot" className="top-0 left-0" />
         </div>
       </div>
 
@@ -74,6 +73,9 @@ function LensHeaderContent({ lens }: { lens: Lens }) {
       <p className="mt-auto line-clamp-3 text-center font-semibold leading-snug text-zinc-900 transition-colors group-hover/link:text-zinc-600">
         {lens.model}
       </p>
+      <div className="mt-1 flex h-[18px] items-center justify-center">
+        <OwnedLensMark lensId={lens.id} form="inline" />
+      </div>
     </Link>
   );
 }
