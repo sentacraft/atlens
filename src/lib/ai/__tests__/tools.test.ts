@@ -3,7 +3,7 @@ import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { systemPrompt } from "../system-prompt";
 import type { UIMessage } from "ai";
-import { buildLensTools, type ToolData, seedRecalledRefs } from "../tools";
+import { buildLensTools, countShownFigures, type ToolData, seedRecalledRefs } from "../tools";
 import { getLensesByMount } from "@/lib/lens/data";
 import { lensRef, sourceRef } from "../lens-ref";
 
@@ -123,27 +123,28 @@ describe("showLensImages", () => {
     })));
   });
 
-  it("shows and reads a requested product photo", () => {
+  it("shows and reads every product photo of a requested lens", () => {
     const output = run(imageTool(), { lenses: [{ ref, images: [{ role: "product" }] }] });
-    expect(output.displayImages.map(({ image }: { image: { role: string } }) => image.role)).toEqual(["product"]);
+    expect(output.displayImages.length).toBeGreaterThan(0);
+    expect(output.displayImages.every(({ image }: { image: { role: string } }) => image.role === "product")).toBe(true);
   });
 
-  it("includes all eligible MTF charts in the viewer, and reads those displayed", async () => {
+  it("displays and reads every eligible MTF chart", async () => {
     const zoom = lensRef("fujifilm-gf-35-70mmf45-56-wr-g");
     const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set([zoom]));
     const input = { lenses: [{ ref: zoom, images: [{ role: "mtf" as const }] }] };
     const result = run(gfx.showLensImages, input);
-    expect(result.displayImages[0].gallery).toHaveLength(6);
-    expect(result.displayImages).toHaveLength(2);
+    expect(result.displayImages).toHaveLength(6);
     const filtered = run(gfx.showLensImages, { lenses: [{ ref: zoom, images: [{ role: "mtf", focalLengthMm: 70 }] }] });
-    expect(filtered.displayImages[0].gallery).toHaveLength(3);
-    expect(filtered.displayImages[0].gallery.every((entry: { image: { focalLengthMm: number } }) => entry.image.focalLengthMm === 70)).toBe(true);
+    expect(filtered.displayImages).toHaveLength(3);
+    expect(filtered.displayImages.every((entry: { image: { focalLengthMm: number } }) => entry.image.focalLengthMm === 70)).toBe(true);
     const projected = await gfx.showLensImages.toModelOutput!({ toolCallId: "images", input, output: result });
     if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
     expect(JSON.parse(projected.value[0].text)).toMatchObject({
       presentation: { galleries: [{ lensRef: zoom, role: "mtf", imageCount: 6 }] },
+      imagesForReading: result.displayImages.map(({ imageRef }: { imageRef: string }) => imageRef),
     });
-    expect(projected.value.filter((part) => part.type === "file")).toHaveLength(2);
+    expect(projected.value.filter((part) => part.type === "file")).toHaveLength(6);
   });
 
   it("does not pass unlabeled charts off as matching a requested aperture", () => {
@@ -686,5 +687,54 @@ describe("searchLensByName with several names", () => {
       parts: [{ type: "tool-searchLensByName", toolCallId: "c", state: "output-available", input: { query: "56" }, output: { results: [{ ref: "old1" }, { ref: "old2" }] } }],
     } as UIMessage]);
     expect([...recalledRefs]).toEqual(["old1", "old2"]);
+  });
+});
+
+describe("figure numbers", () => {
+  const a = lensRef("fujifilm-xf-16-55mmf28-r-lm-wr-x");
+  const b = lensRef("fujifilm-xf-16-80mmf4-r-ois-wr-x");
+  const figures = (locale: string, next = 1) => {
+    const counter = { next };
+    return { counter, tool: buildLensTools("X", locale, (brand) => brand, GUEST, new Set([a, b]), counter).showLensImages };
+  };
+  const input = { lenses: [{ ref: a, images: [{ role: "mtf" as const }] }, { ref: b, images: [{ role: "mtf" as const }] }] };
+
+  it("numbers displayed images 1..n across calls in one request, in display order", async () => {
+    const { tool, counter } = figures("en");
+    const first = await run(tool, input);
+    const second = await run(tool, { lenses: [{ ref: b, images: [{ role: "optical-construction" as const }] }] });
+    const all = [...first.displayImages, ...second.displayImages];
+    expect(all.map((image: { figure: number }) => image.figure)).toEqual(all.map((_, i) => i + 1));
+    expect(all[0].figureLabel).toBe("Fig. 1");
+    expect(counter.next).toBe(all.length + 1);
+  });
+
+  it("continues from a seeded count and labels in the reply's locale", async () => {
+    const { tool } = figures("zh", 5);
+    const out = await run(tool, { lenses: [{ ref: a, images: [{ role: "mtf" as const }] }] });
+    expect(out.displayImages[0]).toMatchObject({ figure: 5, figureLabel: "图 5" });
+  });
+
+  it("counts the figures already shown in the resumed assistant message", () => {
+    const shown = (n: number) => ({ type: "tool-showLensImages", toolCallId: `c${n}`, state: "output-available", input: {}, output: { displayImages: Array.from({ length: n }, () => ({})) } });
+    const resumed = [
+      { id: "u", role: "user", parts: [{ type: "text", text: "hi" }] },
+      { id: "a", role: "assistant", parts: [shown(2), shown(3)] },
+    ] as UIMessage[];
+    expect(countShownFigures(resumed)).toBe(5);
+    expect(countShownFigures([...resumed, { id: "u2", role: "user", parts: [{ type: "text", text: "next" }] } as UIMessage])).toBe(0);
+    expect(countShownFigures([])).toBe(0);
+  });
+
+  it("labels each image the model receives and tells it to refer to figures by label", async () => {
+    const { tool } = figures("zh");
+    const output = await run(tool, input);
+    const projected = await tool.toModelOutput!({ toolCallId: "i", input, output });
+    if (projected.type !== "content" || projected.value[0].type !== "text") {throw new Error("Expected vision content");}
+    const summary = JSON.parse(projected.value[0].text);
+    expect(summary.figureNote).toMatch(/label/i);
+    expect(summary.shownImages[0]).toMatchObject({ figure: "图 1", imageRef: output.displayImages[0].imageRef });
+    const captions = projected.value.filter((part) => part.type === "text").slice(1).map((part) => (part as { text: string }).text);
+    expect(captions[0]).toBe(`Image 图 1 (${output.displayImages[0].imageRef}):`);
   });
 });

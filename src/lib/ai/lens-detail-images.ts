@@ -1,9 +1,12 @@
 import { z } from "zod";
 import { SITE } from "@/config/site";
 import { getLensImageUrl, hasPrimaryLensImage } from "@/lib/lens/image";
-import type { Lens, LensImageAsset, Mount } from "@/lib/types";
+import { LENS_IMAGE_ROLES, type Lens, type LensImageAsset, type LensImageRole, type Mount } from "@/lib/types";
 
 const imageRoles = ["product", "mtf", "optical-construction"] as const;
+
+/** The most images one call displays and sends to the model; the rest are listed, never dropped silently. */
+export const MAX_IMAGES_PER_CALL = 24;
 
 export const lensImageRequestsSchema = z.array(z.object({
   role: z.enum(imageRoles),
@@ -14,7 +17,7 @@ export const lensImageRequestsSchema = z.array(z.object({
 
 type ImageRequest = z.infer<typeof lensImageRequestsSchema>[number];
 
-export interface LensDetailDisplayImage {
+export interface LensImageEntry {
   lensRef: string;
   lensName: string;
   lensId: string;
@@ -22,8 +25,10 @@ export interface LensDetailDisplayImage {
   imageRef: string;
   src: string;
   image: LensImageAsset;
-  gallery?: LensDetailDisplayImage[];
 }
+
+/** A displayed image: the entry plus its position among the images shown in the assistant message and that position's label in the reply's locale. */
+export type LensDetailDisplayImage = LensImageEntry & { figure: number; figureLabel: string };
 
 function imageMetadata(asset: LensImageAsset) {
   const { id, ...metadata } = asset;
@@ -35,7 +40,7 @@ export function lensDetailImages(
   lensRef: string,
   lensName: string,
   requests: ImageRequest[] = [],
-  remaining = 4,
+  remaining = MAX_IMAGES_PER_CALL,
 ) {
   const assets = (lens.images ?? []).filter((asset) => imageRoles.some((role) => role === asset.role));
   if (!assets.some((asset) => asset.role === "product") && hasPrimaryLensImage(lens.id)) {
@@ -50,10 +55,10 @@ export function lensDetailImages(
     src: image.id === "primary" ? new URL(getLensImageUrl(lens.id), SITE.url).href : getLensImageUrl(lens.id, image.id),
     image,
   }));
-  const displayImages = new Map<string, LensDetailDisplayImage>();
+  const displayImages = new Map<string, LensImageEntry>();
   const results = requests.map(({ role, imageRef, focalLengthMm, apertureFNumber }) => {
     const candidates = entries.filter((entry) => entry.image.role === role && (!imageRef || entry.imageRef === imageRef));
-    const conditions = (entry: LensDetailDisplayImage) => [
+    const conditions = (entry: LensImageEntry) => [
       focalLengthMm === undefined ? true : entry.image.focalLengthMm === undefined ? null : entry.image.focalLengthMm === focalLengthMm,
       apertureFNumber === undefined ? true : !entry.image.apertureFNumbers ? null : entry.image.apertureFNumbers.includes(apertureFNumber),
     ];
@@ -65,12 +70,13 @@ export function lensDetailImages(
     const fallback = matches.length === 0 && unknown.length > 0;
     const eligible = fallback ? unknown : matches;
     const selected: string[] = [];
-    for (const candidate of eligible.slice(0, role === "mtf" ? 2 : 1)) {
-      if (!displayImages.has(candidate.imageRef) && displayImages.size >= remaining) {continue;}
-      const gallery = !selected.length && eligible.length > 1 && (role === "mtf" || role === "product")
-        ? eligible
-        : displayImages.get(candidate.imageRef)?.gallery;
-      displayImages.set(candidate.imageRef, { ...candidate, ...(gallery ? { gallery } : {}) });
+    const notShown: string[] = [];
+    for (const candidate of eligible) {
+      if (!displayImages.has(candidate.imageRef) && displayImages.size >= remaining) {
+        notShown.push(candidate.imageRef);
+        continue;
+      }
+      displayImages.set(candidate.imageRef, candidate);
       selected.push(candidate.imageRef);
     }
     return {
@@ -78,6 +84,7 @@ export function lensDetailImages(
       ...(imageRef ? { imageRef } : {}),
       status: selected.length ? (fallback ? "conditions-unconfirmed" : "selected") : matches.length || fallback ? "limit" : candidates.length ? "no-match" : "unavailable",
       ...(selected.length ? { selected } : {}),
+      ...(notShown.length ? { notShown } : {}),
       ...(unknown.length ? { unconfirmed: unknown.map((entry) => entry.imageRef) } : {}),
       ...(fallback && selected.length ? {
         note: "The attached charts have unconfirmed test conditions; do not present them as matching the requested conditions. Only describe curves if you received their pixels.",
@@ -85,7 +92,12 @@ export function lensDetailImages(
     };
   });
 
+  const unserved = LENS_IMAGE_ROLES.filter((role) => !imageRoles.some((served) => served === role))
+    .map((role) => ({ role, count: (lens.images ?? []).filter((asset) => asset.role === role).length }))
+    .filter(({ count }) => count > 0);
+
   return {
+    unservedImages: unserved as { role: LensImageRole; count: number }[],
     images: entries.map(({ imageRef, image }) => ({ imageRef, ...imageMetadata(image).metadata })),
     results,
     displayImages: [...displayImages.values()],

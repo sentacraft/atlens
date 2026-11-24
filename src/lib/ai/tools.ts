@@ -16,9 +16,10 @@ import {
 } from "@/lib/ai/recall";
 import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
 import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
+import { figureLabel } from "@/lib/ai/figure-label";
 import { LENS_TABLE_RENDERERS, tableLabelsForLocale } from "@/lib/ai/lens-table-cells";
 import { compareMtfCharts } from "@/lib/ai/mtf-comparison";
-import { lensDetailImages, lensImageRequestsSchema, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
+import { lensDetailImages, lensImageRequestsSchema, MAX_IMAGES_PER_CALL, type LensImageEntry } from "@/lib/ai/lens-detail-images";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
@@ -164,6 +165,19 @@ export function seedRecalledRefs(recalledRefs: Set<string>, messages: UIMessage[
   }
 }
 
+/**
+ * The figure numbers already used by the assistant message this request continues: a sign-in pause
+ * resumes the same message in a new request, and its numbering must carry on rather than restart.
+ */
+export function countShownFigures(messages: UIMessage[]): number {
+  const last = messages.at(-1);
+  if (last?.role !== "assistant") {return 0;}
+  return last.parts.reduce((total, part) => {
+    if (!isToolUIPart(part) || getToolName(part) !== "showLensImages" || part.state !== "output-available") {return total;}
+    return total + ((part.output as { displayImages?: unknown[] } | null)?.displayImages?.length ?? 0);
+  }, 0);
+}
+
 /** Data the tools read beyond the catalogue: the user's account and the review store. */
 export interface ToolData {
   /** Favorite lens ids, newest first, or null for a guest. */
@@ -237,6 +251,8 @@ export function buildLensTools(
   tBrand: (brand: string) => string,
   data: ToolData,
   recalledRefs: Set<string>,
+  // Filled with the next figure number once the history is resolved, like recalledRefs.
+  figures: { next: number } = { next: 1 },
 ) {
   const mountLabel = mount === "G" ? "Fujifilm GFX" : "Fujifilm X";
   const contextRefs = buildRefIndex(getLensesByMount(mount, locale));
@@ -386,21 +402,10 @@ export function buildLensTools(
           ...(notReturned ? { notReturned } : {}),
         };
       },
-      // Saved replies can still carry the image fields of the retired lensDetails output; none of them belong in the model's context.
-      toModelOutput: ({ output }) => {
-        const without = (value: object, keys: string[]) => Object.fromEntries(Object.entries(value).filter(([key]) => !keys.includes(key)));
-        return {
-          type: "text",
-          value: JSON.stringify({
-            ...without(output, ["displayImages", "readRefs", "historical"]),
-            lenses: output.lenses.map((lens) => without(lens, ["images", "imageResults"])),
-          }),
-        };
-      },
     }),
 
     showLensImages: tool({
-      description: "Show the user product photos, MTF charts or optical diagrams of recalled lenses, and read them. Use the image ref to revisit an exact image.",
+      description: "Show the user product photos, MTF charts or optical diagrams of recalled lenses, and read them. Show images when the user asks to see or interpret them, and attach the optical diagram when answering how many elements or groups or which special elements a lens has. Otherwise do not show images unasked; MTF charts are not a way to answer which lens is sharper. Use the image ref to revisit an exact image.",
       inputSchema: z.object({
         lenses: z.array(z.object({
           ref: z.string().describe("Lens ref from an earlier recall result."),
@@ -409,15 +414,22 @@ export function buildLensTools(
       }),
       execute: ({ lenses }) => {
         const { kept, notReturned } = capRefs(lenses.map(({ ref }) => ref), MAX_DETAIL_REFS);
-        const displayImages: LensDetailDisplayImage[] = [];
+        const displayImages: LensImageEntry[] = [];
         return {
           lenses: recalledLenses(kept).map((lens, index) => {
             const { name, maxAperture, focalNativeMm } = resolveLens(lens, locale, tBrand);
-            const { images, results, displayImages: selected } = lensDetailImages(lens, kept[index], name, lenses.find(({ ref }) => ref === kept[index])?.images, 4 - displayImages.length);
+            const { images, results, displayImages: selected, unservedImages } = lensDetailImages(lens, kept[index], name, lenses.find(({ ref }) => ref === kept[index])?.images, MAX_IMAGES_PER_CALL - displayImages.length);
             displayImages.push(...selected);
-            return { ref: kept[index], name, maxAperture, focalNativeMm, images, ...(results.length ? { imageResults: results } : {}) };
+            return {
+              ref: kept[index], name, maxAperture, focalNativeMm, images,
+              ...(results.length ? { imageResults: results } : {}),
+              ...(unservedImages.length ? { unservedImages, unservedNote: "These image types exist for this lens but are not served here; they are on the lens's page. Never say the lens has no such image." } : {}),
+            };
           }),
-          displayImages,
+          displayImages: displayImages.map((entry) => {
+            const figure = figures.next++;
+            return { ...entry, figure, figureLabel: figureLabel(locale, figure) };
+          }),
           ...(notReturned ? { notReturned } : {}),
         };
       },
@@ -431,7 +443,15 @@ export function buildLensTools(
             imageCount: rest.length + 1,
           })),
         };
-        const metadata = { ...details, presentation, imagesForReading: displayImages.map(({ imageRef }) => imageRef) };
+        const metadata = {
+          ...details,
+          presentation,
+          imagesForReading: displayImages.map(({ imageRef }) => imageRef),
+          ...(displayImages.some(({ figureLabel }) => figureLabel) ? {
+            shownImages: displayImages.map(({ figureLabel, imageRef }) => ({ figure: figureLabel, imageRef })),
+            figureNote: "The user sees each shown image with its figure label. Refer to shown images by that label, e.g. in prose, not by imageRef.",
+          } : {}),
+        };
         if (!displayImages.length) {
           return { type: "text", value: JSON.stringify(metadata) };
         }
@@ -453,8 +473,8 @@ export function buildLensTools(
           type: "content",
           value: [
             { type: "text", text: JSON.stringify(reading) },
-            ...displayImages.flatMap(({ imageRef, src }) => [
-              { type: "text" as const, text: `Image ${imageRef}:` },
+            ...displayImages.flatMap(({ imageRef, src, figureLabel }) => [
+              { type: "text" as const, text: figureLabel ? `Image ${figureLabel} (${imageRef}):` : `Image ${imageRef}:` },
               { type: "file" as const, mediaType: "image/webp", data: { type: "url" as const, url: new URL(src) }, providerOptions: IMAGE_READING_OPTIONS },
             ]),
           ],

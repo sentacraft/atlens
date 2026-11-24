@@ -285,11 +285,10 @@
     "gathering": "正在检索镜头库…",
     "composing": "正在整理结果…",
     "lensImages": {
+      "figure": "图 {number}",
       "title": "镜头图片",
       "type": "{role, select, product {外观照} mtf {MTF 曲线} structure {光学结构图} other {镜头图片}}",
-      "imageLabel": "{lens} · {type}",
-      "count": "共 {count, number} 张",
-      "openGallery": "放大图片：{label}（{count}）"
+      "imageLabel": "{lens} · {type}"
     },
     "table": {
       "lensHeader": "镜头",

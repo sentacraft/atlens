@@ -227,13 +227,14 @@ function digest(msg) {
         role: image.image?.role ?? null,
         read: true,
         galleryCount: image.gallery?.length ?? 1,
+        figure: image.figureLabel ?? null,
         focalLengthMm: image.image?.focalLengthMm ?? null,
         apertureFNumbers: image.image?.apertureFNumbers ?? null,
       }));
       images.push(...shown);
       // The judge cannot see pixels; this line tells it what was on screen and read.
       if (shown.length) {
-        transcript.push(`[images]\n${shown.map((image) => `- ${image.lensName} ${image.role}${image.focalLengthMm ? ` ${image.focalLengthMm}mm` : ""}${image.apertureFNumbers ? ` f/${image.apertureFNumbers.join(", f/")}` : ""}${image.galleryCount > 1 ? ` (gallery of ${image.galleryCount})` : ""}, read`).join("\n")}`);
+        transcript.push(`[images]\n${shown.map((image) => `- ${image.figure ? `${image.figure}: ` : ""}${image.lensName} ${image.role}${image.focalLengthMm ? ` ${image.focalLengthMm}mm` : ""}${image.apertureFNumbers ? ` f/${image.apertureFNumbers.join(", f/")}` : ""}${image.galleryCount > 1 ? ` (gallery of ${image.galleryCount})` : ""}, read`).join("\n")}`);
       }
     }
     if (name === "lensReviews") {

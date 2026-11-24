@@ -26,7 +26,7 @@ import { ASK_CHOICES } from "@/lib/ai/choice-request";
 import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
 import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval, signInDeclined } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
-import { buildLensTools, seedRecalledRefs } from "@/lib/ai/tools";
+import { buildLensTools, countShownFigures, seedRecalledRefs } from "@/lib/ai/tools";
 import { loadLensReviews } from "@/lib/lens/reviews-repository";
 import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
 import { checkIrisQuota, recordIrisTurn, type IrisQuotaUser } from "@/lib/ai/iris-quota";
@@ -49,7 +49,7 @@ import {
 } from "@/lib/askiris/conversation-repository";
 import { MAX_CONVERSATION_TITLE_LENGTH } from "@/lib/askiris/conversation-contract";
 import { resolveTurn } from "@/lib/askiris/turn-history";
-import { normalizeLensDetailsMessage, withHistoricalTablePresentation } from "@/lib/askiris/lens-details-history";
+import { withHistoricalTablePresentation } from "@/lib/askiris/lens-details-history";
 import { createAuth } from "@/lib/auth";
 import {
   askIrisMessageMetadataSchema,
@@ -146,6 +146,7 @@ export async function POST(req: NextRequest) {
     process.env.NODE_ENV === "production" ? undefined : evalFavorites(req.headers.get(EVAL_FAVORITES_HEADER));
   // Filled once the history is resolved below; validate needs the tools before that.
   const recalledRefs = new Set<string>();
+  const figures = { next: 1 };
   const tools = withRepeatedFailureNotice(
     buildLensTools(
       mount,
@@ -162,6 +163,7 @@ export async function POST(req: NextRequest) {
         },
       },
       recalledRefs,
+      figures,
     ),
   );
   const validate = (messages: unknown) =>
@@ -172,7 +174,7 @@ export async function POST(req: NextRequest) {
       tools,
     });
 
-  const incoming = await validate([normalizeLensDetailsMessage(message)]);
+  const incoming = await validate([message]);
   if (!incoming.success) {
     console.warn("[askiris] invalid message", incoming.error.message.slice(0, 500));
     return chatErrorResponse("unavailable", 400);
@@ -180,7 +182,7 @@ export async function POST(req: NextRequest) {
 
   let stored: AskIrisUIMessage[];
   try {
-    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId }) as AskIrisUIMessage[]).map(normalizeLensDetailsMessage);
+    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId }) as AskIrisUIMessage[]);
     // validateUIMessages rejects an empty list, which a new conversation has.
     const checked = stored.length > 0 ? await validate(stored) : undefined;
     // Stored turns that no longer match the tool schemas are still replayed: dropping
@@ -220,6 +222,7 @@ export async function POST(req: NextRequest) {
   }
   const { history, userMessage, historyChanged } = turn;
   seedRecalledRefs(recalledRefs, history);
+  figures.next = countShownFigures(history) + 1;
   const gearDeclined = gearCardDecline(history);
   const declinedSignIn = signInDeclined(history);
   const activeTools = Object.keys(tools).filter((name) =>
