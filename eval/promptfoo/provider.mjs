@@ -156,6 +156,7 @@ function digest(msg) {
   const imageRequests = [];
   const images = [];
   const imageResults = [];
+  const mtfGroups = [];
   const reviews = [];
   const recalledRefs = new Set();
   const toolsCalled = [];
@@ -218,6 +219,9 @@ function digest(msg) {
       }
       for (const lens of part.output?.lenses ?? []) {
         imageResults.push(...(lens.imageResults ?? []).map((result) => ({ ...result, lensId: REF_TO_ID.get(lens.ref) ?? lens.ref })));
+      }
+      if (part.output?.mtfGroups) {
+        mtfGroups.push({ groups: part.output.mtfGroups.map((g) => ({ ...g, lenses: g.lenses.map((l) => ({ ...l, lensId: REF_TO_ID.get(l.lens) ?? l.lens })) })), between: part.output.betweenGroups ?? null });
       }
       // Every displayed image reaches the model, so `read` is always true.
       const shown = (part.output?.displayImages ?? []).map((image) => ({
@@ -335,6 +339,7 @@ function digest(msg) {
     details,
     imageRequests,
     imageResults,
+    mtfGroups,
     images,
     reviews,
     recalledRefs: [...recalledRefs],
@@ -421,6 +426,7 @@ export default class AskIrisProvider {
         details: d.details,
         imageRequests: d.imageRequests,
         imageResults: d.imageResults,
+        mtfGroups: d.mtfGroups,
         images: d.images,
         reviews: d.reviews,
         recalledRefs: d.recalledRefs,

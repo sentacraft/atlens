@@ -18,9 +18,9 @@ import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
 import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
 import { figureLabel } from "@/lib/ai/figure-label";
 import { LENS_TABLE_RENDERERS, tableLabelsForLocale } from "@/lib/ai/lens-table-cells";
-import { compareMtfCharts } from "@/lib/ai/mtf-comparison";
-import { lensDetailImages, lensImageRequestsSchema, MAX_IMAGES_PER_CALL, type LensImageEntry } from "@/lib/ai/lens-detail-images";
-import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
+import { groupMtfCharts, type MtfChart } from "@/lib/ai/mtf-comparison";
+import { lensDetailImages, lensImageRequestsSchema, MAX_IMAGES_PER_CALL, type LensDetailDisplayImage, type LensImageEntry } from "@/lib/ai/lens-detail-images";
+import { OPTICAL_TRAITS, type ApertureValue, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
@@ -178,6 +178,37 @@ export function countShownFigures(messages: UIMessage[]): number {
   }, 0);
 }
 
+/** How many earlier lenses' MTF charts join a comparison, most recently shown first. */
+const EARLIER_MTF_LENSES = 3;
+
+/**
+ * The MTF charts shown by showLensImages earlier in the conversation, oldest first, each named the way
+ * this reply can refer to it: by figure label when it is in the assistant message a resumed turn
+ * continues, otherwise by imageRef (figure numbers restart every reply).
+ */
+export function earlierMtfCharts(messages: UIMessage[]): MtfChart[] {
+  const charts: MtfChart[] = [];
+  messages.forEach((message, index) => {
+    const sameReply = index === messages.length - 1 && message.role === "assistant";
+    for (const part of message.parts) {
+      if (!isToolUIPart(part) || getToolName(part) !== "showLensImages" || part.state !== "output-available") {continue;}
+      const output = part.output as { displayImages?: LensDetailDisplayImage[]; lenses?: { ref: string; maxAperture?: ApertureValue | null; focalNativeMm?: [number, number] }[] } | null;
+      for (const shown of output?.displayImages ?? []) {
+        if (shown.image.role !== "mtf") {continue;}
+        const lens = output?.lenses?.find(({ ref }) => ref === shown.lensRef);
+        charts.push({
+          lensRef: shown.lensRef,
+          maxAperture: lens?.maxAperture ?? null,
+          zoom: lens?.focalNativeMm ? lens.focalNativeMm[0] !== lens.focalNativeMm[1] : false,
+          image: shown.image,
+          name: sameReply && shown.figureLabel ? shown.figureLabel : `${shown.imageRef} (shown in an earlier reply)`,
+        });
+      }
+    }
+  });
+  return charts;
+}
+
 /** Data the tools read beyond the catalogue: the user's account and the review store. */
 export interface ToolData {
   /** Favorite lens ids, newest first, or null for a guest. */
@@ -252,7 +283,8 @@ export function buildLensTools(
   data: ToolData,
   recalledRefs: Set<string>,
   // Filled with the next figure number once the history is resolved, like recalledRefs.
-  figures: { next: number } = { next: 1 },
+  // `mtfShown` holds the MTF charts shown earlier in the conversation and in this request, oldest first.
+  figures: { next: number; mtfShown?: MtfChart[] } = { next: 1 },
 ) {
   const mountLabel = mount === "G" ? "Fujifilm GFX" : "Fujifilm X";
   const contextRefs = buildRefIndex(getLensesByMount(mount, locale));
@@ -415,21 +447,35 @@ export function buildLensTools(
       execute: ({ lenses }) => {
         const { kept, notReturned } = capRefs(lenses.map(({ ref }) => ref), MAX_DETAIL_REFS);
         const displayImages: LensImageEntry[] = [];
+        const lensOutputs = recalledLenses(kept).map((lens, index) => {
+          const { name, maxAperture, focalNativeMm } = resolveLens(lens, locale, tBrand);
+          const { images, results, displayImages: selected, unservedImages } = lensDetailImages(lens, kept[index], name, lenses.find(({ ref }) => ref === kept[index])?.images, MAX_IMAGES_PER_CALL - displayImages.length);
+          displayImages.push(...selected);
+          return {
+            ref: kept[index], name, maxAperture, focalNativeMm, images,
+            ...(results.length ? { imageResults: results } : {}),
+            ...(unservedImages.length ? { unservedImages, unservedNote: "These image types exist for this lens but are not served here; they are on the lens's page. Never say the lens has no such image." } : {}),
+          };
+        });
+        const labelled = displayImages.map((entry) => {
+          const figure = figures.next++;
+          return { ...entry, figure, figureLabel: figureLabel(locale, figure) };
+        });
+        // Charts of this call, plus the most recently shown other lenses', so a follow-up can be compared.
+        const shownNow: MtfChart[] = labelled.filter(({ image }) => image.role === "mtf").map(({ lensRef, image, figureLabel: name }) => {
+          const lens = lensOutputs.find((entry) => entry.ref === lensRef);
+          return { lensRef, image, name, maxAperture: lens?.maxAperture ?? null, zoom: lens ? lens.focalNativeMm[0] !== lens.focalNativeMm[1] : false };
+        });
+        const shownBefore = figures.mtfShown ?? [];
+        const earlierLenses = [...new Set(shownBefore.map(({ lensRef }) => lensRef).reverse())]
+          .filter((ref) => !shownNow.some((chart) => chart.lensRef === ref))
+          .slice(0, EARLIER_MTF_LENSES);
+        const grouping = shownNow.length ? groupMtfCharts([...shownBefore.filter(({ lensRef }) => earlierLenses.includes(lensRef)), ...shownNow]) : undefined;
+        figures.mtfShown = [...shownBefore, ...shownNow];
         return {
-          lenses: recalledLenses(kept).map((lens, index) => {
-            const { name, maxAperture, focalNativeMm } = resolveLens(lens, locale, tBrand);
-            const { images, results, displayImages: selected, unservedImages } = lensDetailImages(lens, kept[index], name, lenses.find(({ ref }) => ref === kept[index])?.images, MAX_IMAGES_PER_CALL - displayImages.length);
-            displayImages.push(...selected);
-            return {
-              ref: kept[index], name, maxAperture, focalNativeMm, images,
-              ...(results.length ? { imageResults: results } : {}),
-              ...(unservedImages.length ? { unservedImages, unservedNote: "These image types exist for this lens but are not served here; they are on the lens's page. Never say the lens has no such image." } : {}),
-            };
-          }),
-          displayImages: displayImages.map((entry) => {
-            const figure = figures.next++;
-            return { ...entry, figure, figureLabel: figureLabel(locale, figure) };
-          }),
+          lenses: lensOutputs,
+          displayImages: labelled,
+          ...grouping,
           ...(notReturned ? { notReturned } : {}),
         };
       },
@@ -455,19 +501,14 @@ export function buildLensTools(
         if (!displayImages.length) {
           return { type: "text", value: JSON.stringify(metadata) };
         }
-        const mtfImages = displayImages.filter(({ image }) => image.role === "mtf");
-        const mtfComparison = compareMtfCharts(mtfImages.map(({ lensRef, image }) => {
-          const lens = details.lenses.find((entry) => entry.ref === lensRef);
-          return { lensRef, image, maxAperture: lens?.maxAperture ?? null, zoom: lens ? lens.focalNativeMm[0] !== lens.focalNativeMm[1] : false };
-        }));
+        const hasMtf = displayImages.some(({ image }) => image.role === "mtf");
         const reading = {
           ...metadata,
-          ...(mtfImages.length ? {
-            mtfNote: mtfComparison
-              ? "Interpret only legible curves. mtfComparison governs how the charts may be compared."
+          ...(hasMtf ? {
+            mtfNote: output.mtfGroups
+              ? "Interpret only legible curves. mtfGroups governs how the charts may be compared: values within a group as its level allows, only curve shapes between groups."
               : "Interpret only legible curves. If a chart does not state its test conditions, say so when it affects the answer.",
           } : {}),
-          ...(mtfComparison ? { mtfComparison } : {}),
         };
         return {
           type: "content",
