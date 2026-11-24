@@ -14,7 +14,7 @@ const VIEWPORTS = {
 const EXTRA_PATHS = ["/en/lenses/x/compare?ids=fujifilm-xf-16mmf14-r-wr-x,sigma-contemporary-100-400mm-f5-63-dg-dn-os-x"];
 
 // The lens card's compare chip is absolutely placed over its price row; the fix (in-flow chip) is
-// the Active board card "镜头操作入口统一（对比 + 收藏）". Remove this once that lands.
+// the Active board card on unifying the lens actions (compare and favorite). Remove this once that lands.
 const known = (problem: TextProblem) => problem.kind === "overlap" && [problem.text, problem.other].includes("Compare");
 
 async function pagesToCheck(page: Page): Promise<string[]> {

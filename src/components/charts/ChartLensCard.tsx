@@ -1,5 +1,6 @@
 "use client";
 
+import OwnedLensMark from "@/components/lens/OwnedLensMark";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { DialogTitle } from "@/components/ui/dialog";
@@ -55,7 +56,10 @@ export function ChartLensSummary({ lens, size }: { lens: ChartLens; size: keyof 
         style={lensImageStyle}
       />
       <div className="flex min-w-0 flex-col gap-1">
-        <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
+        <span className="flex items-center gap-1.5">
+          <span className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">{brandLabel(tBrand, lens.brand)}</span>
+          <OwnedLensMark lensId={lens.id} form="inline" />
+        </span>
         <Model className={cn("font-semibold leading-snug text-zinc-900", cls.model)}>{lens.model}</Model>
         <span className={cn("flex flex-col whitespace-nowrap text-zinc-600", cls.facts)}>
           {facts.map((line) => line && <span key={line}>{line}</span>)}

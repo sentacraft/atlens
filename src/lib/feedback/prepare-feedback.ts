@@ -5,7 +5,7 @@ import zh from "@/messages/zh.json";
 import type { Lens } from "@/lib/types";
 import { buildSpecGroups, buildSpecGroupLabels, resolveSpecGroups, rowPlainText } from "@/lib/lens/spec-groups";
 import { getLensUrl } from "@/lib/lens/lens";
-import { getLensImageUrl } from "@/lib/lens/image";
+import { addLensFeedbackFields } from "./lens-feedback-fields";
 import { pickPriceEntry, formatPriceForReport } from "@/lib/lens/pricing";
 import { MAX_FEEDBACK_SEARCH_QUERY_LENGTH } from "./feedback-contract";
 import { createFeedbackDraft, type FeedbackField } from "./feedback-draft";
@@ -14,7 +14,7 @@ export const FEEDBACK_SPEC_FIELDS = [
   "focalLength", "focalLengthEquiv", "maxAperture", "minAperture", "maxTStop", "minTStop", "angleOfView",
   "apertureBladeCount", "lensConfiguration", "weight", "dimensions", "filterSize", "lensMaterial", "af",
   "focusMotor", "internalFocusing", "minFocusDist", "maxMagnification", "ois", "wr", "apertureRing",
-  "powerZoom", "internalZoom", "releaseYear", "accessories", "officialLink", "productImage", "price",
+  "powerZoom", "internalZoom", "releaseYear", "accessories", "officialLink", "productImage", "mtf", "price",
 ] as const;
 
 export const prepareFeedbackInputSchema = z.object({
@@ -43,12 +43,10 @@ export function buildFeedbackFields(lens: Lens, locale: string): FeedbackField[]
   const values = { yes: t("yes"), no: t("no"), partial: t("partial"), unknown: t("unknown"), missing: t("missing") };
   const price = pickPriceEntry(lens.pricing, locale);
   const url = getLensUrl(lens, locale);
-  return [
+  return addLensFeedbackFields([
     ...groups.flatMap((group) => group.rows.map((row) => ({ label: row.label, currentValue: rowPlainText(row, values), group: group.label }))),
     ...(price ? [{ label: p("fieldLabel"), currentValue: formatPriceForReport(price, p), group: p("groupLabel") }] : []),
-    ...(url ? [{ label: t("fieldOfficialLink"), currentValue: url, group: t("fieldGroupMedia") }] : []),
-    { label: t("fieldLensImage"), currentValue: getLensImageUrl(lens.id), group: t("fieldGroupMedia"), hideCurrentValue: true },
-  ];
+  ], lens, url, t);
 }
 
 export function prepareFeedback(input: PrepareFeedbackInput, lens: Lens | undefined, locale: string, brand: string) {
@@ -57,7 +55,7 @@ export function prepareFeedback(input: PrepareFeedbackInput, lens: Lens | undefi
   if (input.suggestedCorrection && input.type !== "data_issue") {throw new Error("A data correction requires type data_issue.");}
   const fields = lens ? buildFeedbackFields(lens, locale) : [];
   const { detail: t, pricing: p } = translators(locale);
-  const field = input.field === "price" ? p("fieldLabel") : input.field === "officialLink" ? t("fieldOfficialLink") : input.field === "productImage" ? t("fieldLensImage") : input.field ? t(input.field) : undefined;
+  const field = input.field === "price" ? p("fieldLabel") : input.field === "officialLink" ? t("fieldOfficialLink") : input.field === "productImage" ? t("fieldLensImage") : input.field === "mtf" ? t("fieldMtf") : input.field ? t(input.field) : undefined;
   const selected = fields.find((entry) => entry.label === field);
   return createFeedbackDraft({
     type: input.type, description: input.description, wantsReply: input.wantsReply, replyContact: input.replyContact,

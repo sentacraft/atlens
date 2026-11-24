@@ -12,6 +12,7 @@ export const PROFILE_PATH = "/me";
 // Admin pages sit outside [locale]; link to them with next/link, not next-intl.
 export const ADMIN_PATH = "/admin";
 export const ADMIN_ANALYTICS_PATH = "/admin/analytics";
+export const ADMIN_PROMO_PATH = "/admin/promo";
 
 export type AboutSection =
   | "background"

@@ -1,3 +1,4 @@
+import type { NamespaceTranslator } from "@/i18n/translator";
 import missingNoteClauses from "@/data/technical-image-missing-notes.json";
 import type { Lens, LensImageAsset } from "@/lib/types";
 
@@ -26,4 +27,19 @@ export function technicalImageFilter(preset: LensImageAsset["displayPreset"]) {
   if (preset === "invert-on-white") {return "invert(1) hue-rotate(180deg) saturate(0.6)";}
   if (preset === "white-background") {return "saturate(0.6)";}
   return undefined;
+}
+
+export function technicalImageShortLabel(image: LensImageAsset) {
+  return [
+    image.focalLengthMm !== undefined ? `${image.focalLengthMm}mm` : undefined,
+    image.spatialFrequency ? `${image.spatialFrequency.values.join(", ")} ${image.spatialFrequency.unit}` : undefined,
+    image.apertureFNumbers?.map((n) => `f/${n}`).join(", "),
+  ].filter(Boolean).join(" · ");
+}
+
+export function getTechnicalImageConditions(image: LensImageAsset, t: NamespaceTranslator<"LensDetail">): string[] {
+  return [
+    image.mtfMethod && t(`opticalImages.${image.mtfMethod}`),
+    image.depictedMount && t("opticalImages.mount", { mount: image.depictedMount }),
+  ].filter((line): line is string => Boolean(line));
 }

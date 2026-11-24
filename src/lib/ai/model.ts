@@ -90,6 +90,14 @@ function dashscopeThinking(reasoning: AgentReasoning) {
   return reasoning === "low" ? { enable_thinking: true, thinking_budget: 1024 } : { enable_thinking: true };
 }
 
+// Without these the SDK downloads each chart and sends the tool result as one JSON string, its
+// bytes as hundreds of thousands of text tokens, and the model never sees the image. All three
+// accept image_url parts in a tool message and fetch the public URL themselves.
+const IMAGE_TOOL_RESULTS = {
+  supportsMultiPartToolContent: true,
+  supportedUrls: () => ({ "image/*": [/^https:\/\//] }),
+};
+
 export function getAgentModel({ provider, modelId, reasoning }: AgentModelChoice): LanguageModel {
   switch (provider) {
     case "deepseek":
@@ -105,6 +113,7 @@ export function getAgentModel({ provider, modelId, reasoning }: AgentModelChoice
       // GLM-5.3-Flash accepts only "enabled".
       return createOpenAICompatible({
         name: "zhipu",
+        ...IMAGE_TOOL_RESULTS,
         baseURL: "https://open.bigmodel.cn/api/paas/v4",
         apiKey: process.env.ZHIPU_API_KEY,
         transformRequestBody: (args) => ({ ...args, thinking: { type: reasoning === "off" ? "disabled" : "enabled" } }),
@@ -113,6 +122,7 @@ export function getAgentModel({ provider, modelId, reasoning }: AgentModelChoice
       // Reasoning is on unless disabled, adding ~10s to first token on every step.
       return createOpenAICompatible({
         name: "dashscope",
+        ...IMAGE_TOOL_RESULTS,
         baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
         apiKey: process.env.DASHSCOPE_API_KEY,
         transformRequestBody: (args) => ({ ...args, ...dashscopeThinking(reasoning) }),
@@ -121,6 +131,7 @@ export function getAgentModel({ provider, modelId, reasoning }: AgentModelChoice
       // OpenRouter ignores vendor reasoning flags such as `thinking`; only its own field works.
       return createOpenAICompatible({
         name: "openrouter",
+        ...IMAGE_TOOL_RESULTS,
         baseURL: "https://openrouter.ai/api/v1",
         apiKey: process.env.OPENROUTER_API_KEY,
         transformRequestBody: (args) => ({ ...args, reasoning: openRouterReasoning(reasoning) }),

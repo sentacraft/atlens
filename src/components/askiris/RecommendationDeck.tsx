@@ -10,6 +10,7 @@ import { weightDisplay } from "@/lib/lens/format";
 import { formatPrice } from "@/lib/lens/pricing";
 import Markdown from "@/components/askiris/Markdown";
 import LensActions from "@/components/lens/LensActions";
+import OwnedMark from "@/components/lens/OwnedMark";
 import type { Recommendation } from "@/lib/ai/recall";
 import { lensPath } from "@/lib/url/routes";
 
@@ -54,6 +55,7 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
               className="object-contain p-1.5"
               loading="lazy"
             />
+            {rec.owned ? <OwnedMark form="corner" /> : null}
           </div>
 
           <div className="flex min-w-0 flex-1 flex-col justify-between">

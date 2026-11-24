@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import LensTable from "../LensTable";
 import { resolveLens } from "@/lib/ai/recall";
 import { getLensesByMount } from "@/lib/lens/data";
@@ -68,5 +68,21 @@ describe("LensTable length and OIS columns", () => {
     render(<LensTable lenses={plain} columns={["ois"]} caption={null} />);
 
     expect(screen.getByText("no")).toBeTruthy();
+  });
+});
+
+it("renders element counts and special glass in the construction column", () => {
+  const lens = { ...lenses[0], lensConfiguration: { groups: 10, elements: 15, aspherical: 2, ed: 3 } };
+  render(<LensTable lenses={[lens]} columns={["lensConfiguration"]} caption={null} />);
+  expect(screen.getByRole("columnheader", { name: "lensConfiguration" })).toBeInTheDocument();
+  expect(screen.getByRole("cell")).toHaveTextContent("10 lcGroups / 15 lcElements 2 lcAspherical · 3 lcEd");
+});
+
+describe("LensTable owned lenses", () => {
+  it("marks an owned lens after its name, and no other row", () => {
+    render(<LensTable lenses={[{ ...lenses[0], owned: true }, lenses[1]]} columns={["weight"]} caption={null} />);
+    const rows = screen.getAllByRole("row").slice(1);
+    expect(within(rows[0]).getByText("owned")).toBeInTheDocument();
+    expect(within(rows[1]).queryByText("owned")).toBeNull();
   });
 });

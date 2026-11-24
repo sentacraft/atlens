@@ -83,6 +83,24 @@ describe.each(["manual", "iris"] as const)("%s feedback", (kind) => {
   });
 });
 
+describe("optional image selection", () => {
+  it.each([undefined, "https://images.example/002.webp"])("submits the MTF category with image %s", async (image) => {
+    const fetchMock = mockApi();
+    setup("manual", {
+      type: "data_issue",
+      description: "The chart has a problem.",
+      context: { field: "MTF Charts", currentValue: image },
+      fields: [{ label: "MTF Charts", imageOptions: [{ label: "35mm · 10 lines/mm", value: "https://images.example/002.webp" }] }],
+    });
+    expect(screen.getByRole("combobox", { name: "fieldImagePickerLabel" })).toHaveTextContent(image ? "35mm · 10 lines/mm" : "fieldImagePickerNone");
+    await ready();
+    fireEvent.click(screen.getByRole("button", { name: "submit" }));
+    await waitFor(() => expect(screen.getByText("success")).toBeInTheDocument());
+    const post = fetchMock.mock.calls.find(([, init]) => init?.method === "POST");
+    expect(JSON.parse(post![1]!.body as string).context).toEqual({ field: "MTF Charts", ...(image ? { currentValue: image } : {}) });
+  });
+});
+
 describe("Iris feedback card", () => {
   it("honors an explicit reply request and lets the user change the contact", async () => {
     const fetchMock = mockApi();

@@ -12,6 +12,8 @@ const withNextIntl = createNextIntlPlugin({
 initOpenNextCloudflareForDev();
 
 const nextConfig: NextConfig = {
+  // AGENTS.md is maintained by hand; `next dev` would otherwise append its own agent-rules block to it.
+  agentRules: false,
   // Without this, Turbopack in a nested worktree picks the parent repo's lockfile as the root.
   // https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory
   turbopack: {

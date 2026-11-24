@@ -1,11 +1,16 @@
 import Link from "next/link";
-import { ADMIN_ANALYTICS_PATH } from "@/lib/url/routes";
+import { ADMIN_ANALYTICS_PATH, ADMIN_PROMO_PATH } from "@/lib/url/routes";
 
 const MODULES = [
   {
     href: ADMIN_ANALYTICS_PATH,
     title: "Analytics",
     description: "Visitors, funnel, Ask Iris and accounts, with trends over a chosen range.",
+  },
+  {
+    href: ADMIN_PROMO_PATH,
+    title: "Promo Studio",
+    description: "Preview and export social images from lens collections.",
   },
 ];
 

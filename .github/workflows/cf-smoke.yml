@@ -12,7 +12,6 @@ name: CF Runtime Smoke
 
 on:
   pull_request:
-    branches: [main]
   push:
     branches: [main]
 

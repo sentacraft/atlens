@@ -37,6 +37,8 @@ import { pickPriceEntry } from "@/lib/lens/pricing";
 import { lensDisplayName, lensSubtitleLine, brandLabel } from "@/lib/lens/format";
 import { lensPath } from "@/lib/url/routes";
 import { DataSourceBar } from "@/components/lens/DataSource";
+import { addLensFeedbackFields } from "@/lib/feedback/lens-feedback-fields";
+import OwnedLensMark from "@/components/lens/OwnedLensMark";
 import { CompareTechnicalImages } from "@/components/lens/TechnicalImages";
 import { getTechnicalImages } from "@/lib/lens/technical-images";
 
@@ -71,6 +73,9 @@ function LensHeaderContent({ lens }: { lens: Lens }) {
       <p className="mt-auto line-clamp-3 text-center font-semibold leading-snug text-zinc-900 transition-colors group-hover/link:text-zinc-600">
         {lens.model}
       </p>
+      <div className="mt-1 flex h-[18px] items-center justify-center">
+        <OwnedLensMark lensId={lens.id} form="inline" />
+      </div>
     </Link>
   );
 }
@@ -759,7 +764,7 @@ export default function CompareTable({ allLenses, minColumns = 0 }: Props) {
                       <FeedbackTrigger
                         type="data_issue"
                         context={{ lensId: lens.id, lensModel: lens.model, lensBrand: brandLabel(tBrand, lens.brand) }}
-                        fields={fields}
+                        fields={addLensFeedbackFields(fields, lens, url ?? undefined, td)}
                         className={`inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap py-1 ${TEXT_LINK_CLS}`}
                       >
                         <Flag className="h-3 w-3 shrink-0" />

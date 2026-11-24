@@ -71,6 +71,14 @@ export const LENS_TABLE_COLUMNS = [
   "length",
   "ois",
   "releaseYear",
+  "lensConfiguration",
+  "apertureBladeCount",
+  "minAperture",
+  "maxTStop",
+  "minTStop",
+  "dimensions",
+  "focusMotor",
+  "lensMaterial",
 ] as const;
 export type LensTableColumn = (typeof LENS_TABLE_COLUMNS)[number];
 
@@ -198,6 +206,33 @@ export function toRecalled(lens: ResolvedLens): RecalledLens {
   };
 }
 
+type OmittedFromRecall = Exclude<keyof ResolvedLens, keyof RecalledLens | "id">;
+
+// Listed by hand because types cannot be enumerated; the type argument fails to compile if a field
+// joins or leaves the gap between ResolvedLens and RecalledLens without this list following.
+const OMITTED_FROM_RECALL = (<L extends OmittedFromRecall[]>(fields: L & ([Exclude<OmittedFromRecall, L[number]>] extends [never] ? unknown : never)) => fields)([
+  "generation",
+  "minAperture",
+  "maxTStop",
+  "minTStop",
+  "apertureBladeCount",
+  "focusMotor",
+  "internalFocusing",
+  "powerZoom",
+  "internalZoom",
+  "diameterMm",
+  "filterMm",
+  "lensMaterial",
+  "lensConfiguration",
+  "accessories",
+  "fieldNotes",
+]);
+
+/** Sent with every recall result: a key missing from a recalled lens is not a gap in the catalogue. */
+export const RECALL_OMITTED_NOTE =
+  `Recalled lenses leave out these detail specs: ${[...OMITTED_FROM_RECALL].sort().join(", ")}. ` +
+  "Get them with lensDetails. In any record, null means the catalogue holds no value.";
+
 export type DetailedLens = Omit<ResolvedLens, "id"> & { ref: string };
 
 export function toDetailed(lens: ResolvedLens): DetailedLens {
@@ -205,7 +240,8 @@ export function toDetailed(lens: ResolvedLens): DetailedLens {
   return { ref: lensRef(id), ...rest };
 }
 
-export type Recommendation = ResolvedLens & { reason: string };
+/** `owned` marks a lens in the user's saved gear; the cards and tables do not render it yet. */
+export type Recommendation = ResolvedLens & { reason: string; owned?: boolean };
 
 // A "56" request still catches a 55mm lens.
 const FOCAL_MATCH_TOLERANCE = 0.1;
@@ -566,7 +602,7 @@ export function listLenses(
   caption: string | undefined,
   tBrand: (brand: string) => string,
   recalledRefs: Set<string>,
-): { lenses: ResolvedLens[]; columns: LensTableColumn[]; caption: string | null } {
+): { lenses: (ResolvedLens & { owned?: boolean })[]; columns: LensTableColumn[]; caption: string | null } {
   const byRef = buildRefIndex(getLensesByMount(mount, locale));
   const seen = new Set<string>();
   const lenses: ResolvedLens[] = [];

@@ -30,6 +30,32 @@ describe("prepareFeedback", () => {
     expect(draft.wantsReply).toBe(true);
   });
 
+  it("offers image categories even when a lens has no supplemental images", () => {
+    const lens = { ...getLensesByMount("X", "en")[0], images: undefined };
+    const draft = prepareFeedback({ ...input, type: "data_issue", field: "mtf" }, lens, "en", "FUJIFILM");
+    expect(draft.fields.filter((field) => field.group === "Product Info").map((field) => field.label)).toContain("Lens Image");
+    const optics = draft.fields.filter((field) => field.group === "Optics");
+    const mtf = optics.findIndex((field) => field.label === "MTF Charts");
+    expect(mtf).toBeGreaterThan(0);
+    expect(optics[mtf - 1].label).toBe("Lens Configuration");
+    expect(optics[mtf].imageOptions).toEqual([]);
+    expect(draft.fields.some((field) => field.group === "Media & Links" || field.label === "Optical Construction Diagram")).toBe(false);
+    expect(draft.context).toMatchObject({ field: "MTF Charts", currentValue: undefined });
+  });
+
+  it("keeps actual MTF assets distinct without adding selectors for photos or diagrams", () => {
+    const lens = getLensesByMount("G", "en").find((entry) => entry.id === "fujifilm-gf-35-70mmf45-56-wr-g")!;
+    const fields = buildFeedbackFields(lens, "en").filter((field) => field.group === "Optics");
+    const mtf = fields.find((field) => field.label === "MTF Charts");
+    expect(mtf?.imageOptions).toHaveLength(6);
+    expect(mtf?.imageOptions).toContainEqual({
+      label: "35mm · 10 lines/mm",
+      value: expect.stringContaining(`${lens.id}/002.`),
+    });
+    expect(fields.filter((field) => field.label.startsWith("MTF Charts"))).toEqual([mtf]);
+    expect(fields.filter((field) => field.imageOptions?.length)).toEqual([mtf]);
+  });
+
   it("keeps a missing spec field available in the editor without inventing a current value", () => {
     const lens = { ...getLensesByMount("X", "en")[0], pricing: undefined };
     const draft = prepareFeedback({ ...input, type: "data_issue", field: "price" }, lens, "en", "FUJIFILM");

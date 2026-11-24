@@ -429,6 +429,23 @@ tests:
         metric: programmatic
         value: "/187/.test(output)"
 
+  # Guard: a spec that recall results leave out is looked up with lensDetails, not called unknown.
+  - description: guard-detail-spec
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 35mm F1.4 R 的滤镜口径多大？"
+    assert:
+      - *no_deck
+      - type: javascript # the 52mm comes from the catalogue's detail record
+        metric: programmatic
+        value: "context.metadata.toolsCalled.includes('lensDetails') && /52/.test(output)"
+
   # Guard: a broad query matches more than the deck can show — say how many, offer to narrow.
   - description: guard-over-match
     metadata:
@@ -1477,6 +1494,23 @@ tests:
         metric: programmatic
         value: "context.metadata.tables.at(-1).rows.map((r) => r.weightG).filter((w) => w != null).every((w, i, a) => i === 0 || a[i - 1] <= w)"
 
+  # Table: a second table request after an earlier table in the same conversation still gets a fresh table.
+  - description: table-second-request
+    metadata:
+      area: table
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "把 XF 23mm F1.4 R LM WR、XF 33mm F1.4 R LM WR 的重量和滤镜口径列个表"
+          - "再把 XF 56mm F1.2 R WR 和 XF 90mm F2 R LM WR 也列一个"
+    assert:
+      - type: javascript # the last turn (the only one the metadata holds) put out a table holding the second pair
+        metric: programmatic
+        value: "context.metadata.tables.length > 0 && ['56mm F1\\.2', '90mm F2'].every((m) => context.metadata.tables.at(-1).names.some((n) => new RegExp(m).test(n ?? '')))"
+
   # Gear: a focal-gap question works from the owned lenses' equivalents, and gets them right.
   - description: gear-gap
     metadata:
@@ -1780,6 +1814,24 @@ tests:
           the kit lens (for example, what a portrait prime adds over it) or to the X-E5. It
           fails if it ignores the owned gear entirely or suggests the owned kit lens.
 
+  - description: en-chinese-question
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "有哪些一镜走天下的镜头？"
+    assert:
+      - type: llm-rubric
+        metric: english
+        provider: *behavior_grader
+        value: >-
+          The reply is written in Chinese, the language the user wrote in, even though the
+          interface language is English. Lens names and card text may stay as the catalogue
+          gives them. It fails if the reply's own prose is in English.
+
   - description: en-italian-newest-lenses
     metadata:
       area: english
@@ -1865,3 +1917,347 @@ tests:
           from manufacturers' official sources through a data pipeline, with a caveat that errors
           are possible and key specs should be confirmed with the manufacturer before buying. It
           fails if it claims the data is guaranteed accurate or official on behalf of the brands.
+
+  # Images: what Iris shows and reads from MTF charts and optical diagrams. `context.metadata.images`
+  # lists the images the latest turn displayed and whether their pixels reached the model; the
+  # judge sees the same as an `[images]` block, since it cannot see the pixels itself.
+  - description: images-mtf-unconfirmed-aperture
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 35mm F1.4 在 f/2 的 MTF 怎么样？"
+    assert:
+      - *no_deck
+      - type: javascript # the MTF charts were shown and read
+        metric: images
+        value: "context.metadata.images.some((i) => i.lensId === 'fujifilm-xf-35mmf14-r-x' && i.role === 'mtf' && i.read)"
+      - type: javascript # the lens's maximum aperture is not a test-aperture filter
+        metric: images
+        value: "context.metadata.imageRequests.every((r) => r.apertureFNumber !== 1.4)"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The user asked about f/2, but these charts do not state the aperture they were
+          measured at. The reply must not present what it reads from them as the lens's
+          performance at f/2, and must make clear the charts' test aperture is not stated.
+          Describing the curves themselves is fine. It fails if it says or implies the charts
+          show f/2, or if it states f/2 performance as a reading of the charts.
+
+  - description: images-mtf-compare-unmatched
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      mtfReferences: file://mtf-references.txt
+      dialog:
+        turns:
+          - "对比 XF 16-55mm F2.8 和 XF 16-80mm F4 的 MTF，哪个边缘更好？"
+    assert:
+      - type: javascript # both lenses' MTF charts reached the model, not just the screen
+        metric: images
+        value: "context.metadata.images.some((i) => i.role === 'mtf' && i.read && i.lensId.startsWith('fujifilm-xf-16-55mmf28')) && context.metadata.images.some((i) => i.role === 'mtf' && i.read && i.lensId === 'fujifilm-xf-16-80mmf4-r-ois-wr-x')"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The charts of the two lenses can be compared, but only with caveats: neither states
+          its test aperture, and the lenses open to different apertures (f/2.8 and f/4). The
+          reply may give a leaning on which lens has better edges, but must say the test
+          aperture is not stated and that the comparison assumes something such as both
+          charts being measured wide open (f/2.8 vs f/4). It fails if it says the charts share
+          identical or confirmed test conditions, if it gives an edge verdict with no such
+          caveat, or if it never refers to what the charts show at all.
+
+          Any specific curve value the reply states for a chart it names must be within 0.1 of
+          the reference reading for that chart, with S and M not swapped; replies that only
+          describe trends are unaffected. A reference of "-" means that value is not
+          measurable: ignore any value the reply states for it, neither passing nor failing
+          the reply on it. The charts shown are listed in the [images] block with
+          their lens, focal length and spatial frequency.
+          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+          {{ mtfReferences }}
+  # Sharpness of two named lenses, without asking for charts: their MTF charts are shown and read
+  # unprompted.
+  - description: images-mtf-proactive
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      mtfReferences: file://mtf-references.txt
+      dialog:
+        turns:
+          - "XF 16-55mm F2.8 和 XF 16-80mm F4 在广角端，边缘画质哪个更好？"
+    assert:
+      - type: javascript # both lenses' MTF charts were shown and read without being asked for
+        metric: images
+        value: "context.metadata.images.some((i) => i.role === 'mtf' && i.read && i.lensId.startsWith('fujifilm-xf-16-55mmf28')) && context.metadata.images.some((i) => i.role === 'mtf' && i.read && i.lensId === 'fujifilm-xf-16-80mmf4-r-ois-wr-x')"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The reply should draw on what the two lenses' wide-end MTF charts show about the
+          edges. Neither chart states its test aperture and the lenses open to different
+          apertures, so a leaning is fine only with that caveat; it fails if it calls the
+          conditions identical or confirmed. It also fails if it judges the edges on
+          reputation alone without referring to the charts.
+
+          Any specific curve value the reply states for a chart it names must be within 0.1 of
+          the reference reading for that chart, with S and M not swapped; replies that only
+          describe trends are unaffected. A reference of "-" means that value is not
+          measurable: ignore any value the reply states for it, neither passing nor failing
+          the reply on it. The charts shown are listed in the [images] block with
+          their lens, focal length and spatial frequency.
+          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+          {{ mtfReferences }}
+
+  # The follow-up asks about a chart the first turn did not show, so answering needs that chart
+  # fetched; history keeps the earlier pixels but not this chart. Restating what the
+  # first reply already said is fair and is not what this checks.
+
+  - description: images-followup-history
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      mtfReferences: file://mtf-references.txt
+      dialog:
+        turns:
+          - "给我看看 XF 16-80mm F4 广角端的 MTF 曲线"
+          - "那 80mm 端 45 线对的图呢？边缘大概掉到多少？"
+    assert:
+      - *no_deck
+      - type: javascript # the follow-up read the 16-80's 80mm MTF chart
+        metric: images
+        value: "context.metadata.images.some((i) => i.lensId === 'fujifilm-xf-16-80mmf4-r-ois-wr-x' && i.role === 'mtf' && i.read && /:image-00[45]$/.test(i.imageRef))"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The follow-up asks about the 80mm, 45 lp/mm chart, which the first reply did not
+          describe. If the latest reply has no [images] block listing an 80mm chart, it has not
+          seen that chart: it must not give values or a description of its curves, and may
+          offer to look. If it did read an 80mm chart, it answers about the 45 lp/mm one with
+          a rough edge figure or description. It fails on curve readings for the 80mm chart
+          without one being read, or on answering about a different chart than asked.
+          Any specific curve value the reply states for a chart it names must be within 0.1 of
+          the reference reading for that chart, with S and M not swapped; replies that only
+          describe trends are unaffected. A reference of "-" means that value is not
+          measurable: ignore any value the reply states for it, neither passing nor failing
+          the reply on it.
+          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+          {{ mtfReferences }}
+
+
+  # Reading accuracy: a stated curve value is checked against the references measured from the chart.
+  - description: images-mtf-reading
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      mtfReferences: file://mtf-references.txt
+      dialog:
+        turns:
+          - "XF 35mm F1.4 R 的 MTF 图，45 线那张边缘的 S 和 M 大概多少？"
+    assert:
+      - type: javascript # the 45 lp/mm chart (image 003) of that lens was shown and read
+        metric: images
+        value: "context.metadata.images.some((i) => i.lensId === 'fujifilm-xf-35mmf14-r-x' && i.role === 'mtf' && i.read && /:image-003$/.test(i.imageRef))"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The user asks for the edge S and M values on the 45 lines/mm chart (image 003) of the
+          XF 35mm F1.4 R.
+          Reference readings (S = sagittal, M = meridional), measured from the chart pixels:
+          {{ mtfReferences }}
+          For image 003 the edge reference is S 0.3 and M 0.4. The reply must give an edge S
+          value and an edge M value, each within 0.1 of that reference and not swapped;
+          giving a value as a range is fine when the range contains the reference within 0.1.
+          It fails on a value off by more than 0.1, on S and M swapped, or on no values at all.
+  # The second lens is shown in a later turn, so its comparability grade must cover the chart shown in the first.
+  - description: images-mtf-compare-followup
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      mtfReferences: file://mtf-references.txt
+      dialog:
+        turns:
+          - "给我看看 XF 16-80mm F4 广角端的 MTF 曲线"
+          - "那 XF 16-55mm F2.8 呢？哪个边缘更好？"
+    assert:
+      - type: javascript # the final turn's showLensImages grouped both lenses
+        metric: images
+        value: "context.metadata.mtfGroups.some((call) => ['fujifilm-xf-16-80mmf4-r-ois-wr-x', 'fujifilm-xf-16-55mmf28-r-lm-wr-x'].every((id) => call.groups.some((g) => g.lenses.some((l) => l.lensId === id))))"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          The charts of the two lenses can be compared, but only with caveats: neither states
+          its test aperture, and the lenses open to different apertures (f/2.8 and f/4). The
+          reply may give a leaning on which lens has better edges, but must say the test
+          aperture is not stated and that the comparison assumes something such as both
+          charts being measured wide open (f/2.8 vs f/4). It fails if it says the charts share
+          identical or confirmed test conditions, if it gives an edge verdict with no such
+          caveat, or if it never refers to what the charts show at all.
+
+          Any specific curve value the reply states for a chart it names must be within 0.1 of
+          the reference reading for that chart, with S and M not swapped; replies that only
+          describe trends are unaffected. A reference of "-" means that value is not
+          measurable: ignore any value the reply states for it, neither passing nor failing
+          the reply on it.
+          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+          {{ mtfReferences }}
+
+  - description: images-missing
+    metadata:
+      area: images
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "Sigma 18-50mm F2.8 DC DN 的 MTF 曲线能给我看看吗？"
+    assert:
+      - *no_deck
+      - type: javascript # there is no MTF chart for this lens to show
+        metric: images
+        value: "context.metadata.images.every((i) => i.role !== 'mtf')"
+      - type: llm-rubric
+        metric: images
+        provider: *behavior_grader
+        value: >-
+          Atlens has no MTF chart for this lens. The reply must tell the user it has none to
+          show, in any wording ("no chart available here" is enough), and must not describe
+          curves, quote MTF values, or characterize the chart as if it had one. Pointing to
+          specs, reviews, or the maker's site is fine. It fails only if it implies a chart was
+          shown or describes an MTF chart for this lens.
+
+  - description: guard-superlative-sharpest
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "富士 X 卡口哪支镜头最锐？"
+    assert:
+      - *card_quality
+      - type: javascript # MTF charts of different lenses are not pulled up to rank them
+        metric: images
+        value: "new Set(context.metadata.images.filter((i) => i.role === 'mtf').map((i) => i.lensId)).size <= 1"
+      - type: llm-rubric
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Atlens has no data that ranks sharpness: MTF charts are measured under different,
+          often unstated, conditions. The reply must not rank lenses or crown a single winner,
+          and must not make a performance or reputation claim that does not come from a
+          lensReviews result in the conversation. It says why the data cannot rank this, and
+          asks about the user's use or offers a version the data can answer. Cards are fine
+          only if their reasons stay within specs and review results.
+
+  # Guard: predictions are not answerable from the data; a dated historical price is fine.
+  - description: guard-prediction
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 56mm F1.2 R WR 年底会降价吗？"
+    assert:
+      - *no_deck
+      - type: llm-rubric
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Nobody can tell from Atlens data whether a price will drop. The reply must not
+          predict a price drop, a release or a discontinuation. It may cite the lens's
+          historical price as a dated reference and point to the lens page for the current
+          price. It fails if it predicts or guesses what the price will do.
+
+  # Guard: failure rates and quality-control claims need data Atlens does not hold.
+  - description: guard-reliability
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 16-55mm F2.8 R LM WR II 品控怎么样，故障率高吗？"
+    assert:
+      - *no_deck
+      - type: llm-rubric
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Atlens holds no failure-rate or quality-control data. The reply must not claim a
+          failure rate, a QC reputation or copy-to-copy consistency beyond what a lensReviews
+          result in the conversation says, with its sources. When no review result covers it,
+          it says Atlens has no such data. It fails on an unsourced reliability claim.
+
+  # Guard: a taste question is not settled by data; relay reviews or the differing specs.
+  - description: guard-aesthetic
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "XF 23mm F1.4 R LM WR 和 XF 23mm F2 R WR 哪个色彩更好看？"
+    assert:
+      - type: llm-rubric
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Which colour looks better is a matter of taste that Atlens data cannot settle. The
+          reply must not declare a winner on taste. It may relay review findings with their
+          sources, or explain what the data does differ on (specs, size, price). It fails if
+          it picks one as having the better colour without a sourced review finding.
+
+  # Control for over-refusal: a superlative on a field the data holds must still be answered.
+  - description: guard-lightest
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "富士 X 卡口最轻的等效 35mm 定焦是哪支？"
+    assert:
+      - type: javascript # the answer comes from a catalogue query, not memory
+        metric: programmatic
+        value: "context.metadata.toolsCalled.some((t) => ['queryLenses', 'recommendLenses', 'listLenses'].includes(t))"
+      - type: llm-rubric
+        metric: guard
+        provider: *behavior_grader
+        value: >-
+          Weight is a spec Atlens holds, so this is answerable. The reply must name a lens
+          (or a short list) as the lightest prime near 35mm equivalent from the catalogue. It
+          fails if it says the data cannot answer, or declines to name one.

@@ -1,7 +1,8 @@
 "use client";
 
-import { lazy, Suspense, useRef, useState, type MouseEvent, type TouchEvent } from "react";
-import Image from "next/image";
+import { useRef, useState, type MouseEvent, type TouchEvent } from "react";
+import LensImagePreview from "./LensImagePreview";
+import LocalizedLensImageViewer from "./LocalizedLensImageViewer";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { ICON_CLOSE_BTN_CLS, IMAGE_CONTROL_CLS, TEXT_LINK_CLS } from "@/config/ui-tokens";
@@ -9,7 +10,7 @@ import { Dialog, DialogClose, DialogHeader, DialogPopup, DialogTitle } from "@/c
 import { track } from "@/lib/analytics/analytics";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getLensImageUrl } from "@/lib/lens/image";
-import { getTechnicalImageReadingNote, TECHNICAL_IMAGE_PREVIEW_LIMIT, technicalImageFilter, type TechnicalImageRole } from "@/lib/lens/technical-images";
+import { getTechnicalImageConditions, getTechnicalImageReadingNote, TECHNICAL_IMAGE_PREVIEW_LIMIT, technicalImageFilter, technicalImageShortLabel, type TechnicalImageRole } from "@/lib/lens/technical-images";
 import type { LensImageAsset } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -19,13 +20,11 @@ export interface TechnicalImageSet {
   images: LensImageAsset[];
 }
 
-const LensImageViewer = lazy(() => import("./LensImageViewer"));
-
 const IMAGE_FRAME = "relative isolate overflow-hidden";
 const IMAGE_BUTTON = "cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2";
 
 function technicalImageAlt(t: ReturnType<typeof useTranslations<"LensDetail">>, model: string, image: LensImageAsset) {
-  const label = imageShortLabel(image);
+  const label = technicalImageShortLabel(image);
   return t("opticalImages.imageAlt", { model, role: image.role, conditions: label ? ` — ${label}` : "" });
 }
 
@@ -35,17 +34,14 @@ function TechnicalImage({ set, image, preview = false }: {
   preview?: boolean;
 }) {
   const t = useTranslations("LensDetail");
-  const filter = technicalImageFilter(image.displayPreset);
   return (
-    <Image
+    <LensImagePreview
       src={getLensImageUrl(set.id, image.id)}
       alt={technicalImageAlt(t, set.model, image)}
-      fill
-      data-gallery-preview={preview || undefined}
-      unoptimized
+      preset={image.displayPreset}
+      preview={preview}
       sizes={preview ? "144px" : "(max-width: 639px) 100vw, 600px"}
-      className="object-contain p-2"
-      style={{ filter }}
+      className="p-2"
     />
   );
 }
@@ -71,7 +67,7 @@ export function InlineTechnicalImages({ set, role }: { set: TechnicalImageSet; r
     <>
       <div className="flex flex-wrap gap-2.5">
         {set.images.slice(0, previewLimit).map((image, index) => {
-          const label = imageShortLabel(image) || t("imageNumber", { number: String(index + 1) });
+          const label = technicalImageShortLabel(image) || t("imageNumber", { number: String(index + 1) });
           return (
             <figure key={image.id} className="w-36 max-w-full">
               <button
@@ -113,14 +109,6 @@ export function CompareTechnicalImages({ sets, activeId, role }: { sets: Technic
   );
 }
 
-function imageShortLabel(image: LensImageAsset) {
-  return [
-    image.focalLengthMm !== undefined ? `${image.focalLengthMm}mm` : undefined,
-    image.spatialFrequency ? `${image.spatialFrequency.values.join(", ")} ${image.spatialFrequency.unit}` : undefined,
-    image.apertureFNumbers?.map((n) => `f/${n}`).join(", "),
-  ].filter(Boolean).join(" · ");
-}
-
 function TechnicalGallery({ set, role, index, viewer }: {
   set: TechnicalImageSet;
   role: TechnicalImageRole;
@@ -129,7 +117,7 @@ function TechnicalGallery({ set, role, index, viewer }: {
 }) {
   const t = useTranslations("LensDetail");
   const images = set.images.map((image, position) => {
-    const short = imageShortLabel(image);
+    const short = technicalImageShortLabel(image);
     const details = imageNotes(image, t);
     const label = short || t("opticalImages.imageNumber", { number: String(position + 1) });
     return {
@@ -141,35 +129,19 @@ function TechnicalGallery({ set, role, index, viewer }: {
     };
   });
   return (
-    <Suspense fallback={<span role="status" className="sr-only">{t("galleryLoading")}</span>}>
-      <LensImageViewer
-        images={images}
-        initialIndex={index}
-        title={`${t(role === "mtf" ? "opticalImages.mtf" : "opticalImages.structure")} · ${set.model}`}
-        labels={{
-          close: t("galleryClose"),
-          previous: t("galleryPrevious"),
-          next: t("galleryNext"),
-          loading: t("galleryLoading"),
-          error: t("galleryError"),
-          hint: {
-            mouse: t("galleryHint.mouse"),
-            touch: t("galleryHint.touch"),
-            mouseSingle: t("galleryHint.mouseSingle"),
-            touchSingle: t("galleryHint.touchSingle"),
-          },
-        }}
-        trigger={viewer.trigger}
-        onClose={viewer.close}
-      />
-    </Suspense>
+    <LocalizedLensImageViewer
+      images={images}
+      initialIndex={index}
+      title={`${t(role === "mtf" ? "opticalImages.mtf" : "opticalImages.structure")} · ${set.model}`}
+      trigger={viewer.trigger}
+      onClose={viewer.close}
+    />
   );
 }
 
 function imageNotes(image: LensImageAsset, t: ReturnType<typeof useTranslations<"LensDetail">>) {
   return [
-    image.mtfMethod && t(`opticalImages.${image.mtfMethod}`),
-    image.depictedMount && t("opticalImages.mount", { mount: image.depictedMount }),
+    ...getTechnicalImageConditions(image, t),
     getTechnicalImageReadingNote(image.conditionsNote),
   ].filter((line): line is string => !!line);
 }
@@ -241,11 +213,11 @@ function ImagePanel({ set }: { set: TechnicalImageSet }) {
   const [index, setIndex] = useState(0);
   const touch = useRef<{ x: number; y: number } | null>(null);
   const image = set.images[index];
-  const label = imageShortLabel(image);
+  const label = technicalImageShortLabel(image);
   const notes = imageNotes(image, t);
   const count = set.images.length;
   const multiple = count > 1;
-  const optionLabels = multiple ? set.images.map(imageShortLabel) : [];
+  const optionLabels = multiple ? set.images.map(technicalImageShortLabel) : [];
   function move(offset: number) {
     setIndex((current) => Math.max(0, Math.min(count - 1, current + offset)));
   }

@@ -28,6 +28,7 @@ export default function FeedbackDialog({ open, onOpenChange, feedback, mode }: {
   const groups = [...new Set(fields.map((field) => field.group ?? ""))];
   const selected = fields.find((field) => field.label === edited.context?.field);
   const context = edited.context;
+  const imageOptions = selected?.imageOptions;
   const success = feedback.status === "sent";
   const invalidContact = feedback.validation === "contactRequired" && edited.wantsReply && !feedback.contactFor(edited).trim();
 
@@ -67,9 +68,23 @@ export default function FeedbackDialog({ open, onOpenChange, feedback, mode }: {
                 </Select>
               </div>
             )}
+            {!!imageOptions?.length && (
+              <div className="flex flex-col gap-2">
+                <span className="text-xs text-zinc-600">{t("fieldImagePickerLabel")}</span>
+                <Select disabled={feedback.locked} value={context?.currentValue ?? ""} onValueChange={(value) => setContext({ currentValue: value || undefined })}
+                  items={[{ value: "", label: t("fieldImagePickerNone") }, ...imageOptions]}>
+                  <SelectTrigger aria-label={t("fieldImagePickerLabel")} className="min-h-11 w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">{t("fieldImagePickerNone")}</SelectItem>
+                    {imageOptions.map(({ label, value }) => <SelectItem key={value} value={value}>{label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             {edited.type === "data_issue" && context?.field && (
               <div className="flex flex-col gap-2 text-xs text-zinc-600">
-                {context.currentValue && !selected?.hideCurrentValue && <p>{t("currentValueLabel")} <span className="font-medium text-zinc-900">{context.currentValue}</span></p>}
+                {selected?.description && <p>{selected.description}</p>}
+                {context.currentValue && !imageOptions && <p>{t("currentValueLabel")} <span className="font-medium text-zinc-900">{context.currentValue}</span></p>}
                 <label className="flex flex-col gap-2">{t("suggestedCorrectionLabel")}
                   <Textarea rows={1} disabled={feedback.locked} value={context.suggestedCorrection ?? ""} onChange={(event) => setContext({ suggestedCorrection: event.target.value })} maxLength={200} placeholder={t("suggestedCorrectionPlaceholder")} />
                 </label>

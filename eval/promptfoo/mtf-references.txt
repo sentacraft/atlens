@@ -1,0 +1,17 @@
+Reference MTF readings, measured from the chart pixels against each chart's gridlines on 2026-11-23. Re-measure them if the data pipeline replaces an image. Values are S/M (sagittal/meridional) at the image-height positions named; "-" means not measurable, never judged. Tolerance is +-0.1.
+
+XF 35mm F1.4 R (fujifilm-xf-35mmf14-r-x)
+- image 002, 15 lines/mm: centre 0.85/0.85; ~7mm 0.75/0.85; edge 0.45/0.85
+- image 003, 45 lines/mm: centre 0.6/0.6; ~7mm 0.45/0.45; ~10mm S 0.35; edge 0.3/0.4
+
+XF 16-55mm F2.8 R LM WR (fujifilm-xf-16-55mmf28-r-lm-wr-x)
+- image 002, wide end, 15 lines/mm: centre 0.95/0.95; ~7mm 0.95/0.95; edge 0.9/0.9
+- image 003, wide end, 45 lines/mm: centre 0.95/0.95; ~7mm 0.8/0.65; edge 0.7/0.65
+- image 004, tele end, 15 lines/mm: centre 1.0/1.0; ~7mm 0.95/0.9; edge 0.85/-
+- image 005, tele end, 45 lines/mm: centre 0.95/0.95; ~7mm 0.7/0.7; edge 0.45/-
+
+XF 16-80mm F4 R OIS WR (fujifilm-xf-16-80mmf4-r-ois-wr-x)
+- image 002, 16mm, 15 lines/mm: centre 1.0/1.0; ~7mm 1.0/0.9; edge 0.95/0.75
+- image 003, 16mm, 45 lines/mm: centre 0.95/0.9; ~7mm 0.9/0.4; ~10mm M dips to ~0.33, then ~0.45 at 12mm; edge 0.65/0.25
+- image 004, 80mm, 15 lines/mm: centre 0.95/0.95; ~7mm 0.95/0.9; edge 0.85/0.75
+- image 005, 80mm, 45 lines/mm: centre 0.8/0.8; ~7mm 0.8/0.5; edge 0.6/0.25

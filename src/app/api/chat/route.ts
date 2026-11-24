@@ -26,7 +26,8 @@ import { ASK_CHOICES } from "@/lib/ai/choice-request";
 import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
 import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval, signInDeclined } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
-import { buildLensTools, seedRecalledRefs } from "@/lib/ai/tools";
+import type { MtfChart } from "@/lib/ai/mtf-comparison";
+import { buildLensTools, countShownFigures, earlierMtfCharts, seedRecalledRefs } from "@/lib/ai/tools";
 import { loadLensReviews } from "@/lib/lens/reviews-repository";
 import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
 import { checkIrisQuota, recordIrisTurn, type IrisQuotaUser } from "@/lib/ai/iris-quota";
@@ -145,6 +146,7 @@ export async function POST(req: NextRequest) {
     process.env.NODE_ENV === "production" ? undefined : evalFavorites(req.headers.get(EVAL_FAVORITES_HEADER));
   // Filled once the history is resolved below; validate needs the tools before that.
   const recalledRefs = new Set<string>();
+  const figures: { next: number; mtfShown?: MtfChart[] } = { next: 1 };
   const tools = withRepeatedFailureNotice(
     buildLensTools(
       mount,
@@ -161,6 +163,7 @@ export async function POST(req: NextRequest) {
         },
       },
       recalledRefs,
+      figures,
     ),
   );
   const validate = (messages: unknown) =>
@@ -179,7 +182,7 @@ export async function POST(req: NextRequest) {
 
   let stored: AskIrisUIMessage[];
   try {
-    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId })) as AskIrisUIMessage[];
+    stored = (await loadAskIrisTurnHistory(appDb, { conversationId, userId }) as AskIrisUIMessage[]);
     // validateUIMessages rejects an empty list, which a new conversation has.
     const checked = stored.length > 0 ? await validate(stored) : undefined;
     // Stored turns that no longer match the tool schemas are still replayed: dropping
@@ -219,6 +222,8 @@ export async function POST(req: NextRequest) {
   }
   const { history, userMessage, historyChanged } = turn;
   seedRecalledRefs(recalledRefs, history);
+  figures.next = countShownFigures(history) + 1;
+  figures.mtfShown = earlierMtfCharts(history);
   const gearDeclined = gearCardDecline(history);
   const declinedSignIn = signInDeclined(history);
   const activeTools = Object.keys(tools).filter((name) =>
@@ -265,7 +270,10 @@ export async function POST(req: NextRequest) {
   // A stopped turn is stored with its unfinished tool calls, which the model cannot take back.
   let modelMessages: ModelMessage[];
   try {
-    modelMessages = await convertToModelMessages(history, { tools, ignoreIncompleteToolCalls: true });
+    modelMessages = await convertToModelMessages(history, {
+      tools,
+      ignoreIncompleteToolCalls: true,
+    });
   } catch (error) {
     console.error("[askiris] failed to convert messages", error);
     persistTrace(traceCollector.finalizeError("message_conversion_failed"));

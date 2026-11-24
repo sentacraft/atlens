@@ -153,6 +153,10 @@ function digest(msg) {
   const queries = [];
   const searches = [];
   const details = [];
+  const imageRequests = [];
+  const images = [];
+  const imageResults = [];
+  const mtfGroups = [];
   const reviews = [];
   const recalledRefs = new Set();
   const toolsCalled = [];
@@ -207,7 +211,37 @@ function digest(msg) {
       });
     }
     if (name === "lensDetails") {
-      details.push(...(part.input?.refs ?? []));
+      details.push(...(part.input?.lenses ?? []).map(({ ref }) => ref));
+    }
+    if (name === "showLensImages") {
+      for (const lens of part.input?.lenses ?? []) {
+        imageRequests.push(...(lens.images ?? []).map((request) => ({ ...request, lensId: REF_TO_ID.get(lens.ref) ?? lens.ref })));
+      }
+      for (const lens of part.output?.lenses ?? []) {
+        imageResults.push(...(lens.imageResults ?? []).map((result) => ({ ...result, lensId: REF_TO_ID.get(lens.ref) ?? lens.ref })));
+      }
+      if (part.output?.mtfGroups) {
+        mtfGroups.push({ groups: part.output.mtfGroups.map((g) => ({ ...g, lenses: g.lenses.map((l) => ({ ...l, lensId: REF_TO_ID.get(l.lens) ?? l.lens })) })), between: part.output.betweenGroups ?? null });
+      }
+      // Every displayed image reaches the model, so `read` is always true.
+      const shown = (part.output?.displayImages ?? []).map((image) => ({
+        lensId: image.lensId,
+        lensName: image.lensName,
+        imageRef: image.imageRef,
+        role: image.image?.role ?? null,
+        read: true,
+        galleryCount: image.gallery?.length ?? 1,
+        figure: image.figureLabel ?? null,
+        id: image.image?.id ?? null,
+        spatialFrequency: image.image?.spatialFrequency ?? null,
+        focalLengthMm: image.image?.focalLengthMm ?? null,
+        apertureFNumbers: image.image?.apertureFNumbers ?? null,
+      }));
+      images.push(...shown);
+      // The judge cannot see pixels; this line tells it what was on screen and read.
+      if (shown.length) {
+        transcript.push(`[images]\n${shown.map((image) => `- ${image.figure ? `${image.figure}: ` : ""}${image.lensName} ${image.role}${image.id ? ` image ${image.id}` : ""}${image.focalLengthMm ? ` ${image.focalLengthMm}mm` : ""}${image.spatialFrequency ? ` ${image.spatialFrequency.values.join("/")} ${image.spatialFrequency.unit}` : ""}${image.apertureFNumbers ? ` f/${image.apertureFNumbers.join(", f/")}` : ""}${image.galleryCount > 1 ? ` (gallery of ${image.galleryCount})` : ""}, read`).join("\n")}`);
+      }
     }
     if (name === "lensReviews") {
       for (const lens of part.output?.lenses ?? []) {
@@ -226,7 +260,9 @@ function digest(msg) {
       }
     }
     if (name === "searchLensByName") {
-      searches.push({ query: part.input?.query ?? null, refs: refsFromOutput(part.output) });
+      for (const group of part.output?.results ?? []) {
+        searches.push({ query: group.query ?? null, refs: refsFromOutput({ matches: group.matches }) });
+      }
     }
     for (const ref of refsFromOutput(part.output)) {
       recalledRefs.add(ref);
@@ -301,6 +337,10 @@ function digest(msg) {
     queries,
     searches,
     details,
+    imageRequests,
+    imageResults,
+    mtfGroups,
+    images,
     reviews,
     recalledRefs: [...recalledRefs],
     steps,
@@ -384,6 +424,10 @@ export default class AskIrisProvider {
         queries: d.queries,
         searches: d.searches,
         details: d.details,
+        imageRequests: d.imageRequests,
+        imageResults: d.imageResults,
+        mtfGroups: d.mtfGroups,
+        images: d.images,
         reviews: d.reviews,
         recalledRefs: d.recalledRefs,
         steps: d.steps,
