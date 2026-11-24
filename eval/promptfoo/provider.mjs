@@ -253,7 +253,9 @@ function digest(msg) {
       }
     }
     if (name === "searchLensByName") {
-      searches.push({ query: part.input?.query ?? null, refs: refsFromOutput(part.output) });
+      for (const group of part.output?.results ?? []) {
+        searches.push({ query: group.query ?? null, refs: refsFromOutput({ matches: group.matches }) });
+      }
     }
     for (const ref of refsFromOutput(part.output)) {
       recalledRefs.add(ref);

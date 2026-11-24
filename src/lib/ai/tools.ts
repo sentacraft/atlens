@@ -11,10 +11,12 @@ import {
   toDetailed,
   toRecalled,
   RECALL_SORT_NAMES,
+  RECALL_OMITTED_NOTE,
   LENS_TABLE_COLUMNS,
 } from "@/lib/ai/recall";
 import { lensRef, buildRefIndex, sourceRef } from "@/lib/ai/lens-ref";
 import { groupLensImages } from "@/lib/askiris/lens-image-galleries";
+import { LENS_TABLE_RENDERERS, tableLabelsForLocale } from "@/lib/ai/lens-table-cells";
 import { compareMtfCharts } from "@/lib/ai/mtf-comparison";
 import { lensDetailImages, lensImageRequestsSchema, type LensDetailDisplayImage } from "@/lib/ai/lens-detail-images";
 import { OPTICAL_TRAITS, type Mount } from "@/lib/types";
@@ -31,6 +33,9 @@ import { prepareFeedback, prepareFeedbackInputSchema } from "@/lib/feedback/prep
 import type { LensReviews } from "@/lib/lens/reviews-repository";
 
 const RECALL_LIMIT = 20;
+
+// A model fills an unset bound with 0, which no requirement ever means; the message tells it to retry with null.
+const bound = () => z.number().positive("A bound must be a positive number. Use null, not 0, for an unrestricted bound.");
 
 const recallConstraintsSchema = z.object({
   brands: z
@@ -62,7 +67,7 @@ const recallConstraintsSchema = z.object({
         "appear only when named here; macro always appears.",
     ),
   coversFocals: z
-    .array(z.number())
+    .array(bound())
     .nullish()
     .describe(
       "Native focal lengths in mm (the number printed on the lens, not the full-frame " +
@@ -73,52 +78,44 @@ const recallConstraintsSchema = z.object({
   // Not a [min, max] tuple: it compiles to prefixItems, which Google's function
   // declarations reject.
   focalWithin: z
-    .object({ min: z.number().nullish(), max: z.number().nullish() })
+    .object({ min: bound().nullish(), max: bound().nullish() })
     .nullish()
     .describe(
       "Native focal window in mm (the number printed on the lens, not the full-frame " +
         "equivalent); an omitted end is open. The lens's ENTIRE focal range must lie inside it.",
     ),
-  minReach: z
-    .number()
+  minReach: bound()
     .nullish()
     .describe("Native mm; a hard lower bound on the lens's longest focal length (its tele end)."),
-  maxWide: z
-    .number()
+  maxWide: bound()
     .nullish()
     .describe("Native mm; a hard upper bound on the lens's shortest focal length (its wide end)."),
-  maxWeightG: z
-    .number()
+  maxWeightG: bound()
     .nullish()
     .describe("Grams; a hard upper bound on lens weight."),
-  maxLengthMm: z
-    .number()
+  maxLengthMm: bound()
     .nullish()
     .describe("Barrel length ceiling in mm; a hard upper bound."),
   maxApertureF: z
-    .object({ wide: z.number().nullish(), tele: z.number().nullish() })
+    .object({ wide: bound().nullish(), tele: bound().nullish() })
     .nullish()
     .describe(
       "f-number ceiling at each zoom end (smaller = wider); a hard bound.",
     ),
-  maxPrice: z
-    .number()
+  maxPrice: bound()
     .nullish()
     .describe("Price ceiling in the user's currency (CNY for zh, USD for en)."),
-  minMagnification: z
-    .number()
+  minMagnification: bound()
     .nullish()
     .describe(
       "Minimum magnification ratio (1 = life-size); a hard lower bound.",
     ),
-  minApertureBladeCount: z
-    .number()
+  minApertureBladeCount: bound()
     .nullish()
     .describe(
       "Minimum aperture blade count; a hard lower bound.",
     ),
-  minReleaseYear: z
-    .number()
+  minReleaseYear: bound()
     .nullish()
     .describe("Only lenses released in or after this year; a hard lower bound."),
   sortBy: z
@@ -141,7 +138,11 @@ const RECALL_OUTPUT_REFS: Record<string, (output: never) => unknown[]> = {
       ...(result.matches ?? []).map((lens) => lens.ref),
       ...(result.maybe ?? []).map((entry) => entry.lens?.ref),
     ]),
-  searchLensByName: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
+  // Compatibility: replies saved before searchLensByName took several names hold `results` as a flat
+  // list of lenses. Drop the `ref` branch once no saved conversation predates that change (stored
+  // conversations have no retention limit, so until a migration rewrites them).
+  searchLensByName: (output: { results?: ({ matches?: RefList; ref?: unknown })[] }) =>
+    (output.results ?? []).flatMap((entry) => entry.matches ? entry.matches.map((lens) => lens.ref) : [entry.ref]),
   myFavorites: (output: { results?: RefList }) => (output.results ?? []).map((lens) => lens.ref),
   myGear: (output: { lenses?: RefList }) => (output.lenses ?? []).map((lens) => lens.ref),
 };
@@ -256,6 +257,13 @@ export function buildLensTools(
     });
   };
 
+  // One gear snapshot per request; a guest or a failed read marks nothing and never raises.
+  const markOwned = async <T extends { id: string }>(lenses: T[]): Promise<(T & { owned?: true })[]> => {
+    const gear = await data.gear().catch(() => null);
+    const owned = new Set(gear?.known ? gear.lenses.flatMap((lens) => lens.ref ? [lens.ref] : []) : []);
+    return lenses.map((lens) => owned.has(lensRef(lens.id)) ? { ...lens, owned: true } : lens);
+  };
+
   return {
     queryLenses: tool({
       description:
@@ -285,33 +293,42 @@ export function buildLensTools(
             : result;
         }),
         note: QUERY_LENSES_NOTE,
+        detailSpecsNote: RECALL_OMITTED_NOTE,
       }),
     }),
 
     searchLensByName: tool({
       description:
-        "Look up a model or brand the user named, in the current mount only. Use queryLenses for spec searches.",
+        "Look up the models or brands the user named, in the current mount only: one call for all of them. " +
+        "Use queryLenses for spec searches.",
       inputSchema: z.object({
-        query: z
-          .string()
+        queries: z
+          .array(z.string())
+          .min(1)
+          .max(4)
           .describe(
-            "One lens's model or brand identifier, extracted from the request — a short " +
-              "name or number token, matched against a name index. Not a full sentence, and " +
-              "not several lenses at once; to look up more than one, call once per lens.",
+            "One identifier per lens or brand, extracted from the request — a short name or number " +
+              "token each, matched against a name index. Not a full sentence. Results come back in the same order.",
           ),
-        limit: z.number().optional().describe("Max results (default 8)."),
+        limit: z.number().optional().describe("Max results per query (default 8)."),
       }),
-      execute: ({ query, limit }) => {
+      execute: ({ queries, limit }) => {
         const index = buildLensSearchIndex(getLensesByMount(mount, locale));
-        const results = searchLensIndex(index, query, limit ?? 8).map((lens) =>
-          toRecalled(resolveLens(lens, locale, tBrand)),
-        );
-        for (const lens of results) {
-          recalledRefs.add(lens.ref);
-        }
-        return results.length ? { results } : {
-          results,
-          note: `No name match in ${mountLabel}. This lookup does not search across mounts. If the name points to a different mount, confirm which one the user means.`,
+        return {
+          results: queries.map((query) => {
+            const matches = searchLensIndex(index, query, limit ?? 8).map((lens) =>
+              toRecalled(resolveLens(lens, locale, tBrand)),
+            );
+            for (const lens of matches) {
+              recalledRefs.add(lens.ref);
+            }
+            return matches.length ? { query, matches } : {
+              query,
+              matches,
+              note: `No name match in ${mountLabel}. This lookup does not search across mounts. If the name points to a different mount, confirm which one the user means.`,
+            };
+          }),
+          detailSpecsNote: RECALL_OMITTED_NOTE,
         };
       },
     }),
@@ -332,7 +349,7 @@ export function buildLensTools(
         for (const lens of results) {
           recalledRefs.add(lens.ref);
         }
-        return { results, total: lenses.length, otherMounts };
+        return { results, total: lenses.length, otherMounts, detailSpecsNote: RECALL_OMITTED_NOTE };
       },
     }),
 
@@ -528,14 +545,17 @@ export function buildLensTools(
           .min(1)
           .max(6),
       }),
-      execute: ({ picks }) => recommendLenses(mount, locale, picks, tBrand, recalledRefs),
+      execute: ({ picks }) => {
+        const { recommendations } = recommendLenses(mount, locale, picks, tBrand, recalledRefs);
+        return markOwned(recommendations).then((marked) => ({ recommendations: marked }));
+      },
       // The model already has these specs; it gets the refs back so its prose can link them.
       // Requires passing this same ToolSet to convertToModelMessages.
       toModelOutput: ({ output }) => ({
         type: "text",
         value:
           `Rendered ${output.recommendations.length} recommendation card(s) to the user, for: ` +
-          output.recommendations.map((rec) => lensRef(rec.id)).join(", ") +
+          output.recommendations.map((rec) => lensRef(rec.id) + (rec.owned ? " (already owned)" : "")).join(", ") +
           ". The user reads each card's reason there; your text frames the choice rather than restating each card.",
       }),
     }),
@@ -561,17 +581,31 @@ export function buildLensTools(
           .optional()
           .describe("An optional short caption above the table, in the user's language."),
       }),
-      execute: ({ refs, columns, caption }) => ({
-        ...listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs),
-        historical: false,
-      }),
-      toModelOutput: ({ output }) => ({
+      execute: ({ refs, columns, caption }) => {
+        const table = listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs);
+        return markOwned(table.lenses).then((lenses) => ({ ...table, lenses, historical: false }));
+      },
+      toModelOutput: ({ output }) => {
+        const labels = tableLabelsForLocale(locale);
+        return {
         type: "text",
         value: JSON.stringify({ presentation: {
           scope: output.historical ? "history" : "currentReply",
-          table: { lensRefs: output.lenses.map((lens) => lensRef(lens.id)), columns: output.columns },
+          ...(output.caption ? { caption: output.caption } : {}),
+          table: {
+            lensRefs: output.lenses.map((lens) => lensRef(lens.id)),
+            columns: output.columns,
+            // What each cell shows the user, so the model never writes prose that contradicts the table.
+            lenses: output.lenses.map((lens) => ({
+              ref: lensRef(lens.id),
+              name: lens.name,
+              ...(lens.owned ? { owned: true } : {}),
+              values: Object.fromEntries(output.columns.map((column) => [column, LENS_TABLE_RENDERERS[column](lens, labels) ?? labels.na])),
+            })),
+          },
         } }),
-      }),
+        };
+      },
     }),
 
     prepareFeedback: tool({

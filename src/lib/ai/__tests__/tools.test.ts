@@ -69,7 +69,7 @@ describe("a recall tool's gate accepts exactly what it returned", () => {
       { queries: [{ type: "prime" }] },
       (out: { results: { matches: { ref: string }[] }[] }) => out.results[0].matches,
     ],
-    ["searchLensByName", { query: "35" }, (out: { results: { ref: string }[] }) => out.results],
+    ["searchLensByName", { queries: ["35"] }, (out: { results: { matches: { ref: string }[] }[] }) => out.results[0].matches],
   ])("%s", async (name, input, pick) => {
     const tools = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set());
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -519,9 +519,9 @@ describe("queryLenses result note", () => {
 
   it("keeps a failed XF lookup scoped to the current GFX catalogue", async () => {
     const gfx = buildLensTools("G", "en", (brand) => brand, GUEST, new Set());
-    const result = await run(gfx.searchLensByName, { query: "XF 35mm" });
-    expect(result.results).toEqual([]);
-    expect(result.note).toMatch(/GFX.*different mount/);
+    const result = await run(gfx.searchLensByName, { queries: ["XF 35mm"] });
+    expect(result.results).toMatchObject([{ query: "XF 35mm", matches: [] }]);
+    expect(result.results[0].note).toMatch(/GFX.*different mount/);
   });
 
   it("carries the rules for reading maybe and the cap with the data", async () => {
@@ -542,13 +542,149 @@ describe("queryBodies", () => {
   });
 });
 
-it("summarizes table columns without repeating cell values", async () => {
+it("sends the model the cell values a table shows, with the caption", async () => {
   const ref = lensRef("fujifilm-xf-35mmf14-r-x");
   const lookup = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref]));
-  const input = { refs: [ref], columns: ["lensConfiguration" as const] };
-  const output = run(lookup.listLenses, input);
+  const input = { refs: [ref], columns: ["lensConfiguration" as const], caption: "Construction" };
+  const output = await run(lookup.listLenses, input);
   const projected = await lookup.listLenses.toModelOutput!({ toolCallId: "table", input, output });
-  expect(projected.type).toBe("text");
   if (projected.type !== "text") { throw new Error("Expected table summary"); }
-  expect(JSON.parse(projected.value)).toEqual({ presentation: { scope: "currentReply", table: { lensRefs: [ref], columns: ["lensConfiguration"] } } });
+  const { presentation } = JSON.parse(projected.value);
+  expect(presentation).toMatchObject({ scope: "currentReply", caption: "Construction", table: { lensRefs: [ref], columns: ["lensConfiguration"] } });
+  expect(presentation.table.lenses).toEqual([{ ref, name: expect.any(String), values: { lensConfiguration: expect.stringMatching(/\d/) } }]);
+});
+
+describe("recall results name the specs they leave out", () => {
+  const OMITTED_NOTE = /leave out these detail specs: ([^.]+)\./;
+
+  it("lists exactly the ResolvedLens fields toRecalled drops, on every recall result", async () => {
+    const recall = await run(tools.searchLensByName, { queries: ["35"] });
+    const recalled = Object.keys(recall.results[0].matches[0]);
+    const lensRefFound = recall.results[0].matches[0].ref as string;
+    const seeded = buildLensTools("X", "zh", (brand) => brand, GUEST, new Set([lensRefFound]));
+    const detailed = Object.keys((await run(seeded.lensDetails, { lenses: [{ ref: lensRefFound }] })).lenses[0]);
+    const expected = detailed.filter((key) => !recalled.includes(key)).sort();
+    expect(expected.length).toBeGreaterThan(5);
+
+    const results = [
+      recall,
+      await run(tools.queryLenses, { queries: [{ type: "prime" }] }),
+    ];
+    for (const result of results) {
+      const text = JSON.stringify(result);
+      const listed = JSON.parse(`"${(text.match(OMITTED_NOTE) ?? [])[1] ?? ""}"`).split(", ").sort();
+      expect(listed).toEqual(expected);
+      expect(text).toContain("lensDetails");
+      expect(text).toContain("null means the catalogue holds no value");
+    }
+  });
+});
+
+describe("listLenses tells the model the values it shows", () => {
+  it("sends each tabled lens with the chosen columns' values, formed as the table forms them", async () => {
+    const found = await run(tools.searchLensByName, { queries: ["35mm F1.4"] });
+    const refs = found.results[0].matches.slice(0, 2).map((lens: { ref: string }) => lens.ref);
+    const input = { refs, columns: ["lensConfiguration", "weight"] as ("lensConfiguration" | "weight")[] };
+    const output = await run(tools.listLenses, input);
+    const projected = await tools.listLenses.toModelOutput!({ toolCallId: "table", input, output });
+    if (projected.type !== "text") {throw new Error("Expected text output");}
+    const { presentation } = JSON.parse(projected.value);
+    expect(presentation.scope).toBe("currentReply");
+    expect(presentation.table.columns).toEqual(["lensConfiguration", "weight"]);
+    expect(presentation.table.lensRefs).toEqual(refs);
+    expect(presentation.table.lenses).toHaveLength(refs.length);
+    for (const row of presentation.table.lenses) {
+      expect(row).toMatchObject({ ref: expect.any(String), name: expect.any(String) });
+      expect(row.values.lensConfiguration).toMatch(/\d/);
+      expect(row.values.weight).toMatch(/\d\s?g/);
+    }
+  });
+});
+
+describe("queryLenses bounds", () => {
+  const parse = (query: unknown) => (tools.queryLenses.inputSchema as unknown as { safeParse: (value: unknown) => { success: boolean; error?: { message: string } } }).safeParse({ queries: [query] });
+
+  it.each([
+    { maxWide: 0 }, { maxWeightG: 0 }, { maxLengthMm: 0 }, { maxPrice: 0 }, { minReach: 0 },
+    { minMagnification: 0 }, { minApertureBladeCount: 0 }, { minReleaseYear: 0 },
+    { maxApertureF: { wide: 0 } }, { maxApertureF: { tele: 0 } },
+    { focalWithin: { min: 0 } }, { focalWithin: { max: 0 } }, { coversFocals: [0] },
+  ])("rejects a zero bound %o and says null means unrestricted", (query) => {
+    const result = parse(query);
+    expect(result.success).toBe(false);
+    expect(result.error?.message).toContain("null");
+  });
+
+  it("still accepts null and positive bounds", () => {
+    expect(parse({ maxWide: null, maxWeightG: 400, maxApertureF: { wide: 2.8, tele: null }, focalWithin: { min: 35, max: null } }).success).toBe(true);
+  });
+});
+
+describe("owned lenses", () => {
+  const ref = lensRef("fujifilm-xf-35mmf14-r-x");
+  const other = lensRef("fujifilm-xf-56mmf12-r-wr-x");
+  const ownerData = (gear: ToolData["gear"]): ToolData => ({ ...GUEST, gear });
+  const owner = ownerData(async () => ({ known: true, bodies: [], lenses: [{ name: "XF 35mm F1.4 R", ref, manual: false, adapted: false }] }));
+  const build = (data: ToolData) => buildLensTools("X", "en", (brand) => brand, data, new Set([ref, other]));
+
+  it("flags a lens the signed-in user owns in the card, table and model output, and no other", async () => {
+    const lookup = build(owner);
+    const cards = await run(lookup.recommendLenses, { picks: [{ ref, reason: "r" }, { ref: other, reason: "r" }] });
+    expect(cards.recommendations.map((rec: { owned?: boolean }) => rec.owned)).toEqual([true, undefined]);
+    const cardText = await lookup.recommendLenses.toModelOutput!({ toolCallId: "c", input: { picks: [] }, output: cards });
+    expect(JSON.stringify(cardText)).toMatch(new RegExp(`${ref}[^,]*already owned`));
+    expect(JSON.stringify(cardText)).not.toMatch(new RegExp(`${other}[^,]*already owned`));
+
+    const input = { refs: [ref, other], columns: ["weight" as const] };
+    const table = await run(lookup.listLenses, input);
+    expect(table.lenses.map((lens: { owned?: boolean }) => lens.owned)).toEqual([true, undefined]);
+    const projected = await lookup.listLenses.toModelOutput!({ toolCallId: "t", input, output: table });
+    if (projected.type !== "text") {throw new Error("Expected text");}
+    expect(JSON.parse(projected.value).presentation.table.lenses.map((row: { owned?: boolean }) => row.owned)).toEqual([true, undefined]);
+  });
+
+  it.each([
+    ["a guest", GUEST],
+    ["a failed gear read", ownerData(async () => { throw new Error("db down"); })],
+    ["an unavailable profile", ownerData(async () => ({ known: false, reason: "unavailable" }))],
+  ])("marks nothing, without an error, for %s", async (_name, data) => {
+    const lookup = build(data);
+    const cards = await run(lookup.recommendLenses, { picks: [{ ref, reason: "r" }] });
+    expect(cards.recommendations[0]).not.toHaveProperty("owned");
+    const table = await run(lookup.listLenses, { refs: [ref] });
+    expect(table.lenses[0]).not.toHaveProperty("owned");
+  });
+});
+
+describe("searchLensByName with several names", () => {
+  it("groups matches per query in input order and recalls every ref", async () => {
+    const recalledRefs = new Set<string>();
+    const lookup = buildLensTools("X", "zh", (brand) => brand, GUEST, recalledRefs);
+    const result = await run(lookup.searchLensByName, { queries: ["XF 56mm", "no-such-lens-zzz", "XF 35mm F1.4"] });
+    expect(result.results.map((group: { query: string }) => group.query)).toEqual(["XF 56mm", "no-such-lens-zzz", "XF 35mm F1.4"]);
+    expect(result.results[1].matches).toEqual([]);
+    expect(result.results[1].note).toMatch(/No name match/);
+    expect(result.results[0]).not.toHaveProperty("note");
+    for (const group of result.results) {
+      for (const lens of group.matches) {expect(recalledRefs.has(lens.ref)).toBe(true);}
+    }
+    expect(result.detailSpecsNote).toContain("lensDetails");
+  });
+
+  it("caps the names at four", () => {
+    const schema = tools.searchLensByName.inputSchema as unknown as { safeParse: (value: unknown) => { success: boolean } };
+    expect(schema.safeParse({ queries: ["a", "b", "c", "d"] }).success).toBe(true);
+    expect(schema.safeParse({ queries: ["a", "b", "c", "d", "e"] }).success).toBe(false);
+    expect(schema.safeParse({ queries: [] }).success).toBe(false);
+  });
+
+  // Compatibility: replies saved before the multi-name input hold `results` as a flat lens list.
+  it("still seeds refs from a saved turn in the old flat output shape", () => {
+    const recalledRefs = new Set<string>();
+    seedRecalledRefs(recalledRefs, [{
+      id: "a", role: "assistant",
+      parts: [{ type: "tool-searchLensByName", toolCallId: "c", state: "output-available", input: { query: "56" }, output: { results: [{ ref: "old1" }, { ref: "old2" }] } }],
+    } as UIMessage]);
+    expect([...recalledRefs]).toEqual(["old1", "old2"]);
+  });
 });
