@@ -12,7 +12,8 @@ import { cineCollectionTag } from "@/components/collection/CineCollectionLink";
 import { BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
-import { buildLineup, lineupLenses, type Lineup } from "@/lib/charts/lineup";
+import { buildLineup, type Lineup } from "@/lib/charts/lineup";
+import { lineupListGroups } from "@/lib/charts/list";
 import { getLensesByMount } from "@/lib/lens/data";
 import { brandLabel } from "@/lib/lens/format";
 import { buildItemListSchema } from "@/lib/lens/seo";
@@ -101,11 +102,7 @@ export default async function LineupsPage({ params }: { params: Params }) {
         <BrandLineupsOverview locale={locale} mount={data.resolvedMount} lineups={data.lineups} />
         <ChartLensList
           locale={locale}
-          groups={data.lineups.map((lineup) => ({
-            key: lineup.brand,
-            heading: brandLabel(tBrand, lineup.brand),
-            lenses: lineupLenses(lineup),
-          }))}
+          groups={lineupListGroups(data.lineups).map((group) => ({ ...group, heading: brandLabel(tBrand, group.key) }))}
         />
         <SupportNote className="mt-12" />
       </main>

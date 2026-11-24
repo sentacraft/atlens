@@ -13,7 +13,8 @@ import { cineCollectionTag } from "@/components/collection/CineCollectionLink";
 import { BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
-import { buildTimeline, lensesByYear } from "@/lib/charts/timeline";
+import { timelineListGroups } from "@/lib/charts/list";
+import { buildTimeline } from "@/lib/charts/timeline";
 import { formatDataDate } from "@/lib/charts/data-date";
 import { getLensesByMount, meta } from "@/lib/lens/data";
 import { brandLabel } from "@/lib/lens/format";
@@ -138,7 +139,7 @@ export default async function TimelinePage({ params }: { params: Params }) {
         </Suspense>
         <ChartLensList
           locale={locale}
-          groups={lensesByYear(timeline).map(({ year, lenses }) => ({ key: String(year), heading: String(year), lenses }))}
+          groups={timelineListGroups(timeline).map((group) => ({ ...group, heading: group.key }))}
         />
         <SupportNote className="mt-12" />
       </main>

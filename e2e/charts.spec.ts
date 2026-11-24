@@ -24,6 +24,23 @@ test.describe("Charts", () => {
     }
   });
 
+  test("opening the list does not move the page", async ({ page }) => {
+    for (const path of [TIMELINE, LINEUPS]) {
+      await page.goto(path, { waitUntil: "networkidle" });
+      const list = page.locator("details").filter({ hasText: "View as list" });
+      // Scroll so the list's summary is on screen and the page is scrolled, as a reader would be.
+      await list.scrollIntoViewIfNeeded();
+      await page.evaluate(() => window.scrollBy(0, 120));
+      await page.waitForTimeout(300);
+      const before = await page.evaluate(() => window.scrollY);
+      expect(before, path).toBeGreaterThan(0);
+      await list.getByText("View as list").click();
+      await expect(list.getByRole("heading", { level: 2 }).first(), path).toBeVisible();
+      await page.waitForTimeout(500);
+      expect(await page.evaluate(() => window.scrollY), path).toBe(before);
+    }
+  });
+
   test("/charts redirects to the timeline", async ({ page }) => {
     await page.goto("/en/lenses/x/charts");
     await expect(page).toHaveURL(new RegExp(`${TIMELINE}$`));
