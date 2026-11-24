@@ -197,15 +197,19 @@ export function brandLabel(t: { (key: BrandKey): string; has(key: BrandKey): boo
 }
 
 // Fujifilm model names already contain the series, so it is omitted.
+export function lensModelName(series: string | undefined, model: string): string {
+  if (!series || model.toLowerCase().includes(series.toLowerCase())) {
+    return model;
+  }
+  return `${series} ${model}`;
+}
+
 export function lensDisplayName(
   brandName: string,
   series: string | undefined,
   model: string,
 ): string {
-  if (!series || model.toLowerCase().includes(series.toLowerCase())) {
-    return `${brandName} ${model}`;
-  }
-  return `${brandName} ${series} ${model}`;
+  return `${brandName} ${lensModelName(series, model)}`;
 }
 
 export function lensSubtitleLine(
