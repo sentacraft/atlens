@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { systemPrompt } from "../system-prompt";
-import type { UIMessage } from "ai";
+import { convertToModelMessages, type UIMessage } from "ai";
 import { buildLensTools, countShownFigures, type ToolData, seedRecalledRefs } from "../tools";
 import { getLensesByMount } from "@/lib/lens/data";
 import { lensRef, sourceRef } from "../lens-ref";
@@ -551,7 +551,7 @@ it("sends the model the cell values a table shows, with the caption", async () =
   const projected = await lookup.listLenses.toModelOutput!({ toolCallId: "table", input, output });
   if (projected.type !== "text") { throw new Error("Expected table summary"); }
   const { presentation } = JSON.parse(projected.value);
-  expect(presentation).toMatchObject({ scope: "currentReply", caption: "Construction", table: { lensRefs: [ref], columns: ["lensConfiguration"] } });
+  expect(presentation).toMatchObject({ caption: "Construction", table: { lensRefs: [ref], columns: ["lensConfiguration"] } });
   expect(presentation.table.lenses).toEqual([{ ref, name: expect.any(String), values: { lensConfiguration: expect.stringMatching(/\d/) } }]);
 });
 
@@ -590,7 +590,7 @@ describe("listLenses tells the model the values it shows", () => {
     const projected = await tools.listLenses.toModelOutput!({ toolCallId: "table", input, output });
     if (projected.type !== "text") {throw new Error("Expected text output");}
     const { presentation } = JSON.parse(projected.value);
-    expect(presentation.scope).toBe("currentReply");
+    expect(presentation).not.toHaveProperty("scope");
     expect(presentation.table.columns).toEqual(["lensConfiguration", "weight"]);
     expect(presentation.table.lensRefs).toEqual(refs);
     expect(presentation.table.lenses).toHaveLength(refs.length);
@@ -736,5 +736,25 @@ describe("figure numbers", () => {
     expect(summary.shownImages[0]).toMatchObject({ figure: "图 1", imageRef: output.displayImages[0].imageRef });
     const captions = projected.value.filter((part) => part.type === "text").slice(1).map((part) => (part as { text: string }).text);
     expect(captions[0]).toBe(`Image 图 1 (${output.displayImages[0].imageRef}):`);
+  });
+});
+
+describe("a past table reaches the model as it was", () => {
+  it("sends a stored listLenses output through toModelOutput unchanged, with no history marker", async () => {
+    const ref = lensRef("fujifilm-xf-35mmf14-r-x");
+    const lookup = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref]));
+    const input = { refs: [ref], columns: ["weight" as const] };
+    const output = await run(lookup.listLenses, input);
+    const past = [
+      { id: "u", role: "user", parts: [{ type: "text", text: "table" }] },
+      { id: "a", role: "assistant", parts: [{ type: "tool-listLenses", toolCallId: "t", state: "output-available", input, output }] },
+      { id: "u2", role: "user", parts: [{ type: "text", text: "next" }] },
+    ] as UIMessage[];
+    const messages = await convertToModelMessages(past, { tools: lookup, ignoreIncompleteToolCalls: true });
+    const result = JSON.stringify(messages);
+    const direct = await lookup.listLenses.toModelOutput!({ toolCallId: "t", input, output });
+    if (direct.type !== "text") {throw new Error("Expected text output");}
+    expect(result).toContain(JSON.stringify(direct.value).slice(1, -1));
+    expect(result).not.toContain("history");
   });
 });
