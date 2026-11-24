@@ -10,7 +10,7 @@ export const MAX_IMAGES_PER_CALL = 24;
 
 export const lensImageRequestsSchema = z.array(z.object({
   role: z.enum(imageRoles),
-  imageRef: z.string().optional().describe("Exact ref from this lens's image list; use it to retrieve the same image in a follow-up."),
+  imageRef: z.string().optional().describe("Exact ref from this lens's image list; use it to show one specific image."),
   focalLengthMm: z.number().positive().optional().describe("Chart test focal length, only if requested separately from the lens model or search."),
   apertureFNumber: z.number().positive().optional().describe("Chart test aperture, only if requested. Never copy the lens maximum aperture into this filter."),
 })).max(3);
@@ -87,7 +87,7 @@ export function lensDetailImages(
       ...(notShown.length ? { notShown } : {}),
       ...(unknown.length ? { unconfirmed: unknown.map((entry) => entry.imageRef) } : {}),
       ...(fallback && selected.length ? {
-        note: "The attached charts have unconfirmed test conditions; do not present them as matching the requested conditions. Only describe curves if you received their pixels.",
+        note: "The attached charts have unconfirmed test conditions; do not present them as matching the requested conditions.",
       } : {}),
     };
   });

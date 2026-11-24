@@ -420,7 +420,7 @@ export function buildLensTools(
     }),
 
     lensDetails: tool({
-      description: "Look up specs for recalled lenses. Element counts and special elements come from specs; images never override them.",
+      description: "Look up specs for recalled lenses.",
       inputSchema: z.object({
         lenses: z.array(z.object({
           ref: z.string().describe("Lens ref from an earlier recall result."),
@@ -437,7 +437,7 @@ export function buildLensTools(
     }),
 
     showLensImages: tool({
-      description: "Show the user product photos, MTF charts or optical diagrams of recalled lenses, and read them. Show images when the user asks to see or interpret them, and attach the optical diagram when answering how many elements or groups or which special elements a lens has. Otherwise do not show images unasked; MTF charts are not a way to answer which lens is sharper. Use the image ref to revisit an exact image.",
+      description: "Show the user product photos, MTF charts or optical diagrams of recalled lenses, and read them. Show images when the user asks to see or interpret them, and attach the optical diagram when answering how many elements or groups or which special elements a lens has. Otherwise do not show images unasked; MTF charts are not a way to answer which lens is sharper. Optical diagrams illustrate the construction; element and group counts come from lensDetails specs. Use an image ref to show one specific image.",
       inputSchema: z.object({
         lenses: z.array(z.object({
           ref: z.string().describe("Lens ref from an earlier recall result."),
@@ -454,7 +454,7 @@ export function buildLensTools(
           return {
             ref: kept[index], name, maxAperture, focalNativeMm, images,
             ...(results.length ? { imageResults: results } : {}),
-            ...(unservedImages.length ? { unservedImages, unservedNote: "These image types exist for this lens but are not served here; they are on the lens's page. Never say the lens has no such image." } : {}),
+            ...(unservedImages.length ? { unservedImages, unservedNote: "These image types exist for this lens but are not served here; they are on the lens's page." } : {}),
           };
         });
         const labelled = displayImages.map((entry) => {
