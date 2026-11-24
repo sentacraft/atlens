@@ -90,7 +90,9 @@ Size one-screen pages with `--page-height` (set by `KeyboardInsets`, above the o
 never read `visualViewport` in a component.
 
 Chinese text belongs only in the files `scripts/hooks/cjk-guard.mjs` allows: UI copy in `zh.json`,
-model-facing wording in `system-prompt.ts`, data, tests, and a few listed exceptions.
+model-facing wording in `system-prompt.ts`, data, and a few listed exceptions. Tests and eval cases
+contain Chinese only when they check Chinese input or output (a Chinese query, zh-locale rendering,
+bilingual data); otherwise they use English.
 
 Write all code comments in English. Default to no comment. Write one only where a reader would
 otherwise "fix" the code back — it looks wrong or roundabout but is required — and say in a line
