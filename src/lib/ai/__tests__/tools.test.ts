@@ -769,7 +769,7 @@ describe("MTF grouping across calls and replies", () => {
   };
   const all = new Set(Object.values(refs));
   const build = (figures: { next: number; mtfShown: unknown[] } = { next: 1, mtfShown: [] }) =>
-    ({ figures, tools: buildLensTools("X", "zh", (brand) => brand, GUEST, all, figures as never) });
+    ({ figures, tools: buildLensTools("X", "en", (brand) => brand, GUEST, all, figures as never) });
   const show = (tool: ReturnType<typeof build>["tools"]["showLensImages"], ...lenses: string[]) =>
     run(tool, { lenses: lenses.map((ref) => ({ ref, images: [{ role: "mtf" as const }] })) });
   const message = (id: string, role: "user" | "assistant", ...outputs: unknown[]) => ({
@@ -791,7 +791,7 @@ describe("MTF grouping across calls and replies", () => {
     const second = await show(t.showLensImages, refs.b);
     expect(lensesIn(second)).toEqual([refs.a, refs.b]);
     // The earlier chart of this reply is named by its figure label.
-    expect(JSON.stringify(second.mtfGroups)).toContain("图 1");
+    expect(JSON.stringify(second.mtfGroups)).toContain("Fig. 1");
   });
 
   it("grades a chart against ones shown in an earlier reply, naming them by imageRef", async () => {

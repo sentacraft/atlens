@@ -12,14 +12,14 @@ const f10_30 = { values: [10, 30], unit: "lines/mm" as const };
 describe("groupMtfCharts", () => {
   it("puts two lenses on the same scale in one group with the unstated-aperture caveat", () => {
     const result = groupMtfCharts([
-      chart("a", 2.8, { spatialFrequency: f15_45 }, true, "图 1"),
-      chart("b", 4, { spatialFrequency: f15_45, focalLengthMm: 16 }, true, "图 2"),
+      chart("a", 2.8, { spatialFrequency: f15_45 }, true, "Fig. 1"),
+      chart("b", 4, { spatialFrequency: f15_45, focalLengthMm: 16 }, true, "Fig. 2"),
     ]);
     expect(result?.mtfGroups).toHaveLength(1);
     expect(result?.betweenGroups).toBeUndefined();
     const [group] = result!.mtfGroups;
     expect(group.level).toBe("values-with-caveats");
-    expect(group.lenses).toEqual([{ lens: "a", charts: ["图 1"] }, { lens: "b", charts: ["图 2"] }]);
+    expect(group.lenses).toEqual([{ lens: "a", charts: ["Fig. 1"] }, { lens: "b", charts: ["Fig. 2"] }]);
     const aperture = group.caveats.find((text) => text.includes("test aperture"));
     expect(aperture).toContain("f/2.8");
     expect(aperture).toContain("f/4");
@@ -71,12 +71,12 @@ describe("groupMtfCharts", () => {
 
   it("lists every chart of a lens under that lens, once per lens", () => {
     const result = groupMtfCharts([
-      chart("a", 2.8, { spatialFrequency: f15_45 }, false, "图 1"),
-      chart("a", 2.8, { spatialFrequency: f15_45 }, false, "图 2"),
+      chart("a", 2.8, { spatialFrequency: f15_45 }, false, "Fig. 1"),
+      chart("a", 2.8, { spatialFrequency: f15_45 }, false, "Fig. 2"),
       chart("b", 4, { spatialFrequency: f15_45 }, false, "img-b (shown in an earlier reply)"),
     ]);
     expect(result?.mtfGroups[0].lenses).toEqual([
-      { lens: "a", charts: ["图 1", "图 2"] },
+      { lens: "a", charts: ["Fig. 1", "Fig. 2"] },
       { lens: "b", charts: ["img-b (shown in an earlier reply)"] },
     ]);
   });
