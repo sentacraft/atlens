@@ -1797,6 +1797,24 @@ tests:
           the kit lens (for example, what a portrait prime adds over it) or to the X-E5. It
           fails if it ignores the owned gear entirely or suggests the owned kit lens.
 
+  - description: en-chinese-question
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "有哪些一镜走天下的镜头？"
+    assert:
+      - type: llm-rubric
+        metric: english
+        provider: *behavior_grader
+        value: >-
+          The reply is written in Chinese, the language the user wrote in, even though the
+          interface language is English. Lens names and card text may stay as the catalogue
+          gives them. It fails if the reply's own prose is in English.
+
   - description: en-italian-newest-lenses
     metadata:
       area: english
