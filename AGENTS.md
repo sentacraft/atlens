@@ -48,9 +48,13 @@ When a shared component or helper gains a caller, redesign its props around ever
 and update the existing call sites, rather than adding optional props so old calls stay unchanged.
 
 Mockups and design explorations use Open Artifacts and the Atlens design system (see Code style).
-Read `.open-artifacts.json` for the asset project ID and remote storage mode, then resolve the
-artifact URIs in the private asset registry. Use the authorized remote `artifact` MCP; do not bind
-local design directories or create a parallel native Claude Artifact. Demos and UX experiments
+Read the gitignored project-root `.open-artifacts.json` for remote artifact URIs.
+Its schema is illustrated in `.open-artifacts.example.json`; it is our project convention, not
+a configuration automatically loaded by the official tool. If it is missing, use the authorized
+remote library to identify existing artifacts and restore the mapping; never create replacements
+or fall back to old local designs. Ordinary code development and CI do not need the mapping.
+Use the authorized remote `artifact` MCP; do not bind local design directories or create a parallel
+native Claude Artifact. Demos and UX experiments
 that need the app's own code or data belong under `src/app/[locale]/design-lab/`, never in production
 code. Pages and components there — and all Test Hook pages and components — hardcode English
 strings, do not use `next-intl`, and must not add keys to `en.json` or `zh.json`.
@@ -73,8 +77,9 @@ A lens shown as an item to browse gets favorite and compare only from `LensActio
 those buttons anywhere else.
 
 The Atlens design canvas and design system are private Cloudflare-hosted Open Artifacts.
-The private asset registry maps the `assetProject` in `.open-artifacts.json` to remote artifact URIs;
-never commit those private bindings, design files, comments, exports, or machine paths here.
+Their private mapping lives only in the gitignored project-root `.open-artifacts.json`, not in an
+external asset registry or client-specific instruction file. Never commit that mapping, design files,
+comments, exports, or machine paths here; commit only the placeholder example and shared rules.
 The cloud is the only editable master. Old `.design` bindings and local asset directories are backups,
 not editing entry points; do not delete or overwrite outstanding local changes. Read and reply to
 comments on request without adopting another session's threads. Use one writer per cloud artifact.
