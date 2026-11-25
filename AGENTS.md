@@ -143,12 +143,12 @@ fits. A PR that reworks layout gets the `text-fit-check` label.
 
 ## Git workflow
 
-- `main` is protected. Work on a task branch, commit completed changes, push that branch, and
-  open a PR targeting `main`. Never push directly to `main`.
-- PR titles follow Conventional Commits. Titles and descriptions are written in English.
-- Describe what the diff does not make obvious. Do not restate the changes.
-- Do not merge. Wait for CI, report the result, and leave the merge decision to the maintainer.
-- A session works in one worktree. Switch branches inside it for separate topics, and open one PR per topic rather than accumulating unrelated changes in one PR. Don't create extra worktrees for a session's own work.
+- The primary checkout stays on `main` and is reserved for synchronization; make task changes in non-primary worktrees.
+- A coding session works in one worktree. Switch branches inside it for separate topics, with a new branch from freshly fetched `origin/main` and one PR per topic. Do not create extra worktrees for that session's own work.
+- Run checks and commit completed changes, then publish the task branch and open a PR targeting `main` with the user's authorization.
+- PR titles follow Conventional Commits. Titles and descriptions are written in English; explain non-obvious decisions.
+- Merge after CI passes and the maintainer authorizes it.
+- After an authorized merge, fetch and fast-forward the primary checkout to `origin/main`; stop and report a dirty or diverged checkout.
 
 ## Compatibility
 
