@@ -38,6 +38,7 @@ import { lensDisplayName, lensSubtitleLine, brandLabel } from "@/lib/lens/format
 import { lensPath } from "@/lib/url/routes";
 import { DataSourceBar } from "@/components/lens/DataSource";
 import { addLensFeedbackFields } from "@/lib/feedback/lens-feedback-fields";
+import OwnedLensMark from "@/components/lens/OwnedLensMark";
 import { CompareTechnicalImages } from "@/components/lens/TechnicalImages";
 import { getTechnicalImages } from "@/lib/lens/technical-images";
 
@@ -72,6 +73,9 @@ function LensHeaderContent({ lens }: { lens: Lens }) {
       <p className="mt-auto line-clamp-3 text-center font-semibold leading-snug text-zinc-900 transition-colors group-hover/link:text-zinc-600">
         {lens.model}
       </p>
+      <div className="mt-1 flex h-[18px] items-center justify-center">
+        <OwnedLensMark lensId={lens.id} form="inline" />
+      </div>
     </Link>
   );
 }

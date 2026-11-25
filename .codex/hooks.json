@@ -1,0 +1,47 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/hooks/ui-token-review.mjs\"",
+            "statusMessage": "Checking shared UI tokens",
+            "timeout": 10,
+            "type": "command"
+          },
+          {
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/hooks/site-facts-review.mjs\"",
+            "statusMessage": "Checking site facts",
+            "timeout": 10,
+            "type": "command"
+          },
+          {
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/hooks/cjk-guard.mjs\"",
+            "statusMessage": "Checking for misplaced Chinese text",
+            "timeout": 10,
+            "type": "command"
+          },
+          {
+            "command": "node \"$(git rev-parse --show-toplevel)/scripts/hooks/launch-review.mjs\"",
+            "statusMessage": "Checking launch checklist",
+            "timeout": 10,
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit|Write|apply_patch"
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "bash \"$(git rev-parse --show-toplevel)/scripts/worktree-setup.sh\" --claude-hook",
+            "statusMessage": "Checking worktree dependencies",
+            "timeout": 600,
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  }
+}

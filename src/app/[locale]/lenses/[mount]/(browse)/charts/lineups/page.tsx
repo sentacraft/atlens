@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import BrandLineupsOverview from "@/components/charts/BrandLineupsOverview";
+import ChartLensList from "@/components/charts/ChartLensList";
 import { ChartLinkShare } from "@/components/charts/ChartShare";
 import ChartsHeader from "@/components/charts/ChartsHeader";
 import JsonLd from "@/components/seo/JsonLd";
@@ -12,6 +13,7 @@ import { BROWSE_PAGE_MAIN_CLS, SECTION_TOP_CLS } from "@/config/ui-tokens";
 import { cn } from "@/lib/utils";
 import { chartBrands, countCineLenses } from "@/lib/charts/catalog";
 import { buildLineup, type Lineup } from "@/lib/charts/lineup";
+import { lineupListGroups } from "@/lib/charts/list";
 import { getLensesByMount } from "@/lib/lens/data";
 import { brandLabel } from "@/lib/lens/format";
 import { buildItemListSchema } from "@/lib/lens/seo";
@@ -77,6 +79,7 @@ export default async function LineupsPage({ params }: { params: Params }) {
     notFound();
   }
   const t = await getTranslations({ locale, namespace: "Charts" });
+  const tBrand = await getTranslations({ locale, namespace: "Brands" });
   const itemList = buildItemListSchema({
     name: data.seo.title,
     description: data.seo.description,
@@ -97,6 +100,10 @@ export default async function LineupsPage({ params }: { params: Params }) {
           action={<ChartLinkShare title={data.title} />}
         />
         <BrandLineupsOverview locale={locale} mount={data.resolvedMount} lineups={data.lineups} />
+        <ChartLensList
+          locale={locale}
+          groups={lineupListGroups(data.lineups).map((group) => ({ ...group, heading: brandLabel(tBrand, group.key) }))}
+        />
         <SupportNote className="mt-12" />
       </main>
     </>

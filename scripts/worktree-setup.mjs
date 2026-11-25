@@ -133,20 +133,23 @@ export function setup({ cwd = process.cwd(), check = false, hook = false, runtim
 
 export function sessionCwd(input) {
   const event = JSON.parse(input);
-  if (typeof event.cwd !== 'string' || !path.isAbsolute(event.cwd)) {
+  const cwd = event.cwd ?? event.workspacePaths?.[0];
+  if (typeof cwd !== 'string' || !path.isAbsolute(cwd)) {
     throw new Error('SessionStart requires an absolute cwd in its JSON input; refusing to guess the target checkout.');
   }
-  return event.cwd;
+  return cwd;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
-  const hook = args.includes('--claude-hook');
+  const claudeHook = args.includes('--claude-hook');
+  const antigravityHook = args.includes('--antigravity-hook');
+  const hook = claudeHook || antigravityHook;
   let message;
   let failed = false;
   try {
-    if (args.some((arg) => !['--check', '--claude-hook'].includes(arg))) {
-      throw new Error('Usage: node scripts/worktree-setup.mjs [--check] [--claude-hook]');
+    if (args.some((arg) => !['--check', '--claude-hook', '--antigravity-hook'].includes(arg))) {
+      throw new Error('Usage: node scripts/worktree-setup.mjs [--check] [--claude-hook|--antigravity-hook]');
     }
     const cwd = hook ? sessionCwd(readFileSync(0, 'utf8')) : process.cwd();
     message = setup({ cwd, hook, check: args.includes('--check') });
@@ -154,7 +157,11 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     failed = true;
     message = `Project setup failed: ${error.message} Do not run build/test/dev until setup succeeds.`;
   }
-  if (hook) {
+  if (antigravityHook) {
+    console.log(JSON.stringify({
+      injectSteps: [{ systemMessage: { systemMessage: message } }],
+    }));
+  } else if (claudeHook) {
     console.log(JSON.stringify({
       ...(failed ? { systemMessage: message } : {}),
       hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: message },
