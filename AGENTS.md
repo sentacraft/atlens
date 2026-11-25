@@ -47,9 +47,7 @@ I/O, carries testable logic, or gains a second consumer.
 When a shared component or helper gains a caller, redesign its props around every caller as equals
 and update the existing call sites, rather than adding optional props so old calls stay unchanged.
 
-Mockups and design explorations use Open Artifacts and the Atlens design system (see Code style).
-Use the canvas configured in `.open-artifacts.json`; keep design sources in their mapped directories,
-not in production application code or a parallel native Claude Artifact. Demos and UX experiments
+Mockups and design explorations use Open Artifacts (see Code style). Demos and UX experiments
 that need the app's own code or data belong under `src/app/[locale]/design-lab/`, never in production
 code. Pages and components there — and all Test Hook pages and components — hardcode English
 strings, do not use `next-intl`, and must not add keys to `en.json` or `zh.json`.
@@ -71,11 +69,9 @@ confirmations, or in-progress work may opt into `dismissOnOutsidePress`.
 A lens shown as an item to browse gets favorite and compare only from `LensActions`; don't build
 those buttons anywhere else.
 
-The Atlens design canvas and design system live in a separate private asset store. This public
-repository declares their logical paths in `.open-artifacts.json`; ignored `.design` bindings
-resolve them in each worktree. Never commit private design files or bindings here. Open or comment
-on designs through the `open-artifacts` skill, not a separate service or a native Claude Artifact
-copy.
+Designs have one editable source: private cloud Open Artifacts, accessed through the remote
+`artifact` MCP. Read their URIs from the gitignored `.open-artifacts.json` at the project root;
+see `.open-artifacts.example.json` for the format. Never commit the real mapping or private design files.
 
 The design system mirrors the theme, fonts, `ui-tokens.ts` and the components listed in
 `scripts/hooks/ui-token-review.mjs`; a PR that changes how any of them looks says which part of the
@@ -147,8 +143,8 @@ fits. A PR that reworks layout gets the `text-fit-check` label.
 
 ## Git workflow
 
-- Commit completed changes and push the current branch immediately without asking for separate
-  confirmation.
+- `main` is protected. Work on a task branch, commit completed changes, push that branch, and
+  open a PR targeting `main`. Never push directly to `main`.
 - PR titles follow Conventional Commits. Titles and descriptions are written in English.
 - Describe what the diff does not make obvious. Do not restate the changes.
 - Do not merge. Wait for CI, report the result, and leave the merge decision to the maintainer.

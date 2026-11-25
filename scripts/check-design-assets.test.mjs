@@ -11,8 +11,7 @@ function fixture(t) {
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const git = (...args) => execFileSync('git', ['-C', root, ...args], { stdio: 'pipe' });
   git('init', '-q');
-  writeFileSync(join(root, '.open-artifacts.json'), JSON.stringify({ v: 1, assetPrivacy: 'external-private', privateDesignPaths: ['design'] }));
-  writeFileSync(join(root, '.gitignore'), '/.design\n/design\n');
+  writeFileSync(join(root, '.gitignore'), '/.open-artifacts.json\n/.design\n/design\n');
   return { root, git };
 }
 
@@ -40,8 +39,16 @@ test('force-added legacy design sources are rejected', t => {
   assert.throws(() => checkDesignIndex(root), /design\/canvas.json/);
 });
 
-test('invalid blocked paths fail closed', t => {
-  const { root } = fixture(t);
-  writeFileSync(join(root, '.open-artifacts.json'), JSON.stringify({ v: 1, assetPrivacy: 'external-private', privateDesignPaths: ['../private'] }));
-  assert.throws(() => checkDesignIndex(root), /relative project paths/);
+test('force-added private cloud mappings are rejected', t => {
+  const { root, git } = fixture(t);
+  writeFileSync(join(root, '.open-artifacts.json'), JSON.stringify({ v: 1, storage: 'remote' }));
+  git('add', '-f', '.open-artifacts.json');
+  assert.throws(() => checkDesignIndex(root), /\.open-artifacts\.json/);
+});
+
+test('the public example passes without a local mapping', t => {
+  const { root, git } = fixture(t);
+  writeFileSync(join(root, '.open-artifacts.example.json'), JSON.stringify({ v: 1, storage: 'remote' }));
+  git('add', '.open-artifacts.example.json');
+  assert.deepEqual(checkDesignIndex(root), { trackedPrivatePaths: 0 });
 });
