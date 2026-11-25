@@ -5,7 +5,7 @@ import { resolveLens, type Recommendation } from "@/lib/ai/recall";
 import { getLensesByMount } from "@/lib/lens/data";
 import RecommendationDeck from "../RecommendationDeck";
 
-vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
+vi.mock("next-intl", () => ({ useTranslations: () => Object.assign((key: string) => key, { rich: (key: string) => key }) }));
 vi.mock("next/image", () => ({ default: ({ alt }: { alt: string }) => <span role="img" aria-label={alt} /> }));
 vi.mock("@/i18n/navigation", () => ({ Link: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a> }));
 vi.mock("@/lib/analytics/analytics", () => ({ track: vi.fn() }));

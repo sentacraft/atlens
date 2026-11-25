@@ -77,7 +77,10 @@ function RecommendationCard({ rec }: { rec: Recommendation }) {
                 <div className="text-foreground flex flex-wrap items-center gap-x-2 text-xs font-medium">
                   {price ? (
                     <span className="inline-flex items-baseline gap-1">
-                      {price}
+                      {tPricing.rich("priceApprox", {
+                        price,
+                        approx: (chunks) => <span className="text-muted-foreground font-normal">{chunks}</span>,
+                      })}
                       {rec.price?.condition === "used" && (
                         <span className="text-muted-foreground">{tPricing("conditionUsed")}</span>
                       )}

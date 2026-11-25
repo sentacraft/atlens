@@ -1,4 +1,4 @@
-import type { Lens, Mount } from "@/lib/types";
+import type { Lens, Mount, SearchName } from "@/lib/types";
 
 // The only lens identifier the model sees. Catalogue ids are patterned, and the model
 // rebuilt them instead of copying (`viltrox-af-27mm-f1.4-x` for `viltrox-af-27mm-f14-x`).
@@ -50,4 +50,12 @@ export function buildRefIndex(lenses: Lens[]): Map<string, Lens> {
 
 // Kept out of lens-link-index, which imports the catalogue: a client import of this type
 // must never be one edit away from bundling it.
-export type LensLinkIndex = Record<string, { id: string; mount: Mount }>;
+export interface LensLinkTarget {
+  id: string;
+  mount: Mount;
+  /** The lens's name as the site shows it in this locale. */
+  name: string;
+  /** Names to search other sites for its reviews (`searchAliases.review`). */
+  review: SearchName;
+}
+export type LensLinkIndex = Record<string, LensLinkTarget>;

@@ -9,6 +9,7 @@ import { ArrowUpRight, LogIn, MessageSquare } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import { useChatLinkTargets } from "@/components/askiris/ChatLinkContext";
+import ReviewSearchChip from "@/components/askiris/ReviewSearchChip";
 import { SourceMarker } from "@/components/askiris/ReviewSources";
 import { SOURCE_MARKER_LABEL } from "@/lib/askiris/review-citations";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
@@ -103,6 +104,18 @@ function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNo
       }
       return (
         <ChipLink href={buildComparePath(known[0].mount, known.map((entry) => entry.id))}>{children}</ChipLink>
+      );
+    }
+    case "reviews": {
+      const entries = link.refs.map((ref) => targets?.lenses[ref]);
+      const known = entries.filter((entry) => entry !== undefined);
+      if (known.length !== entries.length) {
+        return <>{children}</>;
+      }
+      return (
+        <ReviewSearchChip lenses={known} className={CHIP_CLS} iconClassName={CHIP_ICON_CLS}>
+          {children}
+        </ReviewSearchChip>
       );
     }
     case "source":

@@ -1,6 +1,6 @@
 import type { GearStatus } from "@/lib/ai/gear-context";
 import type { GearCardDecline } from "@/lib/ai/gear-request";
-import { factLinkMarkdown, type LinkAction } from "@/lib/askiris/inline-links";
+import { MAX_REVIEW_SEARCH_LENSES, factLinkMarkdown, type LinkAction } from "@/lib/askiris/inline-links";
 import type { Mount } from "@/lib/types";
 import { fillUiStrings } from "@/lib/ui-strings";
 
@@ -77,4 +77,15 @@ export function gearPrompt(state: GearStatus["kind"], { declined, signInDeclined
         ? "读取保存的器材或按已有器材推荐，交给 myGear 的登录卡；一般按需求推荐直接回答，不必索要登录或填写。"
         : "具体器材由 myGear 读取，不要根据登录状态猜测档案内容。";
   return `【器材访问状态】\n${status}${instruction}`;
+}
+
+/**
+ * The once-per-conversation suggestion to look at other sites' reviews before deciding; null after
+ * a reply in this conversation already offered it.
+ */
+export function reviewSearchPrompt(offered: boolean): string | null {
+  if (offered) {
+    return null;
+  }
+  return `【评测和样张】用户要在两三支镜头之间拍板时——问该选哪支、说准备买，或你给出了最终倾向——讲完取舍后，用一句自然的话建议他下决定前再看看这几支在其他平台的评测和样张，并把这句话里的说法写成链接 [文字](reviews:ref,ref)，ref 逐字照抄工具返回的，只放正在比较的这几支，最多 ${MAX_REVIEW_SEARCH_LENSES} 支。其他时候不提。`;
 }
