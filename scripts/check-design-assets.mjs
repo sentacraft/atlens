@@ -1,26 +1,24 @@
-import { readFileSync } from 'node:fs';
-import { resolve, posix } from 'node:path';
+import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 export function checkDesignIndex(cwd) {
-  const git = (...args) => execFileSync('git', ['-c', 'core.fsmonitor=false', '-C', cwd, ...args], { encoding: 'utf8' });
-  const root = git('rev-parse', '--show-toplevel').trim();
-  const config = JSON.parse(readFileSync(resolve(root, '.open-artifacts.json'), 'utf8'));
-  if (config.v !== 1) { throw new Error('Expected .open-artifacts.json v1'); }
-  const extra = config.assetPrivacy === 'external-private' ? config.privateDesignPaths ?? [] : [];
-  if (!Array.isArray(extra)) { throw new Error('privateDesignPaths must be an array'); }
-  const blocked = ['.design', ...extra.map(value => {
-    if (typeof value !== 'string' || !value || value.includes('\\') || value.includes('\0') || posix.isAbsolute(value) || value.split('/').includes('..')) {
-      throw new Error('Private design paths must be relative project paths');
-    }
-    const path = posix.normalize(value).replace(/\/$/, '');
-    if (path === '.') { throw new Error('A private design path cannot be the project root'); }
-    return path;
-  })];
-  const files = git('ls-files', '--cached', '-z').split('\0').filter(Boolean);
+  const root = execFileSync('git', ['-C', cwd, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
+  const git = (...args) => execFileSync('git', ['-c', 'core.fsmonitor=false', '-C', root, ...args], { encoding: 'utf8' });
+  const blocked = ['.design', 'design'];
+  const files = git('ls-files', '--full-name', '--cached', '-z').split('\0').filter(Boolean);
   const violations = files.filter(file => blocked.some(path => file === path || file.startsWith(`${path}/`)));
   if (violations.length) { throw new Error(`Private design paths are in Git index: ${violations.join(', ')}`); }
+  if (!files.includes('.open-artifacts.json')) { throw new Error('Track .open-artifacts.json with cloud artifact URIs'); }
+  const mapping = JSON.parse(git('show', ':.open-artifacts.json'));
+  const fields = ['v', 'storage', 'canvas', 'designSystem'];
+  if (Object.keys(mapping).some(key => !fields.includes(key))) { throw new Error('Cloud mapping must contain only version, storage and artifact URIs, not credentials'); }
+  if (mapping.v !== 1 || mapping.storage !== 'remote') { throw new Error('Expected remote cloud mapping v1'); }
+  for (const role of ['canvas', 'designSystem']) {
+    if (typeof mapping[role] !== 'string' || !/^open-artifact:\/\/artifact\/art_[a-z0-9]+$/.test(mapping[role])) {
+      throw new Error(`Expected a plain artifact URI for ${role}`);
+    }
+  }
   return { trackedPrivatePaths: 0 };
 }
 

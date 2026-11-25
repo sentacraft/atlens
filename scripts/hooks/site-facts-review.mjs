@@ -18,10 +18,11 @@ if (touched.length === 0) {
   process.exit(0);
 }
 
-// Node strips the types; these modules import only types and each other by relative path.
-const { HANDWRITTEN_FACTS } = await import(`${root}/src/lib/site-facts/handwritten.ts`);
-const { ABOUT_FACT_SOURCES, staleAboutCopy } = await import(`${root}/src/lib/site-facts/about-sources.ts`);
-const { SPEC_GUIDE } = await import(`${root}/src/lib/ai/spec-guide.ts`);
+// Application modules also need the project's tsconfig path aliases.
+const { require: tsxRequire } = await import("tsx/cjs/api");
+const { HANDWRITTEN_FACTS } = tsxRequire(`${root}/src/lib/site-facts/handwritten.ts`, import.meta.url);
+const { ABOUT_FACT_SOURCES, staleAboutCopy } = tsxRequire(`${root}/src/lib/site-facts/about-sources.ts`, import.meta.url);
+const { SPEC_GUIDE } = tsxRequire(`${root}/src/lib/ai/spec-guide.ts`, import.meta.url);
 
 const sections = [];
 

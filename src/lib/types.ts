@@ -924,6 +924,7 @@ export interface Lens {
    * Ordered, classified supplemental assets. The primary product image is separate.
    * Populate a nonempty list with unique IDs only for content selected for import; omit it when none is selected.
    * The pipeline importer assigns IDs; omit unknown conditions.
+   * Include at most one optical-construction image per lens; omit that role when no suitable diagram is available.
    * Do not copy private provenance URLs, credits, license records, dispositions, reasons,
    * file paths, hashes, crop links or processing logs, including into conditionsNote.
    * Notes are English; translations.zh.imageNotes supplies Chinese notes by image ID.

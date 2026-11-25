@@ -74,6 +74,15 @@ test('rejects cross-platform dependency reuse and node/pnpm mismatch', (t) => {
   assert.equal(f.calls.length, 1);
 });
 
+test('accepts an exact Node version and rejects a different patch', (t) => {
+  const f = fixture(t);
+  writeFileSync(path.join(f.root, '.nvmrc'), `${process.versions.node}\n`);
+  assert.match(setup(f.options), /installed/);
+  writeFileSync(path.join(f.root, '.nvmrc'), `${runtimeIdentity().nodeMajor}.0.999\n`);
+  assert.throws(() => setup(f.options), /Node .* required/);
+  assert.equal(f.calls.length, 1);
+});
+
 test('rejects symlinked node_modules and install marker', (t) => {
   const f = fixture(t);
   const target = path.join(f.root, 'shared');

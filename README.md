@@ -328,6 +328,8 @@ Open [http://localhost:3000](http://localhost:3000). Browsing, filtering, and co
 
 `pnpm run preview` builds and serves the app on the real Cloudflare Workers runtime (workerd), which catches issues `next dev` can't.
 
+Optional coding-agent skills: install Skillshare CLI, then run `skillshare install -p` and `skillshare sync -p` from the checkout root.
+
 ## Contributing
 
 Small fixes are welcome. For larger code changes or new features, please open an issue first so we can align on scope before implementation.

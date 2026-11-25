@@ -7,6 +7,7 @@ import { emitContext, readHookEvent, repoRoot, touchedFiles } from "./touched-fi
 // The only places Chinese text belongs. A path ending in "/" covers everything under it.
 const ALLOWED = [
   "src/messages/zh.json", // UI copy
+  "migrations/app/0009_migrate_legacy_lens_details.sql", // Persisted Chinese figure labels in conversation history
   "src/lib/ai/system-prompt.ts", // every model-facing Chinese sentence
   "src/data/", // lens and collection data
   "src/lib/types.ts", // Lens JSDoc examples, the data pipeline's extraction spec
@@ -19,7 +20,7 @@ const ALLOWED = [
 ];
 const ALLOWED_DIRS = ["__tests__/"];
 
-const CJK = /[　-〿㐀-鿿＀-￯]/;
+const CJK = /[\u3000-\u303f\u3400-\u9fff\uff00-\uffef]/;
 
 const event = readHookEvent();
 if (!event) {
