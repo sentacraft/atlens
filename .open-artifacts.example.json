@@ -1,6 +1,0 @@
-{
-  "v": 1,
-  "storage": "remote",
-  "canvas": "open-artifact://artifact/<canvas-id>",
-  "designSystem": "open-artifact://artifact/<design-system-id>"
-}

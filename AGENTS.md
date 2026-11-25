@@ -70,8 +70,8 @@ A lens shown as an item to browse gets favorite and compare only from `LensActio
 those buttons anywhere else.
 
 Designs have one editable source: private cloud Open Artifacts, accessed through the remote
-`artifact` MCP. Read their URIs from the gitignored `.open-artifacts.json` at the project root;
-see `.open-artifacts.example.json` for the format. Never commit the real mapping or private design files.
+`artifact` MCP. Read their URIs from the tracked `.open-artifacts.json` at the project root.
+Keep credentials out of this mapping; each device authorizes independently. Never commit private design files.
 
 The design system mirrors the theme, fonts, `ui-tokens.ts` and the components listed in
 `scripts/hooks/ui-token-review.mjs`; a PR that changes how any of them looks says which part of the
