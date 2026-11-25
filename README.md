@@ -305,20 +305,6 @@ The pipeline keeps an append-only, git-tracked log of verified process incidents
 
 Requires Node 25 (see `.nvmrc`) and pnpm.
 
-Optional coding-agent skills are declared in `.skillshare/config.yaml` and pinned by
-`.skillshare/skills.lock.json`. With Skillshare CLI installed, run these commands from the checkout root:
-
-```bash
-skillshare install -p
-```
-
-```bash
-skillshare sync -p
-```
-
-To upgrade a skill, run `skillshare update <name> -p`, review the changes, and commit the lockfile.
-Skillshare generates the installed copies and client links; edit skills in their source repository.
-
 ```bash
 pnpm install
 cp .env.example .env.local
@@ -341,6 +327,8 @@ Open [http://localhost:3000](http://localhost:3000). Browsing, filtering, and co
 | Feedback form | `GITHUB_TOKEN` and `GITHUB_FEEDBACK_REPO` |
 
 `pnpm run preview` builds and serves the app on the real Cloudflare Workers runtime (workerd), which catches issues `next dev` can't.
+
+Optional coding-agent skills: install Skillshare CLI, then run `skillshare install -p` and `skillshare sync -p` from the checkout root.
 
 ## Contributing
 
