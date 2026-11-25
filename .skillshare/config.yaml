@@ -4,6 +4,9 @@ targets:
   - claude
   - codex
   - antigravity
+skills:
+  - name: vercel-react-best-practices
+    source: github.com/vercel-labs/agent-skills/skills/react-best-practices
 ignore:
   - .DS_Store
   - .git/
