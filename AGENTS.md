@@ -156,8 +156,8 @@ fits. A PR that reworks layout gets the `text-fit-check` label.
 
 ## Git workflow
 
-- Commit completed changes and push the current branch immediately without asking for separate
-  confirmation.
+- `main` is protected. Work on a task branch, commit completed changes, push that branch, and
+  open a PR targeting `main`. Never push directly to `main`.
 - PR titles follow Conventional Commits. Titles and descriptions are written in English.
 - Describe what the diff does not make obvious. Do not restate the changes.
 - Do not merge. Wait for CI, report the result, and leave the merge decision to the maintainer.
