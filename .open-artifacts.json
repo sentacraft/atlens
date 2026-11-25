@@ -2,7 +2,6 @@
   "v": 1,
   "assetProject": "atlens",
   "assetPrivacy": "external-private",
-  "canvas": ".design/canvas",
-  "designSystem": ".design/system",
+  "storage": "remote",
   "privateDesignPaths": ["design"]
 }
