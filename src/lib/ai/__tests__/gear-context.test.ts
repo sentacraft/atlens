@@ -44,7 +44,7 @@ describe("describeGear", () => {
       lenses: [{
         name: "Fujifilm XF 18-55mm F2.8-4 R LM OIS",
         ref: lensRef("fujifilm-xf-18-55mmf28-4-r-lm-ois-x"),
-        focal: "18–55mm", equivalent: "27–83mm", aperture: "f/2.8–4", manual: false, adapted: false,
+        focal: "18–55mm", equivalent: "27–83mm", aperture: "F2.8–4", manual: false, adapted: false,
       }],
     });
   });
@@ -55,7 +55,7 @@ describe("describeGear", () => {
       manual: { brand: "Helios", model: "44-2 58mm F2", mount: "X", focalMinMm: 58, focalMaxMm: 58, maxApertureWide: 2, adapted: true, originalMount: "M42" },
     };
     expect(describeGear({ kind: "account", gear: [manual] }, brandName)).toEqual({
-      known: true, bodies: [], lenses: [{ name: "Helios 44-2 58mm F2", focal: "58mm", equivalent: "87mm", aperture: "f/2", manual: true, adapted: true, originalMount: "M42" }],
+      known: true, bodies: [], lenses: [{ name: "Helios 44-2 58mm F2", focal: "58mm", equivalent: "87mm", aperture: "F2", manual: true, adapted: true, originalMount: "M42" }],
     });
   });
 });

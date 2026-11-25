@@ -60,7 +60,7 @@ function describeLens(item: GearItem, brandName: (slug: string) => string): Gear
       aperture:
         lens.maxApertureWide === undefined
           ? undefined
-          : `f/${lens.maxApertureWide}${lens.maxApertureTele === undefined ? "" : `–${lens.maxApertureTele}`}`,
+          : `F${lens.maxApertureWide}${lens.maxApertureTele === undefined ? "" : `–${lens.maxApertureTele}`}`,
       manual: true,
       adapted: lens.adapted === true,
       originalMount: lens.originalMount,

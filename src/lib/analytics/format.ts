@@ -83,7 +83,7 @@ export function formatFilterSnapshot(json: string): string {
     parts.push(`Focal: ${f.focalLength.value}mm ${f.focalLength.reference}`);
   }
   if (isPositiveFinite(f.maxAperture)) {
-    parts.push(`Max aperture: f/${f.maxAperture} or faster`);
+    parts.push(`Max aperture: F${f.maxAperture} or faster`);
   }
   if (isPositiveFinite(f.weightLimit)) {
     parts.push(`Weight limit: ${f.weightLimit}g`);

@@ -97,7 +97,7 @@ test("aperture and custom weight limits persist and reset together", { tag: "@lo
   await page.goto("/en/lenses/x/browse");
   await openSecondaryFilters(page);
   await page.getByRole("button", { name: "Max Aperture", exact: true }).click();
-  await page.getByRole("menuitemradio", { name: "f/2.8 or faster", exact: true }).click();
+  await page.getByRole("menuitemradio", { name: "F2.8 or faster", exact: true }).click();
   await page.getByRole("button", { name: "Weight limit", exact: true }).click();
   await page.getByRole("menuitemradio", { name: "Custom…", exact: true }).click();
   const weight = page.getByRole("textbox", { name: "Maximum lens weight in grams" });

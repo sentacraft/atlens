@@ -17,6 +17,7 @@ const ALLOWED = [
   "src/lib/askiris/test-prompts.ts", // Chinese prompts the Test Hook panel offers for copying
   "e2e/", // Chinese UI assertions
   "README.md", // bilingual readme
+  "docs/copy-style.md", // bilingual copy style guide with Chinese examples
 ];
 const ALLOWED_DIRS = ["__tests__/"];
 

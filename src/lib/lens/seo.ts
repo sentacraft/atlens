@@ -99,8 +99,8 @@ export function buildLensProductSchema(args: {
 
   if (lens.maxAperture !== undefined) {
     const ap = Array.isArray(lens.maxAperture)
-      ? `f/${lens.maxAperture[0]}-${lens.maxAperture[1]}`
-      : `f/${lens.maxAperture}`;
+      ? `F${lens.maxAperture[0]}-${lens.maxAperture[1]}`
+      : `F${lens.maxAperture}`;
     props.push({ "@type": "PropertyValue", name: "Max aperture", value: ap });
   }
 
