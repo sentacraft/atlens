@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { lensRef, buildRefIndex, LENS_REF_LENGTH, escapeLensLinkLabels } from "../lens-ref";
+import { lensRef, buildRefIndex, LENS_REF_LENGTH, escapeLensLinkLabels, normalizeRefListLinks } from "../lens-ref";
 import { getAllLenses } from "@/lib/lens/data";
 
 const lenses = getAllLenses("zh");
@@ -59,5 +59,18 @@ describe("escapeLensLinkLabels", () => {
     expect(escapeLensLinkLabels("[A *B* ~C~ `D`](lens:abcde)")).toBe(
       "[A \\*B\\* \\~C\\~ \\`D\\`](lens:abcde)",
     );
+  });
+});
+
+describe("normalizeRefListLinks", () => {
+  it("removes spaces and turns full-width separators into commas", () => {
+    expect(normalizeRefListLinks("[a](reviews:abc, def) [b](compare:abc，def) [c](reviews:abc、def)")).toBe(
+      "[a](reviews:abc,def) [b](compare:abc,def) [c](reviews:abc,def)",
+    );
+  });
+
+  it("leaves other links alone", () => {
+    const text = "[a](lens:abc, def) [b](reviews:abc,def)";
+    expect(normalizeRefListLinks(text)).toBe(text);
   });
 });

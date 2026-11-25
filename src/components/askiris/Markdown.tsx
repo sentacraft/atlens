@@ -15,7 +15,7 @@ import { SOURCE_MARKER_LABEL } from "@/lib/askiris/review-citations";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { escapeLensLinkLabels } from "@/lib/ai/lens-ref";
+import { escapeLensLinkLabels, normalizeRefListLinks } from "@/lib/ai/lens-ref";
 import { PAGE_LINKS, isChatLinkHref, parseChatLink, type ChatLink } from "@/lib/askiris/inline-links";
 import { mountHasCharts, mountHasCollections } from "@/lib/mount";
 import { buildComparePath } from "@/lib/url/compare";
@@ -167,7 +167,7 @@ export default function Markdown({
         urlTransform={(url) => (isChatLinkHref(url) ? url : defaultUrlTransform(url))}
         components={{ a: ProseAnchor }}
       >
-        {escapeLensLinkLabels(children)}
+        {escapeLensLinkLabels(normalizeRefListLinks(children))}
       </ReactMarkdown>
     </div>
   );

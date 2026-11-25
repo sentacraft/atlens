@@ -188,6 +188,30 @@ describe("Markdown chat links", () => {
     );
   });
 
+  it.each([
+    ["a space", `[compare](compare:${REF}, ${OTHER})`],
+    ["a full-width comma", `[compare](compare:${REF}，${OTHER})`],
+    ["an enumeration comma", `[compare](compare:${REF}、${OTHER})`],
+  ])("still builds a compare link when the refs are separated by %s", (_, markdown) => {
+    expect(renderLinks(markdown).querySelector("a")!.getAttribute("href")).toBe(
+      "/lenses/x/compare?ids=viltrox-af-35mm-f17-air-x,sigma-contemporary-12mm-f14-dc-x",
+    );
+  });
+
+  it.each([
+    ["a space", `reviews:${REF}, ${OTHER}`],
+    ["a full-width comma", `reviews:${REF}，${OTHER}`],
+  ])("still opens review searches when the refs are separated by %s", (_, destination) => {
+    const container = render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <ChatLinkProvider targets={TARGETS}>
+          <Markdown>{`See [some reviews](${destination}) first.`}</Markdown>
+        </ChatLinkProvider>
+      </NextIntlClientProvider>,
+    ).container;
+    expect(container.querySelector("button")!.textContent).toBe("some reviews");
+  });
+
   it("opens review searches on other sites for every lens a reviews link names", () => {
     const container = render(
       <NextIntlClientProvider locale="en" messages={en}>

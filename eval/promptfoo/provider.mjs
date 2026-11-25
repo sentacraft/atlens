@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { DefaultChatTransport, readUIMessageStream } from "ai";
 // The real implementation: a copy of the hash would drift silently.
-import { lensRef, LENS_LINK_PREFIX } from "../../src/lib/ai/lens-ref.ts";
+import { lensRef, LENS_LINK_PREFIX, normalizeRefListLinks } from "../../src/lib/ai/lens-ref.ts";
 import { MODEL_PRESET_HEADER } from "../../src/lib/ai/model-presets.ts";
 import { askIrisChatRequestBody } from "../../src/lib/askiris/chat-request.ts";
 
@@ -399,7 +399,7 @@ export default class AskIrisProvider {
         break;
       }
     }
-    const transcript = convo.join("\n\n") || "(empty)";
+    const transcript = normalizeRefListLinks(convo.join("\n\n")) || "(empty)";
     const linkRefs = [...transcript.matchAll(LENS_LINK_RE)].map((m) => m[1]);
     const compareLinks = [...transcript.matchAll(COMPARE_LINK_RE)].map((m) => m[2].split(","));
     const sourceLinks = [...transcript.matchAll(SOURCE_LINK_RE)].map((m) => m[2]);

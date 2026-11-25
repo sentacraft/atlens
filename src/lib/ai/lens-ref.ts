@@ -44,6 +44,15 @@ export function escapeLensLinkLabels(markdown: string): string {
   });
 }
 
+const MULTI_REF_LINK = /\]\((compare|reviews):([^)\n]*)\)/g;
+
+// CommonMark rejects a destination containing a space, so this runs before parsing.
+export function normalizeRefListLinks(markdown: string): string {
+  return markdown.replace(MULTI_REF_LINK, (_, scheme: string, refs: string) =>
+    `](${scheme}:${refs.replace(/\s+/g, "").replace(/[，、]/g, ",")})`,
+  );
+}
+
 export function buildRefIndex(lenses: Lens[]): Map<string, Lens> {
   return new Map(lenses.map((lens) => [lensRef(lens.id), lens]));
 }

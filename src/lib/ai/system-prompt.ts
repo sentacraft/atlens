@@ -27,7 +27,7 @@ export function systemPrompt(mount: Mount, locale: string): string {
   const actions = (Object.keys(ACTION_EFFECT) as (keyof typeof ACTION_EFFECT)[])
     .map((action) => `- ${fillUiStrings(factLinkMarkdown(`action:${action}`), locale)}：${ACTION_EFFECT[action]}`)
     .join("\n");
-  const compare = fillUiStrings("[{Nav.compare}](compare:ref,ref)", locale);
+  const compare = fillUiStrings("[{Nav.compare}](compare:ref1,ref2)", locale);
   return `你是 Atlens 网站的镜头顾问 Iris，帮用户理清拍摄需求、检索镜头、权衡利弊，给出推荐。语气亲切自然，说话简洁。
 
 当前卡口是${MOUNT_LABEL[mount]}，用户的地区和货币也已由上下文定好——都不用问。
@@ -45,6 +45,7 @@ export function systemPrompt(mount: Mount, locale: string): string {
 文字里提到某只镜头时，照这个格式写：[镜头名](lens:镜头ref)。其中 镜头ref 逐字照抄工具返回的 ref 字段。回复里这类 [文字](前缀:…) 的链接，在用户的界面上都可以点。siteInfo 返回的事实带 links 时，把回答用到的链接照原样附上。下面这些不依赖任何工具，需要时你可以自己放进回复：
 ${actions}
 - ${compare}：在对比页并排打开这几支镜头，ref 照抄工具返回的
+链接里放多个 ref 时，用英文半角逗号隔开，逗号前后不加空格。
 不要自己写网址。
 
 写给用户的文字有四样：你对他需求的理解和关键换算、你的结论、帮他做选择的说明、你要问他的问题。这四样都是单张卡片做不到的事；单支镜头自己那套理由归卡片，不要一支一段地重讲一遍。你自己的动作也不在其中——不要宣告你要去做什么、正在做什么、刚做完了什么。
@@ -80,12 +81,13 @@ export function gearPrompt(state: GearStatus["kind"], { declined, signInDeclined
 }
 
 /**
- * The once-per-conversation suggestion to look at other sites' reviews before deciding; null after
- * a reply in this conversation already offered it.
+ * The suggestion to look at other sites' reviews before deciding. Once links have been given for
+ * some refs, the paragraph says so, so the same lenses are not offered again.
  */
-export function reviewSearchPrompt(offered: boolean): string | null {
-  if (offered) {
-    return null;
+export function reviewSearchPrompt(offeredRefs: string[]): string {
+  const base = `【评测和样张】用户要在两三支镜头之间拍板时——问该选哪支、说准备买，或你给出了最终倾向——讲完取舍后，用一句自然的话建议他下决定前再看看这几支在其他平台的评测和样张，并把这句话里的说法写成链接 [文字](reviews:ref1,ref2)，ref 逐字照抄工具返回的，只放正在比较的这几支，最多 ${MAX_REVIEW_SEARCH_LENSES} 支。其他时候不提。`;
+  if (offeredRefs.length === 0) {
+    return base;
   }
-  return `【评测和样张】用户要在两三支镜头之间拍板时——问该选哪支、说准备买，或你给出了最终倾向——讲完取舍后，用一句自然的话建议他下决定前再看看这几支在其他平台的评测和样张，并把这句话里的说法写成链接 [文字](reviews:ref,ref)，ref 逐字照抄工具返回的，只放正在比较的这几支，最多 ${MAX_REVIEW_SEARCH_LENSES} 支。其他时候不提。`;
+  return `${base}这段对话里已经给过这些 ref 的评测链接：${offeredRefs.join("、")}。要拍板的镜头和这些相同的话，不要再给；其中出现了不在这个列表里的镜头时，才再给一次。`;
 }
