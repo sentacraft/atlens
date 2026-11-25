@@ -47,14 +47,7 @@ I/O, carries testable logic, or gains a second consumer.
 When a shared component or helper gains a caller, redesign its props around every caller as equals
 and update the existing call sites, rather than adding optional props so old calls stay unchanged.
 
-Mockups and design explorations use Open Artifacts and the Atlens design system (see Code style).
-Read the gitignored project-root `.open-artifacts.json` for remote artifact URIs.
-Its schema is illustrated in `.open-artifacts.example.json`; it is our project convention, not
-a configuration automatically loaded by the official tool. If it is missing, use the authorized
-remote library to identify existing artifacts and restore the mapping; never create replacements
-or fall back to old local designs. Ordinary code development and CI do not need the mapping.
-Use the authorized remote `artifact` MCP; do not bind local design directories or create a parallel
-native Claude Artifact. Demos and UX experiments
+Mockups and design explorations use Open Artifacts (see Code style). Demos and UX experiments
 that need the app's own code or data belong under `src/app/[locale]/design-lab/`, never in production
 code. Pages and components there — and all Test Hook pages and components — hardcode English
 strings, do not use `next-intl`, and must not add keys to `en.json` or `zh.json`.
@@ -76,15 +69,9 @@ confirmations, or in-progress work may opt into `dismissOnOutsidePress`.
 A lens shown as an item to browse gets favorite and compare only from `LensActions`; don't build
 those buttons anywhere else.
 
-The Atlens design canvas and design system are private Cloudflare-hosted Open Artifacts.
-Their private mapping lives only in the gitignored project-root `.open-artifacts.json`, not in an
-external asset registry or client-specific instruction file. Never commit that mapping, design files,
-comments, exports, or machine paths here; commit only the placeholder example and shared rules.
-The cloud is the only editable master. Old `.design` bindings and local asset directories are backups,
-not editing entry points; do not delete or overwrite outstanding local changes. Read and reply to
-comments on request without adopting another session's threads. Use one writer per cloud artifact.
-Production UI tokens remain in `src/config/ui-tokens.ts`; no automatic cloud-to-code or reverse sync
-is implied. Review explicit design changes before changing application code.
+Designs have one editable source: private cloud Open Artifacts, accessed through the remote
+`artifact` MCP. Read their URIs from the gitignored `.open-artifacts.json` at the project root;
+see `.open-artifacts.example.json` for the format. Never commit the real mapping or private design files.
 
 The design system mirrors the theme, fonts, `ui-tokens.ts` and the components listed in
 `scripts/hooks/ui-token-review.mjs`; a PR that changes how any of them looks says which part of the
