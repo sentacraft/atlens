@@ -20,6 +20,7 @@ import { figureLabel } from "@/lib/ai/figure-label";
 import { LENS_TABLE_RENDERERS, tableLabelsForLocale } from "@/lib/ai/lens-table-cells";
 import { groupMtfCharts, type MtfChart } from "@/lib/ai/mtf-comparison";
 import { lensDetailImages, lensImageRequestsSchema, MAX_IMAGES_PER_CALL, type LensDetailDisplayImage, type LensImageEntry } from "@/lib/ai/lens-detail-images";
+import { getMtfSamples } from "@/lib/lens/mtf-samples";
 import { OPTICAL_TRAITS, type ApertureValue, type Mount } from "@/lib/types";
 import { ASK_FOR_GEAR, gearRequestInputSchema, gearRequestOutputSchema } from "@/lib/ai/gear-request";
 import { ASK_CHOICES, choiceRequestInputSchema, choiceRequestOutputSchema } from "@/lib/ai/choice-request";
@@ -276,6 +277,8 @@ function capRefs(refs: string[], limit: number): { kept: string[]; notReturned?:
 // providers (Qwen, GLM, OpenRouter) take no per-image option and fetch the URL as is.
 const IMAGE_READING_OPTIONS = { deepseek: { imageDetail: "original" }, openai: { imageDetail: "high" } };
 
+const MTF_SAMPLES_NOTE = "mtfSamples holds approximate readings estimated from the manufacturer's chart, keyed by imageRef; they are not measured data. Say \"about\" when quoting them, never rank lenses on a difference of 0.05 or less, and carry a chart's limitations into any answer that uses them. A null value could not be read. A chart without an entry has no readings.";
+
 export function buildLensTools(
   mount: Mount,
   locale: string,
@@ -502,6 +505,11 @@ export function buildLensTools(
           return { type: "text", value: JSON.stringify(metadata) };
         }
         const hasMtf = displayImages.some(({ image }) => image.role === "mtf");
+        // Joined here rather than in `execute`, whose output is sent to the browser and stored with the chat.
+        const mtfSamples = displayImages.flatMap(({ lensId, imageRef, image }) => {
+          const samples = image.role === "mtf" ? getMtfSamples(lensId, image.id) : undefined;
+          return samples ? [[imageRef, samples] as const] : [];
+        });
         const reading = {
           ...metadata,
           ...(hasMtf ? {
@@ -509,6 +517,7 @@ export function buildLensTools(
               ? "Interpret only legible curves. mtfGroups governs how the charts may be compared: values within a group as its level allows, only curve shapes between groups."
               : "Interpret only legible curves. If a chart does not state its test conditions, say so when it affects the answer.",
           } : {}),
+          ...(mtfSamples.length ? { mtfSamples: Object.fromEntries(mtfSamples), mtfSamplesNote: MTF_SAMPLES_NOTE } : {}),
         };
         return {
           type: "content",

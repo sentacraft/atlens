@@ -333,53 +333,7 @@ export interface LensImageAsset {
   depictedMount?: string;
   /** English, user-facing test conditions, applicability limits, missing information or source contradictions, up to 1200 characters. Do not repeat lens specifications or embed private source URLs, credits, license records or review history. */
   conditionsNote?: string;
-  /**
-   * MTF-only approximate readings from this manufacturer's chart, not independently measured MTF.
-   * Publish only after human review of the current image; review again if the image changes.
-   * Never include private paths, fingerprints, or review records.
-   * Keep consequential limitations with the chart or affected series (e.g. unknown normalization
-   * reference or frequency unit, conflicting aperture, unclear direction, or format applicability).
-   * Keep existing user-facing conditionsNote; do not copy private review notes into either field.
-   */
-  mtfSamples?: {
-    source: "manufacturer-chart";
-    humanReviewed: true;
-    limitations?: string[];
-    series: LensMtfSeries[];
-  };
 }
-
-/** One group of readings at a single chart scale and set of conditions. */
-type LensMtfSeries = {
-  /** Use physical units only when confirmed. If the scale is undefined, preserve the original numeric ticks and state the limitation. */
-  axis:
-    | { kind: "image-height-mm" | "normalized-image-height" | "field-angle-deg" }
-    | { kind: "chart-scale"; ticks: number[] };
-  /** Use image-level conditions only where they apply to the entire chart. Omit unknown or conflicting conditions rather than inferring them. */
-  focalLengthMm?: LensImageAsset["focalLengthMm"];
-  apertureFNumber?: number;
-  /** Record the source value and its stated unit; do not convert or guess the unit. */
-  spatialFrequency?: { value: number; unit: NonNullable<LensImageAsset["spatialFrequency"]>["unit"] };
-  mtfMethod?: LensImageAsset["mtfMethod"];
-  limitations?: string[];
-} & (
-  | {
-    /** Positions use this series' axis. S/M values are in [0, 1]; null means no reliable reading, not zero. */
-    points: {
-      position: number;
-      s: number | null;
-      m: number | null;
-      /** When the traces cannot be separated, record the same non-null estimate for both. This does not establish exact equality. */
-      estimate?: "shared";
-    }[];
-  }
-  | {
-    /** When direction cannot be confirmed, identify a single trace by its original legend or visible label instead of assigning S/M. */
-    label: string;
-    /** Positions use the same axis; values use the same [0, 1] and null conventions as S/M. */
-    points: { position: number; value: number | null }[];
-  }
-);
 
 /** Translated user-facing fields for a single locale. */
 interface LensLocaleTranslations {

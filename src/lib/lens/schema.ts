@@ -244,54 +244,6 @@ const imageNumberListSchema = z.array(positiveNumberSchema).min(1).refine(
   (values) => new Set(values).size === values.length,
   "Image condition values must be unique",
 );
-const mtfFrequencyUnitSchema = z.enum(["lines/mm", "lp/mm"]);
-const mtfMethodSchema = z.enum(["geometrical", "diffraction"]);
-const mtfLimitationsSchema = z.array(imageNoteSchema).min(1);
-const mtfReadingSchema = z.number().min(0).max(1).nullable();
-const mtfAxisSchema = z.union([
-  z.strictObject({ kind: z.enum(["image-height-mm", "normalized-image-height", "field-angle-deg"]) }),
-  z.strictObject({ kind: z.literal("chart-scale"), ticks: z.array(z.number()).min(1) }),
-]);
-const mtfSeriesShape = {
-  axis: mtfAxisSchema,
-  focalLengthMm: positiveNumberSchema.optional(),
-  apertureFNumber: positiveNumberSchema.optional(),
-  spatialFrequency: z.strictObject({ value: positiveNumberSchema, unit: mtfFrequencyUnitSchema }).optional(),
-  mtfMethod: mtfMethodSchema.optional(),
-  limitations: mtfLimitationsSchema.optional(),
-};
-const mtfSeriesSchema = z.union([
-  z.strictObject({
-    ...mtfSeriesShape,
-    points: z.array(z.strictObject({
-      position: z.number(),
-      s: mtfReadingSchema,
-      m: mtfReadingSchema,
-      estimate: z.literal("shared").optional(),
-    }).refine(
-      ({ estimate, s, m }) => estimate !== "shared" || (s !== null && s === m),
-      { path: ["estimate"], message: "A shared estimate requires the same non-null reading for S and M" },
-    )).min(1),
-  }),
-  z.strictObject({
-    ...mtfSeriesShape,
-    label: nonEmptyStringSchema,
-    points: z.array(z.strictObject({ position: z.number(), value: mtfReadingSchema })).min(1),
-  }),
-]);
-const mtfSamplesSchema = z.strictObject({
-  source: z.literal("manufacturer-chart"),
-  humanReviewed: z.literal(true),
-  limitations: mtfLimitationsSchema.optional(),
-  series: z.array(mtfSeriesSchema).min(1),
-}).superRefine(({ limitations, series }, ctx) => {
-  series.forEach((group, index) => {
-    if (group.axis.kind === "chart-scale" && !group.limitations && !limitations) {
-      ctx.addIssue({ code: "custom", path: ["series", index, "limitations"], message: "An undefined chart scale requires a chart or series limitation" });
-    }
-  });
-});
-
 const lensImageAssetSchema = z.strictObject({
   id: imageIdSchema,
   role: z.enum(LENS_IMAGE_ROLES),
@@ -299,13 +251,12 @@ const lensImageAssetSchema = z.strictObject({
   focalLengthMm: positiveNumberSchema.optional(),
   spatialFrequency: z.strictObject({
     values: imageNumberListSchema,
-    unit: mtfFrequencyUnitSchema,
+    unit: z.enum(["lines/mm", "lp/mm"]),
   }).optional(),
   apertureFNumbers: imageNumberListSchema.optional(),
-  mtfMethod: mtfMethodSchema.optional(),
+  mtfMethod: z.enum(["geometrical", "diffraction"]).optional(),
   depictedMount: z.string().regex(/^[A-Z][A-Z0-9-]{0,15}$/).optional(),
   conditionsNote: imageNoteSchema.optional(),
-  mtfSamples: mtfSamplesSchema.optional(),
 }).superRefine((image, ctx) => {
   if (image.displayPreset !== undefined && image.role !== "mtf" && image.role !== "optical-construction") {
     ctx.addIssue({ code: "custom", path: ["displayPreset"], message: "Display presets are only valid for MTF charts and optical diagrams" });
@@ -313,7 +264,7 @@ const lensImageAssetSchema = z.strictObject({
   if (image.role === "mtf") {
     return;
   }
-  for (const field of ["spatialFrequency", "mtfMethod", "mtfSamples"] as const) {
+  for (const field of ["spatialFrequency", "mtfMethod"] as const) {
     if (image[field] !== undefined) {
       ctx.addIssue({ code: "custom", path: [field], message: `${field} is only valid for MTF images` });
     }

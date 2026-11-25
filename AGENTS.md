@@ -115,6 +115,8 @@ message or PR description, not in the source.
 - `src/data/lenses.json` and `src/data/lenses-gfx.json` come from the data pipeline at the commit
   pinned in `src/data/catalog-source.json` (`pnpm run catalog:fetch`). Never edit them; data
   corrections go through the pipeline.
+- `src/data/mtf-samples.json` comes from the same pinned commit. Only server code for Ask Iris reads
+  it (`src/lib/lens/mtf-samples.ts`); keep it out of the catalog records, which pages send to browsers.
 - `src/data/collections.json` and `src/data/brands.json` are hand-authored and may be edited
   directly; their copy follows `src/data/collections.md`.
 - The `Lens` JSDoc in `src/lib/types.ts` is the pipeline's field-extraction spec. Do not trim it.

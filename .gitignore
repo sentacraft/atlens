@@ -102,6 +102,7 @@ src/messages/*.d.json.ts
 # lens catalog, downloaded by scripts/fetch-lens-catalog.mts
 src/data/lenses.json
 src/data/lenses-gfx.json
+src/data/mtf-samples.json
 src/data/.lens-catalog-commit
 
 # Signed-in state for scripts/readme-shots; holds a session cookie
