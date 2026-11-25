@@ -7,17 +7,19 @@
 --    images and imageResults), then a tool-showLensImages part (toolCallId = original id + '-images')
 --    holding the images. Legacy gallery arrays are flattened into displayImages (deduplicated by
 --    imageRef), and every image gets a figure number (1-based across the message) and a figureLabel
---    ("图 n" for zh, "Fig. n" otherwise). The label's locale is the message's own context_json locale,
+--    (localized for zh, "Fig. n" otherwise). The label's locale is the message's own context_json locale.
 --    else the conversation's most recent context locale, else zh.
 -- 3. A tool-lensDetails part whose output has an empty displayImages array keeps its specs and loses the
 --    same image-only fields (displayImages, readRefs, historical, each lens's images and imageResults);
 --    no showLensImages part is added.
+--
+-- Re-parse aggregate subquery results with json() before embedding them, or SQLite can store them as strings.
 
 UPDATE askiris_messages
 SET message_json = json_set(
   message_json,
   '$.parts',
-  (
+  json((
     SELECT json_group_array(
       json(
         CASE
@@ -28,7 +30,7 @@ SET message_json = json_set(
               '$.input',
               json_object(
                 'lenses',
-                (SELECT json_group_array(json_object('ref', r.value) ORDER BY r.key) FROM json_each(part.value, '$.input.refs') AS r)
+                json((SELECT json_group_array(json_object('ref', r.value) ORDER BY r.key) FROM json_each(part.value, '$.input.refs') AS r))
               )
             )
           ELSE part.value
@@ -37,7 +39,7 @@ SET message_json = json_set(
       ORDER BY part.key
     )
     FROM json_each(message_json, '$.parts') AS part
-  )
+  ))
 )
 WHERE message_json LIKE '%"tool-lensDetails"%'
   AND EXISTS (
@@ -49,7 +51,7 @@ UPDATE askiris_messages AS m
 SET message_json = json_set(
   m.message_json,
   '$.parts',
-  (
+  json((
     WITH
     locale AS (
       SELECT COALESCE(
@@ -118,9 +120,9 @@ SET message_json = json_set(
         json_set(
           json_remove(s.v, '$.output.displayImages', '$.output.readRefs', '$.output.historical'),
           '$.input',
-          json_object('lenses', (SELECT json_group_array(json_object('ref', i.value ->> '$.ref') ORDER BY i.key) FROM json_each(s.v, '$.input.lenses') AS i)),
+          json_object('lenses', json((SELECT json_group_array(json_object('ref', i.value ->> '$.ref') ORDER BY i.key) FROM json_each(s.v, '$.input.lenses') AS i))),
           '$.output.lenses',
-          (SELECT json_group_array(json_remove(l.value, '$.images', '$.imageResults') ORDER BY l.key) FROM json_each(s.v, '$.output.lenses') AS l)
+          json((SELECT json_group_array(json_remove(l.value, '$.images', '$.imageResults') ORDER BY l.key) FROM json_each(s.v, '$.output.lenses') AS l))
         )
       FROM split AS s
       UNION ALL
@@ -131,20 +133,20 @@ SET message_json = json_set(
           'state', s.v ->> '$.state',
           'input', json_object(
             'lenses',
-            (
+            json((
               SELECT json_group_array(
                 json_object(
                   'ref', lo.lens,
-                  'images', (SELECT json_group_array(json_object('role', ro.role) ORDER BY ro.rn) FROM role_order AS ro WHERE ro.k = lo.k AND ro.lens = lo.lens AND ro.rn <= 3)
+                  'images', json((SELECT json_group_array(json_object('role', ro.role) ORDER BY ro.rn) FROM role_order AS ro WHERE ro.k = lo.k AND ro.lens = lo.lens AND ro.rn <= 3))
                 )
                 ORDER BY lo.first
               )
               FROM lens_order AS lo WHERE lo.k = s.k
-            )
+            ))
           ),
           'output', json_object(
             'lenses',
-            (
+            json((
               SELECT json_group_array(
                 json_patch(
                   json_object(
@@ -163,14 +165,14 @@ SET message_json = json_set(
               FROM lens_order AS lo
               LEFT JOIN json_each(s.v, '$.output.lenses') AS old ON old.value ->> '$.ref' = lo.lens
               WHERE lo.k = s.k
-            ),
+            )),
             'displayImages',
-            (SELECT json_group_array(json(sh.img) ORDER BY sh.n) FROM shown AS sh WHERE sh.k = s.k)
+            json((SELECT json_group_array(json(sh.img) ORDER BY sh.n) FROM shown AS sh WHERE sh.k = s.k))
           )
         )
       FROM split AS s
     ) AS emitted
-  )
+  ))
 )
 WHERE m.message_json LIKE '%"tool-lensDetails"%'
   AND EXISTS (
@@ -182,7 +184,7 @@ UPDATE askiris_messages
 SET message_json = json_set(
   message_json,
   '$.parts',
-  (
+  json((
     SELECT json_group_array(
       json(
         CASE
@@ -191,7 +193,7 @@ SET message_json = json_set(
             THEN json_set(
               json_remove(part.value, '$.output.displayImages', '$.output.readRefs', '$.output.historical'),
               '$.output.lenses',
-              (SELECT json_group_array(json_remove(l.value, '$.images', '$.imageResults') ORDER BY l.key) FROM json_each(part.value, '$.output.lenses') AS l)
+              json((SELECT json_group_array(json_remove(l.value, '$.images', '$.imageResults') ORDER BY l.key) FROM json_each(part.value, '$.output.lenses') AS l))
             )
           ELSE part.value
         END
@@ -199,7 +201,7 @@ SET message_json = json_set(
       ORDER BY part.key
     )
     FROM json_each(message_json, '$.parts') AS part
-  )
+  ))
 )
 WHERE message_json LIKE '%"tool-lensDetails"%'
   AND EXISTS (

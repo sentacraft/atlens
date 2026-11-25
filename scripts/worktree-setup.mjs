@@ -37,7 +37,7 @@ export function runtimeIdentity() {
   return {
     platform: process.platform, arch: process.arch,
     libc: process.platform === 'linux' ? (header.glibcVersionRuntime ? 'glibc' : 'musl') : null,
-    nodeMajor: process.versions.node.split('.')[0], abi: process.versions.modules,
+    nodeMajor: process.versions.node.split('.')[0], nodeVersion: process.versions.node, abi: process.versions.modules,
   };
 }
 
@@ -63,9 +63,10 @@ export function setup({ cwd = process.cwd(), check = false, hook = false, runtim
     throw new Error('This project setup supports macOS and Linux only.');
   }
   const pkg = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
-  const nodeMajor = readFileSync(path.join(root, '.nvmrc'), 'utf8').trim();
-  if (runtime.nodeMajor !== nodeMajor) {
-    throw new Error(`Node ${nodeMajor} required; found Node ${runtime.nodeMajor}. Select the project runtime without replacing system Node.`);
+  const expectedNode = readFileSync(path.join(root, '.nvmrc'), 'utf8').trim();
+  const actualNode = /^\d+$/.test(expectedNode) ? runtime.nodeMajor : runtime.nodeVersion;
+  if (actualNode !== expectedNode) {
+    throw new Error(`Node ${expectedNode} required; found Node ${actualNode}. Select the project runtime without replacing system Node.`);
   }
   const expectedPnpm = /^pnpm@(\d+\.\d+\.\d+)$/.exec(pkg.packageManager)?.[1];
   if (!expectedPnpm) {
