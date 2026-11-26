@@ -35,20 +35,20 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@ai-sdk/deepseek": "^3.0.64",
-    "@ai-sdk/google": "^4.0.94",
-    "@ai-sdk/openai": "^4.0.92",
-    "@ai-sdk/openai-compatible": "^3.0.68",
-    "@ai-sdk/react": "^4.0.141",
+    "@ai-sdk/deepseek": "^3.0.89",
+    "@ai-sdk/google": "^4.0.124",
+    "@ai-sdk/openai": "^4.0.122",
+    "@ai-sdk/openai-compatible": "^3.0.94",
+    "@ai-sdk/react": "^4.0.184",
     "@base-ui/react": "^1.9.0",
     "@fontsource-variable/source-serif-4": "^5.2.9",
-    "@tanstack/react-query": "^5.103.1",
-    "ai": "^7.0.138",
-    "better-auth": "^1.7.7",
+    "@tanstack/react-query": "^5.108.4",
+    "ai": "^7.0.179",
+    "better-auth": "^1.7.28",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "8.6.0",
-    "fflate": "0.8.2",
+    "fflate": "0.8.3",
     "geist": "^1.7.0",
     "kysely": "^0.29.6",
     "kysely-d1": "^0.4.0",
@@ -56,7 +56,7 @@
     "modern-screenshot": "^4.6.8",
     "motion": "^12.38.0",
     "next": "^16.4.6",
-    "next-intl": "^4.8.3",
+    "next-intl": "^4.16.2",
     "photoswipe": "5.4.4",
     "qrcode.react": "^4.2.0",
     "react": "19.2.4",
@@ -70,10 +70,10 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tw-animate-css": "^1.4.0",
-    "zod": "^4.3.6"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.20.12",
+    "@opennextjs/cloudflare": "^1.20.19",
     "@playwright/test": "^1.64.1",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4",
@@ -92,7 +92,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.1.1",
-    "wrangler": "^4.151.3"
+    "wrangler": "^4.168.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
