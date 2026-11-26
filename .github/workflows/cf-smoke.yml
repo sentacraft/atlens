@@ -21,6 +21,8 @@ concurrency:
 
 jobs:
   smoke:
+    # Replaced by preview-smoke.yml at the cutover in docs/remote-verification.md.
+    if: vars.CF_PREVIEW_VALIDATION != 'true'
     name: OpenNext / workerd smoke test
     runs-on: ubuntu-latest
     timeout-minutes: 15

@@ -10,6 +10,7 @@
     "env:check": "node --experimental-strip-types scripts/check-env.mts",
     "secret:add": "node --experimental-strip-types scripts/secret-add.mts",
     "d1:migrate:previews": "node --experimental-strip-types scripts/migrate-preview-d1.mts",
+    "preview:publish": "node --experimental-strip-types scripts/ci/publish-preview.mts",
     "d1:migrate:local": "node --experimental-strip-types scripts/migrate-local-d1.mts",
     "catalog:fetch": "node --experimental-strip-types scripts/fetch-lens-catalog.mts",
     "d1:pull:catalog": "node --experimental-strip-types scripts/pull-local-catalog.mts",
