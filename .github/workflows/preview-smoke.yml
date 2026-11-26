@@ -1,33 +1,27 @@
 name: Cloudflare Preview smoke
 
-# Cloudflare builds and deploys a branch Preview, then dispatches its fixed deployment URL here.
-# Activation and cutover: docs/remote-verification.md.
+# Cloudflare builds and deploys a branch Preview, then posts its fixed deployment URL as a commit
+# status. The check run written by the last job is the result; the posted status is only the handoff.
+# Activation, trust model and cutover: docs/remote-verification.md.
 
 on:
-  repository_dispatch:
-    types: [cloudflare_preview_ready]
+  status:
 
-# Two deployments of one commit would otherwise race for the same commit status.
+# Every commit status starts a run, so the context and state are part of the group: otherwise an
+# unrelated status on the same commit would cancel a queued probe.
 concurrency:
-  group: preview-smoke-${{ github.event.client_payload.sha }}
+  group: preview-smoke-${{ github.event.sha }}-${{ github.event.context }}-${{ github.event.state }}
 
 permissions:
   contents: read
 
-env:
-  STATUS_CONTEXT: Cloudflare Preview smoke
-  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
 jobs:
   target:
-    name: Validate the dispatched deployment
+    name: Validate the posted deployment
+    if: github.event.context == 'cloudflare/preview-deployment' && github.event.state == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    permissions:
-      contents: read
-      statuses: write
     outputs:
-      sha: ${{ steps.target.outputs.sha }}
       base_url: ${{ steps.target.outputs.base_url }}
     steps:
       - uses: actions/checkout@v4
@@ -39,18 +33,26 @@ jobs:
           node-version-file: .nvmrc
 
       - id: target
+        name: Check the deployment address
         run: node --experimental-strip-types scripts/ci/preview-target.mts
+        env:
+          STATUS_SHA: ${{ github.event.sha }}
+          STATUS_TARGET_URL: ${{ github.event.target_url }}
+          STATUS_DESCRIPTION: ${{ github.event.description }}
 
-      # A dispatch run is attached to the default branch, so the result has to be written to the
-      # deployed commit explicitly.
-      - name: Mark the deployed commit pending
+      # The next job runs this commit's scripts, so it must be a branch head of this repository: a
+      # status can also name a fork's pull request commit.
+      - name: Require a current branch head
         env:
           GH_TOKEN: ${{ github.token }}
-          SHA: ${{ steps.target.outputs.sha }}
-          BASE_URL: ${{ steps.target.outputs.base_url }}
+          SHA: ${{ github.event.sha }}
         run: |
-          gh api "repos/$GITHUB_REPOSITORY/statuses/$SHA" -f state=pending \
-            -f context="$STATUS_CONTEXT" -f target_url="$RUN_URL" -f description="Probing $BASE_URL"
+          heads=$(gh api "repos/$GITHUB_REPOSITORY/commits/$SHA/branches-where-head" \
+            --jq '[.[] | select(.name != "main")] | length')
+          if [ "$heads" -eq 0 ]; then
+            echo "::error::$SHA is not the current head of a task branch"
+            exit 1
+          fi
 
   smoke:
     name: Probe the deployment
@@ -60,7 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.target.outputs.sha }}
+          ref: ${{ github.event.sha }}
           persist-credentials: false
 
       - uses: actions/setup-node@v4
@@ -79,21 +81,31 @@ jobs:
 
   report:
     name: Report on the deployed commit
-    if: ${{ always() && needs.target.outputs.sha != '' }}
+    if: ${{ always() && github.event.context == 'cloudflare/preview-deployment' && github.event.state == 'success' }}
     needs: [target, smoke]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
-      statuses: write
+      contents: read
+      checks: write
     steps:
-      - name: Set the final commit status
+      # Created already completed, so no failure can leave it in progress. The branch head is read
+      # again because it may have moved while the probes ran.
+      - name: Create the result check run
         env:
           GH_TOKEN: ${{ github.token }}
-          SHA: ${{ needs.target.outputs.sha }}
+          SHA: ${{ github.event.sha }}
           BASE_URL: ${{ needs.target.outputs.base_url }}
-          RESULT: ${{ needs.smoke.result }}
+          TARGET_RESULT: ${{ needs.target.result }}
+          SMOKE_RESULT: ${{ needs.smoke.result }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          state=failure
-          if [ "$RESULT" = success ]; then state=success; fi
-          gh api "repos/$GITHUB_REPOSITORY/statuses/$SHA" -f state="$state" \
-            -f context="$STATUS_CONTEXT" -f target_url="$RUN_URL" -f description="Smoke $RESULT: $BASE_URL"
+          heads=$(gh api "repos/$GITHUB_REPOSITORY/commits/$SHA/branches-where-head" \
+            --jq '[.[] | select(.name != "main")] | length') || heads=0
+          conclusion=failure
+          if [ "$SMOKE_RESULT" = success ] && [ "$heads" -gt 0 ]; then conclusion=success; fi
+          gh api "repos/$GITHUB_REPOSITORY/check-runs" \
+            -f name="Cloudflare Preview smoke" -f head_sha="$SHA" -f details_url="$RUN_URL" \
+            -f status=completed -f conclusion="$conclusion" \
+            -f "output[title]=Preview smoke: $conclusion" \
+            -f "output[summary]=Target: $TARGET_RESULT. Smoke: $SMOKE_RESULT. Task branches at this head: $heads. Deployment: ${BASE_URL:-not accepted}"

@@ -3,7 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 import { publishPreview } from "../publish-preview.mts";
 
 const sha = "a".repeat(40);
-const env = { WORKERS_CI_BRANCH: "feat/example", WORKERS_CI_COMMIT_SHA: sha, PREVIEW_DISPATCH_TOKEN: "test-token" };
+const buildId = "22222222-2222-4222-8222-222222222222";
+const env = { WORKERS_CI_BRANCH: "feat/example", WORKERS_CI_COMMIT_SHA: sha, WORKERS_CI_BUILD_UUID: buildId,
+  PREVIEW_STATUS_TOKEN: "test-token" };
 const deployment = { type: "preview", version: 1, worker_name: "atlens",
   deployment_id: "122c5506-1111-4111-8111-111111111111", deployment_urls: ["https://122c5506.preview.atlens.app"] };
 
@@ -14,9 +16,9 @@ function deploy(args: string[], childEnv: Record<string, string | undefined>) {
 }
 
 describe("Preview publisher", () => {
-  it("deploys existing output and dispatches the fixed deployment without invoking a build", async () => {
+  it("deploys existing output and posts the fixed deployment on the built commit", async () => {
     const calls: string[][] = [];
-    const send = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 204 }));
+    const send = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 201 }));
     await publishPreview({ env, send, run: (args, childEnv) => {
       calls.push(args);
       deploy(args, childEnv);
@@ -25,19 +27,24 @@ describe("Preview publisher", () => {
       ["run", "d1:migrate:previews"],
       ["exec", "wrangler", "preview", "--name", env.WORKERS_CI_BRANCH, "--tag", sha, "--json"],
     ]);
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(send.mock.calls[0][0]).toBe(`https://api.github.com/repos/sentacraft/atlens/statuses/${sha}`);
     const body = send.mock.calls[0][1]!.body as string;
     expect(JSON.parse(body)).toEqual({
-      event_type: "cloudflare_preview_ready",
-      client_payload: { sha, deploymentId: deployment.deployment_id, baseUrl: deployment.deployment_urls[0] },
+      state: "success",
+      context: "cloudflare/preview-deployment",
+      target_url: deployment.deployment_urls[0],
+      description: `deployment=${deployment.deployment_id} build=${buildId}`,
     });
-    expect(body).not.toContain(env.PREVIEW_DISPATCH_TOKEN);
+    expect(body).not.toContain(env.PREVIEW_STATUS_TOKEN);
   });
 
   it.each([
-    ["no token", { PREVIEW_DISPATCH_TOKEN: "" }],
+    ["no token", { PREVIEW_STATUS_TOKEN: "" }],
     ["the production branch", { WORKERS_CI_BRANCH: "main" }],
     ["no branch", { WORKERS_CI_BRANCH: undefined }],
     ["no commit", { WORKERS_CI_COMMIT_SHA: undefined }],
+    ["no build UUID", { WORKERS_CI_BUILD_UUID: undefined }],
   ])("has no side effects with %s", async (_name, change) => {
     const run = vi.fn();
     const send = vi.fn<typeof fetch>();
@@ -46,8 +53,8 @@ describe("Preview publisher", () => {
     expect(send).not.toHaveBeenCalled();
   });
 
-  it("fails the build when the notification is rejected", async () => {
+  it("fails the build when the status is rejected", async () => {
     const send = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 403 }));
-    await expect(publishPreview({ env, send, run: deploy })).rejects.toThrow(/notification failed \(HTTP 403\)/);
+    await expect(publishPreview({ env, send, run: deploy })).rejects.toThrow(/status was rejected \(HTTP 403\)/);
   });
 });
