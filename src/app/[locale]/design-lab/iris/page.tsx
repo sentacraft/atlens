@@ -281,9 +281,9 @@ const FSTOP_OPTIONS = FSTOP_SEQUENCE.filter((f): f is number => f !== "A");
 
 function formatFStop(f: number): string {
   if (!isFinite(f) || f > 22) {
-    return "f/—";
+    return "F—";
   }
-  return `f/${f.toFixed(1)}`;
+  return `F${f.toFixed(1)}`;
 }
 
 export default function ApertureV2Lab() {

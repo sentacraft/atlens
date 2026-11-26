@@ -299,7 +299,7 @@ The pipeline keeps an append-only, git-tracked log of verified process incidents
 - Deterministic fields are computed in code — never inferred by an LLM.
 - Agents propose; code enforces; the maintainer approves what ships.
 
-**A note on accuracy.** Atlens covers hundreds of lenses across dozens of spec dimensions, and we kindly ask for your patience with the small errors and stale entries that slip through. Bug reports via the in-app feedback or GitHub issues are very welcome — for anything critical to a purchase, please confirm on the manufacturer's official page first.
+**A note on accuracy.** Atlens covers hundreds of lenses across dozens of spec dimensions, so small errors and stale entries do slip through. Bug reports via the in-app feedback or GitHub issues are very welcome — for anything critical to a purchase, please confirm on the manufacturer's official page first.
 
 ## Local Development
 
@@ -332,7 +332,7 @@ Optional coding-agent skills: install Skillshare CLI, then run `skillshare insta
 
 ## Contributing
 
-Small fixes are welcome. For larger code changes or new features, please open an issue first so we can align on scope before implementation.
+Small fixes are welcome. For larger code changes or new features, please open an issue first to align on scope before implementation.
 
 To report a data issue (wrong spec, broken image) or suggest a missing lens, use the feedback links inside the app, or open a [GitHub Issue](https://github.com/sentacraft/atlens/issues).
 

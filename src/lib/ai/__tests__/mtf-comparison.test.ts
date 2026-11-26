@@ -21,8 +21,8 @@ describe("groupMtfCharts", () => {
     expect(group.level).toBe("values-with-caveats");
     expect(group.lenses).toEqual([{ lens: "a", charts: ["Fig. 1"] }, { lens: "b", charts: ["Fig. 2"] }]);
     const aperture = group.caveats.find((text) => text.includes("test aperture"));
-    expect(aperture).toContain("f/2.8");
-    expect(aperture).toContain("f/4");
+    expect(aperture).toContain("F2.8");
+    expect(aperture).toContain("F4");
   });
 
   it("grades matching conditions as values with no caveats", () => {
@@ -37,7 +37,7 @@ describe("groupMtfCharts", () => {
       chart("b", [3.5, 5.6], { spatialFrequency: f15_45, apertureFNumbers: [8], conditionsNote: "Wide-angle end" }, true),
     ]);
     const caveats = result!.mtfGroups[0].caveats.join(" ");
-    expect(caveats).toContain("f/8");
+    expect(caveats).toContain("F8");
     expect(caveats).toContain("focal length");
   });
 

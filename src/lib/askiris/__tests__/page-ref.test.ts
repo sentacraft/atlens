@@ -13,7 +13,7 @@ describe("describeFilters", () => {
 
   it("describes the custom reference and both numeric limits", () => {
     expect(describeFilters({ ...defaultFilters, focalLength: { value: 40, reference: "equivalent" }, maxAperture: 2.8, weightLimit: 500 }, labels)).toEqual([
-      "Around 40mm equivalent", "f/2.8 or faster", "Up to 500g",
+      "Around 40mm equivalent", "F2.8 or faster", "Up to 500g",
     ]);
   });
 

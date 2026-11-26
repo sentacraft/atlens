@@ -31,8 +31,8 @@ export function focalRangeDisplay(min: number, max: number): string {
 
 export function apertureDisplay(aperture: NonNullable<Lens["maxAperture"]>): string {
   return Array.isArray(aperture)
-    ? `f/${aperture[0]}–${aperture[1]}`
-    : `f/${aperture}`;
+    ? `F${aperture[0]}–${aperture[1]}`
+    : `F${aperture}`;
 }
 
 export function tStopDisplay(

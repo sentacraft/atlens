@@ -97,22 +97,22 @@ describe("focalRangeDisplay", () => {
 
 describe("apertureDisplay", () => {
   it("shows a single aperture for primes and constant-aperture zooms", () => {
-    expect(apertureDisplay(1.4)).toBe("f/1.4");
+    expect(apertureDisplay(1.4)).toBe("F1.4");
   });
 
   it("shows an aperture range for variable-aperture zooms", () => {
-    expect(apertureDisplay([3.5, 6.3])).toBe("f/3.5–6.3");
+    expect(apertureDisplay([3.5, 6.3])).toBe("F3.5–6.3");
   });
 
   it("shows a minimum aperture range when the zoom closes down differently", () => {
-    expect(apertureDisplay([16, 22])).toBe("f/16–22");
+    expect(apertureDisplay([16, 22])).toBe("F16–22");
   });
 });
 
 describe("primaryApertureDisplay / secondaryApertureDisplay", () => {
   it("non-cine lens shows f-stop primary, no secondary", () => {
     const lens = makeLens({ focalLengthMin: 35, focalLengthMax: 35 });
-    expect(primaryApertureDisplay(lens)).toBe("f/1.4");
+    expect(primaryApertureDisplay(lens)).toBe("F1.4");
     expect(secondaryApertureDisplay(lens)).toBeUndefined();
   });
 
@@ -140,7 +140,7 @@ describe("primaryApertureDisplay / secondaryApertureDisplay", () => {
       minTStop: 16,
       isCine: true,
     });
-    expect(primaryApertureDisplay(lens)).toBe("f/2");
+    expect(primaryApertureDisplay(lens)).toBe("F2");
     expect(secondaryApertureDisplay(lens)).toBe("T2.1");
   });
 });

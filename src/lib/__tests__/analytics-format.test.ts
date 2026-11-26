@@ -37,7 +37,7 @@ describe("formatFilterSnapshot", () => {
       focalLength: { value: 50, reference: "equivalent" },
       maxAperture: 2.8,
       weightLimit: 500,
-    }))).toBe("Focal: 50mm equivalent · Max aperture: f/2.8 or faster · Weight limit: 500g");
+    }))).toBe("Focal: 50mm equivalent · Max aperture: F2.8 or faster · Weight limit: 500g");
     expect(formatFilterSnapshot(JSON.stringify({
       focalLength: { value: 33.3, reference: "actual" },
     }))).toBe("Focal: 33.3mm actual");

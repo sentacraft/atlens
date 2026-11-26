@@ -94,7 +94,7 @@ describe("lens images in Iris replies", () => {
       expect(screen.getByText(label)).toBeInTheDocument();
     }
     expect(screen.getAllByRole("img")).toHaveLength(4);
-    expect(screen.getByText("35mm · f/1.4, f/8")).toBeInTheDocument();
+    expect(screen.getByText("35mm · F1.4, F8")).toBeInTheDocument();
     expectBefore(screen.getByText("Fig. 2"), screen.getByText("Between"));
     expectBefore(screen.getByText("Between"), screen.getByText("Fig. 3"));
   });

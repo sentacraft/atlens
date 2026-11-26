@@ -32,7 +32,7 @@ const RULES: Record<Level, string> = {
   alone: "No other shown lens shares this chart scale; compare it with the others by curve shape only.",
 };
 
-const fNumber = (value: number) => `f/${value}`;
+const fNumber = (value: number) => `F${value}`;
 const maxApertureLabel = (value: ApertureValue | null) =>
   value === null ? "unknown" : Array.isArray(value) ? `${fNumber(value[0])}–${fNumber(value[1])}` : fNumber(value);
 

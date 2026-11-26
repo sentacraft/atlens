@@ -55,7 +55,7 @@ Set from the manufacturer's marketing and model name; independent, and a lens ca
 When a model name holds a code not listed here, say you are not sure what it stands for and describe the lens from its specs instead.
 
 Fujifilm (official explainer: fujifilm-x.com "Lens Names Explained")
-Pattern: series + focal length + aperture + feature codes. XF 18-55mm F2.8-4 R LM OIS is an XF zoom, 18-55mm, f/2.8 at wide to f/4 at tele, with an aperture ring, a linear motor, and optical stabilization.
+Pattern: series + focal length + aperture + feature codes. XF 18-55mm F2.8-4 R LM OIS is an XF zoom, 18-55mm, F2.8 at wide to F4 at tele, with an aperture ring, a linear motor, and optical stabilization.
 - Series: XF is the main X-mount line, built and rendered to a higher standard. XC is the lighter, cheaper X-mount line, without aperture rings. GF lenses are for G mount (GFX medium format). MKX is the X-mount cine zoom line, rated in T-stops (MKX18-55mmT2.9).
 - Codes: R has an aperture ring; LM linear motor; OIS optical stabilization; WR weather resistant; PZ power zoom; APD apodization filter, which smooths out-of-focus transitions at the cost of some light (only the XF 56mm F1.2 R APD so far); T/S tilt-shift (GF); Macro; II second generation.
 - The red badge on some zooms is not part of the name; it is an informal mark for professional constant-aperture, weather-sealed zooms.

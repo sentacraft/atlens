@@ -213,7 +213,7 @@ export const HANDWRITTEN_FACTS: SiteFact[] = [
   {
     id: "rate-limit",
     topic: "askIris",
-    text: `Without an account, Ask Iris answers ${IRIS_QUOTA.guestTurnsDaily} questions a day; signing in raises that limit. Iris also has an overall usage limit, and when it is reached she pauses for everyone until it resets.`,
+    text: `Without an account, Ask Iris answers ${IRIS_QUOTA.guestTurnsDaily} questions a day; signing in raises that limit. Iris also has an overall usage limit, and when it is reached it pauses for everyone until it resets.`,
     sources: ["src/lib/ai/iris-quota.ts"],
     links: ["action:signIn"],
   },
