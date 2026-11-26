@@ -299,6 +299,11 @@
       "used": "used",
       "expand": "Expand"
     },
+    "reviewSearch": {
+      "title": "Reviews & samples",
+      "subtitle": "Search other sites. Results come from each site.",
+      "close": "Close"
+    },
     "thinking": "Thinking…",
     "starters": {
       "need": ["Traveling", "Portraits", "Street photography", "Night sky", "Kids and pets", "Small and light", "Macro", "Landscapes"],

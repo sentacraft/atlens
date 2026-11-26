@@ -9,12 +9,13 @@ import { ArrowUpRight, LogIn, MessageSquare } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import { useChatLinkTargets } from "@/components/askiris/ChatLinkContext";
+import ReviewSearchChip from "@/components/askiris/ReviewSearchChip";
 import { SourceMarker } from "@/components/askiris/ReviewSources";
 import { SOURCE_MARKER_LABEL } from "@/lib/askiris/review-citations";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { escapeLensLinkLabels } from "@/lib/ai/lens-ref";
+import { escapeLensLinkLabels, normalizeRefListLinks } from "@/lib/ai/lens-ref";
 import { PAGE_LINKS, isChatLinkHref, parseChatLink, type ChatLink } from "@/lib/askiris/inline-links";
 import { mountHasCharts, mountHasCollections } from "@/lib/mount";
 import { buildComparePath } from "@/lib/url/compare";
@@ -105,6 +106,18 @@ function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNo
         <ChipLink href={buildComparePath(known[0].mount, known.map((entry) => entry.id))}>{children}</ChipLink>
       );
     }
+    case "reviews": {
+      const entries = link.refs.map((ref) => targets?.lenses[ref]);
+      const known = entries.filter((entry) => entry !== undefined);
+      if (known.length !== entries.length) {
+        return <>{children}</>;
+      }
+      return (
+        <ReviewSearchChip lenses={known} className={CHIP_CLS} iconClassName={CHIP_ICON_CLS}>
+          {children}
+        </ReviewSearchChip>
+      );
+    }
     case "source":
       // A label other than the bare marker is a name the sentence needs, such as its subject.
       return (
@@ -154,7 +167,7 @@ export default function Markdown({
         urlTransform={(url) => (isChatLinkHref(url) ? url : defaultUrlTransform(url))}
         components={{ a: ProseAnchor }}
       >
-        {escapeLensLinkLabels(children)}
+        {escapeLensLinkLabels(normalizeRefListLinks(children))}
       </ReactMarkdown>
     </div>
   );

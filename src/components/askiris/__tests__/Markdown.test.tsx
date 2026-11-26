@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi } from "vitest";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
 import Markdown from "../Markdown";
 import { ChatLinkProvider } from "../ChatLinkContext";
 import { lensRef, type LensLinkIndex } from "@/lib/ai/lens-ref";
@@ -43,7 +44,7 @@ vi.mock("@/components/feedback/FeedbackTrigger", () => ({
 // Iris writes the opaque ref; the index maps it back to the real lens.
 const REF = "9q0ih";
 const INDEX: LensLinkIndex = {
-  [REF]: { id: "viltrox-af-35mm-f17-air-x", mount: "X" },
+  [REF]: { id: "viltrox-af-35mm-f17-air-x", mount: "X", name: "Viltrox AF 35mm F1.7 Air", review: { en: "Viltrox AF 35mm f1.7 Air" } },
 };
 
 describe("Markdown lens: links", () => {
@@ -97,7 +98,7 @@ describe("Markdown lens: links in tables", () => {
   it("keeps a lens name containing a pipe in one table cell", () => {
     const ref = "c01n5";
     const index: LensLinkIndex = {
-      [ref]: { id: "sigma-contemporary-12mm-f14-dc-x", mount: "X" },
+      [ref]: { id: "sigma-contemporary-12mm-f14-dc-x", mount: "X", name: "Sigma 12mm F1.4 DC", review: { en: "Sigma 12mm f1.4" } },
     };
     const table = [
       "| Lens | Weight | Price |",
@@ -127,7 +128,7 @@ describe("Markdown lens: links across the catalogue", () => {
   ] as const)("keeps every %s lens name intact in a table cell", (locale, brands) => {
     const lenses = getAllLenses(locale);
     const index: LensLinkIndex = Object.fromEntries(
-      lenses.map((lens) => [lensRef(lens.id), { id: lens.id, mount: lens.mount }]),
+      lenses.map((lens) => [lensRef(lens.id), { id: lens.id, mount: lens.mount, name: lens.model, review: lens.searchAliases.review }]),
     );
     const names = lenses.map((lens) =>
       lensDisplayName(brands[lens.brand as keyof typeof brands] ?? lens.brand, lens.series, lens.model),
@@ -156,8 +157,8 @@ describe("Markdown chat links", () => {
   const TARGETS = {
     lenses: {
       ...INDEX,
-      [OTHER]: { id: "sigma-contemporary-12mm-f14-dc-x", mount: "X" as const },
-      [GFX]: { id: "fujifilm-gf-45mm-f28-r-wr-g", mount: "G" as const },
+      [OTHER]: { id: "sigma-contemporary-12mm-f14-dc-x", mount: "X" as const, name: "Sigma 12mm F1.4 DC", review: { en: "Sigma 12mm f1.4" } },
+      [GFX]: { id: "fujifilm-gf-45mm-f28-r-wr-g", mount: "G" as const, name: "Fujifilm GF45mmF2.8 R WR", review: { en: "Fujifilm GF 45mm f2.8" } },
     },
     collections: ["pancake"],
     brands: ["sigma"],
@@ -185,6 +186,50 @@ describe("Markdown chat links", () => {
     expect(link!.getAttribute("href")).toBe(
       "/lenses/x/compare?ids=viltrox-af-35mm-f17-air-x,sigma-contemporary-12mm-f14-dc-x",
     );
+  });
+
+  it.each([
+    ["a space", `[compare](compare:${REF}, ${OTHER})`],
+    ["a full-width comma", `[compare](compare:${REF}，${OTHER})`],
+    ["an enumeration comma", `[compare](compare:${REF}、${OTHER})`],
+  ])("still builds a compare link when the refs are separated by %s", (_, markdown) => {
+    expect(renderLinks(markdown).querySelector("a")!.getAttribute("href")).toBe(
+      "/lenses/x/compare?ids=viltrox-af-35mm-f17-air-x,sigma-contemporary-12mm-f14-dc-x",
+    );
+  });
+
+  it.each([
+    ["a space", `reviews:${REF}, ${OTHER}`],
+    ["a full-width comma", `reviews:${REF}，${OTHER}`],
+  ])("still opens review searches when the refs are separated by %s", (_, destination) => {
+    const container = render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <ChatLinkProvider targets={TARGETS}>
+          <Markdown>{`See [some reviews](${destination}) first.`}</Markdown>
+        </ChatLinkProvider>
+      </NextIntlClientProvider>,
+    ).container;
+    expect(container.querySelector("button")!.textContent).toBe("some reviews");
+  });
+
+  it("opens review searches on other sites for every lens a reviews link names", () => {
+    const container = render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <ChatLinkProvider targets={TARGETS}>
+          <Markdown>{`Have a look at [some reviews](reviews:${REF},${OTHER}) first.`}</Markdown>
+        </ChatLinkProvider>
+      </NextIntlClientProvider>,
+    ).container;
+    const trigger = container.querySelector("button")!;
+    expect(trigger.textContent).toBe("some reviews");
+    fireEvent.click(trigger);
+    const searches = [...document.body.querySelectorAll<HTMLAnchorElement>('a[target="_blank"]')].map((a) => a.href);
+    expect(searches.filter((href) => href.includes("youtube.com"))).toEqual([
+      "https://www.youtube.com/results?search_query=Viltrox%20AF%2035mm%20f1.7%20Air%20review",
+      "https://www.youtube.com/results?search_query=Sigma%2012mm%20f1.4%20review",
+    ]);
+    expect(document.body.textContent).toContain("Viltrox AF 35mm F1.7 Air");
+    expect(document.body.textContent).toContain("Sigma 12mm F1.4 DC");
   });
 
   it("links a known collection on the current mount", () => {
@@ -215,6 +260,8 @@ describe("Markdown chat links", () => {
     ["a compare link with one lens", `[x](compare:${REF})`],
     ["a compare link across mounts", `[x](compare:${REF},${GFX})`],
     ["an unknown collection", "[x](collection:nope)"],
+    ["a review search with an unknown ref", `[x](reviews:${REF},zzzzz)`],
+    ["a review search with more than three lenses", `[x](reviews:${REF},${OTHER},${GFX},abcde)`],
   ])("renders %s as plain text", (_, markdown) => {
     const container = renderLinks(markdown);
     expect(container.querySelector("a, button")).toBeNull();

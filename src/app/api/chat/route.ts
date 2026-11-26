@@ -17,7 +17,8 @@ import {
   agentModelLabel,
   missingAgentModelKey,
 } from "@/lib/ai/model";
-import { gearPrompt, systemPrompt } from "@/lib/ai/system-prompt";
+import { gearPrompt, reviewSearchPrompt, systemPrompt } from "@/lib/ai/system-prompt";
+import { offeredReviewRefs } from "@/lib/ai/review-search-offer";
 import { findAgentModelPreset, MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
 import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus, type GearSummary } from "@/lib/ai/gear-context";
 import { EVAL_FAVORITES_HEADER, evalFavorites } from "@/lib/ai/favorites";
@@ -226,6 +227,7 @@ export async function POST(req: NextRequest) {
   figures.mtfShown = earlierMtfCharts(history);
   const gearDeclined = gearCardDecline(history);
   const declinedSignIn = signInDeclined(history);
+  const reviewNudge = reviewSearchPrompt(offeredReviewRefs(history));
   const activeTools = Object.keys(tools).filter((name) =>
     !(declinedSignIn && SIGN_IN_GATED_TOOL_NAMES.includes(name)) &&
     !(name === ASK_FOR_GEAR && (gearDeclined || declinedSignIn)),
@@ -295,6 +297,7 @@ export async function POST(req: NextRequest) {
         role: "system",
         content: gearPrompt(gearAccess, { declined: gearDeclined, signInDeclined: declinedSignIn }),
       },
+      { role: "system", content: reviewNudge },
     ],
     messages: modelMessages,
     tools,

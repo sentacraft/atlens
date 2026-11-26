@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { DefaultChatTransport, readUIMessageStream } from "ai";
 // The real implementation: a copy of the hash would drift silently.
-import { lensRef, LENS_LINK_PREFIX } from "../../src/lib/ai/lens-ref.ts";
+import { lensRef, LENS_LINK_PREFIX, normalizeRefListLinks } from "../../src/lib/ai/lens-ref.ts";
 import { MODEL_PRESET_HEADER } from "../../src/lib/ai/model-presets.ts";
 import { askIrisChatRequestBody } from "../../src/lib/askiris/chat-request.ts";
 
@@ -14,6 +14,7 @@ const LENS_LINK_RE = new RegExp(`\\]\\(${LENS_LINK_PREFIX}([^)\\s]+)\\)`, "g");
 const LENS_LINK_DISPLAY_RE = new RegExp(`\\[([^\\]]+)\\]\\(${LENS_LINK_PREFIX}[^)\\s]+\\)`, "g");
 const COMPARE_LINK_RE = /\[([^\]]+)\]\(compare:([^)\s]+)\)/g;
 const SOURCE_LINK_RE = /\[([^\]]*)\]\(source:([^)\s]+)\)/g;
+const REVIEWS_LINK_RE = /\[([^\]]+)\]\(reviews:([^)\s]+)\)/g;
 
 const REF_TO_ID = new Map(
   ["lenses.json", "lenses-gfx.json"]
@@ -398,15 +399,17 @@ export default class AskIrisProvider {
         break;
       }
     }
-    const transcript = convo.join("\n\n") || "(empty)";
+    const transcript = normalizeRefListLinks(convo.join("\n\n")) || "(empty)";
     const linkRefs = [...transcript.matchAll(LENS_LINK_RE)].map((m) => m[1]);
     const compareLinks = [...transcript.matchAll(COMPARE_LINK_RE)].map((m) => m[2].split(","));
     const sourceLinks = [...transcript.matchAll(SOURCE_LINK_RE)].map((m) => m[2]);
+    const reviewSearchLinks = [...transcript.matchAll(REVIEWS_LINK_RE)].map((m) => m[2].split(",").map((ref) => REF_TO_ID.get(ref) ?? ref));
     const fetchedSources = new Set(reviewsEver.flatMap((lens) => lens.sourceIds));
     const readable = transcript
       .replace(LENS_LINK_DISPLAY_RE, "$1")
       .replace(COMPARE_LINK_RE, "$1 (compare page link)")
-      .replace(SOURCE_LINK_RE, "[source: $1]");
+      .replace(SOURCE_LINK_RE, "[source: $1]")
+      .replace(REVIEWS_LINK_RE, "$1 (link to review searches on other sites)");
     // Recalled refs only: five base36 chars collide with ordinary words.
     const bareRefs = [...recalledEver].filter((ref) => new RegExp(`\\b${ref}\\b`).test(readable));
     return {
@@ -417,6 +420,7 @@ export default class AskIrisProvider {
         unknownLinkIds: [...new Set(linkRefs.filter((ref) => !REF_TO_ID.has(ref)))],
         compareLinks,
         sourceLinks,
+        reviewSearchLinks,
         unknownSourceLinks: sourceLinks.filter((key) => !fetchedSources.has(key)),
         picks: d.picks,
         pickGroups: d.pickGroups,

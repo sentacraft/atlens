@@ -5,6 +5,7 @@ import { getLensesByMount } from "@/lib/lens/data";
 import { SITE_TOPICS, siteFacts } from "@/lib/site-facts";
 import { HANDWRITTEN_FACTS } from "@/lib/site-facts/handwritten";
 import { COLLECTIONS } from "@/lib/collections";
+import { SIGN_IN_PITCHES } from "@/lib/sign-in-pitch";
 
 function factsFor(topic: (typeof SITE_TOPICS)[number], locale: string): string {
   return siteFacts([topic], locale, "X")[0].facts.join("\n");
@@ -51,6 +52,21 @@ describe("siteFacts", () => {
     expect(factsFor("usage", "en")).toContain(`"${en.Nav.collections}"`);
     expect(factsFor("account", "zh")).toContain(zh.Auth.benefitFavorites);
     expect(factsFor("usage", "zh")).toContain(`"${zh.Nav.getApp}" page`);
+  });
+
+  it("lists every benefit the sign-in dialog offers", () => {
+    for (const key of SIGN_IN_PITCHES.account_menu.benefits) {
+      const auth = zh.Auth as Record<string, string>;
+      expect(factsFor("account", "zh")).toContain(auth[`${key}Plain`] ?? auth[key].replace(/<\/?[a-z]+>/g, ""));
+    }
+  });
+
+  it("names the review findings, review searches and alternatives on lens pages", () => {
+    const usage = factsFor("usage", "zh");
+    expect(usage).toContain(`"${zh.LensDetail.sectionReviews}"`);
+    expect(usage).toContain(`"${zh.LensReviews.title}"`);
+    expect(usage).toContain(zh.LensReviews.channel.bilibili);
+    expect(usage).toContain(`"${zh.LensDetail.sectionAlternatives}"`);
   });
 
   it("lists price sources from the data", () => {

@@ -76,10 +76,13 @@ function isOneOf<T extends string>(value: string, options: readonly T[]): value 
   return (options as readonly string[]).includes(value);
 }
 
-function compareRefs(value: string): string[] | null {
+function refList(value: string, min: number, max: number): string[] | null {
   const refs = [...new Set(value.split(",").map((part) => part.trim()).filter(Boolean))];
-  return refs.length >= 2 && refs.length <= MAX_COMPARE ? refs : null;
+  return refs.length >= min && refs.length <= max ? refs : null;
 }
+
+/** The most lenses one review search link opens; it is offered once a choice is down to a few. */
+export const MAX_REVIEW_SEARCH_LENSES = 3;
 
 // One parser per scheme: the scheme list, the matcher, and the ChatLink type all derive from it.
 const PARSERS = {
@@ -87,8 +90,12 @@ const PARSERS = {
   page: (value: string) => (isKeyOf(value, PAGE_LINKS) ? ({ kind: "page", key: value }) as const : null),
   action: (value: string) => (isKeyOf(value, ACTION_LINKS) ? ({ kind: "action", action: value }) as const : null),
   compare: (value: string) => {
-    const refs = compareRefs(value);
+    const refs = refList(value, 2, MAX_COMPARE);
     return refs ? ({ kind: "compare", refs }) as const : null;
+  },
+  reviews: (value: string) => {
+    const refs = refList(value, 1, MAX_REVIEW_SEARCH_LENSES);
+    return refs ? ({ kind: "reviews", refs }) as const : null;
   },
   collection: (value: string) => ({ kind: "collection", slug: value }) as const,
   brand: (value: string) => ({ kind: "brand", slug: value }) as const,

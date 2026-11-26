@@ -16,7 +16,7 @@ const viltrox: Lens = {
 };
 
 function links(locale: string, lens: Lens = viltrox) {
-  return buildReviewSearchLinks({ lens, locale, reviewKeyword: locale === "zh" ? "评测" : "review" });
+  return buildReviewSearchLinks({ names: lens.searchAliases.review, locale, reviewKeyword: locale === "zh" ? "评测" : "review" });
 }
 
 describe("searchNameFor", () => {

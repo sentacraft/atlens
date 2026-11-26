@@ -699,6 +699,40 @@ tests:
           lens's edge quality or purple fringing, ranks the two on those as though it had
           been looked up, or sends the user to an Atlens page (compare, lens page) for them.
 
+  # Reviews: once the user is about to decide between a few lenses, the reply suggests other
+  # sites' reviews of those lenses, through one link.
+  - description: reviews-search-at-decision
+    metadata:
+      area: reviews
+    vars:
+      mount: X
+      locale: zh
+      dialog:
+        turns:
+          - "拍人像，在富士 XF 56mm F1.2 R WR 和唯卓仕 AF 75mm F1.2 Pro 之间纠结"
+          - "就这两支了，帮我定一个吧"
+    assert:
+      - type: javascript # one link, naming only lenses the conversation is deciding between
+        metric: programmatic
+        value: >-
+          context.metadata.reviewSearchLinks.length === 1 &&
+          context.metadata.reviewSearchLinks[0].every((id) => ["fujifilm-xf-56mmf12-r-wr-x", "viltrox-af-75mm-f12-pro-x"].includes(id))
+
+  # Reviews: a first, open recommendation is not a decision, so no review-search link yet.
+  - description: reviews-search-not-early
+    metadata:
+      area: reviews
+    vars:
+      mount: X
+      locale: en
+      dialog:
+        turns:
+          - "I want a portrait lens, budget around $800."
+    assert:
+      - type: javascript
+        metric: programmatic
+        value: "context.metadata.reviewSearchLinks.length === 0"
+
   # Reviews: rendering questions are answered from review findings, attributed to the reviews.
   - description: reviews-relay
     metadata:

@@ -11,6 +11,8 @@ import { MAX_COMPARE } from "@/lib/lens/lens";
 import { mountHasCharts, mountHasCollections } from "@/lib/mount";
 import { priceMarket, type Market } from "@/lib/lens/pricing";
 import { isPurchaseLocale } from "@/lib/purchase/links";
+import { reviewSearchChannels } from "@/lib/lens/review-search";
+import { SIGN_IN_PITCHES } from "@/lib/sign-in-pitch";
 import { donationChannels } from "@/lib/support";
 import { MOUNTS, type Lens, type LensPriceEntry, type Mount } from "@/lib/types";
 import { HANDWRITTEN_FACTS } from "@/lib/site-facts/handwritten";
@@ -101,12 +103,19 @@ function commercialTies(locale: string): string[] {
   ];
 }
 
+// Every benefit the sign-in dialog lists, so a new one reaches Iris without a second edit here.
+function signInBenefits(locale: string): string[] {
+  const auth = MESSAGES[locale].Auth as Record<string, string>;
+  return SIGN_IN_PITCHES.account_menu.benefits.map(
+    (key) => auth[`${key}Plain`] ?? auth[key].replace(/<\/?[a-z]+>/g, ""),
+  );
+}
+
 function accountFeatures(locale: string): string[] {
-  const auth = MESSAGES[locale].Auth;
   return [
     withLinks(
       locale,
-      `Browsing, comparing, and Ask Iris all work without an account. Signing in adds: ${[auth.benefitGearPlain, auth.benefitFavorites, auth.benefitChatsPlain].join("; ")}`,
+      `Browsing, comparing, and Ask Iris all work without an account. Signing in adds: ${signInBenefits(locale).join("; ")}`,
       ["action:signIn", "page:profileFavorites", "page:profileGear"],
     ),
   ];
@@ -125,11 +134,13 @@ function features(locale: string): string[] {
       named(m.RecentlyAdded.pageTitle, "lenses added to the data, by date"),
       named(m.Profile.favoritesTitle, "lenses the user saved; needs an account"),
       named(m.Profile.gearTitle, "the bodies and lenses the user owns, which Iris takes into account; needs an account"),
-      named(m.Share.button, "share a lens or a comparison as a link or a poster image"),
+      named(m.Share.button, "share a lens, a comparison or a chart as a link or a poster image"),
       named(m.Nav.feedback, "report a data problem or send an idea"),
       named(m.Nav.getApp, "install Atlens as a web app"),
     ])}.`,
     "Lens pages show product photos in a swipeable gallery. Opening a photo shows a zoomable lightbox, full-screen on phones and centered on desktop, with thumbnails for multiple images. Close with the close button, Escape, or a vertical drag while not zoomed in.",
+    `A lens page's "${m.LensDetail.sectionReviews}" section sums up what published reviews say about the lens, where Atlens has findings for it, each finding with the reviews it comes from; signed out, it shows the overall verdict and how many findings each group has, and signing in shows them all. Below that, "${m.LensReviews.title}" links search ${list(reviewSearchChannels(locale).map((channel) => m.LensReviews.channel[channel]))} for the lens's reviews and sample photos.`,
+    `A lens page's "${m.LensDetail.sectionAlternatives}" section lists lenses from any brand at about the same focal length.`,
     "When available, MTF charts and optical construction diagrams appear in the lens specifications. The comparison page opens the same types of images side by side when more than one compared lens has them.",
     `The site is available in ${list(routing.locales.map(languageName))}.`,
     withLinks(

@@ -30,6 +30,7 @@ const EVENT_FIELDS = {
   askiris_message: { method: "string", pool: "string" },
   askiris_rec_click: { lens_id: "string", source: "string" },
   askiris_new_conversation: { reason: "string" },
+  askiris_review_search: { lens_count: "number" },
   page_view: { referrer: "string", from_path: "string" },
   search_select: { query: "string", lens_id: "string", rank: "number" },
   sign_in_open: { reason: "string", entry: "string" },
@@ -367,6 +368,10 @@ export const EVENT_DOCS: EventDocs = {
         },
       },
     },
+  },
+  askiris_review_search: {
+    description: "A visitor opened the review and sample searches Iris offered in a reply; the searches themselves count as outbound clicks.",
+    fields: { lens_count: { description: "How many lenses the link covered." } },
   },
   page_view: {
     description: "A page opened, either from outside or by moving within the site.",
