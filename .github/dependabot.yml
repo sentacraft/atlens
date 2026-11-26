@@ -1,0 +1,39 @@
+# Dependabot only opens pull requests; merging them stays a maintainer decision.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore
+      include: scope
+    # Neither group takes major updates, so each major gets its own pull request.
+    groups:
+      next-runtime:
+        patterns:
+          - next
+          - "@opennextjs/*"
+          - wrangler
+          - "@cloudflare/*"
+        update-types: [minor, patch]
+      minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+    # Upgraded by hand, in exact versions, across repositories.
+    ignore:
+      - dependency-name: "@playwright/test"
+      - dependency-name: playwright
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ci
+      include: scope
+    groups:
+      github-actions:
+        patterns: ["*"]
