@@ -62,15 +62,16 @@ test.describe("Charts", () => {
 
   test("on a phone the timeline scrolls sideways and opens on the earliest years", async ({ page }) => {
     test.skip((page.viewportSize()?.width ?? 0) >= 768, "Phone layout only");
-    await page.goto(TIMELINE, { waitUntil: "networkidle" });
+    await page.goto(TIMELINE);
     const earlier = page.locator('[data-scroll-hint="left"]').locator("visible=true");
     const later = page.locator('[data-scroll-hint="right"]').locator("visible=true");
     const rail = later.locator("..").locator(".overflow-x-auto");
     const firstYear = Math.min(...datedLenses.map(({ year }) => year));
     await expect(rail.getByText(String(firstYear), { exact: true })).toBeVisible();
+    // This hint turns on only after hydration, so the checks below see what the client left behind.
+    await expect(later).toHaveCSS("opacity", "1");
     await expect.poll(() => rail.evaluate((element) => element.scrollLeft)).toBe(0);
     await expect(earlier).toHaveCSS("opacity", "0");
-    await expect(later).toHaveCSS("opacity", "1");
     await rail.evaluate((element) => { element.scrollLeft = element.scrollWidth; });
     await expect(earlier).toHaveCSS("opacity", "1");
     await expect(later).toHaveCSS("opacity", "0");

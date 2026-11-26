@@ -45,6 +45,8 @@ test.describe("Nav auto-hide (mobile only)", () => {
     // WebKit's emulated programmatic scroll does not reliably drive direction detection.
     testInfo.skip(browserName === "webkit", "Nav auto-hide is flaky under WebKit emulated scroll");
     await page.goto("/en/lenses");
+    // The scroll listener attaches on hydration; an earlier scroll is never seen.
+    await page.waitForLoadState("networkidle");
     await waitForScrollable(page, 200);
   });
 
