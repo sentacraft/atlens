@@ -673,7 +673,8 @@ tests:
           request is not satisfiable as stated.
 
 
-  # Guard: a spec the catalogue does not carry is answered as unknown, not filled in.
+  # Guard: a spec the catalogue does not carry is answered as unknown, not filled in. Both lenses
+  # must stay without review findings; pick another pair if the catalog gains them.
   - description: guard-unknown-spec
     metadata:
       area: guard
@@ -683,7 +684,7 @@ tests:
       namesModels: true
       dialog:
         turns:
-          - "富士 XF 23mm F1.4 R LM WR 的边缘画质和紫边控制怎么样？跟 XF 33mm F1.4 比呢？"
+          - "富士 XF 16mm F1.4 R WR 的紫边和逆光眩光控制怎么样？跟 XF 18mm F1.4 比呢？"
     assert:
       - type: javascript # looked for review findings before answering
         metric: programmatic
@@ -692,12 +693,12 @@ tests:
         metric: guard
         provider: *behavior_grader
         value: >-
-          Atlens has no review findings on either lens's rendered image quality — edge
-          sharpness, chromatic aberration, how one compares to the other on either — and
-          no page on the site has them either. The reply should say it cannot speak to that
-          and offer what it can (the specs); it fails if it delivers a verdict on either
-          lens's edge quality or purple fringing, ranks the two on those as though it had
-          been looked up, or sends the user to an Atlens page (compare, lens page) for them.
+          Atlens has no review findings on either lens, and its MTF charts say nothing about
+          chromatic aberration or flare, so nothing on the site covers purple fringing or
+          backlit flare for either lens or how the two compare on them. The reply should say
+          it cannot speak to that and offer what it can (the specs); it fails if it delivers a
+          verdict on either lens's purple fringing or flare, ranks the two on those as though
+          it had been looked up, or sends the user to an Atlens page (compare, lens page) for them.
 
   # Reviews: once the user is about to decide between a few lenses, the reply suggests other
   # sites' reviews of those lenses, through one link.
