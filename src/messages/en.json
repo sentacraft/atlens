@@ -925,8 +925,8 @@
     "customizeTitle": "Title",
     "customizeSlogan": "Slogan",
     "customizeSloganPlaceholder": "Add a personal note…",
-    "shareCtaMulti": "Comparing {count, number} lenses on Atlens",
-    "shareCtaSingle": "Looking at this lens on Atlens",
+    "shareCtaMulti": "Compared {count, number} lenses side by side on Atlens — specs and reference prices at a glance",
+    "shareCtaSingle": "Found this lens on Atlens: {name}",
     "copyFailed": "Copy failed",
     "shareFailed": "Share failed, please try again",
     "longImage": "Long image · scroll to preview, tap to enlarge"
@@ -1045,11 +1045,11 @@
     "supportIntegrity": "Affiliate links never affect rankings or price data. The code is open source if you want to check how it works. If you run into a broken link, a wrong model match, or a store issue, please <feedback>tell me</feedback> so I can fix it.",
     "supportDirectTitle": "Support Atlens directly",
     "ackTitle": "Acknowledgments",
-    "ackBody": "Before today's large language models and AI coding agents, I couldn't have built a project of this scope on my own — let alone shipped it in under a month. Those tools turned what would have stayed a rough idea in a notebook into something real.",
+    "ackBody": "Over the past year, large language models have moved faster than I expected. I could not have imagined completing a project at this scale on my own — let alone shipping it in under a month. Without large language models and AI coding agents, Atlens might have stayed an idea forever. It still feels remarkable that a spark of inspiration can actually become a real product in the hands of one developer.",
     "ackStory1Tag": "Claude Code",
-    "ackStory1Body": "Iris is Atlens's resident character — the aperture animation on the home page that opens and closes when you tap it.\n\nTo build it, Claude first studied diagrams and mechanics references for petal-shaped aperture blades before writing any code. The result is a three-body constraint kinematic model solving forward and inverse kinematics in real time, with the opening computed from arc-intersection geometry. I had no background in mechanism kinematics; Claude built the model from scratch.\n\nLike Clippy once sitting in the corner of Microsoft Office, Iris is more than an animation — it's the character that lives on the site and helps you pick a lens when you need one.",
+    "ackStory1Body": "Iris is Atlens's resident character — the aperture animation on the home page that opens and closes like a breath with each tap.\n\nBuilding Iris required Claude to first study the mechanical principles behind petal-shaped aperture blades — working through structural diagrams, motion logic, and kinematics references before writing a single line of code. What it produced is a genuine three-body constraint kinematic engine: forward and inverse kinematics solved analytically in real time, aperture openings computed from arc-intersection geometry. I had no background in mechanism kinematics; the entire system was built from scratch.\n\nIris is more than an animation. Like Clippy once sitting in the corner of Microsoft Office, Iris is Atlens's resident character — accompanying every visitor with a quiet personality of its own.",
     "ackStory2Tag": "Claude Design & Google Gemini",
-    "ackStory2Body": "Claude Design and Gemini shaped several key design decisions across the site. In the filter panel, Gemini clarified the interaction model for single- vs. multi-select controls so each one's behavior is obvious at a glance. On the lens list, it refined card layout and spacing across screen sizes. For the share poster, it steered the layout toward a clean, restrained look.\n\nAs an engineer, I can usually tell when a UI feels off without knowing why. Gemini gave me the vocabulary to diagnose what wasn't working and understand why a fix helped.",
+    "ackStory2Body": "Claude Design and Gemini shaped several key design decisions throughout the project. When building the filter panel, Gemini established the interaction language for single- and multi-select controls so a control's behavior is intuitive at first glance. On the lens list, it refined card layout and spacing across screen sizes, keeping the information hierarchy clear on every device. For the share poster, it pushed the design toward something genuinely clean, restrained, and visually considered.\n\nAs an engineer, I could feel when something in the design was off — but rarely knew why. Gemini gave me the vocabulary to diagnose design problems, and the understanding to know why the fix worked. The site reached a level of craft I couldn't have gotten to on my own.",
     "ackClaudeArchitect": "Architect",
     "ackClaudeEngineer": "Engineer",
     "ackGeminiDesigner": "Design Advisor",
@@ -1102,7 +1102,7 @@
     "cancel": "Cancel",
     "close": "Close",
     "success": "Got it, thanks",
-    "successBody": "I read every report and fix what I can.",
+    "successBody": "I read every report myself and update confirmed issues as soon as I can.",
     "error": "Something went wrong. Please try again in a bit.",
     "emailLabel": "Atlens official email",
     "editTitle": "Edit feedback",
@@ -1207,7 +1207,7 @@
     "reportIssue": "Report an issue",
     "mountLabel": "Fujifilm {mount}-Mount",
     "seoName": "{title} for Fujifilm {mount}",
-    "shareText": "Atlens collection: {title} ({mount})"
+    "shareText": "Found a {mount} “{title}” collection on Atlens"
   },
   "LensActions": {
     "favorite": "Favorite",

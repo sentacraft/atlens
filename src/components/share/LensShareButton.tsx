@@ -51,7 +51,9 @@ export function LensShareButton({
   const computedPosterTitle = computePosterTitle(lenses, tBrand, tImage);
   const effectiveTitle = titleOverride ?? presetTitle ?? "";
   const effectiveSlogan = sloganOverride ?? presetSubtitle ?? "";
-  const cta = isSingle ? t("shareCtaSingle") : t("shareCtaMulti", { count: lenses.length });
+  const cta = isSingle
+    ? t("shareCtaSingle", { name: lensDisplayName(brandLabel(tBrand, lenses[0].brand), lenses[0].series, lenses[0].model) })
+    : t("shareCtaMulti", { count: lenses.length });
 
   const posterLabels: PosterLabels = {
     appName: "Atlens",

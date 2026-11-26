@@ -925,8 +925,8 @@
     "customizeTitle": "标题",
     "customizeSlogan": "补充文案",
     "customizeSloganPlaceholder": "写一句你想加的话…",
-    "shareCtaMulti": "我在 Atlens 上对比了这 {count, number} 支镜头",
-    "shareCtaSingle": "我在 Atlens 上看到这支镜头",
+    "shareCtaMulti": "在 Atlens 上并排对比了这 {count, number} 支镜头，参数和参考价一目了然",
+    "shareCtaSingle": "在 Atlens 发现一支镜头：{name}",
     "copyFailed": "复制失败",
     "shareFailed": "分享失败，请重试",
     "longImage": "长图 · 上下滚动预览，点击放大"
@@ -1045,11 +1045,11 @@
     "supportIntegrity": "联盟合作不会影响排序和价格展示。Atlens 的代码是开源的，随时可以查看具体实现。如果遇到链接失效、型号对应错误或其他问题，欢迎<feedback>告诉我</feedback>，我会尽快处理。",
     "supportDirectTitle": "直接支持 Atlens",
     "ackTitle": "致谢",
-    "ackBody": "在今天的大语言模型和 AI Coding Agent 出现之前，我很难想象自己一个人能把这样一个项目从零搭起来，更不用说在不到一个月内上线。感谢这些工具，让很多原本只能停在笔记里的想法真正在我手里落了地。",
+    "ackBody": "过去这一年，大语言模型的发展快得超出想象。以前我很难想象仅凭一己之力就能完成如此规模的项目，更不敢奢望在不到一个月内将其落地。如果没有大语言模型和 AI Coding Agent，Atlens 可能永远只会停留在构想阶段。庆幸赶上了这个节点，让那些曾经只是灵感火花的想法，真的能在一个独立开发者手里变成现实。",
     "ackStory1Tag": "Claude Code",
-    "ackStory1Body": "Iris 是 Atlens 的小角色——首页那个点一下就会跟着张合的光圈动画。\n\n为了做出这个效果，Claude 先去查了花瓣状光圈叶片的机械结构资料和运动演示，理顺运动逻辑后才开始写代码，最后做成了一套实时解算的三体约束运动学模型，光圈开口的形状也按圆弧相交几何精确计算。我对机构运动学一窍不通，这套模型几乎完全是 Claude 从零写出来的。\n\n就像早年 Microsoft Office 角落里那个叫 Clippy 的回形针，Iris 不只是一段动画，也是 Atlens 里常驻的小角色——平时待在页面上，需要时陪你挑镜头。",
+    "ackStory1Body": "Iris 是 Atlens 的灵魂角色——首页那个随着点击呼吸张合的光圈动画。\n\n为了实现 Iris，Claude 研读了大量有关花瓣状光圈叶片机械结构的资料和教学视频，理清运动逻辑后才开始建模。最终做出来的是一套三体约束运动学引擎——实时解析正逆运动学方程，光圈开口由圆弧相交几何精确计算。我对机构运动学一窍不通，整套系统完全由 Claude 从零建模完成。\n\nIris 不仅仅是一段动画。就像早年 Microsoft Office 角落里那个叫 Clippy 的回形针，它是 Atlens 的灵魂角色，用一种安静而有个性的方式陪伴着每一位访客。",
     "ackStory2Tag": "Claude Design & Google Gemini",
-    "ackStory2Body": "Claude Design 和 Gemini 参与了这个项目里几处关键的设计决策。做筛选面板时，Gemini 帮我理清了单选和多选控件的交互方式，让人一眼就能分清各自的行为；在镜头列表页，它细化了不同屏幕尺寸下的卡片排布和留白，让信息层级更清楚；做分享海报时，也是它把版式收进了干净、克制的风格里。\n\n写代码的时候，我经常能感觉到界面「哪里不对」，但说不上来原因。Gemini 给了我拆解设计问题的语言，也让我弄明白为什么这样改会更好。",
+    "ackStory2Body": "Claude Design 和 Gemini 深度参与了这个项目几个关键节点的设计决策。在做筛选面板时，Gemini 帮我厘清了单选与多选的交互语言，让人在第一眼就能凭直觉判断一个控件的行为。在镜头列表的响应式布局中，它细化了不同屏幕尺寸下卡片的排布方式与视觉间距，让信息层级在任何设备上都保持清晰。在分享海报的设计中，它把那张海报推向了一个干净、克制、有美感的调性。\n\n作为工程师，我经常能感觉到界面「哪里不对」，却说不清为什么。Gemini 给了我诊断设计问题的语言，让我在修好问题的同时，也真正理解了背后的逻辑——知其然，也知其所以然。",
     "ackClaudeArchitect": "架构师",
     "ackClaudeEngineer": "工程师",
     "ackGeminiDesigner": "设计顾问",
@@ -1102,7 +1102,7 @@
     "cancel": "取消",
     "close": "关闭",
     "success": "已收到，谢谢反馈",
-    "successBody": "每一条我都会看，有空就来处理。",
+    "successBody": "每一条我都会认真看，确认后尽快更新。",
     "error": "提交时出了点问题，请稍后再试。",
     "emailLabel": "Atlens 官方邮箱",
     "editTitle": "修改反馈",
@@ -1207,7 +1207,7 @@
     "reportIssue": "反馈问题",
     "mountLabel": "富士 {mount} 卡口",
     "seoName": "富士 {mount} 卡口{title}",
-    "shareText": "Atlens 合集：{title}（{mount}）"
+    "shareText": "在 Atlens 翻到一份{mount}「{title}」合集"
   },
   "LensActions": {
     "favorite": "收藏",

@@ -1,7 +1,7 @@
 # Writing collection and brand copy
 
 `collections.json` and `brands.json` are hand-written, and the catalog keeps growing under them.
-Follow [docs/copy-style.md](../../docs/copy-style.md) for voice and formatting, and write copy that stays true as lenses are added:
+Write copy that stays true as lenses are added:
 
 - Describe the brand or theme: its character, positioning and what sets its lenses apart. Lens
   counts already appear in lines generated from the data.
