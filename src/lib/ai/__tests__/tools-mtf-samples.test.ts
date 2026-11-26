@@ -5,7 +5,7 @@ import { lensRef } from "../lens-ref";
 
 const sampled = vi.hoisted(() => ({
   axis: "image height, mm",
-  series: [{ frequency: "15 lines/mm", x: [14], curves: [{ name: "S", values: [0.64] }] }],
+  series: [{ frequency: { value: 15, unit: "lines/mm" }, x: [14], curves: [{ name: "S", values: [0.64] }] }],
 }));
 // Every chart of every lens has readings, so what reaches the model shows which charts were asked about.
 vi.mock("@/lib/lens/mtf-samples", () => ({ getMtfSamples: () => sampled }));

@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import type { z } from "zod";
 
 import { formatZodIssues, lensCatalogSchema } from "../src/lib/lens/schema.ts";
-import { mtfSamplesSchema, orphanedMtfSamples } from "../src/lib/lens/mtf-samples-schema.ts";
+import { mtfSampleConflicts, mtfSamplesSchema, orphanedMtfSamples } from "../src/lib/lens/mtf-samples-schema.ts";
 
 const catalogPaths = ["src/data/lenses.json", "src/data/lenses-gfx.json"];
 
@@ -38,10 +38,19 @@ if (!samples.success) {
   failed = true;
 } else if (!failed) {
   const orphans = orphanedMtfSamples(samples.data, lenses);
+  const conflicts = mtfSampleConflicts(samples.data, lenses);
   if (orphans.length) {
     console.error(`MTF samples name charts the catalog does not have: ${orphans.join(", ")}`);
     failed = true;
-  } else {
+  }
+  if (conflicts.length) {
+    console.error(`MTF samples contradict the catalog's image metadata for ${samplesPath}`);
+    for (const conflict of conflicts) {
+      console.error(`- ${conflict}`);
+    }
+    failed = true;
+  }
+  if (!orphans.length && !conflicts.length) {
     console.log(`MTF samples validation passed for ${samplesPath}`);
   }
 }
