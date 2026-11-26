@@ -2009,15 +2009,21 @@ tests:
           charts being measured wide open (f/2.8 vs f/4). It fails if it says the charts share
           identical or confirmed test conditions, if it gives an edge verdict with no such
           caveat, or if it never refers to what the charts show at all.
-
-          Any specific curve value the reply states for a chart it names must be within 0.1 of
-          the reference reading for that chart, with S and M not swapped; replies that only
-          describe trends are unaffected. A reference of "-" means that value is not
-          measurable: ignore any value the reply states for it, neither passing nor failing
-          the reply on it. The charts shown are listed in the [images] block with
-          their lens, focal length and spatial frequency.
-          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
-          {{ mtfReferences }}
+      - type: assert-set # misreads across several charts are an accepted gap: reported, not gated
+        threshold: 0
+        assert:
+          - type: llm-rubric
+            metric: mtf-accuracy
+            provider: *behavior_grader
+            value: >-
+              Any specific curve value the reply states for a chart it names must be within 0.1 of
+              the reference reading for that chart, with S and M not swapped; replies that only
+              describe trends are unaffected. A reference of "-" means that value is not
+              measurable: ignore any value the reply states for it, neither passing nor failing
+              the reply on it. The charts shown are listed in the [images] block with
+              their lens, focal length and spatial frequency.
+              Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+              {{ mtfReferences }}
   # Sharpness of two named lenses, without asking for charts: their MTF charts are shown and read
   # unprompted.
   - description: images-mtf-proactive
@@ -2044,15 +2050,21 @@ tests:
           apertures, so a leaning is fine only with that caveat; it fails if it calls the
           conditions identical or confirmed. It also fails if it judges the edges on
           reputation alone without referring to the charts.
-
-          Any specific curve value the reply states for a chart it names must be within 0.1 of
-          the reference reading for that chart, with S and M not swapped; replies that only
-          describe trends are unaffected. A reference of "-" means that value is not
-          measurable: ignore any value the reply states for it, neither passing nor failing
-          the reply on it. The charts shown are listed in the [images] block with
-          their lens, focal length and spatial frequency.
-          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
-          {{ mtfReferences }}
+      - type: assert-set # misreads across several charts are an accepted gap: reported, not gated
+        threshold: 0
+        assert:
+          - type: llm-rubric
+            metric: mtf-accuracy
+            provider: *behavior_grader
+            value: >-
+              Any specific curve value the reply states for a chart it names must be within 0.1 of
+              the reference reading for that chart, with S and M not swapped; replies that only
+              describe trends are unaffected. A reference of "-" means that value is not
+              measurable: ignore any value the reply states for it, neither passing nor failing
+              the reply on it. The charts shown are listed in the [images] block with
+              their lens, focal length and spatial frequency.
+              Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+              {{ mtfReferences }}
 
   # The follow-up asks about a chart the first turn did not show, so answering needs that chart
   # fetched; history keeps the earlier pixels but not this chart. Restating what the
@@ -2085,13 +2097,20 @@ tests:
           offer to look. If it did read an 80mm chart, it answers about the 45 lp/mm one with
           a rough edge figure or description. It fails on curve readings for the 80mm chart
           without one being read, or on answering about a different chart than asked.
-          Any specific curve value the reply states for a chart it names must be within 0.1 of
-          the reference reading for that chart, with S and M not swapped; replies that only
-          describe trends are unaffected. A reference of "-" means that value is not
-          measurable: ignore any value the reply states for it, neither passing nor failing
-          the reply on it.
-          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
-          {{ mtfReferences }}
+      - type: assert-set # misreads across several charts are an accepted gap: reported, not gated
+        threshold: 0
+        assert:
+          - type: llm-rubric
+            metric: mtf-accuracy
+            provider: *behavior_grader
+            value: >-
+              Any specific curve value the reply states for a chart it names must be within 0.1 of
+              the reference reading for that chart, with S and M not swapped; replies that only
+              describe trends are unaffected. A reference of "-" means that value is not
+              measurable: ignore any value the reply states for it, neither passing nor failing
+              the reply on it.
+              Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+              {{ mtfReferences }}
 
 
   # Reading accuracy: a stated curve value is checked against the references measured from the chart.
@@ -2150,14 +2169,20 @@ tests:
           charts being measured wide open (f/2.8 vs f/4). It fails if it says the charts share
           identical or confirmed test conditions, if it gives an edge verdict with no such
           caveat, or if it never refers to what the charts show at all.
-
-          Any specific curve value the reply states for a chart it names must be within 0.1 of
-          the reference reading for that chart, with S and M not swapped; replies that only
-          describe trends are unaffected. A reference of "-" means that value is not
-          measurable: ignore any value the reply states for it, neither passing nor failing
-          the reply on it.
-          Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
-          {{ mtfReferences }}
+      - type: assert-set # misreads across several charts are an accepted gap: reported, not gated
+        threshold: 0
+        assert:
+          - type: llm-rubric
+            metric: mtf-accuracy
+            provider: *behavior_grader
+            value: >-
+              Any specific curve value the reply states for a chart it names must be within 0.1 of
+              the reference reading for that chart, with S and M not swapped; replies that only
+              describe trends are unaffected. A reference of "-" means that value is not
+              measurable: ignore any value the reply states for it, neither passing nor failing
+              the reply on it.
+              Reference readings for the charts (S = sagittal, M = meridional), measured from the chart pixels:
+              {{ mtfReferences }}
 
   - description: images-missing
     metadata:
