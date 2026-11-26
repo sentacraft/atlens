@@ -1,7 +1,7 @@
 // Regression: the hero once grew past the viewport and pushed its actions out of the first screen.
 // The featured collections may fall below the fold on short screens; the actions must not.
 
-import { type Page, test, expect } from "./support/test";
+import { type Page, test, expect } from "@playwright/test";
 
 async function simulateNotch(page: Page) {
   await page.addStyleTag({

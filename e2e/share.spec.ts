@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "./support/test";
+import { test, expect, type Page } from "@playwright/test";
 import { datedLenses, sigmaLenses, sigmaYears, stillsBrands, stillsLenses, yearSpan } from "./support/chart-catalog";
 
 const englishNumber = new Intl.NumberFormat("en");

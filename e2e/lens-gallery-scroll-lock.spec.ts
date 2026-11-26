@@ -1,4 +1,4 @@
-import { expect, test } from "./support/test";
+import { expect, test } from "@playwright/test";
 
 test.use({ viewport: { width: 1200, height: 900 }, launchOptions: { ignoreDefaultArgs: ["--hide-scrollbars"] } });
 

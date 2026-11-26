@@ -17,20 +17,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  remote:
-    if: vars.CF_PREVIEW_VALIDATION == 'true' && (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'text-fit-check'))
-    permissions:
-      contents: read
-      actions: read
-      checks: write
-    uses: ./.github/workflows/preview-validation.yml
-    with:
-      revision: ${{ github.event.pull_request.head.sha || '' }}
-    secrets: inherit
-
   playwright-version:
     name: Resolve Playwright image
-    if: vars.CF_PREVIEW_VALIDATION != 'true' && (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'text-fit-check'))
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'text-fit-check')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:

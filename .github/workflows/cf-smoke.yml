@@ -1,6 +1,14 @@
 name: CF Runtime Smoke
 
-# Retained only until the Cloudflare Preview cutover in docs/remote-verification.md.
+# The only gate that exercises the ACTUAL deploy runtime (Cloudflare workerd via
+# OpenNext) before production. `next build` and `next start` cannot see this
+# class of bug: PR #397 set dynamicParams=false, which serves fine under
+# `next start` but 404s every detail page on workerd. This job builds the
+# OpenNext bundle, boots it on local workerd via `wrangler dev`, and smoke-tests
+# one canary URL per route template — the same script the cron uptime check uses.
+#
+# Heavier than the main CI (full next build + opennext transform + workerd boot),
+# so it lives in its own workflow.
 
 on:
   pull_request:
@@ -13,6 +21,7 @@ concurrency:
 
 jobs:
   smoke:
+    # Replaced by preview-smoke.yml at the cutover in docs/remote-verification.md.
     if: vars.CF_PREVIEW_VALIDATION != 'true'
     name: OpenNext / workerd smoke test
     runs-on: ubuntu-latest
@@ -38,7 +47,11 @@ jobs:
           LENS_CATALOG_TOKEN: ${{ secrets.LENS_CATALOG_TOKEN }}
 
       - name: Build for Cloudflare (OpenNext)
-        # The temporary baseline needs only local output, not a deployment or notification.
+        # `opennextjs-cloudflare build` directly, NOT `pnpm run build:cf` — the
+        # latter ends in `populateCache remote`, which uploads to the live
+        # Cloudflare account and needs credentials we don't (and shouldn't) have
+        # in CI. The static-assets incremental cache ships its assets with the
+        # build, so local workerd serves them without the remote populate.
         run: pnpm exec opennextjs-cloudflare build
 
       - name: Boot workerd and smoke-test canaries

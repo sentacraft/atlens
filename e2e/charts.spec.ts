@@ -1,4 +1,4 @@
-import { test, expect } from "./support/test";
+import { test, expect } from "@playwright/test";
 import { datedLenses, sigmaLenses, sigmaYears, stillsBrands, stillsLenses, yearSpan } from "./support/chart-catalog";
 
 const TIMELINE = "/en/lenses/x/charts/timeline";

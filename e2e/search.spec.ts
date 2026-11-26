@@ -1,4 +1,4 @@
-import { test, expect } from "./support/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("Lens search dialog", () => {
   test.beforeEach(async ({ page }) => {

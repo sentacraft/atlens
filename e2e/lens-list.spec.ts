@@ -1,4 +1,4 @@
-import { test, expect } from "./support/test";
+import { test, expect } from "@playwright/test";
 import { LENS_CARD_LINK, selectBrandFilter } from "./helpers";
 
 const RESULT_COUNT_RE = /\d+ (lenses|支镜头)/;

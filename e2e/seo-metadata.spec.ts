@@ -1,4 +1,4 @@
-import { expect, test } from "./support/test";
+import { expect, test } from "@playwright/test";
 
 // Regression: prerendered pages resolved metadataBase at build time, where Workers Builds
 // has no SITE_URL, so every og:image pointed at http://localhost:3000.

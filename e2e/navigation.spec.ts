@@ -1,4 +1,4 @@
-import { test, expect } from "./support/test";
+import { test, expect } from "@playwright/test";
 
 test.describe("Navigation", () => {
   test("home page loads and CTA links to lenses", async ({ page }, testInfo) => {

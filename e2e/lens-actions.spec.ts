@@ -1,4 +1,4 @@
-import { test, expect } from "./support/test";
+import { test, expect } from "@playwright/test";
 
 // Every page that lists lenses as items to browse gives each one both favorite and compare.
 const PAGES = [

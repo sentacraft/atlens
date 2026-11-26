@@ -3,44 +3,39 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { deploymentFromOutput, inputHashes, parseBuildRecord, parseVerification, repository } from "./preview-contract.mts";
-import { buildRecordPath } from "./prepare-preview.mts";
+import { deploymentFromOutput, dispatchType, parseTarget, repository } from "./preview-target.mts";
 
-type Run = (args: string[], env: Record<string, string | undefined>) => void;
+type Env = Record<string, string | undefined>;
+type Run = (args: string[], env: Env) => void;
 
-export async function publishPreview({ root = process.cwd(), env = process.env,
-  run = (args: string[], childEnv: Record<string, string | undefined>) => {
-    execFileSync("pnpm", args, { cwd: root, env: { ...process.env, ...childEnv }, stdio: "inherit" });
-  }, send = fetch,
-}: { root?: string; env?: Record<string, string | undefined>; run?: Run; send?: typeof fetch } = {}) {
-  if (!env.PREVIEW_DISPATCH_TOKEN || !env.WORKERS_CI_BRANCH || env.WORKERS_CI_BRANCH === "main") {
+const pnpm: Run = (args, env) => {
+  execFileSync("pnpm", args, { env: { ...process.env, ...env }, stdio: "inherit" });
+};
+
+export async function publishPreview({ env = process.env, run = pnpm, send = fetch }:
+  { env?: Env; run?: Run; send?: typeof fetch } = {}) {
+  const { PREVIEW_DISPATCH_TOKEN: token, WORKERS_CI_BRANCH: branch, WORKERS_CI_COMMIT_SHA: sha } = env;
+  if (!token || !branch || branch === "main" || !sha) {
     throw new Error("Preview publishing requires a non-production Cloudflare build and PREVIEW_DISPATCH_TOKEN");
-  }
-  const build = parseBuildRecord(JSON.parse(readFileSync(path.join(root, buildRecordPath), "utf8")));
-  const head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
-  const inputs = inputHashes(readFileSync(path.join(root, "pnpm-lock.yaml")), readFileSync(path.join(root, "src/data/catalog-source.json")));
-  if (build.sha !== head || build.sha !== env.WORKERS_CI_COMMIT_SHA || build.branch !== env.WORKERS_CI_BRANCH ||
-      build.buildId !== env.WORKERS_CI_BUILD_UUID || JSON.stringify(build.inputs) !== JSON.stringify(inputs)) {
-    throw new Error("Refusing stale or mismatched Preview build output");
   }
   const temporary = mkdtempSync(path.join(tmpdir(), "preview-publish-"));
   try {
     const output = path.join(temporary, "wrangler.jsonl");
     run(["run", "d1:migrate:previews"], env);
-    run(["exec", "wrangler", "preview", "--name", build.branch, "--tag", build.sha, "--json"], {
+    run(["exec", "wrangler", "preview", "--name", branch, "--tag", sha, "--json"], {
       ...env, WRANGLER_OUTPUT_FILE_PATH: output,
     });
-    const record = parseVerification({ ...build, ...deploymentFromOutput(readFileSync(output, "utf8")) });
+    const target = parseTarget({ sha, ...deploymentFromOutput(readFileSync(output, "utf8")) });
     const response = await send(`https://api.github.com/repos/${repository}/dispatches`, {
       method: "POST", redirect: "error", signal: AbortSignal.timeout(20_000),
-      headers: { Authorization: `Bearer ${env.PREVIEW_DISPATCH_TOKEN}`, Accept: "application/vnd.github+json",
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28", "Content-Type": "application/json" },
-      body: JSON.stringify({ event_type: "cloudflare_preview_ready", client_payload: record }),
+      body: JSON.stringify({ event_type: dispatchType, client_payload: target }),
     });
     if (response.status !== 204) {
       throw new Error(`Preview deployed, but verification notification failed (HTTP ${response.status}); no test success was recorded`);
     }
-    return record;
+    return target;
   } finally {
     rmSync(temporary, { recursive: true, force: true });
   }

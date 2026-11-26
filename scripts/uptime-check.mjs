@@ -4,11 +4,8 @@
 // Used by .github/workflows/uptime.yml (prod) and cf-smoke.yml (local workerd).
 import { readFileSync } from "node:fs";
 import { oneEachTemplate } from "./lib/route-templates.mjs";
-import { readVerification, previewHeaders } from "./ci/preview-contract.mts";
 
-const verification = process.env.PREVIEW_VERIFICATION_FILE
-  ? readVerification(process.env.PREVIEW_VERIFICATION_FILE) : undefined;
-const rawBase = verification?.baseUrl ?? process.env.BASE_URL;
+const rawBase = process.env.BASE_URL;
 if (!rawBase) {
   console.error(
     "✗ BASE_URL is required (e.g. https://atlens.app or http://localhost:8787).\n" +
@@ -65,9 +62,9 @@ async function fetchText(url) {
     const timer = setTimeout(() => ac.abort(), TIMEOUT_MS);
     try {
       const res = await fetch(url, {
-        redirect: verification ? "manual" : "follow",
+        redirect: "follow",
         signal: ac.signal,
-        headers: { "user-agent": "atlens-uptime-check", ...(verification ? previewHeaders(verification, url) : {}) },
+        headers: { "user-agent": "atlens-uptime-check" },
       });
       const body = await res.text();
 
@@ -163,10 +160,8 @@ async function main() {
     process.exit(1);
   }
 
-  let targets = verification?.paths ?? paths;
-  if (verification) {
-    console.log(`Probing ${targets.length} routes from deployment ${verification.deploymentId}…\n`);
-  } else if (manifestPath) {
+  let targets = paths;
+  if (manifestPath) {
     targets = oneEachTemplate(paths, JSON.parse(readFileSync(manifestPath, "utf8")));
     console.log(`Probing ${targets.length} of ${paths.length} URLs, one per route template (concurrency ${CONCURRENCY})…\n`);
   } else if (sampleSize !== null && sampleSize < paths.length) {

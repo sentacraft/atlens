@@ -1,4 +1,4 @@
-import { expect, test } from "./support/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("account access", () => {
   test("opens the sign-in dialog from the navigation", async ({ page }) => {

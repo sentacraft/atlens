@@ -1,6 +1,6 @@
 // Overrides the --safe-inset-* variables to simulate a notch; real devices supply env().
 
-import { type Page, test, expect } from "./support/test";
+import { type Page, test, expect } from "@playwright/test";
 
 const NOTCH_TOP = 59; // Dynamic Island region height
 const HOME_BAR = 34; // home indicator bar height

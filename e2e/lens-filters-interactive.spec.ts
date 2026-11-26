@@ -1,4 +1,4 @@
-import { test, expect } from "./support/test";
+import { test, expect } from "@playwright/test";
 import { LENS_CARD_LINK, openSecondaryFilters, selectBrandFilter } from "./helpers";
 
 test.describe("Focal range filter", () => {

@@ -1,0 +1,99 @@
+name: Cloudflare Preview smoke
+
+# Cloudflare builds and deploys a branch Preview, then dispatches its fixed deployment URL here.
+# Activation and cutover: docs/remote-verification.md.
+
+on:
+  repository_dispatch:
+    types: [cloudflare_preview_ready]
+
+# Two deployments of one commit would otherwise race for the same commit status.
+concurrency:
+  group: preview-smoke-${{ github.event.client_payload.sha }}
+
+permissions:
+  contents: read
+
+env:
+  STATUS_CONTEXT: Cloudflare Preview smoke
+  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+jobs:
+  target:
+    name: Validate the dispatched deployment
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      statuses: write
+    outputs:
+      sha: ${{ steps.target.outputs.sha }}
+      base_url: ${{ steps.target.outputs.base_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - id: target
+        run: node --experimental-strip-types scripts/ci/preview-target.mts
+
+      # A dispatch run is attached to the default branch, so the result has to be written to the
+      # deployed commit explicitly.
+      - name: Mark the deployed commit pending
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.target.outputs.sha }}
+          BASE_URL: ${{ steps.target.outputs.base_url }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$SHA" -f state=pending \
+            -f context="$STATUS_CONTEXT" -f target_url="$RUN_URL" -f description="Probing $BASE_URL"
+
+  smoke:
+    name: Probe the deployment
+    needs: target
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.target.outputs.sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Smoke-test every sitemap route
+        run: node scripts/uptime-check.mjs
+        env:
+          BASE_URL: ${{ needs.target.outputs.base_url }}
+
+      - name: SSG cache behavior
+        run: node scripts/check-cache-headers.mjs
+        env:
+          BASE_URL: ${{ needs.target.outputs.base_url }}
+
+  report:
+    name: Report on the deployed commit
+    if: ${{ always() && needs.target.outputs.sha != '' }}
+    needs: [target, smoke]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      statuses: write
+    steps:
+      - name: Set the final commit status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ needs.target.outputs.sha }}
+          BASE_URL: ${{ needs.target.outputs.base_url }}
+          RESULT: ${{ needs.smoke.result }}
+        run: |
+          state=failure
+          if [ "$RESULT" = success ]; then state=success; fi
+          gh api "repos/$GITHUB_REPOSITORY/statuses/$SHA" -f state="$state" \
+            -f context="$STATUS_CONTEXT" -f target_url="$RUN_URL" -f description="Smoke $RESULT: $BASE_URL"

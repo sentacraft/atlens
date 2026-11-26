@@ -1,4 +1,4 @@
-import { expect, test } from "./support/test";
+import { expect, test } from "@playwright/test";
 import { LENS_CARD_LINK, irisToggle } from "./helpers";
 
 test.describe("Ask Iris side panel", () => {

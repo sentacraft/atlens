@@ -1,6 +1,6 @@
 // Regression: iOS Safari linked the profile's email (and phone-like numbers) by itself.
 
-import { expect, test } from "./support/test";
+import { expect, test } from "@playwright/test";
 
 test("tells iOS not to turn emails, numbers or addresses into links", async ({ page }) => {
   await page.goto("/en/me");

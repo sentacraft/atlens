@@ -326,7 +326,7 @@ Open [http://localhost:3000](http://localhost:3000). Browsing, filtering, and co
 | Ask Iris | `BETTER_AUTH_SECRET`, `ANALYTICS_ID_SECRET`, and the model key named in `.env.example` |
 | Feedback form | `GITHUB_TOKEN` and `GITHUB_FEEDBACK_REPO` |
 
-`pnpm run preview` builds and serves a local workerd baseline for explicit diagnosis. Normal remote verification builds once on Cloudflare, then runs probes and browsers against the fixed deployment. Activation, migration gates and test safety are documented in [Remote verification](docs/remote-verification.md).
+`pnpm run preview` builds and serves the app on the real Cloudflare Workers runtime (workerd), which catches issues `next dev` can't.
 
 Optional coding-agent skills: install Skillshare CLI, then run `skillshare install -p` and `skillshare sync -p` from the checkout root.
 
