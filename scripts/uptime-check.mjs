@@ -3,6 +3,7 @@
 // per-request compare page and the Ask Iris page.
 // Used by .github/workflows/uptime.yml (prod) and cf-smoke.yml (local workerd).
 import { readFileSync } from "node:fs";
+import { renderErrorDigest } from "./lib/render-error.mjs";
 import { oneEachTemplate } from "./lib/route-templates.mjs";
 
 const rawBase = process.env.BASE_URL;
@@ -101,7 +102,9 @@ async function sitemapPaths() {
   return paths;
 }
 
-// The closing </html> catches a 200 that streamed a broken shell.
+// A 200 proves little for a streamed page: the status is sent before rendering finishes, so a later
+// throw only shows up in the body (https://github.com/vercel/next.js/pull/56236). The closing </html>
+// catches a truncated shell, the error digest a page that failed to render.
 async function check(path) {
   const url = `${BASE_URL}${path}`;
   try {
@@ -113,6 +116,11 @@ async function check(path) {
       JSON.parse(body);
     } else if (!/<\/html>/i.test(body)) {
       return { path, reason: "no </html> — empty/broken render" };
+    } else {
+      const digest = renderErrorDigest(body);
+      if (digest) {
+        return { path, reason: `server render error, digest ${digest}` };
+      }
     }
     return null;
   } catch (err) {
