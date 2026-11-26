@@ -276,6 +276,8 @@ function capRefs(refs: string[], limit: number): { kept: string[]; notReturned?:
 // providers (Qwen, GLM, OpenRouter) take no per-image option and fetch the URL as is.
 const IMAGE_READING_OPTIONS = { deepseek: { imageDetail: "original" }, openai: { imageDetail: "high" } };
 
+const MTF_READING = "Read a chart only from curves you can make out: match each legend entry to a visible curve by colour and line style, with its frequency, aperture and S/M, and say so when an entry matches no visible curve. Read values against the gridlines to about 0.05, each tied to its series. For the edge or corners, read the right end of the curve and any dip or rise before it.";
+
 export function buildLensTools(
   mount: Mount,
   locale: string,
@@ -506,8 +508,8 @@ export function buildLensTools(
           ...metadata,
           ...(hasMtf ? {
             mtfNote: output.mtfGroups
-              ? "Interpret only legible curves. mtfGroups governs how the charts may be compared: values within a group as its level allows, only curve shapes between groups."
-              : "Interpret only legible curves. If a chart does not state its test conditions, say so when it affects the answer.",
+              ? `${MTF_READING} mtfGroups governs how the charts may be compared: values within a group as its level allows, only curve shapes between groups.`
+              : `${MTF_READING} If a chart does not state its test conditions, say so when it affects the answer.`,
           } : {}),
         };
         return {
