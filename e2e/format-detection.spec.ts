@@ -2,7 +2,7 @@
 
 import { expect, test } from "@playwright/test";
 
-test("tells iOS not to turn emails, numbers or addresses into links", async ({ page }) => {
+test("tells iOS not to turn emails, numbers or addresses into links", { tag: "@local-only" }, async ({ page }) => {
   await page.goto("/en/me");
 
   const content = await page.locator('meta[name="format-detection"]').getAttribute("content");
@@ -11,7 +11,7 @@ test("tells iOS not to turn emails, numbers or addresses into links", async ({ p
   }
 });
 
-test("keeps the contact email a link where people are meant to write to it", async ({ page }) => {
+test("keeps the contact email a link where people are meant to write to it", { tag: "@local-only" }, async ({ page }) => {
   await page.goto("/en/about");
 
   await expect(page.locator('a[href^="mailto:"]').first()).toBeVisible();

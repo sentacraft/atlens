@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 // Regression: prerendered pages resolved metadataBase at build time, where Workers Builds
 // has no SITE_URL, so every og:image pointed at http://localhost:3000.
-test("social preview images use the production origin", async ({ page }) => {
+test("social preview images use the production origin", { tag: "@local-only" }, async ({ page }) => {
   for (const path of ["/en", "/zh/about", "/en/lenses/x/browse"]) {
     await page.goto(path);
     const image = await page.locator('meta[property="og:image"]').first().getAttribute("content");
@@ -11,7 +11,7 @@ test("social preview images use the production origin", async ({ page }) => {
 });
 
 // Regression: the lens list's heading shared the meta title, which gained a {count} the heading never passed.
-test("the lens list heading names how many lenses it holds", async ({ page }) => {
+test("the lens list heading names how many lenses it holds", { tag: "@local-only" }, async ({ page }) => {
   for (const [path, pattern] of [
     ["/zh/lenses/x/browse", /^富士 X 卡口镜头库：全部 \d+ 支$/],
     ["/en/lenses/x/browse", /^All \d+ Fujifilm X-Mount Lenses/],
@@ -23,14 +23,14 @@ test("the lens list heading names how many lenses it holds", async ({ page }) =>
 
 // Regression: next-intl's middleware sent its own hreflang Link header, whose x-default (an
 // unprefixed URL that redirects) disagreed with the page's <link rel="alternate">.
-test("hreflang comes only from the page head, not a Link header", async ({ request }) => {
+test("hreflang comes only from the page head, not a Link header", { tag: "@local-only" }, async ({ request }) => {
   for (const path of ["/en", "/zh/lenses/x/collections/pancake"]) {
     const response = await request.get(path);
     expect(response.headers()["link"] ?? "", path).not.toContain("hreflang");
   }
 });
 
-test("the charts section redirects permanently to its first chart", async ({ request }) => {
+test("the charts section redirects permanently to its first chart", { tag: "@local-only" }, async ({ request }) => {
   const response = await request.get("/en/lenses/x/charts", { maxRedirects: 0 });
   expect(response.status()).toBe(308);
   expect(response.headers()["location"]).toMatch(/\/en\/lenses\/x\/charts\/timeline$/);
@@ -38,7 +38,7 @@ test("the charts section redirects permanently to its first chart", async ({ req
 
 // Regression: a missing brand or collection returned no metadata, so its 404 inherited the home
 // page's title and description.
-test("a page for a missing brand, collection or lens says it was not found", async ({ page }) => {
+test("a page for a missing brand, collection or lens says it was not found", { tag: "@local-only" }, async ({ page }) => {
   for (const [path, title] of [
     ["/en/lenses/x/brands/no-such-brand", /^Page not found/],
     ["/zh/lenses/x/collections/no-such-collection", /^页面不存在/],

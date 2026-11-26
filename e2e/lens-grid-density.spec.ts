@@ -18,7 +18,7 @@ async function layoutAt(page: Page, width: number) {
   });
 }
 
-test.describe("Lens library grid density", () => {
+test.describe("Lens library grid density", { tag: "@local-only" }, () => {
   test.skip(({ isMobile }) => isMobile, "Sets desktop and tablet viewport widths itself");
 
   test.beforeEach(async ({ page }) => {

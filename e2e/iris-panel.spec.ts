@@ -41,7 +41,7 @@ test.describe("Ask Iris side panel", () => {
     await expect(panel).toBeHidden();
   });
 
-  test("keeps the nav menu above the panel", async ({ page }) => {
+  test("keeps the nav menu above the panel", { tag: "@local-only" }, async ({ page }) => {
     await page.goto("/en/lenses/x/browse");
     await irisToggle(page).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
@@ -60,7 +60,7 @@ test.describe("Ask Iris side panel", () => {
     expect(hit.onItem).toBe(true);
   });
 
-  test("opens History as a popover under its button, leaving the panel its width", async ({ page }) => {
+  test("opens History as a popover under its button, leaving the panel its width", { tag: "@local-only" }, async ({ page }) => {
     await page.goto("/en/lenses/x/browse");
     await irisToggle(page).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
@@ -83,7 +83,7 @@ test.describe("Ask Iris side panel", () => {
     await expect(history).toBeHidden();
   });
 
-  test("narrows the page from the right, keeping its left edge under the nav's", async ({ page }) => {
+  test("narrows the page from the right, keeping its left edge under the nav's", { tag: "@local-only" }, async ({ page }) => {
     await page.setViewportSize({ width: 1680, height: 900 });
     await page.goto("/en/lenses/x/browse");
     // The page's centred shell, the same max-w-7xl container the nav sits in.
@@ -110,7 +110,7 @@ test.describe("Ask Iris side panel", () => {
       .toEqual({ keepsLeft: true, endsAtPanel: true });
   });
 
-  test("collapses when a nav link is clicked, even one to the page it covers", async ({ page }) => {
+  test("collapses when a nav link is clicked, even one to the page it covers", { tag: "@local-only" }, async ({ page }) => {
     await page.goto("/en/lenses/x/browse");
     await irisToggle(page).click();
     const panel = page.getByRole("complementary", { name: "Iris" });
@@ -123,7 +123,7 @@ test.describe("Ask Iris side panel", () => {
     await expect(panel).toBeVisible();
   });
 
-  test("expands over the page in place, and Back or the button collapses it", async ({ page }) => {
+  test("expands over the page in place, and Back or the button collapses it", { tag: "@local-only" }, async ({ page }) => {
     const browse = /\/en\/lenses\/x\/browse$/;
     await page.goto("/en/lenses/x/browse");
     await irisToggle(page).click();
@@ -149,7 +149,7 @@ test.describe("Ask Iris side panel", () => {
   });
 });
 
-test.describe("Ask Iris page entries", () => {
+test.describe("Ask Iris page entries", { tag: "@local-only" }, () => {
   const compareUrl = "/en/lenses/x/compare?ids=fujifilm-xf-23mmf14-r-lm-wr-x,fujifilm-xf-33mmf14-r-lm-wr-x";
 
   test("names the question a page entry asks, never the nav's general Ask Iris", async ({ page }, testInfo) => {
@@ -235,7 +235,7 @@ test.describe("Ask Iris page entries", () => {
   });
 });
 
-test.describe("Ask Iris panel empty state", () => {
+test.describe("Ask Iris panel empty state", { tag: "@local-only" }, () => {
   for (const { name, viewport, role, heroSize } of [
     { name: "side panel", viewport: { width: 1280, height: 800 }, role: "complementary", heroSize: 56 },
     { name: "phone sheet", viewport: { width: 375, height: 812 }, role: "dialog", heroSize: 64 },

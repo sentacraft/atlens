@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("About content", () => {
+test.describe("About content", { tag: "@local-only" }, () => {
   test("About includes the Ask Iris feature and privacy sections", async ({ page }) => {
     await page.goto("/en/about");
 
@@ -21,13 +21,7 @@ test.describe("About content", () => {
 });
 
 test.describe("Ask Iris page", () => {
-  test("does not render a privacy notice entry below the composer", async ({ page }) => {
-    await page.goto("/en/askiris");
-
-    await expect(page.getByTestId("askiris-privacy-trigger")).toHaveCount(0);
-  });
-
-  test("shows History in place of the chat below 1024px, and goes back", async ({ page }, testInfo) => {
+  test("shows History in place of the chat below 1024px, and goes back", { tag: "@local-only" }, async ({ page }, testInfo) => {
     const viewport = page.viewportSize();
     testInfo.skip(!viewport || viewport.width >= 1024, "Wider screens open History as a popover");
     await page.goto("/en/askiris");

@@ -49,21 +49,6 @@ test.describe("Lens viewer safe area", () => {
 const LENS_A = "fujifilm-mkx-18-55mmt29-x";
 const LENS_B = "fujifilm-mkx-50-135mmt29-x";
 
-test.describe("Nav top inset", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/en/lenses");
-    await page.waitForLoadState("networkidle");
-    await simulateNotch(page);
-  });
-
-  test("nav paddingTop equals --safe-inset-top when --titlebar-height is 0", async ({ page }) => {
-    // No WCO in an iPhone standalone PWA, so --titlebar-height stays 0.
-    const paddingTop = await computedPx(page, "header", "padding-top");
-    expect(paddingTop).toBe(NOTCH_TOP);
-  });
-
-});
-
 test.describe("Compare phantom header top inset", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(`/en/lenses/x/compare?ids=${LENS_A},${LENS_B}`);
@@ -79,27 +64,37 @@ test.describe("Compare phantom header top inset", () => {
 
 const TAB_BAR = 60; // the phone tab bar above the home indicator
 
-test.describe("Tab bar and compare bar bottom inset", () => {
+test.describe("Lens list insets", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/en/lenses");
     await page.waitForLoadState("networkidle");
     await simulateNotch(page);
   });
 
-  test("the tab bar pads the home indicator and stands that much taller", async ({ page }) => {
+  test("the nav, tab bar, page body and compare bar clear the notch and home indicator", async ({ page }) => {
+    // No WCO in an iPhone standalone PWA, so --titlebar-height stays 0.
+    expect(await computedPx(page, "header", "padding-top")).toBe(NOTCH_TOP);
+
     const tabBar = page.getByRole("navigation", { name: "Main" });
     await expect(tabBar).toBeVisible();
-    const { paddingBottom, height, bottom } = await tabBar.evaluate((el) => ({
+    const tab = await tabBar.evaluate((el) => ({
       paddingBottom: parseFloat(getComputedStyle(el).paddingBottom),
       height: el.getBoundingClientRect().height,
       bottom: el.getBoundingClientRect().bottom,
     }));
-    expect(paddingBottom).toBe(HOME_BAR);
-    expect(height).toBe(TAB_BAR + HOME_BAR);
-    expect(bottom).toBe(page.viewportSize()!.height);
-  });
+    expect(tab.paddingBottom).toBe(HOME_BAR);
+    expect(tab.height).toBe(TAB_BAR + HOME_BAR);
+    expect(tab.bottom).toBe(page.viewportSize()!.height);
 
-  test("the compare bar sits on the tab bar, which already clears the home indicator", async ({ page }) => {
+    const bodyPadding = await page.evaluate(() => {
+      const el = document.querySelector(".pt-\\[var\\(--nav-height\\)\\]");
+      if (!el) {
+        throw new Error("Layout wrapper not found");
+      }
+      return parseFloat(getComputedStyle(el).paddingBottom);
+    });
+    expect(bodyPadding).toBe(TAB_BAR + HOME_BAR);
+
     // Below 499px only the icon button is visible.
     const addBtn = page.getByRole("button", { name: /add to compare/i }).first();
     await addBtn.waitFor({ state: "visible" });
@@ -118,25 +113,6 @@ test.describe("Tab bar and compare bar bottom inset", () => {
     }));
     expect(paddingBottom).toBe(0);
     expect(Math.abs(cssVar - domHeight)).toBeLessThanOrEqual(1);
-  });
-});
-
-test.describe("Layout body bottom inset", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/en/lenses");
-    await page.waitForLoadState("networkidle");
-    await simulateNotch(page);
-  });
-
-  test("page body wrapper paddingBottom clears the tab bar and the home indicator", async ({ page }) => {
-    const paddingBottom = await page.evaluate(() => {
-      const el = document.querySelector(".pt-\\[var\\(--nav-height\\)\\]");
-      if (!el) {
-        throw new Error("Layout wrapper not found");
-      }
-      return parseFloat(getComputedStyle(el).paddingBottom);
-    });
-    expect(paddingBottom).toBe(TAB_BAR + HOME_BAR);
   });
 });
 

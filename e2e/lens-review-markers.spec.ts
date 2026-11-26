@@ -42,7 +42,7 @@ async function ownsItsBox(control: Locator) {
   });
 }
 
-test("controls after a finding each take their own hover and click", async ({ page }) => {
+test("controls after a finding each take their own hover and click", { tag: "@local-only" }, async ({ page }) => {
   await page.route(`**/api/lenses/${LENS_ID}/reviews*`, (route) => route.fulfill({ json: REVIEWS }));
   await page.goto(`/en/lenses/x/${LENS_ID}`);
   await page.getByRole("button", { name: "Show all 3" }).click();

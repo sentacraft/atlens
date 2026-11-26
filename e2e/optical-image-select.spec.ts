@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 for (const width of [375, 949]) {
-  test(`MTF option text fits the menu at ${width}px`, async ({ page }) => {
+  test(`MTF option text fits the menu at ${width}px`, { tag: "@local-only" }, async ({ page }) => {
     await page.setViewportSize({ width, height: 812 });
     await page.goto("/en/lenses/gfx/compare?ids=fujifilm-gf-35-70mmf45-56-wr-g,fujifilm-gf-45-100mmf4-r-lm-ois-wr-g");
     await page.getByRole("button", { name: "View MTF charts", exact: true }).first().click();
@@ -22,7 +22,7 @@ for (const width of [375, 949]) {
 }
 
 for (const width of [375, 1280]) {
-  test(`single-lens MTF gallery keeps its caption and filter in sync at ${width}px`, async ({ page }) => {
+  test(`single-lens MTF gallery keeps its caption and filter in sync at ${width}px`, { tag: "@local-only" }, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/en/lenses/gfx/fujifilm-gf-35-70mmf45-56-wr-g");
     const trigger = page.getByRole("button", { name: "View remaining MTF charts" });

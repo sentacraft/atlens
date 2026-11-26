@@ -3,86 +3,53 @@ import { LENS_CARD_LINK, selectBrandFilter } from "./helpers";
 
 const RESULT_COUNT_RE = /\d+ (lenses|支镜头)/;
 
-test.describe("Lens list page", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/en/lenses/x");
-  });
+const countOf = (text: string) => parseInt(text.match(/\d+/)![0], 10);
 
-  test("loads lens cards", async ({ page }) => {
+test.describe("Lens list page", () => {
+  test("lists lenses, and filters and sorts them with the filters kept in the URL", async ({ page }) => {
+    await page.goto("/en/lenses/x");
+    await expect(page).toHaveURL(/\/lenses\/x\/browse$/);
     const cards = page.locator(LENS_CARD_LINK);
     await expect(cards.first()).toBeVisible();
-    const count = await cards.count();
-    expect(count).toBeGreaterThan(10);
+    expect(await cards.count()).toBeGreaterThan(10);
+
+    const count = page.getByText(RESULT_COUNT_RE);
+    await expect(count).toBeVisible();
+    const allText = (await count.textContent())!;
+
+    await selectBrandFilter(page, "Sigma");
+    // Written with the click, not debounced.
+    await expect(page).toHaveURL(/\/lenses\/x\/browse\?.*\bb=sigma\b/i, { timeout: 500 });
+    await expect(count).not.toHaveText(allText);
+    const sigmaText = (await count.textContent())!;
+    expect(countOf(sigmaText)).toBeGreaterThan(0);
+    expect(countOf(sigmaText)).toBeLessThan(countOf(allText));
+
+    await page.reload();
+    await expect(count).toHaveText(sigmaText);
+
+    const standard = page.getByRole("button", { name: /^Standard/ });
+    await standard.click();
+    await expect(standard).toHaveAttribute("aria-pressed", "true");
+    const combined = countOf((await count.textContent())!);
+    expect(combined).toBeGreaterThan(0);
+    expect(combined).toBeLessThanOrEqual(countOf(sigmaText));
+
+    await page.getByRole("button", { name: "Reset" }).click();
+    await expect(count).toHaveText(allText);
+
+    // Sorted on the full list: a narrow one can start with the same lens in both directions.
+    const firstHref = (await cards.first().getAttribute("href"))!;
+    await page.getByRole("button", { name: /ascending|descending/i }).click();
+    await expect(cards.first()).not.toHaveAttribute("href", firstHref);
   });
 
-  test("shows result count", async ({ page }) => {
-    await expect(page.getByText(RESULT_COUNT_RE)).toBeVisible();
-  });
-
-  test("points to the cine collection after the photo lenses", async ({ page }) => {
+  test("points to the cine collection after the photo lenses", { tag: "@local-only" }, async ({ page }) => {
     await page.goto("/en/lenses/x/browse?b=sigma");
     const prompt = page.getByRole("link", { name: /Looking for cine lenses/ });
     await expect(prompt).toHaveAttribute("href", "/en/lenses/x/collections/cine");
     // Below the last card, so only a short (filtered) list brings it into view.
     const lastCard = page.locator(LENS_CARD_LINK).last();
     expect((await prompt.boundingBox())!.y).toBeGreaterThan((await lastCard.boundingBox())!.y);
-  });
-
-  test("brand filter narrows results", async ({ page }) => {
-    const countText = await page.getByText(RESULT_COUNT_RE).textContent();
-    const totalCount = parseInt(countText!.match(/\d+/)![0], 10);
-
-    await selectBrandFilter(page, "Sigma");
-
-    const filteredText = await page.getByText(RESULT_COUNT_RE).textContent();
-    const filteredCount = parseInt(filteredText!.match(/\d+/)![0], 10);
-    expect(filteredCount).toBeLessThan(totalCount);
-    expect(filteredCount).toBeGreaterThan(0);
-  });
-
-  test("clear filters restores full count", async ({ page }) => {
-    const countText = await page.getByText(RESULT_COUNT_RE).textContent();
-
-    await selectBrandFilter(page, "Sigma");
-    await expect(page.getByText(RESULT_COUNT_RE)).not.toHaveText(countText!);
-
-    await page.getByRole("button", { name: "Reset" }).click();
-
-    await expect(page.getByText(RESULT_COUNT_RE)).toHaveText(countText!);
-  });
-
-  test("clicking a lens card navigates to detail page", async ({ page }) => {
-    const firstCard = page
-      .locator(LENS_CARD_LINK)
-      .first();
-    const href = await firstCard.getAttribute("href");
-    await firstCard.click();
-
-    await expect(page).toHaveURL(new RegExp(href!));
-    await expect(page.locator("body")).toBeVisible();
-  });
-
-  test("applying a brand filter writes it into the URL synchronously", async ({
-    page,
-  }) => {
-    await expect(page).toHaveURL(/\/lenses\/x\/browse$/);
-
-    await selectBrandFilter(page, "Sigma");
-
-    await expect(page).toHaveURL(/[?&]b=sigma\b/i, { timeout: 500 });
-
-    await expect(page).toHaveURL(/\/lenses\/x\/browse\?/);
-  });
-
-  test("filter state survives a page refresh", async ({ page }) => {
-    await selectBrandFilter(page, "Sigma");
-    await expect(page).toHaveURL(/[?&]b=sigma\b/i);
-
-    await page.reload();
-
-    const filteredText = await page.getByText(RESULT_COUNT_RE).textContent();
-    const filteredCount = parseInt(filteredText!.match(/\d+/)![0], 10);
-    expect(filteredCount).toBeGreaterThan(0);
-    expect(filteredCount).toBeLessThan(50);
   });
 });

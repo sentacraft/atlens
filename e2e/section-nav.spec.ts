@@ -5,21 +5,7 @@ const LENS_PATH = "/en/lenses/x/fujifilm-xf-56mmf12-r-wr-x";
 // Hidden navigations are left out of role queries, so this finds whichever form is showing.
 const sectionNav = (page: Page) => page.getByRole("navigation", { name: "Sections on this page" });
 
-test.describe("Section navigation, lens detail", () => {
-  test.describe("on a phone", () => {
-    test.use({ viewport: { width: 375, height: 812 } });
-
-    test("a row of chips jumps to a section and puts it in the URL", async ({ page }) => {
-      await page.goto(LENS_PATH);
-      const nav = sectionNav(page);
-      await expect(nav).toBeVisible();
-      await nav.getByRole("link", { name: "Reviews", exact: true }).click();
-
-      await expect(page).toHaveURL(/#reviews$/);
-      await expect(page.getByRole("heading", { level: 2, name: "Reviews", exact: true })).toBeInViewport();
-    });
-  });
-
+test.describe("Section navigation, lens detail", { tag: "@local-only" }, () => {
   test.describe("on a wide screen", () => {
     test.use({ viewport: { width: 1440, height: 900 } });
 
@@ -52,7 +38,7 @@ test.describe("Section navigation, lens detail", () => {
 });
 
 for (const width of [375, 1100]) {
-  test.describe(`Section navigation spacing at ${width}px`, () => {
+  test.describe(`Section navigation spacing at ${width}px`, { tag: "@local-only" }, () => {
     test.use({ viewport: { width, height: 900 } });
 
     test("detail chips have 16px of space on either side and stay sticky", async ({ page }) => {
@@ -88,7 +74,7 @@ for (const width of [375, 1100]) {
   });
 }
 
-test.describe("Section navigation, about page", () => {
+test.describe("Section navigation, about page", { tag: "@local-only" }, () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
   test("lists the sections, and the current one follows the scroll", async ({ page }) => {

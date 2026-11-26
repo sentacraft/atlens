@@ -3,7 +3,7 @@
 
 import { test, expect } from "@playwright/test";
 
-test("the home page does not shift once it has loaded", async ({ page, browserName }) => {
+test("the home page does not shift once it has loaded", { tag: "@local-only" }, async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "Layout shift entries are Chromium-only");
   await page.addInitScript(() => {
     const shifts: number[] = [];

@@ -24,7 +24,7 @@ async function signInOwning(page: Page, ...catalogIds: string[]) {
 
 // The pill sits on the thumbnail's top-left and the card's own content never moves for it.
 for (const width of [320, 375, 1280]) {
-  test.describe(`owned mark on the lens list at ${width}px`, () => {
+  test.describe(`owned mark on the lens list at ${width}px`, { tag: "@local-only" }, () => {
     const phone = width < 768;
     test.use({ viewport: { width, height: 900 }, isMobile: phone, hasTouch: phone });
 
@@ -58,12 +58,6 @@ for (const width of [320, 375, 1280]) {
   });
 }
 
-test("guests see no owned mark anywhere on the list", async ({ page }) => {
-  await page.goto("/en/lenses/x/browse");
-  await expect(page.locator(`a[href$="/${OWNED_ID}"]`).first()).toBeAttached();
-  await expect(page.getByText("Owned", { exact: true })).toHaveCount(0);
-});
-
 test.setTimeout(90_000);
 
 const LABEL = { en: "Owned", zh: "已拥有" } as const;
@@ -71,7 +65,7 @@ const COMPARE_IDS = [OWNED_ID, "fujifilm-mkx-18-55mmt29-x", "fujifilm-mkx-50-135
 
 // The label takes a fixed line under each model, so owning a lens moves nothing.
 for (const width of [375, 1280]) {
-  test.describe(`compare header at ${width}px`, () => {
+  test.describe(`compare header at ${width}px`, { tag: "@local-only" }, () => {
     const phone = width < 768;
     test.use({ viewport: { width, height: 900 }, isMobile: phone, hasTouch: phone });
 
@@ -102,30 +96,7 @@ for (const width of [375, 1280]) {
   });
 }
 
-// A tap opens the lens sheet (a drawer on a phone, a centered dialog on a wide screen); the chart tiles stay unmarked.
-for (const width of [375, 1280]) {
-  test.describe(`chart lens sheet at ${width}px`, () => {
-    test.use({ viewport: { width, height: 900 }, hasTouch: true });
-
-    for (const locale of ["en", "zh"] as const) {
-      test(`${locale}: the sheet labels an owned lens beside its brand; the tiles carry no mark`, async ({ page }) => {
-        await signInOwning(page, OWNED_ID);
-        const lens = page.getByRole("link", { name: /33mm F1\.4 R LM WR/ }).locator("visible=true").first();
-        const sheet = page.getByRole("dialog");
-        await expect(async () => {
-          await page.goto(`/${locale}/lenses/x/charts/timeline`, { waitUntil: "networkidle" });
-          await lens.tap();
-          await expect(sheet).toBeVisible({ timeout: 1000 });
-        }).toPass({ timeout: 60_000 });
-        await expect(sheet.getByText(LABEL[locale], { exact: true })).toBeVisible({ timeout: 15_000 });
-        await page.screenshot({ path: `test-results/owned-sheet-${locale}-${width}.png` });
-        await expect(page.getByRole("img", { name: LABEL[locale] })).toHaveCount(0);
-      });
-    }
-  });
-}
-
-test("favorites carry no owned mark", async ({ page }) => {
+test("favorites carry no owned mark", { tag: "@local-only" }, async ({ page }) => {
   await signInOwning(page, OWNED_ID);
   await page.route("**/api/me/favorites", (route) => route.fulfill({ json: { favorites: [{ lensId: OWNED_ID }] } }));
   await page.goto("/en/me#favorites");

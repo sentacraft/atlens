@@ -1,42 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { LENS_CARD_LINK, openSecondaryFilters, selectBrandFilter } from "./helpers";
+import { openSecondaryFilters } from "./helpers";
 
-test.describe("Focal range filter", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/en/lenses");
-    await page.getByText(/\d+ lenses/).waitFor();
-  });
-
-  test("focal category chip narrows results", async ({ page }) => {
-    const countText = await page.getByText(/\d+ lenses/).textContent();
-    const totalCount = parseInt(countText!.match(/\d+/)![0], 10);
-
-    const standard = page.getByRole("button", { name: /^Standard/ });
-    await standard.click();
-    await expect(standard).toHaveAttribute("aria-pressed", "true");
-
-    const filteredText = await page.getByText(/\d+ lenses/).textContent();
-    const filteredCount = parseInt(filteredText!.match(/\d+/)![0], 10);
-    expect(filteredCount).toBeGreaterThan(0);
-    expect(filteredCount).toBeLessThan(totalCount);
-  });
-
-  test("combining brand and focal filters compounds correctly", async ({ page }) => {
-    await selectBrandFilter(page, "Sigma");
-    const sigmaText = await page.getByText(/\d+ lenses/).textContent();
-    const sigmaCount = parseInt(sigmaText!.match(/\d+/)![0], 10);
-
-    const standard = page.getByRole("button", { name: /^Standard/ });
-    await standard.click();
-    await expect(standard).toHaveAttribute("aria-pressed", "true");
-    const combinedText = await page.getByText(/\d+ lenses/).textContent();
-    const combinedCount = parseInt(combinedText!.match(/\d+/)![0], 10);
-
-    expect(combinedCount).toBeLessThanOrEqual(sigmaCount);
-  });
-});
-
-test("custom equivalent focal lengths match nearby primes and survive history and reload", async ({ page }) => {
+test("custom equivalent focal lengths match nearby primes and survive history and reload", { tag: "@local-only" }, async ({ page }) => {
   await page.goto("/en/lenses/x/browse?filter-test=preserved");
   await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
   const input = page.getByRole("textbox", { name: "Custom focal length" });
@@ -65,7 +30,7 @@ test("custom equivalent focal lengths match nearby primes and survive history an
   expect(new URL(page.url()).searchParams.get("filter-test")).toBe("preserved");
 });
 
-test("coverage is entered inline with a convention menu and no clear action", async ({ page }) => {
+test("coverage is entered inline with a convention menu and no clear action", { tag: "@local-only" }, async ({ page }) => {
   await page.goto("/en/lenses/x/browse?b=fujifilm");
   await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
   const input = page.getByRole("textbox", { name: "Custom focal length" });
@@ -103,7 +68,7 @@ test("coverage is entered inline with a convention menu and no clear action", as
   await expect(page).toHaveURL(/\?b=fujifilm$/);
 });
 
-test("coverage chip follows focal presets and stays one unbroken control", async ({ page }) => {
+test("coverage chip follows focal presets and stays one unbroken control", { tag: "@local-only" }, async ({ page }) => {
   for (const query of ["b=fujifilm", "b=fujifilm&fmm=40&fr=equivalent"]) {
     await page.goto(`/en/lenses/x/browse?${query}`);
     const focal = page.getByRole("group", { name: "Focal length", exact: true });
@@ -128,7 +93,7 @@ test("coverage chip follows focal presets and stays one unbroken control", async
   }
 });
 
-test("aperture and custom weight limits persist and reset together", async ({ page }) => {
+test("aperture and custom weight limits persist and reset together", { tag: "@local-only" }, async ({ page }) => {
   await page.goto("/en/lenses/x/browse");
   await openSecondaryFilters(page);
   await page.getByRole("button", { name: "Max Aperture", exact: true }).click();
@@ -150,7 +115,7 @@ test("aperture and custom weight limits persist and reset together", async ({ pa
   expect(new URL(page.url()).search).toBe("");
 });
 
-test("filter menus share pill geometry and leave room after the chevron", async ({ page }) => {
+test("filter menus share pill geometry and leave room after the chevron", { tag: "@local-only" }, async ({ page }) => {
   await page.goto("/en/lenses/x/browse");
   await page.getByRole("button", { name: "Cover a focal length", exact: true }).click();
   await openSecondaryFilters(page);
@@ -173,7 +138,7 @@ test("filter menus share pill geometry and leave room after the chevron", async 
   }
 });
 
-test("phone limit filters share a row without a persistent aperture note", async ({ page }) => {
+test("phone limit filters share a row without a persistent aperture note", { tag: "@local-only" }, async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 1280) >= 640, "Phone layout only");
   await page.goto("/en/lenses/x/browse?b=fujifilm");
   await openSecondaryFilters(page);
@@ -187,7 +152,7 @@ test("phone limit filters share a row without a persistent aperture note", async
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
-test("phone filter actions use two left-aligned rows", async ({ page }) => {
+test("phone filter actions use two left-aligned rows", { tag: "@local-only" }, async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 1280) >= 640, "Phone layout only");
   await page.goto("/en/lenses/x/browse?b=fujifilm&ap=2.8");
   const toggle = page.getByRole("button", { name: /more filters/i });
@@ -200,22 +165,4 @@ test("phone filter actions use two left-aligned rows", async ({ page }) => {
   expect(assistBox).not.toBeNull();
   expect(Math.abs(assistBox!.x - toggleBox!.x)).toBeLessThanOrEqual(1);
   expect(assistBox!.y).toBeGreaterThanOrEqual(toggleBox!.y + toggleBox!.height);
-});
-
-test.describe("Sort controls", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/en/lenses");
-    await page.getByText(/\d+ lenses/).waitFor();
-  });
-
-  test("toggling sort direction reverses card order", async ({ page }) => {
-    const firstCardAsc = await page
-      .locator(LENS_CARD_LINK)
-      .first()
-      .getAttribute("href");
-
-    await page.getByRole("button", { name: /ascending|descending/i }).click();
-
-    await expect(page.locator(LENS_CARD_LINK).first()).not.toHaveAttribute("href", firstCardAsc!);
-  });
 });

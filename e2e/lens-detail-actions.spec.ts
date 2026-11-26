@@ -38,19 +38,27 @@ async function expectTwoRows(page: Page, locale: keyof typeof LABELS) {
   expect(Math.round(p.x), "the rows line up").toBe(Math.round(f.x));
 }
 
+const [NARROWEST, ...WIDER] = WIDTHS;
+
+test(`two actions on the first row, two on the second at ${NARROWEST}px, in both locales`, async ({ page }) => {
+  await page.setViewportSize({ width: NARROWEST, height: 900 });
+  for (const locale of ["en", "zh"] as const) {
+    await page.goto(`/${locale}/${LENS_PATH}`);
+    await expectTwoRows(page, locale);
+  }
+});
+
 for (const locale of ["en", "zh"] as const) {
-  test.describe(`lens detail actions (${locale})`, () => {
-    for (const width of WIDTHS) {
-      test(`two on the first row, two on the second at ${width}px`, async ({ page }) => {
-        await page.setViewportSize({ width, height: 900 });
-        await page.goto(`/${locale}/${LENS_PATH}`);
-        await expectTwoRows(page, locale);
-      });
+  test(`${locale}: the two rows hold at every wider width`, { tag: "@local-only" }, async ({ page }) => {
+    await page.goto(`/${locale}/${LENS_PATH}`);
+    for (const width of WIDER) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(() => expectTwoRows(page, locale), `${width}px`).toPass({ timeout: 5000 });
     }
   });
 }
 
-test("keeps the rows while Iris's side panel narrows the page", async ({ page }) => {
+test("keeps the rows while Iris's side panel narrows the page", { tag: "@local-only" }, async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto(`/en/${LENS_PATH}`);
   await irisToggle(page).click();
