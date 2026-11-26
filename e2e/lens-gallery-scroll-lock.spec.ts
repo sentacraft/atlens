@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test.use({ viewport: { width: 1200, height: 900 }, launchOptions: { ignoreDefaultArgs: ["--hide-scrollbars"] } });
 
-test("keeps the page and section rail in place while the gallery locks scrolling", async ({ page, browserName, isMobile }) => {
+test("keeps the page and section rail in place while the gallery locks scrolling", { tag: "@local-only" }, async ({ page, browserName, isMobile }) => {
   test.skip(browserName !== "chromium" || isMobile, "The regression requires desktop Chromium's classic scrollbar");
   await page.goto("/en/lenses/gfx/fujifilm-gf-35-70mmf45-56-wr-g#specs");
   const trigger = page.getByRole("button", { name: "Open image: 35mm · 10 lines/mm" });

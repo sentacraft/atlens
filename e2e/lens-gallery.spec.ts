@@ -60,32 +60,39 @@ async function touchSwipe(session: CDPSession, viewport: Locator, reverse = fals
   await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
 }
 
-for (const width of [375, 1280]) {
-  test.describe(`lens gallery at ${width}px`, () => {
-    test.use({ viewport: { width, height: 900 }, isMobile: width < 640, hasTouch: width < 640 });
+test.describe("lens gallery native touch input", () => {
+  test.use({ viewport: { width: 375, height: 900 }, isMobile: true, hasTouch: true });
 
-    test("switches images before opening and shows a compact phone counter", async ({ page }) => {
-      await page.goto(LENS_PATH);
-      const trigger = page.getByRole("button", { name: "Enlarge product image" });
-      await expectSlide(trigger, PRIMARY);
-      await expect(trigger.locator('[data-slot="gallery-slide"][aria-hidden="false"]')).toHaveCSS("padding", "32px");
-      if (width >= 640) {
-        const next = page.getByRole("button", { name: "Next image", exact: true });
-        const box = (await next.boundingBox())!;
-        expect(box.width).toBe(44);
-        expect(box.height).toBe(44);
-        await expect(page.getByRole("button", { name: "Main product image", exact: true }).locator("img")).toHaveCSS("padding", "4px");
-        await next.click();
-      } else {
-        await expect(trigger.locator('[data-slot="gallery-count"]')).toHaveText(`1 / ${GALLERY_IMAGES.length}`);
-        await expect(page.getByRole("button", { name: "Product image 2", exact: true })).toHaveCount(0);
-        await mouseDrag(page, trigger);
-        await expect(trigger.locator('[data-slot="gallery-count"]')).toHaveText(`2 / ${GALLERY_IMAGES.length}`);
-      }
-      await expectSlide(trigger, SECOND_IMAGE);
-      await expect(page.getByRole("dialog")).toHaveCount(0);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    });
+  test("swipes both views and drags down to close", async ({ page, browserName }) => {
+    test.skip(browserName !== "chromium", "Native touch injection uses Chromium's input protocol");
+    await page.goto(LENS_PATH);
+    const session = await page.context().newCDPSession(page);
+    const trigger = page.getByRole("button", { name: "Enlarge product image" });
+    await expectSlide(trigger, PRIMARY);
+    await touchSwipe(session, trigger);
+    await expectSlide(trigger, SECOND_IMAGE);
+    await trigger.tap();
+    const dialog = page.getByRole("dialog");
+    await expectSlide(dialog, SECOND_IMAGE);
+    const image = dialog.getByRole("img", { name: /.+/ });
+    await image.tap();
+    await expect(dialog.locator('[data-slot="gallery-controls"]')).toHaveAttribute("inert", "");
+    await expect(dialog).toBeVisible();
+    await image.tap();
+    await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");
+    await expect(dialog.getByText("Swipe to browse · Drag down to close · Double-tap to zoom", { exact: true })).toBeVisible();
+    await touchSwipe(session, image, true);
+    await expectSlide(dialog, PRIMARY);
+    await touchSwipe(session, image, false, true);
+    await expect(dialog).toHaveCount(0);
+    await expectSlide(trigger, PRIMARY);
+    await session.detach();
+  });
+});
+
+for (const width of [375, 1280]) {
+  test.describe(`lens gallery at ${width}px`, { tag: "@local-only" }, () => {
+    test.use({ viewport: { width, height: 900 }, isMobile: width < 640, hasTouch: width < 640 });
 
     test("keeps the selected image, scroll position, and focus after closing", async ({ page }) => {
       await page.goto(LENS_PATH);
@@ -179,35 +186,6 @@ for (const width of [375, 1280]) {
       await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");
     });
 
-    test.describe("native touch input", () => {
-      test.use({ hasTouch: true });
-      test("swipes both views and drags down to close", async ({ page, browserName }) => {
-        test.skip(browserName !== "chromium", "Native touch injection uses Chromium's input protocol");
-        await page.goto(LENS_PATH);
-        const session = await page.context().newCDPSession(page);
-        const trigger = page.getByRole("button", { name: "Enlarge product image" });
-        await expectSlide(trigger, PRIMARY);
-        await touchSwipe(session, trigger);
-        await expectSlide(trigger, SECOND_IMAGE);
-        await trigger.tap();
-        const dialog = page.getByRole("dialog");
-        await expectSlide(dialog, SECOND_IMAGE);
-        const image = dialog.getByRole("img", { name: /.+/ });
-        await image.tap();
-        await expect(dialog.locator('[data-slot="gallery-controls"]')).toHaveAttribute("inert", "");
-        await expect(dialog).toBeVisible();
-        await image.tap();
-        await expect(dialog.locator('[data-slot="gallery-controls"]')).not.toHaveAttribute("inert", "");
-        await expect(dialog.getByText("Swipe to browse · Drag down to close · Double-tap to zoom", { exact: true })).toBeVisible();
-        await touchSwipe(session, image, true);
-        await expectSlide(dialog, PRIMARY);
-        await touchSwipe(session, image, false, true);
-        await expect(dialog).toHaveCount(0);
-        await expectSlide(trigger, PRIMARY);
-        await session.detach();
-      });
-    });
-
     for (const id of ["sgimage-mf-18mm-f63-aps-c-ultra-slim-pancake-lens-x", "fujifilm-xf-33mmf14-r-lm-wr-x", "fujifilm-xf-150-600mmf56-8-r-lm-ois-wr-x"]) {
       test(`${id}: image fits the viewer and controls`, async ({ page }) => {
         await page.goto(`/en/lenses/x/${id}`);
@@ -230,7 +208,7 @@ for (const width of [375, 1280]) {
   });
 }
 
-test("eight-image phone gallery stays in bounds and scrolls to the selected thumbnail", async ({ page }) => {
+test("eight-image phone gallery stays in bounds and scrolls to the selected thumbnail", { tag: "@local-only" }, async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/en/lenses/x/sgimage-af-35mmf14-x");
   const trigger = page.getByRole("button", { name: "Enlarge product image" });
@@ -253,7 +231,7 @@ test("eight-image phone gallery stays in bounds and scrolls to the selected thum
   await expect(dialog.getByText("8 / 8", { exact: true })).toBeVisible();
 });
 
-test("reduced motion uses a short fade instead of thumbnail zoom", async ({ page }) => {
+test("reduced motion uses a short fade instead of thumbnail zoom", { tag: "@local-only" }, async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(LENS_PATH);
   await page.getByRole("button", { name: "Enlarge product image" }).click();

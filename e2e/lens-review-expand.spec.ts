@@ -30,7 +30,7 @@ const REVIEWS: LensReviewsView = {
   ],
 };
 
-test("expanding the findings keeps the page where the reader was", async ({ page }) => {
+test("expanding the findings keeps the page where the reader was", { tag: "@local-only" }, async ({ page }) => {
   await page.route(`**/api/lenses/${LENS_ID}/reviews*`, (route) => route.fulfill({ json: REVIEWS }));
   await page.goto(`/en/lenses/x/${LENS_ID}`);
 

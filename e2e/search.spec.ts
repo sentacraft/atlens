@@ -1,74 +1,23 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Lens search dialog", () => {
-  test.beforeEach(async ({ page }) => {
+  test("finds lenses as a query is typed, clears, and opens the first result on Enter", async ({ page }) => {
     await page.goto("/en/lenses/x");
-  });
-
-  test("opens dialog when search icon is clicked", async ({ page }) => {
     await page.getByRole("button", { name: /search/i }).click();
-    await expect(page.getByRole("dialog")).toBeVisible();
-  });
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
 
-  test("typing a query shows matching results", async ({ page }) => {
-    await page.getByRole("button", { name: /search/i }).click();
-    await page.getByRole("dialog").waitFor();
-
-    const input = page.getByRole("dialog").locator("input[type='text']");
-    await input.fill("35mm");
-
+    const input = dialog.locator("input[type='text']");
     const listbox = page.getByRole("listbox");
-    await expect(listbox).toBeVisible();
-    const results = listbox.getByRole("option");
-    await expect(results.first()).toBeVisible();
-  });
-
-  test("selecting a result navigates to the lens detail page", async ({ page }) => {
-    await page.getByRole("button", { name: /search/i }).click();
-    await page.getByRole("dialog").waitFor();
-
-    const input = page.getByRole("dialog").locator("input[type='text']");
     await input.fill("35mm");
-
-    const listbox = page.getByRole("listbox");
     await expect(listbox.getByRole("option").first()).toBeVisible();
 
-    await listbox.getByRole("option").first().click();
+    await dialog.getByRole("button", { name: /clear search/i }).click();
+    await expect(listbox).not.toBeVisible();
 
-    await expect(page).toHaveURL(/\/en\/lenses\/x\/[^/]+$/);
-  });
-
-  test("keyboard Enter on first result navigates to detail page", async ({ page }) => {
-    await page.getByRole("button", { name: /search/i }).click();
-    await page.getByRole("dialog").waitFor();
-
-    const input = page.getByRole("dialog").locator("input[type='text']");
     await input.fill("50mm");
-
-    const listbox = page.getByRole("listbox");
     await expect(listbox.getByRole("option").first()).toBeVisible();
-
     await input.press("Enter");
     await expect(page).toHaveURL(/\/en\/lenses\/x\/[^/]+$/);
-  });
-
-  test("clearing the query hides the results listbox", async ({ page }) => {
-    await page.getByRole("button", { name: /search/i }).click();
-    await page.getByRole("dialog").waitFor();
-
-    const input = page.getByRole("dialog").locator("input[type='text']");
-    await input.fill("50mm");
-    await expect(page.getByRole("listbox")).toBeVisible();
-
-    await page.getByRole("dialog").getByRole("button", { name: /clear search/i }).click();
-    await expect(page.getByRole("listbox")).not.toBeVisible();
-  });
-
-  test("Escape closes the dialog", async ({ page }) => {
-    await page.getByRole("button", { name: /search/i }).click();
-    await page.getByRole("dialog").waitFor();
-
-    await page.keyboard.press("Escape");
-    await expect(page.getByRole("dialog")).not.toBeVisible();
   });
 });

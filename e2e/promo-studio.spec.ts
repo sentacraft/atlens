@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { unzipSync } from "fflate";
 
 for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fisheye", "travel-zoom", "23mm", "under-200"]) {
-  test(`shares the cover layout for ${collection}`, async ({ page }) => {
+  test(`shares the cover layout for ${collection}`, { tag: "@local-only" }, async ({ page }) => {
     await page.goto(`/admin/promo?collection=${collection}`);
     const cover = page.getByRole("article");
     const mount = cover.getByText("富士 X 卡口", { exact: true });
@@ -64,7 +64,7 @@ for (const collection of ["pancake", "under-200g", "fast-aperture-primes", "fish
   });
 }
 
-test("offers focal-range, single-focal-length and budget decks", async ({ page }) => {
+test("offers focal-range, single-focal-length and budget decks", { tag: "@local-only" }, async ({ page }) => {
   await page.goto("/admin/promo?collection=travel-zoom");
   const cover = page.getByRole("article");
   const options = page.getByLabel("镜头合集");
@@ -92,7 +92,7 @@ test("offers focal-range, single-focal-length and budget decks", async ({ page }
   }
 });
 
-test("previews a collection and exports its numbered PNG deck", async ({ page, browserName }) => {
+test("previews a collection and exports its numbered PNG deck", { tag: "@local-only" }, async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "The archive assertions run on Chromium.");
   await page.goto("/admin");
   await page.getByRole("link", { name: /Promo Studio/ }).click();

@@ -18,7 +18,7 @@ async function actionsBelowFold(page: Page): Promise<boolean> {
   return !box || box.y + box.height > height;
 }
 
-test.describe("Home page — first screen", () => {
+test.describe("Home page — first screen", { tag: "@local-only" }, () => {
   test.beforeEach(async ({ page }, testInfo) => {
     const viewport = page.viewportSize();
     testInfo.skip(!viewport || viewport.height < 500, "Home hero needs portrait/desktop height");

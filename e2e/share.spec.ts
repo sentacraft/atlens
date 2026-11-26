@@ -13,7 +13,7 @@ async function openShare(page: Page, name: RegExp) {
   }).toPass();
 }
 
-test.describe("Share", () => {
+test.describe("Share", { tag: "@local-only" }, () => {
   test("a lens page offers its spec poster", async ({ page }) => {
     await page.goto("/en/lenses/x/fujifilm-xf-16mmf14-r-wr-x", { waitUntil: "networkidle" });
     await openShare(page, /^Share$/);

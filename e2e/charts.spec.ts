@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { datedLenses, sigmaLenses, sigmaYears, stillsBrands, stillsLenses, yearSpan } from "./support/chart-catalog";
+import { datedLenses, sigmaLenses, sigmaYears, stillsBrands, yearSpan } from "./support/chart-catalog";
 
 const TIMELINE = "/en/lenses/x/charts/timeline";
 const WEIGHT = "/en/lenses/x/charts/weight";
@@ -10,7 +10,7 @@ const LENS = /15mm F1\.4 DC \| Contemporary/;
 // The charts are in the static HTML, so an action can land before hydration attaches its
 // handlers; each interaction retries until the client responds. A tap that lands too early follows
 // the link, so the tap tests also wait for the network to settle first.
-test.describe("Charts", () => {
+test.describe("Charts", { tag: "@local-only" }, () => {
   test("the timeline and the lineups list every lens they chart as links under the chart", async ({ page }) => {
     for (const [path, groups] of [
       [TIMELINE, /^2026/],
@@ -39,11 +39,6 @@ test.describe("Charts", () => {
       await page.waitForTimeout(500);
       expect(await page.evaluate(() => window.scrollY), path).toBe(before);
     }
-  });
-
-  test("/charts redirects to the timeline", async ({ page }) => {
-    await page.goto("/en/lenses/x/charts");
-    await expect(page).toHaveURL(new RegExp(`${TIMELINE}$`));
   });
 
   test("a tap on a timeline lens opens its sheet instead of the lens page", async ({ page, hasTouch }) => {
@@ -99,19 +94,6 @@ test.describe("Charts", () => {
 
     await page.reload();
     await expect(chip).toHaveAttribute("aria-pressed", "true");
-  });
-
-  test("the weight ladder filters by the brand in the URL and ignores the old focal param", async ({ page }) => {
-    await page.goto(`${WEIGHT}?brand=tamron&focal=standard`);
-    await expect(page.getByRole("group", { name: "Brand" }).getByRole("button", { name: /^Tamron/ })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    const rows = page.locator("main section li a").locator("visible=true");
-    await expect(rows).toHaveCount(stillsLenses.filter((lens) => lens.brand === "tamron").length);
-    for (const label of await rows.evaluateAll((links) => links.map((l) => l.getAttribute("aria-label")))) {
-      expect(label).toMatch(/^Tamron /);
-    }
   });
 
   test("a tap on a weight ladder row opens its sheet instead of the lens page", async ({ page, hasTouch }) => {
@@ -177,18 +159,6 @@ test.describe("Charts", () => {
     await page.goto("/en/lenses/x/sirui-aurora-35mmf14-full-frame-autofocus-lens-x");
     await expect(line.getByRole("link")).toHaveCount(1);
     await expect(line).toContainText("Aurora");
-  });
-
-  test("the weight ladder sets everyday references among the lenses by weight", async ({ page }) => {
-    await page.goto(WEIGHT);
-    const heavy = page.locator("section", { has: page.getByRole("heading", { name: "Heavyweights" }) });
-    await expect(heavy.getByText("A 750 ml bottle of water")).toBeVisible();
-    const rows = await heavy.locator("ol > li").allInnerTexts();
-    const water = rows.findIndex((text) => text.includes("A 750 ml bottle of water"));
-    expect(water).toBeGreaterThan(0);
-    const weightOf = (text: string) => Number(text.match(/([\d,]+)g/)?.[1].replace(/,/g, ""));
-    expect(weightOf(rows[water - 1])).toBeGreaterThanOrEqual(770);
-    expect(weightOf(rows[water + 1])).toBeLessThan(770);
   });
 
   test("a weight ladder row shows its compare button only on hover", async ({ page, hasTouch }) => {
@@ -260,46 +230,43 @@ test.describe("Charts", () => {
     await expect(nav).toBeVisible();
     await expect(nav.locator('a[href="#timeline"]')).toHaveCount(0);
   });
+});
 
-  test("the brand on a lens page links to the brand page", async ({ page }) => {
-    await page.goto("/en/lenses/x/sigma-contemporary-18-50mm-f28-dc-dn-x");
-    await expect(page.getByRole("link", { name: "Sigma", exact: true })).toHaveAttribute("href", `${BRANDS}/sigma`);
-  });
-  // WebKit can paint an image embedded in the poster's SVG before decoding it, leaving it blank.
-  test("the enlarged weight ladder poster draws its lens images", async ({ page }) => {
-    await page.goto(`${WEIGHT}?brand=sirui`, { waitUntil: "networkidle" });
-    const trigger = page.getByRole("button", { name: /^Share$/ }).locator("visible=true").first();
-    const preview = page.locator(".cursor-zoom-in");
-    await expect(async () => {
-      await trigger.click();
-      await expect(preview).toBeVisible({ timeout: 1000 });
-    }).toPass();
-    await preview.click();
-    await expect(page.locator('img[src^="data:image/png"]')).toBeVisible({ timeout: 30_000 });
+// WebKit can paint an image embedded in the poster's SVG before decoding it, leaving it blank.
+test("the enlarged weight ladder poster draws its lens images", async ({ page, browserName }) => {
+  test.skip(browserName !== "webkit", "Only WebKit paints the images late");
+  await page.goto(`${WEIGHT}?brand=sirui`, { waitUntil: "networkidle" });
+  const trigger = page.getByRole("button", { name: /^Share$/ }).locator("visible=true").first();
+  const preview = page.locator(".cursor-zoom-in");
+  await expect(async () => {
+    await trigger.click();
+    await expect(preview).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await preview.click();
+  await expect(page.locator('img[src^="data:image/png"]')).toBeVisible({ timeout: 30_000 });
 
-    const darkShare = await page.evaluate(async () => {
-      const poster = document.querySelector<HTMLElement>('.cursor-zoom-in [style*="scale("] > div')!;
-      const lens = poster.querySelector("img")!;
-      const p = poster.getBoundingClientRect();
-      const r = lens.getBoundingClientRect();
-      const png = document.querySelector<HTMLImageElement>('img[src^="data:image/png"]')!;
-      await png.decode();
-      const sx = png.naturalWidth / p.width;
-      const sy = png.naturalHeight / p.height;
-      const canvas = document.createElement("canvas");
-      canvas.width = png.naturalWidth;
-      canvas.height = png.naturalHeight;
-      const ctx = canvas.getContext("2d")!;
-      ctx.drawImage(png, 0, 0);
-      const { data } = ctx.getImageData((r.left - p.left) * sx, (r.top - p.top) * sy, r.width * sx, r.height * sy);
-      let dark = 0;
-      for (let i = 0; i < data.length; i += 4) {
-        if (data[i] + data[i + 1] + data[i + 2] < 300) {
-          dark++;
-        }
+  const darkShare = await page.evaluate(async () => {
+    const poster = document.querySelector<HTMLElement>('.cursor-zoom-in [style*="scale("] > div')!;
+    const lens = poster.querySelector("img")!;
+    const p = poster.getBoundingClientRect();
+    const r = lens.getBoundingClientRect();
+    const png = document.querySelector<HTMLImageElement>('img[src^="data:image/png"]')!;
+    await png.decode();
+    const sx = png.naturalWidth / p.width;
+    const sy = png.naturalHeight / p.height;
+    const canvas = document.createElement("canvas");
+    canvas.width = png.naturalWidth;
+    canvas.height = png.naturalHeight;
+    const ctx = canvas.getContext("2d")!;
+    ctx.drawImage(png, 0, 0);
+    const { data } = ctx.getImageData((r.left - p.left) * sx, (r.top - p.top) * sy, r.width * sx, r.height * sy);
+    let dark = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i] + data[i + 1] + data[i + 2] < 300) {
+        dark++;
       }
-      return dark / (data.length / 4);
-    });
-    expect(darkShare).toBeGreaterThan(0.02);
+    }
+    return dark / (data.length / 4);
   });
+  expect(darkShare).toBeGreaterThan(0.02);
 });

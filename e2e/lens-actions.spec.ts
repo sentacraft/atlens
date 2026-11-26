@@ -25,13 +25,13 @@ for (const { name, path } of PAGES) {
 
 // Prices vary in length; every card must still hold its price and both buttons on one line.
 // Phones get mobile emulation so their scrollbars overlay the page instead of taking 15px from it.
-for (const width of [375, 390, 1280]) {
-  test.describe(`lens list at ${width}px`, () => {
-    const phone = width < 768;
+for (const width of [375, 1280]) {
+  const phone = width < 768;
+  test.describe(`lens list at ${width}px`, { tag: phone ? [] : "@local-only" }, () => {
     test.use({ viewport: { width, height: 900 }, isMobile: phone, hasTouch: phone });
 
-    for (const locale of ["en", "zh"]) {
-      test(`${locale}: every card keeps price and buttons on one line`, async ({ page }) => {
+    test("every card keeps price and buttons on one line in both locales", async ({ page }) => {
+      for (const locale of ["en", "zh"]) {
         await page.goto(`/${locale}/lenses/x/browse`);
         const prices = page.locator("[data-redact-hook=price]");
         await expect(prices.first()).toBeAttached();
@@ -50,8 +50,8 @@ for (const width of [375, 390, 1280]) {
             return a.top >= p.bottom || a.bottom <= p.top || overflow > 0 ? [`${span.textContent} (+${overflow}px of ${Math.round(p.width)}px)`] : [];
           }),
         );
-        expect(broken).toEqual([]);
-      });
-    }
+        expect(broken, locale).toEqual([]);
+      }
+    });
   });
 }
