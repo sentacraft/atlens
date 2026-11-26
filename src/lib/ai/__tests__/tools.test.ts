@@ -116,7 +116,7 @@ describe("showLensImages", () => {
         lensRef, role: image.role, preview: imageRef, imageCount: 1,
       })) },
       imagesForReading: output.displayImages.map(({ imageRef }) => imageRef),
-      mtfNote: expect.stringContaining("Interpret only legible curves"),
+      mtfNote: expect.stringContaining("Read a chart only from curves you can make out"),
     });
     expect(projected.value.filter((part) => part.type === "file")).toEqual(output.displayImages.map(({ src }) => expect.objectContaining({
       data: { type: "url", url: new URL(src) }, providerOptions: { deepseek: { imageDetail: "original" }, openai: { imageDetail: "high" } },
