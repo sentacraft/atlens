@@ -4,9 +4,15 @@ This guide defines the unified voice and formatting rules for all user-facing co
 
 ## Voice: Field Guide + Indie Craft
 
-- **Base (Field Guide)**: Calm, literal, accurate. Explain lenses through physical facts, optical behavior, and practical trade-offs. Avoid filler, exclamation marks, and marketing clichés.
-- **Accent (Indie Craft)**: Plain-spoken first-person honesty from one developer who also shoots Fujifilm. Light, dry humor is welcome in `About`, `Support`, `Feedback`, `Charts`, footer taglines, and empty states — never forced or self-congratulatory.
+- **Base (Field Guide)**: Honest, grounded, and accurate on facts and trade-offs. Explain lenses through physical behavior, handling, and real shooting compromises. Do not inflate claims, fabricate specs, or fall back on pseudo-academic filler.
+- **Accent (Indie Craft)**: Keep the rhythm and character of one Fujifilm shooter talking to another. Warmth, concrete imagery, and light dry humor belong in `brands.json`, `collections.json`, `About`, `Support`, `Feedback`, `Charts`, footer taglines, and empty states. Calm objectivity governs **truthfulness**, not flattening every sentence into a dry spec sheet.
+- **Taglines (`shortDescription`)**: As noted in `src/data/collections.md`, `shortDescription` is a punchy, memorable tagline with character — not a mechanical restatement of filter criteria.
 - **Intentional developer touches**: Keep `0 hallucination`, `lens.json loaded ✓`, and the browser console message as part of the site's identity.
+
+### Keep (Good Voice)
+
+- Conversational shooter judgment: `"plays nicest with the body"`, `"XF 加 XC，原厂原味"`, `"别家不太愿意做的，铭匠常常做"`, `"老蛙比的是谁更广、谁更近"`.
+- Light, concrete humor: `"Pat the bag. Still there."` / `"摸摸包，镜头还在"`, `"Takes a pep talk to pack"`.
 
 ## Pronouns
 
@@ -27,6 +33,6 @@ This guide defines the unified voice and formatting rules for all user-facing co
 
 ## Avoid
 
-- **AI prose tropes**: Abstract buzzwords and inflated phrasing such as *focal excursion*, *depth-of-field governance*, *optical tolerance*, *clinical subject isolation*, *sub-narratives*, *delivers the iconic*, *market dynamics*, *whatsoever*, *please do verify*, *I kindly ask for your patience*.
-- **Chinese marketing / social-media clichés**: `宝藏焦段`, `利器`, `控光利器`, `标杆`, `颠覆`, `天花板`, `回归纯粹`, `告别铁手练肌`, `剥离繁杂背景、拉近时空距离`, `带你窥探微观世界`, `值得玩味`, `快来看看 👀`, `超棒建议`.
+- **AI prose tropes**: Abstract buzzwords and inflated phrasing such as *focal excursion*, *depth-of-field governance*, *optical tolerance*, *clinical subject isolation*, *sub-narratives*, *delivers the iconic*, *market dynamics*, *seamlessly*, *whatsoever*, *please do verify*, *I kindly ask for your patience*.
+- **Chinese marketing / social-media clichés**: `宝藏焦段`, `控光利器`, `颠覆`, `天花板`, `回归纯粹`, `告别铁手练肌`, `剥离繁杂背景、拉近时空距离`, `带你窥探微观世界`, `值得玩味`, `快来看看 👀`, `超棒建议`.
 - **Resume / PR self-praise**: Avoid melodramatic framing (`执念与热情`, `超凡的能力`, `时代的技术红利`, `最诚挚的感激`, `deep conviction`, `my deepest gratitude`). State what was built and why plainly.
