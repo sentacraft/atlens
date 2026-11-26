@@ -129,7 +129,7 @@ that covers the bug:
 |---|---|
 | Pure logic — utilities, transforms, calculations | Vitest |
 | Component rendering or hook behavior | Vitest + `@testing-library/react` + jsdom (`// @vitest-environment jsdom`) |
-| Layout, interaction, browser APIs — fixed positioning, scroll, ResizeObserver, viewport | Playwright (`e2e/`) |
+| Layout, interaction, browser APIs — fixed positioning, scroll, ResizeObserver, viewport | Playwright (`e2e/`), `@local-only` unless it meets the cost rule below |
 | Pure CSS — color, spacing, font size, no conditional logic | No test required; verify with a screenshot |
 
 The AskIris eval (`eval/promptfoo/`) calls paid models on every case. Follow the cost rules
@@ -140,6 +140,22 @@ desktop-only screenshot is not evidence that a UI change works.
 
 Text must fit in both locales: don't give a text container a fixed width that only the Chinese copy
 fits. A PR that reworks layout gets the `text-fit-check` label.
+
+### When a Playwright test is worth its cost
+
+The CI E2E suite is a budget, not a safety net for every change: keep the `e2e` job under about
+4 minutes. Add a CI-gated Playwright test only when all of these hold:
+
+- No lighter layer can catch it (Vitest, or Vitest + jsdom for component behavior).
+- It guards a core path (browse, lens detail, compare, Ask Iris entry, sign-in), or a bug that has
+  regressed before.
+- It checks one behavior, at the viewport and engine where the bug lives. Add a spec to the
+  `ios-safari` list only for WebKit- or touch-specific behavior.
+
+Features do not get Playwright tests by default; verify them with desktop and 375px screenshots. A
+layout bug fix ships its regression test as `@local-only` unless it meets the rule above. A PR that
+adds a CI-gated E2E test says in its description which condition it meets. When a feature is removed
+or reworked, delete its tests rather than adapting them.
 
 ## Git workflow
 
