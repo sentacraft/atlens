@@ -498,7 +498,7 @@ describe("lists longer than one call returns", () => {
     const many = Array.from({ length: 20 }, (_, i) => refs[i % refs.length]);
 
     for (const tool of [lookup.lensReviews]) {
-      const schema = tool.inputSchema as { safeParse: (value: unknown) => { success: boolean } };
+      const schema = tool.inputSchema as unknown as { safeParse: (value: unknown) => { success: boolean } };
       expect(schema.safeParse({ refs: many }).success).toBe(true);
       expect(schema.safeParse({ refs: [] }).success).toBe(false);
     }
