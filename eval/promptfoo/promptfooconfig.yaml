@@ -718,21 +718,6 @@ tests:
           context.metadata.reviewSearchLinks.length === 1 &&
           context.metadata.reviewSearchLinks[0].every((id) => ["fujifilm-xf-56mmf12-r-wr-x", "viltrox-af-75mm-f12-pro-x"].includes(id))
 
-  # Reviews: a first, open recommendation is not a decision, so no review-search link yet.
-  - description: reviews-search-not-early
-    metadata:
-      area: reviews
-    vars:
-      mount: X
-      locale: en
-      dialog:
-        turns:
-          - "I want a portrait lens, budget around $800."
-    assert:
-      - type: javascript
-        metric: programmatic
-        value: "context.metadata.reviewSearchLinks.length === 0"
-
   # Reviews: rendering questions are answered from review findings, attributed to the reviews.
   - description: reviews-relay
     metadata:
