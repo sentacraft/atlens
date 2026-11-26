@@ -1,11 +1,10 @@
 import { readFileSync } from "node:fs";
-import { test, expect, type Page } from "@playwright/test";
+import { readVerification } from "../scripts/ci/preview-contract.mts";
+import { test, expect, type Page } from "./support/test";
 import { oneEachTemplate } from "../scripts/lib/route-templates.mjs";
 import { findTextProblems, type TextProblem } from "./support/text-overflow";
 
-// One page per route template and locale, so a new page type is checked the day it enters the
-// sitemap; text widths that only fit Chinese, or only a wide screen, show up here. Tagged @text-fit:
-// it runs weekly and on PRs labelled text-fit-check (.github/workflows/text-fit-check.yml), not on every PR.
+// Shared by cloud verification and the weekly, manual and labeled text-fit workflow.
 const VIEWPORTS = {
   desktop: { width: 1280, height: 900 },
   phone: { width: 375, height: 812 },
@@ -18,6 +17,9 @@ const EXTRA_PATHS = ["/en/lenses/x/compare?ids=fujifilm-xf-16mmf14-r-wr-x,sigma-
 const known = (problem: TextProblem) => problem.kind === "overlap" && [problem.text, problem.other].includes("Compare");
 
 async function pagesToCheck(page: Page): Promise<string[]> {
+  if (process.env.PREVIEW_VERIFICATION_FILE) {
+    return readVerification(process.env.PREVIEW_VERIFICATION_FILE).paths;
+  }
   const sitemap = await (await page.request.get("/sitemap.xml")).text();
   const paths = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => new URL(match[1]).pathname);
   const manifest = JSON.parse(readFileSync(".next/prerender-manifest.json", "utf8"));

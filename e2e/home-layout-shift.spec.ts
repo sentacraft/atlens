@@ -1,7 +1,7 @@
 // Regression: the random tagline under the collections appeared only after hydration and pushed
 // the whole centered hero up as it did.
 
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./support/test";
 
 test("the home page does not shift once it has loaded", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "Layout shift entries are Chromium-only");

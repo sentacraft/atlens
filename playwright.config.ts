@@ -1,10 +1,11 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// A production build under `next start`: dev-mode compilation makes timing assertions flaky.
-// Workerd-only regressions are covered by cf-smoke.yml and uptime.yml. Port 3100 so a stray
-// `next dev` is never reused.
+import { readVerification, verificationEnvironment } from "./scripts/ci/preview-contract.mts";
+
+const verification = process.env.PREVIEW_VERIFICATION_FILE
+  ? readVerification(process.env.PREVIEW_VERIFICATION_FILE) : undefined;
+const { remote, baseURL } = verificationEnvironment(verification);
 const PORT = 3100;
-const baseURL = `http://localhost:${PORT}`;
 
 // Safe-area values only hold on a mobile viewport, so this spec runs only on ios-pwa.
 const PWA_SPEC = /pwa-safe-area\.spec\.ts/;
@@ -17,13 +18,13 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  // GitHub's public-repo runners have 4 vCPUs, shared with the `next start` server; a third worker
-  // measured no faster than two.
+  // Bound request concurrency on the shared Preview resources.
   workers: process.env.CI ? 2 : undefined,
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "html",
 
   use: {
     baseURL,
+    serviceWorkers: remote ? "block" : "allow",
     trace: "on-first-retry",
   },
 
@@ -55,7 +56,7 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
+  webServer: remote ? undefined : {
     command: `pnpm run build && pnpm exec next start -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,

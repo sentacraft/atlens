@@ -1,6 +1,6 @@
 // Locks down the iris animation lifecycle, which has regressed back and forth.
 
-import { type Page, test, expect } from "@playwright/test";
+import { type Page, test, expect } from "./support/test";
 
 const ANIMATION_SETTLE_MS = 3000;
 

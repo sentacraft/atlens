@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/test";
 
 for (const width of [375, 949]) {
   test(`MTF option text fits the menu at ${width}px`, async ({ page }) => {

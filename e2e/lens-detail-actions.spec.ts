@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./support/test";
 import { irisToggle } from "./helpers";
 
 // Has three store links, so the price button carries its longest label.

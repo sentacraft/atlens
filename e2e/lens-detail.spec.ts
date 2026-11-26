@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./support/test";
 import { LENS_CARD_LINK } from "./helpers";
 
 const LENS_ID = "fujifilm-mkx-18-55mmt29-x";

@@ -1,17 +1,6 @@
 name: E2E
 
-# Playwright end-to-end tests against a PRODUCTION build (`next build` +
-# `next start`), never `next dev` — dev-mode compilation/HMR makes the
-# animation/scroll/hydration assertions flaky and diverges from what ships.
-# The server is built and booted by Playwright's `webServer` (see
-# playwright.config.ts); this job only needs to install deps.
-#
-# Why not the workerd/OpenNext runtime here: every page these tests touch
-# renders without runtime CF bindings (search is client-side; only the untested
-# /api/track beacon needs them). The workerd-only regression class is already
-# gated by cf-smoke.yml + uptime.yml, which sweep the whole sitemap on the real
-# runtime — so running the full browser matrix on workerd would add cost without
-# signal. Heavier than the lint/typecheck/unit CI, so it lives on its own.
+# Keep this Node baseline until Cloudflare Preview verification passes its cutover checks.
 
 on:
   pull_request:
@@ -26,6 +15,7 @@ jobs:
   # The container image must match the locked Playwright version exactly, or its browsers won't
   # match the test runner. Reading it from the lockfile keeps dependency bumps from breaking CI.
   playwright-version:
+    if: vars.CF_PREVIEW_VALIDATION != 'true'
     name: Resolve Playwright image
     runs-on: ubuntu-latest
     timeout-minutes: 5

@@ -11,9 +11,11 @@ must not exist here.
 
 Scripts are in `package.json`. `pnpm run lint` must pass before committing.
 
-Run `pnpm run preview` before merging any change to routing, rendering mode, or
-`next.config.ts`: some regressions appear only on workerd. See the `//preview` and `//start`
-entries in `package.json` for why `next start` is not a substitute.
+Routing, rendering-mode and Next/OpenNext configuration changes need Workers-runtime evidence.
+After the `CF_PREVIEW_VALIDATION` cutover, use the current commit's **Cloudflare Preview validation**
+check and fixed deployment; do not repeat the production build locally. Until that cutover, keep
+existing checks and the local preview requirement. See `docs/remote-verification.md` for activation,
+test coverage and explicit local diagnosis. A missing or stale remote check is not a pass.
 
 ## Project layout
 

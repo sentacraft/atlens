@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./support/test";
 
 const OWNED_ID = "fujifilm-xf-33mmf14-r-lm-wr-x";
 

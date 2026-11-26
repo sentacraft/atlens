@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./support/test";
 import { LENS_CARD_LINK } from "./helpers";
 
 async function layoutAt(page: Page, width: number) {

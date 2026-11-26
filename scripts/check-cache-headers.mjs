@@ -2,7 +2,11 @@
 // Checks prod serves SSG pages from the incremental cache: without the cache override every
 // SSG page silently re-renders per request, which no build-time check can see.
 
-const rawBase = process.env.BASE_URL;
+import { readVerification, previewHeaders } from "./ci/preview-contract.mts";
+
+const verification = process.env.PREVIEW_VERIFICATION_FILE
+  ? readVerification(process.env.PREVIEW_VERIFICATION_FILE) : undefined;
+const rawBase = verification?.baseUrl ?? process.env.BASE_URL;
 if (!rawBase) {
   console.error("✗ BASE_URL is required (e.g. https://atlens.app). Refusing to guess.");
   process.exit(1);
@@ -18,9 +22,9 @@ async function head(path) {
   const timer = setTimeout(() => ac.abort(), TIMEOUT_MS);
   try {
     const res = await fetch(`${BASE_URL}${path}`, {
-      redirect: "follow",
+      redirect: verification ? "manual" : "follow",
       signal: ac.signal,
-      headers: { "user-agent": "atlens-cache-check" },
+      headers: { "user-agent": "atlens-cache-check", ...(verification ? previewHeaders(verification, `${BASE_URL}${path}`) : {}) },
     });
     return {
       status: res.status,

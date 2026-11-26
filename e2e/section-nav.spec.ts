@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./support/test";
 
 const LENS_PATH = "/en/lenses/x/fujifilm-xf-56mmf12-r-wr-x";
 

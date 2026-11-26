@@ -1,4 +1,4 @@
-import { test, expect, type Locator } from "@playwright/test";
+import { test, expect, type Locator } from "./support/test";
 import type { LensReviewsView } from "../src/lib/lens/reviews-view";
 
 const LENS_ID = "fujifilm-mkx-18-55mmt29-x";

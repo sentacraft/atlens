@@ -1,0 +1,187 @@
+name: Cloudflare Preview validation
+
+on:
+  repository_dispatch:
+    types: [cloudflare_preview_ready]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Existing verification run to replay without rebuilding
+        type: string
+      revision:
+        description: Optional existing Preview commit SHA
+        type: string
+  workflow_call:
+    inputs:
+      run_id:
+        type: string
+        default: ""
+      revision:
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+    outputs:
+      sha: ${{ steps.start.outputs.sha }}
+      check_id: ${{ steps.start.outputs.check_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - id: resolve
+        name: Resolve an existing deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_RUN_ID: ${{ inputs.run_id }}
+          PREVIEW_REVISION: ${{ inputs.revision }}
+        run: node --experimental-strip-types scripts/ci/preview-workflow.mts resolve
+      - uses: actions/download-artifact@v4
+        if: steps.resolve.outputs.download == 'true'
+        with:
+          name: ${{ steps.resolve.outputs.artifact }}
+          run-id: ${{ steps.resolve.outputs.run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/preview-record
+      - id: start
+        name: Validate revision and open its check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node --experimental-strip-types scripts/ci/preview-workflow.mts start
+      - uses: actions/upload-artifact@v4
+        with:
+          name: preview-verification-${{ steps.start.outputs.sha }}
+          path: ${{ runner.temp }}/preview-record/verification.json
+          retention-days: 7
+          overwrite: true
+
+  browser-version:
+    needs: target
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.lock.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.target.outputs.sha }}
+          sparse-checkout: pnpm-lock.yaml
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - id: lock
+        run: |
+          node --input-type=module - <<'JS'
+          import { readFileSync, appendFileSync } from 'node:fs';
+          const version = readFileSync('pnpm-lock.yaml', 'utf8').match(/^  '@playwright\/test@([0-9.]+)':$/m)?.[1];
+          if (!version) throw new Error('No locked Playwright version');
+          appendFileSync(process.env.GITHUB_OUTPUT, `version=${version}\n`);
+          JS
+
+  smoke:
+    needs: target
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.target.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/download-artifact@v4
+        with:
+          name: preview-verification-${{ needs.target.outputs.sha }}
+          path: ${{ runner.temp }}/preview-record
+      - name: Probe deployed routes and cache behavior
+        env:
+          PREVIEW_VERIFICATION_FILE: ${{ runner.temp }}/preview-record/verification.json
+          PREVIEW_ACCESS_CLIENT_ID: ${{ secrets.PREVIEW_ACCESS_CLIENT_ID }}
+          PREVIEW_ACCESS_CLIENT_SECRET: ${{ secrets.PREVIEW_ACCESS_CLIENT_SECRET }}
+        run: |
+          node --experimental-strip-types scripts/ci/preview-workflow.mts inputs
+          node scripts/uptime-check.mjs
+          node scripts/check-cache-headers.mjs
+
+  browsers:
+    needs: [target, browser-version]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.browser-version.outputs.version }}-noble
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.target.outputs.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: preview-verification-${{ needs.target.outputs.sha }}
+          path: ${{ runner.temp }}/preview-record
+      - name: Verify build inputs and fetch pinned test data
+        env:
+          PREVIEW_VERIFICATION_FILE: ${{ runner.temp }}/preview-record/verification.json
+          LENS_CATALOG_TOKEN: ${{ secrets.LENS_CATALOG_TOKEN }}
+        run: |
+          node --experimental-strip-types scripts/ci/preview-workflow.mts inputs
+          pnpm run catalog:fetch
+      - name: Test existing deployment without a local server
+        env:
+          PREVIEW_REQUIRED: "true"
+          PREVIEW_VERIFICATION_FILE: ${{ runner.temp }}/preview-record/verification.json
+          PREVIEW_ACCESS_CLIENT_ID: ${{ secrets.PREVIEW_ACCESS_CLIENT_ID }}
+          PREVIEW_ACCESS_CLIENT_SECRET: ${{ secrets.PREVIEW_ACCESS_CLIENT_SECRET }}
+        run: pnpm exec playwright test --project=chromium --project=ios-safari --project=ios-pwa --grep-invert "@local-only"
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: preview-playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  result:
+    if: ${{ always() && needs.target.outputs.check_id != '' }}
+    needs: [target, smoke, browsers]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/download-artifact@v4
+        with:
+          name: preview-verification-${{ needs.target.outputs.sha }}
+          path: ${{ runner.temp }}/preview-record
+      - name: Publish result on the tested commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREVIEW_CHECK_ID: ${{ needs.target.outputs.check_id }}
+          PREVIEW_SMOKE_RESULT: ${{ needs.smoke.result }}
+          PREVIEW_BROWSER_RESULT: ${{ needs.browsers.result }}
+        run: node --experimental-strip-types scripts/ci/preview-workflow.mts finish

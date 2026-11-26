@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./support/test";
 
 // Desktop dialog only; below 640px the dialog is a drawer.
 test.beforeEach(({ page }, testInfo) => {

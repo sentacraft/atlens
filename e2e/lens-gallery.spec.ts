@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { test, expect, type CDPSession, type Locator, type Page } from "@playwright/test";
+import { test, expect, type CDPSession, type Locator, type Page } from "./support/test";
 import type { Lens } from "../src/lib/types";
 
 const publicAssets = JSON.parse(readFileSync(new URL("../src/data/public-assets.json", import.meta.url), "utf8")) as { assets: Record<string, { key: string }> };

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./support/test";
 
 test.describe("About content", () => {
   test("About includes the Ask Iris feature and privacy sections", async ({ page }) => {
