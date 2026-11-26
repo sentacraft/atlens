@@ -9,8 +9,11 @@ const baseURL = `http://localhost:${PORT}`;
 // Safe-area values only hold on a mobile viewport, so this spec runs only on ios-pwa.
 const PWA_SPEC = /pwa-safe-area\.spec\.ts/;
 
-// The WebKit pass runs only specs where the engine, viewport, or touch changes behavior.
-const MOBILE_ENGINE_SPECS = /(home-no-scroll|dynamic-ui|search|charts|lens-gallery)\.spec\.ts/;
+// The WebKit pass runs only specs that check WebKit- or touch-specific behavior.
+const MOBILE_ENGINE_SPECS = /(home-no-scroll|charts|lens-gallery)\.spec\.ts/;
+
+// Specs where a phone viewport changes the UI but the engine does not.
+const PHONE_LAYOUT_SPECS = /(dynamic-ui|search)\.spec\.ts/;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -37,6 +40,11 @@ export default defineConfig({
       name: "android",
       use: { ...devices["Pixel 5"] },
       testIgnore: PWA_SPEC,
+    },
+    {
+      name: "chromium-phone",
+      use: { ...devices["Pixel 5"] },
+      testMatch: PHONE_LAYOUT_SPECS,
     },
     {
       name: "ios-safari",
