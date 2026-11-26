@@ -17,8 +17,9 @@ This guide defines the unified voice and formatting rules for all user-facing co
 
 ## Pronouns
 
-- **First person**: Use `我` / `I`, `me`, `my` in direct site copy (`About`, `Auth`, `Feedback`, `Profile`, `Support`, `DataSource`, `Compare`). Do not use corporate `我们` / `we` / `us` or third-person `作者` / `the author` on the site itself.
-  - Exception: `src/lib/site-facts/handwritten.ts` stays in third person (`the author`) because Iris speaks about the maintainer.
+- **First person**: Use `我` / `I`, `me`, `my` for personal actions by the maintainer (`About`, `Feedback`, `Support`, `DataSource` review, `Compare` curated notes). Do not use corporate `我们` / `we` / `us` or third-person `作者` / `the author` on the site itself.
+  - Exception 1: `src/lib/site-facts/handwritten.ts` stays in third person (`the author`) because Iris speaks about the maintainer.
+  - Exception 2: Automated account, email, and security flows (`Auth` verification codes, account deletion, bot checks) use impersonal system phrasing so private emails and credentials never sound personally handled.
 - **Second person**: Always `你` / `you`. Never use stiff `您` or broadcast `大家`.
 - **Iris**: Refer to Iris as `it` (or `Iris`) in English, never `she` or `her`.
 
