@@ -100,17 +100,46 @@ async function postTurn(messages, mount, locale, conversationId, vars, continuin
   return msg;
 }
 
-// The gear card and the sign-in card stop a turn until the user answers. The eval answers as
-// a guest who carries on without signing in (or, for the gear card, as the case's
-// `gearCardAnswer`) and lets Iris go on, so the rest of the reply is still graded. A case with
-// `stopAtGearCard` grades only whether the gear card showed, so it ends the dialog there
-// instead of paying for the recommendation that follows.
-function answerCards(message, gearOutcome) {
-  const shown = { gear: false, signIn: false };
+// The gear card, sign-in card, and choice card can stop a turn until the user answers. The eval
+// answers as a guest who carries on without signing in (or as the case's `gearCardAnswer` /
+// `choiceCardAnswer`) and lets Iris go on, so the rest of the reply is still graded. A case with
+// `stopAtGearCard` grades only whether the gear card showed, and cases without `choiceCardAnswer`
+// stop at `askChoices` rather than paying for a resumed turn.
+function formatChoiceOutput(questions, choiceAnswer) {
+  if (choiceAnswer === "skipped") {
+    return { output: { outcome: "skipped" }, summary: "(skipped)" };
+  }
+  const picks = Array.isArray(choiceAnswer)
+    ? choiceAnswer
+    : Array.isArray(choiceAnswer?.picks)
+      ? choiceAnswer.picks
+      : null;
+  const answers = questions.map((q, i) => {
+    const pick = picks ? (picks[i] ?? q.options?.[0]) : q.options?.[0];
+    return {
+      question: q.question,
+      picked: pick ? [pick] : [],
+    };
+  });
+  const summary = answers
+    .map((a) => `${a.question}: ${a.picked.join(", ") || "(none)"}`)
+    .join(" | ");
+  return { output: { outcome: "answered", answers }, summary };
+}
+
+function answerCards(message, { gearOutcome, choiceAnswer }) {
+  const shown = { gear: false, signIn: false, choice: false };
+  let choiceSummary = "";
   const parts = message.parts.map((part) => {
     if (part.type === "tool-askForGear" && part.state === "input-available") {
       shown.gear = true;
       return { ...part, state: "output-available", output: { outcome: gearOutcome } };
+    }
+    if (part.type === "tool-askChoices" && part.state === "input-available" && choiceAnswer) {
+      shown.choice = true;
+      const formatted = formatChoiceOutput(part.input?.questions ?? [], choiceAnswer);
+      choiceSummary = formatted.summary;
+      return { ...part, state: "output-available", output: formatted.output };
     }
     if (part.state === "approval-requested" && !part.approval?.isAutomatic) {
       shown.signIn = true;
@@ -118,7 +147,9 @@ function answerCards(message, gearOutcome) {
     }
     return part;
   });
-  return shown.gear || shown.signIn ? { message: { ...message, parts }, shown } : null;
+  return shown.gear || shown.signIn || shown.choice
+    ? { message: { ...message, parts }, shown, choiceSummary }
+    : null;
 }
 
 function refsFromOutput(output) {
@@ -371,20 +402,46 @@ export default class AskIrisProvider {
     const convo = [];
     const recalledEver = new Set();
     const reviewsEver = [];
+    const allPicks = [];
+    const allPickGroups = [];
+    const allQueries = [];
+    const allSearches = [];
+    const allToolsCalled = [];
+    let maxSteps = 0;
     let gearCardShown = false;
     let signInCardShown = false;
+    let choiceCardShown = false;
+    let choiceCardCount = 0;
     let d = digest(null);
     for (let i = 0; i < turns.length; i++) {
       messages.push({ id: crypto.randomUUID(), role: "user", parts: [{ type: "text", text: turns[i] }] });
       convo.push(`[User] ${turns[i]}`);
       let assistant = await postTurn(messages, mount, locale, conversationId, context?.vars);
-      const answered = assistant && answerCards(assistant, context?.vars?.gearCardAnswer ?? "not_signed_in");
-      if (answered) {
+      for (let round = 0; round < 2 && assistant; round++) {
+        const answered = answerCards(assistant, {
+          gearOutcome: context?.vars?.gearCardAnswer ?? "not_signed_in",
+          choiceAnswer: context?.vars?.choiceCardAnswer,
+        });
+        if (!answered) {
+          break;
+        }
         gearCardShown ||= answered.shown.gear;
         signInCardShown ||= answered.shown.signIn;
-        if (!(answered.shown.gear && context?.vars?.stopAtGearCard)) {
-          assistant = await postTurn([...messages, answered.message], mount, locale, conversationId, context?.vars, answered.message);
+        choiceCardShown ||= answered.shown.choice;
+        if (answered.shown.gear && context?.vars?.stopAtGearCard) {
+          break;
         }
+        if (answered.shown.choice && answered.choiceSummary) {
+          convo.push(`[User choice] ${answered.choiceSummary}`);
+        }
+        assistant = await postTurn(
+          [...messages, answered.message],
+          mount,
+          locale,
+          conversationId,
+          context?.vars,
+          answered.message,
+        );
       }
       if (assistant) {
         messages.push(assistant);
@@ -393,6 +450,17 @@ export default class AskIrisProvider {
           recalledEver.add(ref);
         }
         reviewsEver.push(...d.reviews);
+        allPicks.push(...d.picks);
+        allPickGroups.push(...d.pickGroups);
+        allQueries.push(...d.queries);
+        allSearches.push(...d.searches);
+        allToolsCalled.push(...d.toolsCalled);
+        maxSteps = Math.max(maxSteps, d.steps);
+        const turnChoices = d.toolsCalled.filter((t) => t === "askChoices").length;
+        if (turnChoices > 0) {
+          choiceCardShown = true;
+          choiceCardCount += turnChoices;
+        }
         convo.push(`[Iris]\n${d.output}`);
       }
       if (gearCardShown && context?.vars?.stopAtGearCard) {
@@ -424,9 +492,13 @@ export default class AskIrisProvider {
         unknownSourceLinks: sourceLinks.filter((key) => !fetchedSources.has(key)),
         picks: d.picks,
         pickGroups: d.pickGroups,
+        allPicks,
+        allPickGroups,
         tables: d.tables,
         queries: d.queries,
+        allQueries,
         searches: d.searches,
+        allSearches,
         details: d.details,
         imageRequests: d.imageRequests,
         imageResults: d.imageResults,
@@ -434,13 +506,18 @@ export default class AskIrisProvider {
         images: d.images,
         reviews: d.reviews,
         recalledRefs: d.recalledRefs,
+        allRecalledRefs: [...recalledEver],
         steps: d.steps,
+        maxSteps,
         preToolText: d.preToolText,
         toolsCalled: d.toolsCalled,
+        allToolsCalled,
         feedbackDrafts: d.feedbackDrafts,
         specGuideInputs: d.specGuideInputs,
         gearCardShown,
         signInCardShown,
+        choiceCardShown,
+        choiceCardCount,
         turnsRun: turns.length,
       },
     };

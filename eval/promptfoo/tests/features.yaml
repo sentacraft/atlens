@@ -1,0 +1,303 @@
+# Reviews: once the user is about to decide between a few lenses, the reply suggests other
+# sites' reviews of those lenses, through one link.
+- description: reviews-search-at-decision
+  metadata:
+    area: reviews
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "拍人像，在富士 XF 56mm F1.2 R WR 和唯卓仕 AF 75mm F1.2 Pro 之间纠结"
+        - "就这两支了，帮我定一个吧"
+  assert:
+    - type: javascript # one link, naming only lenses the conversation is deciding between
+      metric: programmatic
+      value: >-
+        context.metadata.reviewSearchLinks.length === 1 &&
+        context.metadata.reviewSearchLinks[0].every((id) => ["fujifilm-xf-56mmf12-r-wr-x", "viltrox-af-75mm-f12-pro-x"].includes(id))
+
+# Reviews: rendering questions are answered from review findings, attributed to the reviews.
+- description: reviews-relay
+  metadata:
+    area: reviews
+  vars:
+    mount: X
+    locale: zh
+    namesModels: true
+    dialog:
+      turns:
+        - "富士 XF35mm F1.4 R 的锐度和焦外口碑怎么样？"
+  assert:
+    - file://assertions/no-deck.yaml
+    - type: javascript # answered from findings it actually fetched
+      metric: programmatic
+      value: "context.metadata.reviews.some((lens) => lens.claims.length > 0)"
+    - type: javascript # cites the findings it relays, and only sources the tool returned
+      metric: programmatic
+      value: "context.metadata.sourceLinks.length > 0 && context.metadata.unknownSourceLinks.length === 0"
+    - type: llm-rubric
+      metric: reviews
+      value: >-
+        The reply should present sharpness and background blur as what published
+        reviews report — attributed to reviews, saying where they agree or how many
+        back a point, and noting any disagreement — not as Atlens's own testing or as
+        Iris's opinion. It fails if it states verdicts as plain fact with no attribution,
+        or claims Atlens tested the lens.
+
+# Reviews: a body-dependent finding from older or unstated bodies is caveated against the
+# user's camera instead of being applied to it as is.
+- description: reviews-stale-body
+  metadata:
+    area: reviews
+  vars:
+    mount: X
+    locale: zh
+    namesModels: true
+    dialog:
+      turns:
+        - "XF27mm F2.8 R WR 对焦速度怎么样？我用的是 X-T5。"
+  assert:
+    - file://assertions/no-deck.yaml
+    - type: javascript # the findings it fetched carried staleness
+      metric: programmatic
+      value: "context.metadata.reviews.some((lens) => lens.claims.some((claim) => claim.aspect === 'autofocus' && claim.stale.length > 0))"
+    - type: javascript # cites the findings it relays, and only sources the tool returned
+      metric: programmatic
+      value: "context.metadata.sourceLinks.length > 0 && context.metadata.unknownSourceLinks.length === 0"
+    - type: llm-rubric
+      metric: reviews
+      value: >-
+        Reviews found this lens's autofocus slow, but they tested on an older body or
+        did not say which body. The reply should relay the finding as the reviews' and
+        make clear it may not carry over as is to the user's X-T5, which focuses
+        differently. It fails if it tells the user how fast the lens will focus on the
+        X-T5 as settled fact, or drops the reviews' finding altogether.
+
+# Table: a filter-and-sort request answers with a listLenses table that keeps every constraint.
+- description: table-budget-weight
+  metadata:
+    area: table
+  vars:
+    mount: X
+    locale: zh
+    budgetCNY: 1000
+    dialog:
+      turns:
+        - "把 1000 元以内的自动对焦定焦按重量排一张表"
+  assert:
+    - type: javascript # a table, not cards or prose
+      metric: programmatic
+      value: "context.metadata.tables.length > 0"
+    - type: javascript # every row is an autofocus prime within budget
+      metric: programmatic
+      value: "context.metadata.tables.at(-1).rows.every((r) => r.af === true && r.fmin === r.fmax && (r.price == null || r.price <= 1000))"
+    - type: javascript # rows run light to heavy
+      metric: programmatic
+      value: "context.metadata.tables.at(-1).rows.map((r) => r.weightG).filter((w) => w != null).every((w, i, a) => i === 0 || a[i - 1] <= w)"
+
+# The browse page's "Ask Iris" entry sends the filters in force. They say little about the use, so
+# the reply should commit to a starting pick within them and ask one question, not list a table.
+- description: handoff-browse-zh
+  metadata:
+    area: handoff
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "我在筛镜头：定焦 · 自动 · 广角。帮我缩小范围，先给我一两支合适的"
+  assert:
+    - type: javascript # cards, all primes (the filter), not only a table
+      metric: programmatic
+      value: "context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.fmin === p.fmax)"
+    - type: javascript # at most one question
+      metric: programmatic
+      value: "output.split('[Iris]').pop().split('\\n').filter((line) => /[？?]/.test(line)).length <= 1"
+
+- description: handoff-browse-en
+  metadata:
+    area: handoff
+  vars:
+    mount: X
+    locale: en
+    dialog:
+      turns:
+        - "I'm filtering lenses by Primes · Auto · Wide. Help me narrow it down, starting with a pick or two."
+  assert:
+    - type: javascript # cards, all primes (the filter), not only a table
+      metric: programmatic
+      value: "context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.fmin === p.fmax)"
+    - type: javascript # at most one question
+      metric: programmatic
+      value: "output.split('[Iris]').pop().split('\\n').filter((line) => /[？?]/.test(line)).length <= 1"
+
+# Links: Iris copies fact links and writes compare links by key or ref, never a raw URL.
+- description: link-support
+  metadata:
+    area: links
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "我想支持一下作者，怎么赞赏？"
+  assert:
+    - type: javascript
+      metric: links
+      value: "context.metadata.toolsCalled.includes('siteInfo') && /\\]\\(page:aboutSupport\\)/.test(output) && !/https?:\\/\\/(www\\.)?atlens/.test(output)"
+
+- description: link-compare
+  metadata:
+    area: links
+  vars:
+    mount: X
+    locale: zh
+    namesModels: true
+    dialog:
+      turns:
+        - "XF 23mm F1.4 R LM WR 和 XF 33mm F1.4 R LM WR，我想把完整参数放一起逐项看。"
+  assert:
+    - type: javascript
+      metric: links
+      value: "context.metadata.compareLinks.some((refs) => refs.length === 2) && !/https?:\\/\\//.test(output)"
+
+# Favorites: Iris reads a signed-in user's favorites through myFavorites.
+- description: favorites-compare
+  metadata:
+    area: favorites
+  vars:
+    mount: X
+    locale: zh
+    favorites:
+      lenses: [fujifilm-xf-23mmf14-r-lm-wr-x, fujifilm-xf-33mmf14-r-lm-wr-x, viltrox-af-27mm-f12-pro-x]
+    dialog:
+      turns:
+        - "帮我比较一下我收藏的那几支镜头，哪支更适合扫街？"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript
+      metric: favorites
+      value: "context.metadata.toolsCalled.includes('myFavorites') && context.metadata.linkIds.length + context.metadata.picks.length + context.metadata.tables.length > 0"
+
+# Camera body questions are answered from the body catalogue; a field it lacks is said to be missing.
+- description: bodies-ibis-list-zh
+  metadata:
+    area: bodies
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "富士哪些机身有 7 档防抖？"
+  assert:
+    - type: javascript
+      metric: programmatic
+      value: "context.metadata.toolsCalled.includes('queryBodies')"
+    - type: llm-rubric
+      metric: behavior-floor
+      value: >-
+        The reply lists Fujifilm bodies with about 7 stops of stabilization, drawn from the tool
+        result (X-H2S, X-H2, X-T5, X-S20, X-T50, X-E5 are in the catalogue). It must not name a
+        body that the tool result did not return as having 7 stops.
+
+- description: bodies-out-of-scope-zh
+  metadata:
+    area: bodies
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "X-T5 现在卖多少钱？值得买吗？"
+  assert:
+    - type: llm-rubric
+      metric: behavior-floor
+      value: >-
+        Atlens holds no prices or reviews for camera bodies. The reply says so instead of quoting
+        a price or a verdict on the body. It may give the X-T5's catalogue specs and offer to
+        help with lenses.
+
+# Spec guide: spec conventions come from readSpecGuide.
+- description: term-min-focus-distance
+  metadata:
+    area: terms
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "规格页上写最近对焦距离 0.3m，我拿尺子从镜头前端量，只有二十来厘米就能对上焦，为什么？"
+  assert:
+    - type: javascript
+      metric: terms
+      value: "context.metadata.toolsCalled.includes('readSpecGuide') && context.metadata.specGuideInputs.every(input => input && Object.keys(input).length === 0) && /感光元件|焦平面|传感器/.test(output.split('[Iris]').pop())"
+
+# Site: questions about Atlens itself are answered from siteInfo, and only from it.
+- description: site-model-undisclosed
+  metadata:
+    area: site
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "Ask Iris 背后用的是哪家的 AI 模型？"
+  assert:
+    - type: javascript
+      metric: site
+      value: "context.metadata.toolsCalled.includes('siteInfo') && !/qwen|通义|千问|阿里|dashscope|openai|gpt|claude|gemini|deepseek/i.test(output.split('[Iris]').pop())"
+
+- description: site-capabilities
+  metadata:
+    area: site
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "你都能帮我做什么？有什么是你做不到的？"
+  assert:
+    - type: javascript
+      metric: site
+      value: "context.metadata.toolsCalled.includes('siteInfo')"
+    - type: llm-rubric
+      metric: site
+      value: >-
+        Iris's facts list what it can do — find and recommend lenses as cards, lay them out
+        in a spec table, explain how they differ, look up lens specs, sum up published review findings for lenses that have them, look up Fujifilm camera body specs, use a signed-in user's saved
+        gear and favorites, answer questions about Atlens with links to the pages that say
+        more, link to collections and the compare page — and its limits: it can be wrong, it only knows what Atlens
+        has collected, and it has usage limits. The reply must not claim an ability outside
+        that list, such as placing orders, quoting live prices, or searching other websites;
+        looking something up in Atlens's own facts is not browsing the web. It should mention
+        at least one of those limits.
+
+# Feedback cards prepare a draft; the visitor, not the model, submits it.
+- description: feedback-data-context
+  metadata:
+    area: feedback
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "富士 XF 27mm F2.8 R WR 的重量可能不对，帮我反馈给作者核对，不知道正确值。"
+  assert:
+    - type: javascript
+      metric: feedback
+      value: "context.metadata.feedbackDrafts.some(d => d.input?.field === 'weight' && d.output?.type === 'data_issue' && d.output.context?.lensId && !d.output.context?.suggestedCorrection && !d.output.context?.searchQuery)"
+
+- description: feedback-concept-is-not-a-complaint
+  metadata:
+    area: feedback
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "我还是不理解等效焦距是什么意思，能换个方式解释吗？"
+  assert:
+    - type: javascript
+      metric: feedback
+      value: "!context.metadata.toolsCalled.includes('prepareFeedback')"

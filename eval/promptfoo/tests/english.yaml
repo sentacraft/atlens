@@ -1,0 +1,140 @@
+# English: the Chinese cases carry most of the suite, so these cover what only an English
+# visitor hits.
+- description: en-budget-travel-one-lens
+  metadata:
+    area: english
+  vars:
+    mount: X
+    locale: en
+    dialog:
+      turns:
+        - "I shoot with an X-T50 and travel a lot. I want one lens that does everything, around $600. What would you suggest?"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript # the $600 reaches the recall as dollars, not as a converted or invented figure
+      metric: programmatic
+      value: "context.metadata.queries.some((q) => q.input.maxPrice != null && q.input.maxPrice >= 450 && q.input.maxPrice <= 900)"
+    - type: javascript # an all-in-one ask lands on at least one zoom
+      metric: programmatic
+      value: "context.metadata.picks.some((p) => p.fmin != null && p.fmax != null && p.fmax > p.fmin)"
+
+# Multi-step English comparison (macro + portrait + MTF/reviews): must not askChoices or leak Chinese.
+- description: en-compare-macro-vs-portrait
+  metadata:
+    area: english
+  vars:
+    mount: X
+    locale: en
+    namesModels: true
+    dialog:
+      turns:
+        - "Compare having 80 mm macro for macro and portraiture both, with Fujinon XF 30 mm macro and 90 mm lens for portraiture"
+  assert:
+    - type: javascript # explicit comparison answers directly without a choice card
+      metric: english
+      value: "!context.metadata.toolsCalled.includes('askChoices')"
+    - type: javascript # covers all three compared lenses
+      metric: english
+      value: "['80mm', '30mm', '90mm'].every((f) => new RegExp(f, 'i').test(output))"
+
+- description: en-gear-kit-lens-portrait
+  metadata:
+    area: english
+  vars:
+    mount: X
+    locale: en
+    gear:
+      bodies: [fujifilm-x-e5]
+      lenses: [fujifilm-xc-15-45mmf35-56-ois-pz-x]
+    dialog:
+      turns:
+        - "I have an X-E5 with the kit lens. What should I add for portraits?"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: llm-rubric
+      metric: gear
+      value: >-
+        The user's saved gear (not shown in the conversation) is a Fujifilm X-E5 body and the
+        XC 15-45mm kit zoom. The reply takes that into account: it relates its suggestions to
+        the kit lens (for example, what a portrait prime adds over it) or to the X-E5. It
+        fails if it ignores the owned gear entirely or suggests the owned kit lens.
+
+- description: en-chinese-question
+  metadata:
+    area: english
+  vars:
+    mount: X
+    locale: en
+    expectsChinese: true
+    dialog:
+      turns:
+        - "有哪些一镜走天下的镜头？"
+  assert:
+    - type: llm-rubric
+      metric: english
+      value: >-
+        The reply is written in Chinese, the language the user wrote in, even though the
+        interface language is English. Lens names and card text may stay as the catalogue
+        gives them. It fails if the reply's own prose is in English.
+
+- description: en-italian-newest-lenses
+  metadata:
+    area: english
+  vars:
+    mount: X
+    locale: en
+    dialog:
+      turns:
+        - "lenti rilasciate negli ultimi 3 anni, lista"
+  assert:
+    - type: javascript # the "last 3 years" ask is passed to the recall as a year filter
+      metric: english
+      value: "context.metadata.queries.some((q) => q.input.minReleaseYear != null && q.input.minReleaseYear >= 2022)"
+    - type: llm-rubric
+      metric: english
+      value: >-
+        The reply is written in Italian, the language the user wrote in, even though the
+        interface language is English. It lists lenses released in roughly the last three
+        years. It also says that some lenses have no recorded release year and so may be
+        missing from the list. It fails if it answers in English, or presents the list as
+        complete without that caveat.
+
+- description: en-newest-from-undated-brand
+  metadata:
+    area: english
+  vars:
+    mount: X
+    locale: en
+    dialog:
+      turns:
+        - "What's the newest lens from TTArtisan?"
+  assert:
+    - type: llm-rubric
+      metric: english
+      value: >-
+        TTArtisan lenses have no release year in the catalog. The reply says so, and does not
+        name a lens as "the newest" as if the catalog knew. Offering another way to tell (the
+        user can check the brand's own site, or the reply can list the lineup without dates)
+        is fine. It fails if it names a single lens as the newest with confidence.
+
+- description: en-site-who-and-data
+  metadata:
+    area: english
+  vars:
+    mount: X
+    locale: en
+    dialog:
+      turns:
+        - "Who runs this site, and is the lens data official?"
+  assert:
+    - file://assertions/no-deck.yaml
+    - type: javascript
+      metric: english
+      value: "context.metadata.toolsCalled.includes('siteInfo')"
+    - type: llm-rubric
+      metric: english
+      value: >-
+        The reply says the site is built and maintained by one person and that the specs come
+        from manufacturers' official sources through a data pipeline, with a caveat that errors
+        are possible and key specs should be confirmed with the manufacturer before buying. It
+        fails if it claims the data is guaranteed accurate or official on behalf of the brands.

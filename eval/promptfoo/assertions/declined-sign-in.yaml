@@ -1,0 +1,7 @@
+# For a guest who was shown the sign-in card and chose not to sign in.
+type: llm-rubric
+metric: guard
+value: >-
+  A card asked this guest to sign in so Iris could read their account, and they
+  chose not to. Stating that reading it needs signing in is fine. It fails only if
+  the reply suggests they sign in, now or later ("or sign in and ask me again").

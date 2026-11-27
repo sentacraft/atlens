@@ -1,0 +1,15 @@
+# The card standard. Passes any reply that puts no lens forward; attached only to
+# cases whose reply can recommend, and owns "recommended in prose instead of cards".
+type: llm-rubric
+metric: card-quality
+value: >-
+  If the reply includes recommendation cards, each card carries its own reason
+  line — one to three sentences on what the lens is good for and its main
+  trade-off. A spec table carries no reasons; this does not apply to its rows.
+  The reply fails in only two cases. (1) The prose works through the carded
+  lenses one by one, re-describing each card's case as a standalone write-up
+  parallel to the cards. (2) The prose stands in for cards: the reply is
+  recommending lenses for the user to choose from, yet none of them is on a card
+  or in a table, only listed in the prose. Once the main picks are on cards or in
+  a table, any other lens the prose mentions, in any role, is fine. Comparing
+  lenses the user named, in prose or in a table, needs no cards. A reply that puts no lens forward passes.

@@ -1,0 +1,4 @@
+# Iris never words sign-in herself: the sign-in card does that. Guest cases carry it.
+type: javascript
+metric: guard
+value: "!/登录|sign[ -]?in|log[ -]?in/i.test(output.split('[Iris]').slice(1).join(''))"
