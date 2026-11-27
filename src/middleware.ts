@@ -2,7 +2,15 @@
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
-import { INTERNAL_COOKIE, INTERNAL_COOKIE_MAX_AGE } from "@/lib/analytics/session";
+import {
+  INTERNAL_COOKIE,
+  INTERNAL_COOKIE_MAX_AGE,
+  VID_COOKIE,
+  VID_TTL_SECONDS,
+  isOptedOutOfStats,
+  readVid,
+} from "@/lib/analytics/session";
+import { classifyUserAgent } from "@/lib/analytics/request-class";
 import { LOCALE_PREFERENCE_COOKIE, savedLocaleRedirectPath } from "@/lib/locale-preference";
 
 // Internal param: keep the Obsidian doc "Internal params & cookies" in sync.
@@ -18,6 +26,24 @@ function markInternal(res: NextResponse) {
     maxAge: INTERNAL_COOKIE_MAX_AGE,
   });
   return res;
+}
+
+function isPrefetch(req: NextRequest): boolean {
+  return (
+    req.headers.get("next-router-prefetch") !== null ||
+    req.headers.get("purpose") === "prefetch" ||
+    (req.headers.get("sec-purpose") ?? "").includes("prefetch")
+  );
+}
+
+function shouldMintVid(req: NextRequest): boolean {
+  return (
+    req.method === "GET" &&
+    !readVid(req.cookies) &&
+    !isOptedOutOfStats(req.cookies) &&
+    !isPrefetch(req) &&
+    classifyUserAgent(req.headers.get("user-agent")) !== "bot"
+  );
 }
 
 const i18nMiddleware = createMiddleware(routing);
@@ -54,6 +80,16 @@ export default function middleware(req: NextRequest) {
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
       maxAge: ONE_YEAR,
+    });
+  }
+  // Mint atlens_vid on the HTML response so concurrent mount-time /api/track calls share one vid.
+  if (shouldMintVid(req)) {
+    res.cookies.set(VID_COOKIE, crypto.randomUUID(), {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: VID_TTL_SECONDS,
     });
   }
   return res;

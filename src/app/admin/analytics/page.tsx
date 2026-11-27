@@ -62,8 +62,9 @@ export default async function AnalyticsOverviewPage({
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       <p className="mb-4 text-sm text-zinc-500">
-        Days in China time (UTC+8); internal traffic excluded. Before {D1_CUTOVER_DAY}, each 30-minute session counted as
-        its own visitor, so visitor counts from that period run high.
+        Days in China time (UTC+8); internal and bot traffic excluded (bot sessions stay in &ldquo;Where sessions come
+        from&rdquo;). Before {D1_CUTOVER_DAY}, each 30-minute session counted as its own visitor, so visitor counts from
+        that period run high.
       </p>
       <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatTile
@@ -175,6 +176,7 @@ export default async function AnalyticsOverviewPage({
                 { term: "Country", description: "From Cloudflare, by IP address; the address itself is not stored" },
                 { term: "Network", description: "Data center, mobile or other, guessed from the network operator's name" },
                 { term: "Coverage", description: "Only sessions with this request data, which started being recorded on the date above" },
+                { term: "Bots", description: "Bot sessions are shown here for visibility, even though they are excluded from the metrics above" },
               ]}
             />
           }

@@ -67,7 +67,16 @@ export default async function AnalyticsDiscoveryPage({
           columns={[{ key: "display", label: "Lens", titleKey: "lens_id" }, { key: "n", label: "Picks", align: "right", widthClass: COUNT_WIDTH }]}
         />
       </Card>
-      <Card title="Pages · most viewed" subtitle="Page views, by page" info={<EventDefinitions event="page_view" />}>
+      <Card
+        title="Pages · most viewed"
+        subtitle="Page views, by page"
+        info={
+          <div className="space-y-2">
+            <EventDefinitions event="page_view" />
+            <p>Ask Iris opens in a side panel or phone sheet without changing the route, so its usage is tracked on the Iris tab rather than in page views.</p>
+          </div>
+        }
+      >
         <Table rows={pageViews} columns={[{ key: "path", label: "Page" }, { key: "n", label: "Views", align: "right", widthClass: COUNT_WIDTH }]} />
       </Card>
       <Card

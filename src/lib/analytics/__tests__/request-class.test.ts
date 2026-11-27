@@ -5,8 +5,16 @@ describe("classifyNetwork", () => {
   it.each([
     ["Amazon.com, Inc.", "datacenter"],
     ["DigitalOcean, LLC", "datacenter"],
+    ["Google", "datacenter"],
+    ["Google LLC", "datacenter"],
+    ["Google Cloud", "datacenter"],
+    ["Google Fiber Inc.", "other"],
+    ["Cloudflare, Inc.", "datacenter"],
+    ["Huawei Cloud Service", "datacenter"],
+    ["Beijing ByteDance Technology Co., Ltd.", "datacenter"],
     ["T-Mobile USA, Inc.", "mobile"],
     ["Comcast Cable Communications, LLC", "other"],
+    ["China Telecom", "other"],
   ])("%s -> %s", (organization, expected) => {
     expect(classifyNetwork(organization)).toBe(expected);
   });

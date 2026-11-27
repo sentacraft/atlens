@@ -56,7 +56,8 @@ export function dayOf(ts: number): string {
   return new Date(ts + DAY_OFFSET_SECONDS * 1000).toISOString().slice(0, 10);
 }
 
-const IN_WINDOW = "internal = 0 AND ts >= ?1 AND ts < ?2";
+const IN_WINDOW_WITH_BOTS = "internal = 0 AND ts >= ?1 AND ts < ?2";
+const IN_WINDOW = `${IN_WINDOW_WITH_BOTS} AND (ua_class IS NULL OR ua_class != 'bot')`;
 
 async function rows<T>(db: D1Database, sql: string, ...params: (string | number)[]): Promise<T[]> {
   const { results } = await db.prepare(sql).bind(...params).all<T>();
@@ -721,7 +722,7 @@ export async function loadSessionSources(db: D1Database, window: TimeWindow): Pr
       `SELECT src, ua_class, country, network, COUNT(*) AS n FROM (
          SELECT session_id, MAX(json_extract(props, '$.src')) AS src, MAX(ua_class) AS ua_class,
                 MAX(country) AS country, MAX(network) AS network
-         FROM event_sessions WHERE ${IN_WINDOW} AND origin = 'live'
+         FROM event_sessions WHERE ${IN_WINDOW_WITH_BOTS} AND origin = 'live'
          GROUP BY session_id
          HAVING MAX(ua_class) IS NOT NULL OR MAX(country) IS NOT NULL
        )
