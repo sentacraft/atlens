@@ -246,6 +246,14 @@ export type Recommendation = ResolvedLens & { reason: string; owned?: boolean };
 // A "56" request still catches a 55mm lens.
 const FOCAL_MATCH_TOLERANCE = 0.1;
 
+export interface RecallSummary {
+  primes: number;
+  zooms: number;
+  brands: Record<string, number>;
+  focalMinMm: number | null;
+  focalMaxMm: number | null;
+}
+
 export interface RecallResult {
   matches: RecalledLens[];
   maybe: { lens: RecalledLens; missingFields: string[] }[];
@@ -253,6 +261,33 @@ export interface RecallResult {
   totalMaybe: number;
   /** Brands behind every "maybe" lens, not only the capped list: the reason a field is missing is often a whole brand. */
   maybeBrands: string[];
+  /** Present only when matches are truncated beyond `maxCount`, summarizing the full matched set. */
+  summary?: RecallSummary;
+}
+
+function summarizeMatched(lenses: Lens[], tBrand: (brand: string) => string): RecallSummary {
+  let primes = 0;
+  let zooms = 0;
+  let focalMinMm: number | null = null;
+  let focalMaxMm: number | null = null;
+  const brandCounts = new Map<string, number>();
+
+  for (const lens of lenses) {
+    if (isZoom(lens)) {
+      zooms++;
+    } else {
+      primes++;
+    }
+    const brand = tBrand(lens.brand);
+    brandCounts.set(brand, (brandCounts.get(brand) ?? 0) + 1);
+    focalMinMm = focalMinMm === null ? lens.focalLengthMin : Math.min(focalMinMm, lens.focalLengthMin);
+    focalMaxMm = focalMaxMm === null ? lens.focalLengthMax : Math.max(focalMaxMm, lens.focalLengthMax);
+  }
+
+  const brands = Object.fromEntries(
+    [...brandCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])),
+  );
+  return { primes, zooms, brands, focalMinMm, focalMaxMm };
 }
 
 type Verdict =
@@ -564,6 +599,7 @@ export function recallLenses(
     totalMatched: ranked.length,
     totalMaybe: maybe.length,
     maybeBrands: [...new Set(maybe.map((m) => tBrand(m.lens.brand)))],
+    ...(ranked.length > maxCount ? { summary: summarizeMatched(ranked, tBrand) } : {}),
   };
 }
 

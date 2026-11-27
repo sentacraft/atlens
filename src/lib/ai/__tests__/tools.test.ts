@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { z } from "zod";
 import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { systemPrompt } from "../system-prompt";
@@ -838,5 +839,25 @@ describe("MTF grouping across calls and replies", () => {
     expect(reading.mtfGroups).toEqual(out.mtfGroups);
     expect(reading.mtfNote).toContain("mtfGroups");
     expect(reading).not.toHaveProperty("mtfComparison");
+  });
+});
+
+describe("queryLenses limit and truncation guidance", () => {
+  it("honors explicit limit up to 50, rejects > 50, and summarizes truncated queries", async () => {
+    const schema = tools.queryLenses.inputSchema as z.ZodType;
+    expect(schema.safeParse({ queries: [{ type: "prime", limit: null }] }).success).toBe(true);
+    expect(schema.safeParse({ queries: [{ type: "prime", limit: 30 }] }).success).toBe(true);
+    expect(schema.safeParse({ queries: [{ type: "prime", limit: 51 }] }).success).toBe(false);
+
+    const raised = await run(tools.queryLenses, { queries: [{ type: "prime", limit: 30 }] });
+    expect(raised.results[0].matches).toHaveLength(30);
+    expect(raised.results[0].summary.primes).toBe(raised.results[0].totalMatched);
+    expect(raised.results[0].note).toContain("Do not split filters across extra calls");
+
+    const untrimmed = await run(tools.queryLenses, { queries: [{ type: "zoom", limit: 50 }] });
+    expect(untrimmed.results[0].totalMatched).toBeLessThanOrEqual(50);
+    expect(untrimmed.results[0].matches).toHaveLength(untrimmed.results[0].totalMatched);
+    expect(untrimmed.results[0].summary).toBeUndefined();
+    expect(untrimmed.results[0].note).toBeUndefined();
   });
 });

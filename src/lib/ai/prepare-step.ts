@@ -58,9 +58,21 @@ function resolveLanguageReminder(messages: ReadonlyArray<ModelMessage>, fallback
   return fallbackReminder;
 }
 
+const BUDGET_REACHED_NOTICE =
+  "You have reached the maximum tool-call step limit for this turn, so tools are now disabled " +
+  "for this final step. Do not attempt or output any tool calls. Answer the user directly in " +
+  "plain prose using the information you already gathered; if anything remains unchecked, say " +
+  "so plainly and invite the user to follow up.";
+
+const REPEATED_FAILURE_NOTICE =
+  "The same tool call has failed twice in a row, so tools are now disabled for the rest of " +
+  "this turn to prevent a loop. Do not attempt or output any tool calls. Answer the user " +
+  "directly in plain prose using what you already have, and state plainly anything you could " +
+  "not fetch.";
+
 /**
- * Per-step overrides for Ask Iris: enforces the loop budget, stops empty-handed choice pauses
- * once catalog research starts, and pins the reply-language reminder on every step.
+ * Per-step overrides for Ask Iris: enforces the loop budget, explains why tools are turned off,
+ * stops empty-handed choice pauses once catalog research starts, and pins the reply language.
  */
 export function createPrepareStep<TName extends string>({
   activeTools,
@@ -86,7 +98,15 @@ export function createPrepareStep<TName extends string>({
       messages?: ModelMessage[];
     } = {};
 
-    if (stepNumber >= stepBudget - 1 || hasRepeatedToolFailure(steps)) {
+    const repeatedFailure = hasRepeatedToolFailure(steps);
+    const budgetReached = stepNumber >= stepBudget - 1;
+    const stopNotice = repeatedFailure
+      ? REPEATED_FAILURE_NOTICE
+      : budgetReached
+        ? BUDGET_REACHED_NOTICE
+        : null;
+
+    if (stopNotice) {
       overrides.toolChoice = "none";
     } else if (
       !hasPresentedLenses(steps) &&
@@ -97,10 +117,9 @@ export function createPrepareStep<TName extends string>({
       overrides.activeTools = activeTools.filter((name) => name !== (ASK_CHOICES as TName));
     }
 
-    overrides.messages = [
-      ...messages,
-      { role: "system", content: resolveLanguageReminder(messages, languageReminder) },
-    ];
+    const resolvedLanguage = resolveLanguageReminder(messages, languageReminder);
+    const content = stopNotice ? `${stopNotice}\n\n${resolvedLanguage}` : resolvedLanguage;
+    overrides.messages = [...messages, { role: "system", content }];
 
     return overrides;
   };
