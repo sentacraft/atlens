@@ -30,7 +30,8 @@ import { listUserGear } from "@/lib/me/gear-repository";
 import type { MtfChart } from "@/lib/ai/mtf-comparison";
 import { buildLensTools, countShownFigures, earlierMtfCharts, seedRecalledRefs } from "@/lib/ai/tools";
 import { loadLensReviews } from "@/lib/lens/reviews-repository";
-import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
+import { withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
+import { createPrepareStep } from "@/lib/ai/prepare-step";
 import { checkIrisQuota, recordIrisTurn, type IrisQuotaUser } from "@/lib/ai/iris-quota";
 import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
@@ -228,7 +229,7 @@ export async function POST(req: NextRequest) {
   const gearDeclined = gearCardDecline(history);
   const declinedSignIn = signInDeclined(history);
   const choicesUsed = choicesCardUsed(history);
-  const reviewNudge = reviewSearchPrompt(offeredReviewRefs(history), locale);
+  const reviewNudge = reviewSearchPrompt(offeredReviewRefs(history));
   const activeTools = Object.keys(tools).filter((name) =>
     !(declinedSignIn && SIGN_IN_GATED_TOOL_NAMES.includes(name)) &&
     !(name === ASK_FOR_GEAR && (gearDeclined || declinedSignIn)) &&
@@ -297,7 +298,7 @@ export async function POST(req: NextRequest) {
       { role: "system", content: systemPrompt(mount, locale) },
       {
         role: "system",
-        content: gearPrompt(gearAccess, { declined: gearDeclined, signInDeclined: declinedSignIn }, locale),
+        content: gearPrompt(gearAccess, { declined: gearDeclined, signInDeclined: declinedSignIn }),
       },
       { role: "system", content: reviewNudge },
       { role: "system", content: languagePrompt(locale) },
@@ -310,23 +311,11 @@ export async function POST(req: NextRequest) {
     stopWhen: stepCountIs(STEP_BUDGET),
     // req.signal only fires on Workers with the enable_request_signal compatibility flag.
     abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(STREAM_TIMEOUT_MS)]),
-    prepareStep: ({ stepNumber, steps, messages }) => {
-      const overrides: {
-        toolChoice?: "none";
-        activeTools?: typeof activeTools;
-        messages?: typeof messages;
-      } = {};
-      if (stepNumber >= STEP_BUDGET - 1 || hasRepeatedToolFailure(steps)) {
-        overrides.toolChoice = "none";
-      } else if (stepNumber >= 2 && !hasPresentedLenses(steps) && activeTools.includes(ASK_CHOICES)) {
-        // Avoid burning multiple research steps only to pause empty-handed on a choice card.
-        overrides.activeTools = activeTools.filter((name) => name !== ASK_CHOICES);
-      }
-      if (stepNumber > 0) {
-        overrides.messages = [...messages, { role: "system", content: languagePrompt(locale) }];
-      }
-      return Object.keys(overrides).length > 0 ? overrides : undefined;
-    },
+    prepareStep: createPrepareStep({
+      activeTools,
+      stepBudget: STEP_BUDGET,
+      languageReminder: languagePrompt(locale),
+    }),
     onChunk: ({ chunk }) => traceCollector.recordChunk(chunk),
     onError: ({ error }) => markStreamError(error),
     onStepEnd: (step) => traceCollector.recordStep(step),
@@ -473,16 +462,4 @@ async function loadFavorites(
     return null;
   }
   return (await listUserFavorites(appDb, userId)).map((favorite) => favorite.lensId);
-}
-
-function hasPresentedLenses(
-  steps: ReadonlyArray<{ content: ReadonlyArray<{ type: string; toolName?: string }> }>,
-): boolean {
-  return steps.some((step) =>
-    step.content.some(
-      (part) =>
-        part.type === "tool-result" &&
-        (part.toolName === "recommendLenses" || part.toolName === "listLenses"),
-    ),
-  );
 }

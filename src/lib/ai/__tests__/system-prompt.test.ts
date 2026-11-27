@@ -14,7 +14,7 @@ describe("systemPrompt", () => {
 });
 
 describe("languagePrompt", () => {
-  it("pins all user-facing outputs to the user's language with a locale fallback", () => {
+  it("pins all user-facing outputs to the user's language with a locale fallback in English", () => {
     const enPrompt = languagePrompt("en");
     const zhPrompt = languagePrompt("zh");
     expect(enPrompt).toContain("recommendation card reasons");
@@ -22,9 +22,7 @@ describe("languagePrompt", () => {
     expect(enPrompt).toContain("choice cards");
     expect(enPrompt).toContain("do not switch to Chinese");
     expect(enPrompt).toContain("English");
-    expect(enPrompt).not.toMatch(/[\u4e00-\u9fff]/);
-    expect(zhPrompt).toContain("推荐卡理由");
-    expect(zhPrompt).toContain("表格标题");
-    expect(zhPrompt).toContain("简体中文");
+    expect(zhPrompt).toContain("Simplified Chinese");
+    expect(enPrompt + zhPrompt).not.toMatch(/[\u4e00-\u9fff]/);
   });
 });

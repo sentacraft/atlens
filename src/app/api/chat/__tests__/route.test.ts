@@ -581,7 +581,7 @@ describe("POST /api/chat locale instructions", () => {
     expect(enModel.doStreamCalls[0].prompt.at(-1)?.role).toBe("user");
     const enLastMsg = enModel.doStreamCalls[1].prompt.at(-1);
     expect(enLastMsg?.role).toBe("system");
-    expect(enLastMsg?.content).toContain("do not switch to Chinese");
+    expect(enLastMsg?.content).toContain("English");
 
     const zhModel = new MockLanguageModelV4({ doStream: [toolStep(), textReply()] });
     mocks.getAgentModel.mockReturnValue(zhModel);
@@ -589,6 +589,6 @@ describe("POST /api/chat locale instructions", () => {
     expect(zhModel.doStreamCalls[0].prompt.at(-1)?.role).toBe("user");
     const zhLastMsg = zhModel.doStreamCalls[1].prompt.at(-1);
     expect(zhLastMsg?.role).toBe("system");
-    expect(zhLastMsg?.content).toContain("do not switch to Chinese");
+    expect(zhLastMsg?.content).toContain("English");
   });
 });

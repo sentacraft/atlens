@@ -68,19 +68,7 @@ ${actions}
 export function gearPrompt(
   state: GearStatus["kind"],
   { declined, signInDeclined }: { declined: GearCardDecline | null; signInDeclined: boolean },
-  locale: string,
 ): string {
-  if (locale === "zh") {
-    const status = state === "guest" ? "用户未登录。" : state === "account" ? "用户已登录。" : "暂时无法读取用户器材。";
-    const instruction = signInDeclined
-      ? "用户已取消登录，当前问题不要再要求登录或打开器材卡；用对话已提供的信息或一般建议继续，不编造账号器材。"
-      : declined
-        ? "用户这次跳过了器材填写，用对话已有信息或一般建议继续，不再要求填写或登录。"
-        : state === "guest"
-          ? "读取保存的器材或按已有器材推荐，交给 myGear 的登录卡；一般按需求推荐直接回答，不必索要登录或填写。"
-          : "具体器材由 myGear 读取，不要根据登录状态猜测档案内容。";
-    return `【器材访问状态】\n${status}${instruction}`;
-  }
   const status =
     state === "guest"
       ? "The user is not signed in."
@@ -101,14 +89,7 @@ export function gearPrompt(
  * The suggestion to look at other sites' reviews before deciding. Once links have been given for
  * some refs, the paragraph says so, so the same lenses are not offered again.
  */
-export function reviewSearchPrompt(offeredRefs: string[], locale: string): string {
-  if (locale === "zh") {
-    const base = `【评测和样张】用户要在两三支镜头之间拍板时——问该选哪支、说准备买，或你给出了最终倾向——讲完取舍后，用一句自然的话建议他下决定前再看看这几支在其他平台的评测和样张，并把这句话里的说法写成链接 [文字](reviews:ref1,ref2)，ref 逐字照抄工具返回的，只放正在比较的这几支，最多 ${MAX_REVIEW_SEARCH_LENSES} 支。其他时候不提。`;
-    if (offeredRefs.length === 0) {
-      return base;
-    }
-    return `${base}这段对话里已经给过这些 ref 的评测链接：${offeredRefs.join("、")}。要拍板的镜头和这些相同的话，不要再给；其中出现了不在这个列表里的镜头时，才再给一次。`;
-  }
+export function reviewSearchPrompt(offeredRefs: string[]): string {
   const base = `[Reviews and sample photos] When the user is choosing between two or three lenses to buy—asking which to pick, preparing to buy, or after you state a lean—after explaining the trade-offs, add one natural sentence suggesting they check outside reviews and sample photos before deciding, with the link formatted as [text](reviews:ref1,ref2) using exact refs from tools for only the lenses being compared (at most ${MAX_REVIEW_SEARCH_LENSES}). Do not mention this otherwise.`;
   if (offeredRefs.length === 0) {
     return base;
@@ -118,8 +99,6 @@ export function reviewSearchPrompt(offeredRefs: string[], locale: string): strin
 
 /** Final system instruction pinning reply language across prose and structured tool fields. */
 export function languagePrompt(locale: string): string {
-  if (locale === "zh") {
-    return "用用户最近一条消息所用的语言回复（包括正文、推荐卡理由、表格标题和选项卡）；从消息里看不出语言时（比如只有镜头型号），用简体中文。";
-  }
-  return "Reply in the exact language of the user's latest message across all user-facing text (prose, recommendation card reasons, table captions, and choice cards) — do not switch to Chinese unless the user wrote in Chinese. When the message has no clear language (such as lens model names only), use English.";
+  const fallback = locale === "zh" ? "Simplified Chinese" : "English";
+  return `Reply in the exact language of the user's latest message across all user-facing text (prose, recommendation card reasons, table captions, and choice cards) — do not switch to Chinese unless the user wrote in Chinese. When the message has no clear language (such as lens model names only), use ${fallback}.`;
 }
