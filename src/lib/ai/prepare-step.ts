@@ -6,6 +6,14 @@ interface StepContent {
   content: ReadonlyArray<{ type: string; toolName?: string; input?: unknown }>;
 }
 
+const CATALOG_RESEARCH_TOOLS = new Set([
+  "queryLenses",
+  "searchLensByName",
+  "lensDetails",
+  "lensReviews",
+  "showLensImages",
+]);
+
 /** True once any prior step rendered a recommendation card deck or spec table. */
 export function hasPresentedLenses(steps: ReadonlyArray<StepContent>): boolean {
   return steps.some((step) =>
@@ -17,9 +25,42 @@ export function hasPresentedLenses(steps: ReadonlyArray<StepContent>): boolean {
   );
 }
 
+/** True once any prior step queried or inspected lenses in the catalog. */
+export function hasCatalogResearch(steps: ReadonlyArray<StepContent>): boolean {
+  return steps.some((step) =>
+    step.content.some(
+      (part) =>
+        part.type === "tool-result" &&
+        part.toolName !== undefined &&
+        CATALOG_RESEARCH_TOOLS.has(part.toolName),
+    ),
+  );
+}
+
+function lastUserText(messages: ReadonlyArray<ModelMessage>): string {
+  const userMessage = messages.findLast((message) => message.role === "user");
+  if (!userMessage) {
+    return "";
+  }
+  if (typeof userMessage.content === "string") {
+    return userMessage.content;
+  }
+  return userMessage.content
+    .filter((part): part is { type: "text"; text: string } => part.type === "text" && typeof part.text === "string")
+    .map((part) => part.text)
+    .join("\n");
+}
+
+function resolveLanguageReminder(messages: ReadonlyArray<ModelMessage>, fallbackReminder: string): string {
+  if (/[\u4e00-\u9fff]/.test(lastUserText(messages))) {
+    return "Reply in Simplified Chinese from the very first word, including before any tool call. Never output an English preamble.";
+  }
+  return fallbackReminder;
+}
+
 /**
  * Per-step overrides for Ask Iris: enforces the loop budget, stops empty-handed choice pauses
- * once research starts, and pins the reply-language reminder after tool results.
+ * once catalog research starts, and pins the reply-language reminder on every step.
  */
 export function createPrepareStep<TName extends string>({
   activeTools,
@@ -48,18 +89,19 @@ export function createPrepareStep<TName extends string>({
     if (stepNumber >= stepBudget - 1 || hasRepeatedToolFailure(steps)) {
       overrides.toolChoice = "none";
     } else if (
-      stepNumber >= 2 &&
       !hasPresentedLenses(steps) &&
+      (stepNumber >= 2 || (stepNumber >= 1 && hasCatalogResearch(steps))) &&
       activeTools.includes(ASK_CHOICES as TName)
     ) {
-      // Avoid burning multiple research steps only to pause empty-handed on a choice card.
+      // Avoid burning research steps only to pause empty-handed on a choice card.
       overrides.activeTools = activeTools.filter((name) => name !== (ASK_CHOICES as TName));
     }
 
-    if (stepNumber > 0) {
-      overrides.messages = [...messages, { role: "system", content: languageReminder }];
-    }
+    overrides.messages = [
+      ...messages,
+      { role: "system", content: resolveLanguageReminder(messages, languageReminder) },
+    ];
 
-    return Object.keys(overrides).length > 0 ? overrides : undefined;
+    return overrides;
   };
 }

@@ -100,5 +100,5 @@ export function reviewSearchPrompt(offeredRefs: string[]): string {
 /** Final system instruction pinning reply language across prose and structured tool fields. */
 export function languagePrompt(locale: string): string {
   const fallback = locale === "zh" ? "Simplified Chinese" : "English";
-  return `Reply in the exact language of the user's latest message across all user-facing text (prose, recommendation card reasons, table captions, and choice cards). Only if the message has no clear language (such as lens model names only), use ${fallback}.`;
+  return `Reply in the exact language of the user's latest message from the very first word (including before tool calls, prose, recommendation card reasons, table captions, and choice cards). Only if the message has no clear language (such as lens model names only), use ${fallback}.`;
 }
