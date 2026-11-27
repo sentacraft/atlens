@@ -6,6 +6,7 @@
   vars:
     mount: X
     locale: zh
+    namesModels: true
     dialog:
       turns:
         - "拍人像，在富士 XF 56mm F1.2 R WR 和唯卓仕 AF 75mm F1.2 Pro 之间纠结"
@@ -219,7 +220,7 @@
         help with lenses.
 
 # Spec guide: spec conventions come from readSpecGuide.
-- description: term-min-focus-distance
+- description: term-empty-motor
   metadata:
     area: terms
   vars:
@@ -227,11 +228,11 @@
     locale: zh
     dialog:
       turns:
-        - "规格页上写最近对焦距离 0.3m，我拿尺子从镜头前端量，只有二十来厘米就能对上焦，为什么？"
+        - "为什么有些富士镜头的规格页上，对焦马达那一栏是空的？"
   assert:
     - type: javascript
       metric: terms
-      value: "context.metadata.toolsCalled.includes('readSpecGuide') && context.metadata.specGuideInputs.every(input => input && Object.keys(input).length === 0) && /感光元件|焦平面|传感器/.test(output.split('[Iris]').pop())"
+      value: "context.metadata.toolsCalled.includes('readSpecGuide') && context.metadata.specGuideInputs.every(input => input && Object.keys(input).length === 0) && /没有公布|未公布|没写|没有写|未标注|没有标注/.test(output.split('[Iris]').pop())"
 
 # Site: questions about Atlens itself are answered from siteInfo, and only from it.
 - description: site-model-undisclosed
@@ -265,13 +266,17 @@
       metric: site
       value: >-
         Iris's facts list what it can do — find and recommend lenses as cards, lay them out
-        in a spec table, explain how they differ, look up lens specs, sum up published review findings for lenses that have them, look up Fujifilm camera body specs, use a signed-in user's saved
-        gear and favorites, answer questions about Atlens with links to the pages that say
-        more, link to collections and the compare page — and its limits: it can be wrong, it only knows what Atlens
-        has collected, and it has usage limits. The reply must not claim an ability outside
-        that list, such as placing orders, quoting live prices, or searching other websites;
-        looking something up in Atlens's own facts is not browsing the web. It should mention
-        at least one of those limits.
+        in a spec table, explain how they differ, look up lens specs, show lens images, MTF
+        charts, and optical construction diagrams (and read them when test conditions are
+        stated), sum up published review findings for lenses that have them, look up Fujifilm
+        camera body specs, use a signed-in user's saved gear and favorites, answer questions
+        about Atlens with links to the pages that say more, link to collections and the compare
+        page, and draft editable feedback cards for the user to confirm and submit — and its
+        limits: it can be wrong, it only knows what Atlens has collected, it has no camera body
+        prices, firmware, or reviews, and it has usage limits. The reply must not claim an
+        ability outside that list, such as placing orders, quoting live prices, or searching
+        other websites; looking something up in Atlens's own facts is not browsing the web. It
+        should mention at least one of those limits.
 
 # Feedback cards prepare a draft; the visitor, not the model, submits it.
 - description: feedback-data-context
@@ -280,6 +285,7 @@
   vars:
     mount: X
     locale: zh
+    namesModels: true
     dialog:
       turns:
         - "富士 XF 27mm F2.8 R WR 的重量可能不对，帮我反馈给作者核对，不知道正确值。"

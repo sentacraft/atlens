@@ -196,7 +196,7 @@
     namesModels: true
     dialog:
       turns:
-        - "富士 XF 23mm F1.4 R LM WR 的边缘画质和紫边控制怎么样？跟 XF 33mm F1.4 比呢？"
+        - "七工匠 AF 27mm F2.8 和七工匠 AF 10mm F4 的边缘画质和紫边控制怎么样？比一下呢？"
   assert:
     - type: javascript # looked for review findings before answering
       metric: programmatic
@@ -204,8 +204,8 @@
     - type: llm-rubric # says it doesn't have the figure rather than producing one
       metric: guard
       value: >-
-        Atlens has no review findings on either lens's rendered image quality — edge
-        sharpness, chromatic aberration, how one compares to the other on either — and
+        Atlens has no review findings or MTF charts on either lens's rendered image quality —
+        edge sharpness, chromatic aberration, or how one compares to the other on either — and
         no page on the site has them either. The reply should say it cannot speak to that
         and offer what it can (the specs); it fails if it delivers a verdict on either
         lens's edge quality or purple fringing, ranks the two on those as though it had
