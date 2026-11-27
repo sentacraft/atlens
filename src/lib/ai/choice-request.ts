@@ -1,3 +1,4 @@
+import { getToolName, isToolUIPart, type UIMessage } from "ai";
 import { z } from "zod";
 
 /** The client tool that shows the in-chat choice card; it has no server `execute`. */
@@ -8,10 +9,10 @@ export const MAX_CHOICE_GROUPS = 3;
 const choiceGroupSchema = z.object({
   question: z.string().trim().min(1).max(120).describe("The question, short, in the reply language."),
   options: z
-    .array(z.string().trim().min(1).max(40))
+    .array(z.string().trim().min(1).max(80))
     .min(2)
     .max(5)
-    .describe("Answers a user could pick, short noun phrases. The card adds its own free-text option."),
+    .describe("Short choice label (ideally under 40 characters). The card adds its own free-text option."),
   multiple: z.boolean().nullish().describe("true when more than one answer can apply; default is pick one."),
 });
 
@@ -30,3 +31,11 @@ export const choiceRequestOutputSchema = z.object({
 
 export type ChoiceRequestInput = z.infer<typeof choiceRequestInputSchema>;
 export type ChoiceRequestOutput = z.infer<typeof choiceRequestOutputSchema>;
+
+/** Whether the current user turn already presented an askChoices card. */
+export function choicesCardUsed(messages: UIMessage[]): boolean {
+  const question = messages.slice(Math.max(0, messages.findLastIndex((message) => message.role === "user")));
+  return question
+    .flatMap((message) => message.parts)
+    .some((part) => isToolUIPart(part) && getToolName(part) === ASK_CHOICES);
+}

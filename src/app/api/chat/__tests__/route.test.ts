@@ -484,3 +484,44 @@ describe("POST /api/chat trace status", () => {
     });
   });
 });
+
+describe("POST /api/chat askChoices guards", () => {
+  it("omits askChoices after it was already shown in the current user turn", async () => {
+    const user: UIMessage = { id: "u-choice", role: "user", parts: [{ type: "text", text: "Zoom lenses" }] };
+    const card = {
+      type: "tool-askChoices",
+      toolCallId: "choice-call",
+      state: "input-available",
+      input: { questions: [{ question: "Primary use?", options: ["Travel", "Portraits"] }] },
+    } as const;
+    const paused: UIMessage = { id: "a-choice", role: "assistant", parts: [card] };
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, paused]);
+    const model = new MockLanguageModelV4({ doStream: textReply() });
+    mocks.getAgentModel.mockReturnValue(model);
+
+    const resumed: UIMessage = {
+      ...paused,
+      parts: [{ ...card, state: "output-available", output: { outcome: "answered", answers: [{ question: "Primary use?", picked: ["Travel"] }] } }],
+    };
+    const response = await POST(chatRequest(resumed, user.id));
+    expect(response.status).toBe(200);
+    await settle(response);
+
+    expect(model.doStreamCalls[0].tools?.map((tool) => tool.name)).not.toContain("askChoices");
+  });
+
+  it("drops askChoices from activeTools once stepNumber reaches 2", async () => {
+    const step = (callId: string) =>
+      modelStep([{ type: "tool-call", toolCallId: callId, toolName: "readSpecGuide", input: "{}" }], "tool-calls");
+    const model = new MockLanguageModelV4({ doStream: [step("s0"), step("s1"), step("s2"), textReply()] });
+    mocks.getAgentModel.mockReturnValue(model);
+
+    const response = await POST(chatRequest());
+    expect(response.status).toBe(200);
+    await settle(response);
+
+    expect(model.doStreamCalls[0].tools?.map((tool) => tool.name)).toContain("askChoices");
+    expect(model.doStreamCalls[1].tools?.map((tool) => tool.name)).toContain("askChoices");
+    expect(model.doStreamCalls[2].tools?.map((tool) => tool.name)).not.toContain("askChoices");
+  });
+});
