@@ -564,21 +564,22 @@ describe("POST /api/chat locale instructions", () => {
     const systemContents = model.doStreamCalls[0].prompt
       .filter((msg) => msg.role === "system")
       .map((msg) => (typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content)));
-    expect(systemContents).toHaveLength(4);
+    expect(systemContents).toHaveLength(5);
     expect(systemContents[1]).toContain("[Gear access]");
     expect(systemContents[2]).toContain("[Reviews and sample photos]");
     expect(systemContents[3]).toContain("recommendation card reasons");
     expect(systemContents.slice(1).join("\n")).not.toMatch(/[\u4e00-\u9fff]/);
   });
 
-  it("appends a trailing language anchor after tool calls regardless of user message script", async () => {
+  it("appends a resolved trailing language anchor on step 0 and after tool calls", async () => {
     const toolStep = () =>
       modelStep([{ type: "tool-call", toolCallId: "g1", toolName: "readSpecGuide", input: "{}" }], "tool-calls");
 
     const enModel = new MockLanguageModelV4({ doStream: [toolStep(), textReply()] });
     mocks.getAgentModel.mockReturnValue(enModel);
     await settle(await POST(chatRequest({ id: "u-en", role: "user", parts: [{ type: "text", text: "Who runs this site?" }] })));
-    expect(enModel.doStreamCalls[0].prompt.at(-1)?.role).toBe("user");
+    expect(enModel.doStreamCalls[0].prompt.at(-1)?.role).toBe("system");
+    expect(enModel.doStreamCalls[0].prompt.at(-1)?.content).toContain("English");
     const enLastMsg = enModel.doStreamCalls[1].prompt.at(-1);
     expect(enLastMsg?.role).toBe("system");
     expect(enLastMsg?.content).toContain("English");
@@ -586,9 +587,10 @@ describe("POST /api/chat locale instructions", () => {
     const zhModel = new MockLanguageModelV4({ doStream: [toolStep(), textReply()] });
     mocks.getAgentModel.mockReturnValue(zhModel);
     await settle(await POST(chatRequest({ id: "u-zh", role: "user", parts: [{ type: "text", text: "有哪些一镜走天下的镜头？" }] })));
-    expect(zhModel.doStreamCalls[0].prompt.at(-1)?.role).toBe("user");
+    expect(zhModel.doStreamCalls[0].prompt.at(-1)?.role).toBe("system");
+    expect(zhModel.doStreamCalls[0].prompt.at(-1)?.content).toContain("Simplified Chinese");
     const zhLastMsg = zhModel.doStreamCalls[1].prompt.at(-1);
     expect(zhLastMsg?.role).toBe("system");
-    expect(zhLastMsg?.content).toContain("English");
+    expect(zhLastMsg?.content).toContain("Simplified Chinese");
   });
 });

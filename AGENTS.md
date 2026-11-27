@@ -85,8 +85,8 @@ Device insets (iOS notch, home indicator, Window Controls Overlay) are consumed 
 Size one-screen pages with `--page-height` (set by `KeyboardInsets`, above the on-screen keyboard);
 never read `visualViewport` in a component.
 
-Chinese text belongs only in the files `scripts/hooks/cjk-guard.mjs` allows: UI copy in `zh.json`,
-model-facing wording in `system-prompt.ts`, data, and a few listed exceptions. Tests and eval cases
+Chinese text belongs only in the files `scripts/hooks/cjk-guard.mjs` allows: UI copy in `zh.json`, data,
+and a few listed exceptions. Tests and eval cases contain Chinese only when they check Chinese input
 contain Chinese only when they check Chinese input or output (a Chinese query, zh-locale rendering,
 bilingual data); otherwise they use English.
 

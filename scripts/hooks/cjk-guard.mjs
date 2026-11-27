@@ -8,7 +8,6 @@ import { emitContext, readHookEvent, repoRoot, touchedFiles } from "./touched-fi
 const ALLOWED = [
   "src/messages/zh.json", // UI copy
   "migrations/app/0009_migrate_legacy_lens_details.sql", // Persisted Chinese figure labels in conversation history
-  "src/lib/ai/system-prompt.ts", // every model-facing Chinese sentence
   "src/data/", // lens and collection data
   "src/lib/types.ts", // Lens JSDoc examples, the data pipeline's extraction spec
   "src/lib/purchase/links.ts", // JD and Taobao store names on the Chinese site
@@ -50,7 +49,7 @@ if (offending.length > 0) {
     [
       "The latest edit left Chinese text in a file that should not contain any:",
       ...offending,
-      "Decide which applies to each line: rewrite it in English (comments, identifiers, English strings); move it where Chinese belongs (UI copy to src/messages/zh.json, model-facing wording to src/lib/ai/system-prompt.ts); or, if this file genuinely needs Chinese, add it to ALLOWED in scripts/hooks/cjk-guard.mjs with the reason.",
+      "Decide which applies to each line: rewrite it in English (comments, identifiers, English strings); move it where Chinese belongs (UI copy to src/messages/zh.json); or, if this file genuinely needs Chinese, add it to ALLOWED in scripts/hooks/cjk-guard.mjs with the reason.",
     ].join("\n"),
   );
 }
