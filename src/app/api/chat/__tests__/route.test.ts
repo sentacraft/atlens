@@ -157,7 +157,7 @@ describe("POST /api/chat gear approval", () => {
     const reply = model();
     await settle(await POST(chatRequest()));
     expect(mocks.listUserGear).not.toHaveBeenCalled();
-    expect(systemNotes(reply)).toContain("用户已登录");
+    expect(systemNotes(reply)).toContain("The user is signed in.");
     expect(systemNotes(reply)).not.toContain("XF 27mm");
     expect(systemNotes(reply)).not.toContain(lensRef(profile[0].catalogId));
     expect(reply.doStreamCalls[0].tools?.map((tool) => tool.name)).not.toContain("askToSignIn");
@@ -215,7 +215,7 @@ describe("POST /api/chat gear approval", () => {
     expect(names).not.toContain("myGear");
     expect(names).not.toContain("myFavorites");
     expect(names).not.toContain("askForGear");
-    expect(systemNotes(reply)).toContain("用户已取消登录");
+    expect(systemNotes(reply)).toContain("declined sign-in");
     expect(mocks.listUserGear).not.toHaveBeenCalled();
   });
 
@@ -482,5 +482,113 @@ describe("POST /api/chat trace status", () => {
       status: "error",
       errorCode: "stream_failed",
     });
+  });
+});
+
+describe("POST /api/chat askChoices guards", () => {
+  it("omits askChoices after it was already shown in the current user turn", async () => {
+    const user: UIMessage = { id: "u-choice", role: "user", parts: [{ type: "text", text: "Zoom lenses" }] };
+    const card = {
+      type: "tool-askChoices",
+      toolCallId: "choice-call",
+      state: "input-available",
+      input: { questions: [{ question: "Primary use?", options: ["Travel", "Portraits"] }] },
+    } as const;
+    const paused: UIMessage = { id: "a-choice", role: "assistant", parts: [card] };
+    mocks.loadAskIrisTurnHistory.mockResolvedValue([user, paused]);
+    const model = new MockLanguageModelV4({ doStream: textReply() });
+    mocks.getAgentModel.mockReturnValue(model);
+
+    const resumed: UIMessage = {
+      ...paused,
+      parts: [{ ...card, state: "output-available", output: { outcome: "answered", answers: [{ question: "Primary use?", picked: ["Travel"] }] } }],
+    };
+    const response = await POST(chatRequest(resumed, user.id));
+    expect(response.status).toBe(200);
+    await settle(response);
+
+    expect(model.doStreamCalls[0].tools?.map((tool) => tool.name)).not.toContain("askChoices");
+  });
+
+  it("drops askChoices from activeTools once stepNumber reaches 2", async () => {
+    const step = (callId: string) =>
+      modelStep([{ type: "tool-call", toolCallId: callId, toolName: "readSpecGuide", input: "{}" }], "tool-calls");
+    const model = new MockLanguageModelV4({ doStream: [step("s0"), step("s1"), step("s2"), textReply()] });
+    mocks.getAgentModel.mockReturnValue(model);
+
+    const response = await POST(chatRequest());
+    expect(response.status).toBe(200);
+    await settle(response);
+
+    expect(model.doStreamCalls[0].tools?.map((tool) => tool.name)).toContain("askChoices");
+    expect(model.doStreamCalls[1].tools?.map((tool) => tool.name)).toContain("askChoices");
+    expect(model.doStreamCalls[2].tools?.map((tool) => tool.name)).not.toContain("askChoices");
+  });
+
+  it("keeps askChoices available at stepNumber >= 2 once lenses were already presented", async () => {
+    const searchStep = modelStep(
+      [{ type: "tool-call", toolCallId: "s0", toolName: "searchLensByName", input: JSON.stringify({ queries: ["XF 35mm F1.4"] }) }],
+      "tool-calls",
+    );
+    const recommendStep = modelStep(
+      [
+        {
+          type: "tool-call",
+          toolCallId: "s1",
+          toolName: "recommendLenses",
+          input: JSON.stringify({ picks: [{ ref: lensRef("fujifilm-xf-35mmf14-r-x"), reason: "Bright standard prime." }] }),
+        },
+      ],
+      "tool-calls",
+    );
+    const model = new MockLanguageModelV4({ doStream: [searchStep, recommendStep, textReply()] });
+    mocks.getAgentModel.mockReturnValue(model);
+
+    const response = await POST(chatRequest());
+    expect(response.status).toBe(200);
+    await settle(response);
+
+    expect(model.doStreamCalls[2].tools?.map((tool) => tool.name)).toContain("askChoices");
+  });
+});
+
+describe("POST /api/chat locale instructions", () => {
+  it("sends English tail system instructions with languagePrompt last on en requests", async () => {
+    const model = new MockLanguageModelV4({ doStream: textReply() });
+    mocks.getAgentModel.mockReturnValue(model);
+
+    const response = await POST(chatRequest());
+    expect(response.status).toBe(200);
+    await settle(response);
+
+    const systemContents = model.doStreamCalls[0].prompt
+      .filter((msg) => msg.role === "system")
+      .map((msg) => (typeof msg.content === "string" ? msg.content : JSON.stringify(msg.content)));
+    expect(systemContents).toHaveLength(4);
+    expect(systemContents[1]).toContain("[Gear access]");
+    expect(systemContents[2]).toContain("[Reviews and sample photos]");
+    expect(systemContents[3]).toContain("recommendation card reasons");
+    expect(systemContents.slice(1).join("\n")).not.toMatch(/[\u4e00-\u9fff]/);
+  });
+
+  it("appends a trailing language anchor after tool calls regardless of user message script", async () => {
+    const toolStep = () =>
+      modelStep([{ type: "tool-call", toolCallId: "g1", toolName: "readSpecGuide", input: "{}" }], "tool-calls");
+
+    const enModel = new MockLanguageModelV4({ doStream: [toolStep(), textReply()] });
+    mocks.getAgentModel.mockReturnValue(enModel);
+    await settle(await POST(chatRequest({ id: "u-en", role: "user", parts: [{ type: "text", text: "Who runs this site?" }] })));
+    expect(enModel.doStreamCalls[0].prompt.at(-1)?.role).toBe("user");
+    const enLastMsg = enModel.doStreamCalls[1].prompt.at(-1);
+    expect(enLastMsg?.role).toBe("system");
+    expect(enLastMsg?.content).toContain("English");
+
+    const zhModel = new MockLanguageModelV4({ doStream: [toolStep(), textReply()] });
+    mocks.getAgentModel.mockReturnValue(zhModel);
+    await settle(await POST(chatRequest({ id: "u-zh", role: "user", parts: [{ type: "text", text: "有哪些一镜走天下的镜头？" }] })));
+    expect(zhModel.doStreamCalls[0].prompt.at(-1)?.role).toBe("user");
+    const zhLastMsg = zhModel.doStreamCalls[1].prompt.at(-1);
+    expect(zhLastMsg?.role).toBe("system");
+    expect(zhLastMsg?.content).toContain("English");
   });
 });

@@ -712,10 +712,10 @@ export function buildLensTools(
     // A client tool: the browser shows the choice card and returns the picks.
     [ASK_CHOICES]: tool({
       description:
-        "Ask the user up to three questions as option chips, for questions whose answers are a few short " +
-        "choices; set multiple where several can apply. The card adds its own free-text option. The turn waits " +
-        "for the result: answered (picked per question, empty where the user left a group alone) or skipped. " +
-        "Put the questions in the card only, not in your text; after a skip, go on without asking them again.",
+        "Ask 1–2 short questions (at most 3) as option chips; set multiple where several can apply. " +
+        "The card adds its own free-text option. The turn waits for the result: answered (picked per " +
+        "question, empty where the user left a group alone) or skipped. Put the questions in the card " +
+        "only, not in your text.",
       inputSchema: choiceRequestInputSchema,
       outputSchema: choiceRequestOutputSchema,
     }),

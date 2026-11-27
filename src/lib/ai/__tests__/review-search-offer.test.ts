@@ -34,8 +34,12 @@ describe("reviewSearchPrompt", () => {
     expect(reviewSearchPrompt(["abc", "def"])).toContain("reviews:ref1,ref2");
   });
 
-  it("lists the refs already offered", () => {
-    expect(reviewSearchPrompt([])).not.toContain("已经给过");
-    expect(reviewSearchPrompt(["abc", "def"])).toContain("abc、def");
+  it("lists the refs already offered without CJK characters", () => {
+    const fresh = reviewSearchPrompt([]);
+    const repeat = reviewSearchPrompt(["abc", "def"]);
+    expect(fresh).not.toContain("already been given");
+    expect(repeat).toContain("already been given");
+    expect(repeat).toContain("abc, def");
+    expect(fresh + repeat).not.toMatch(/[\u4e00-\u9fff]/);
   });
 });

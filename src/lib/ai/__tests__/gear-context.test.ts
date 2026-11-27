@@ -9,9 +9,11 @@ const brandName = (slug: string) => (slug === "fujifilm" ? "Fujifilm" : slug);
 describe("gear prompt", () => {
   it.each(["guest", "account", "unavailable"] as const)("provides only %s access state, not a profile", (state) => {
     const prompt = gearPrompt(state, { declined: null, signInDeclined: false });
-    expect(prompt).toContain(state === "guest" ? "用户未登录" : state === "account" ? "用户已登录" : "暂时无法读取");
+    expect(prompt).toContain("[Gear access]");
+    expect(prompt).toContain(state === "guest" ? "not signed in" : state === "account" ? "signed in" : "temporarily unavailable");
     expect(prompt).not.toContain("ref ");
-    expect(prompt).not.toContain("档案是空的");
+    expect(prompt).not.toContain("empty");
+    expect(prompt).not.toMatch(/[\u4e00-\u9fff]/);
   });
 
   it("uses myGear for saved reads, allows explicit edits, and refreshes rather than trusting old profiles", () => {
@@ -24,8 +26,9 @@ describe("gear prompt", () => {
 
   it("does not solicit another login or editor after a sign-in denial", () => {
     const prompt = gearPrompt("guest", { declined: null, signInDeclined: true });
-    expect(prompt).toContain("用户已取消登录");
-    expect(prompt).toContain("不要再要求登录或打开器材卡");
+    expect(prompt).toContain("declined sign-in");
+    expect(prompt).toContain("do not request sign-in");
+    expect(prompt).not.toMatch(/[\u4e00-\u9fff]/);
   });
 });
 

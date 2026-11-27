@@ -17,20 +17,21 @@ import {
   agentModelLabel,
   missingAgentModelKey,
 } from "@/lib/ai/model";
-import { gearPrompt, reviewSearchPrompt, systemPrompt } from "@/lib/ai/system-prompt";
+import { gearPrompt, languagePrompt, reviewSearchPrompt, systemPrompt } from "@/lib/ai/system-prompt";
 import { offeredReviewRefs } from "@/lib/ai/review-search-offer";
 import { findAgentModelPreset, MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
 import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus, type GearSummary } from "@/lib/ai/gear-context";
 import { EVAL_FAVORITES_HEADER, evalFavorites } from "@/lib/ai/favorites";
 import { listUserFavorites } from "@/lib/me/favorites-repository";
-import { ASK_CHOICES } from "@/lib/ai/choice-request";
+import { ASK_CHOICES, choicesCardUsed } from "@/lib/ai/choice-request";
 import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
 import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval, signInDeclined } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
 import type { MtfChart } from "@/lib/ai/mtf-comparison";
 import { buildLensTools, countShownFigures, earlierMtfCharts, seedRecalledRefs } from "@/lib/ai/tools";
 import { loadLensReviews } from "@/lib/lens/reviews-repository";
-import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
+import { withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
+import { createPrepareStep } from "@/lib/ai/prepare-step";
 import { checkIrisQuota, recordIrisTurn, type IrisQuotaUser } from "@/lib/ai/iris-quota";
 import { clientIp, isBypassed, isRateLimited } from "@/lib/rate-limit";
 import { chatErrorResponse } from "@/lib/ai/chat-errors";
@@ -227,10 +228,12 @@ export async function POST(req: NextRequest) {
   figures.mtfShown = earlierMtfCharts(history);
   const gearDeclined = gearCardDecline(history);
   const declinedSignIn = signInDeclined(history);
+  const choicesUsed = choicesCardUsed(history);
   const reviewNudge = reviewSearchPrompt(offeredReviewRefs(history));
   const activeTools = Object.keys(tools).filter((name) =>
     !(declinedSignIn && SIGN_IN_GATED_TOOL_NAMES.includes(name)) &&
-    !(name === ASK_FOR_GEAR && (gearDeclined || declinedSignIn)),
+    !(name === ASK_FOR_GEAR && (gearDeclined || declinedSignIn)) &&
+    !(name === ASK_CHOICES && choicesUsed),
   ) as Array<keyof typeof tools>;
   const messageContext = traceMessageContext(history);
   const analyticsConversationId = await anonymizeId(
@@ -298,18 +301,21 @@ export async function POST(req: NextRequest) {
         content: gearPrompt(gearAccess, { declined: gearDeclined, signInDeclined: declinedSignIn }),
       },
       { role: "system", content: reviewNudge },
+      { role: "system", content: languagePrompt(locale) },
     ],
     messages: modelMessages,
+    allowSystemInMessages: true,
     tools,
     activeTools,
     toolApproval: signInApproval(gearAccess === "account" || testFavorites !== undefined),
     stopWhen: stepCountIs(STEP_BUDGET),
     // req.signal only fires on Workers with the enable_request_signal compatibility flag.
     abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(STREAM_TIMEOUT_MS)]),
-    prepareStep: ({ stepNumber, steps }) =>
-      stepNumber >= STEP_BUDGET - 1 || hasRepeatedToolFailure(steps)
-        ? { toolChoice: "none" }
-        : undefined,
+    prepareStep: createPrepareStep({
+      activeTools,
+      stepBudget: STEP_BUDGET,
+      languageReminder: languagePrompt(locale),
+    }),
     onChunk: ({ chunk }) => traceCollector.recordChunk(chunk),
     onError: ({ error }) => markStreamError(error),
     onStepEnd: (step) => traceCollector.recordStep(step),
