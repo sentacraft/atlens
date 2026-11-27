@@ -18,10 +18,10 @@ describe("gear prompt", () => {
 
   it("uses myGear for saved reads, allows explicit edits, and refreshes rather than trusting old profiles", () => {
     const prompt = systemPrompt("X", "zh");
-    expect(prompt).toContain("先调用 myGear");
-    expect(prompt).toContain("新问题");
+    expect(prompt).toContain("Call myGear first");
+    expect(prompt).toContain("new question");
     expect(prompt).toContain("askForGear");
-    expect(prompt).not.toContain("开头的「用户器材」写着");
+    expect(prompt).not.toContain("[Gear access]");
   });
 
   it("does not solicit another login or editor after a sign-in denial", () => {

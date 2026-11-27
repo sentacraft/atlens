@@ -10,6 +10,7 @@ describe("systemPrompt", () => {
     expect(systemPrompt("X", "zh")).not.toContain("action:signIn");
     expect(systemPrompt("X", "en")).toContain(`[${en.Nav.feedback}](action:feedback)`);
     expect(systemPrompt("X", "en")).not.toMatch(/\{\w+\.\w+\}/);
+    expect(systemPrompt("X", "en")).not.toMatch(/[\u4e00-\u9fff]/);
   });
 });
 
@@ -20,7 +21,7 @@ describe("languagePrompt", () => {
     expect(enPrompt).toContain("recommendation card reasons");
     expect(enPrompt).toContain("table captions");
     expect(enPrompt).toContain("choice cards");
-    expect(enPrompt).toContain("do not switch to Chinese");
+    expect(enPrompt).not.toContain("Chinese");
     expect(enPrompt).toContain("English");
     expect(zhPrompt).toContain("Simplified Chinese");
     expect(enPrompt + zhPrompt).not.toMatch(/[\u4e00-\u9fff]/);
