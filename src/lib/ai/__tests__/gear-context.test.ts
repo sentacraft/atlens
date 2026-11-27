@@ -8,7 +8,7 @@ const brandName = (slug: string) => (slug === "fujifilm" ? "Fujifilm" : slug);
 
 describe("gear prompt", () => {
   it.each(["guest", "account", "unavailable"] as const)("provides only %s access state, not a profile", (state) => {
-    const prompt = gearPrompt(state, { declined: null, signInDeclined: false });
+    const prompt = gearPrompt(state, { declined: null, signInDeclined: false }, "zh");
     expect(prompt).toContain(state === "guest" ? "用户未登录" : state === "account" ? "用户已登录" : "暂时无法读取");
     expect(prompt).not.toContain("ref ");
     expect(prompt).not.toContain("档案是空的");
@@ -23,9 +23,18 @@ describe("gear prompt", () => {
   });
 
   it("does not solicit another login or editor after a sign-in denial", () => {
-    const prompt = gearPrompt("guest", { declined: null, signInDeclined: true });
+    const prompt = gearPrompt("guest", { declined: null, signInDeclined: true }, "zh");
     expect(prompt).toContain("用户已取消登录");
     expect(prompt).toContain("不要再要求登录或打开器材卡");
+  });
+
+  it("renders English gear access prompts without CJK characters for non-zh locales", () => {
+    const guestPrompt = gearPrompt("guest", { declined: null, signInDeclined: false }, "en");
+    const deniedPrompt = gearPrompt("guest", { declined: null, signInDeclined: true }, "en");
+    expect(guestPrompt).toContain("[Gear access]");
+    expect(guestPrompt).toContain("not signed in");
+    expect(deniedPrompt).toContain("declined sign-in");
+    expect(guestPrompt + deniedPrompt).not.toMatch(/[\u4e00-\u9fff]/);
   });
 });
 

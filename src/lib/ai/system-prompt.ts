@@ -21,9 +21,8 @@ const ACTION_EFFECT: Record<Exclude<LinkAction, "signIn">, string> = {
   feedback: "打开反馈表单，用户可以把问题、建议或数据错误发给作者",
 };
 
-// Chinese for both locales; the last paragraph sets the reply language.
+// Chinese for both locales; languagePrompt sets the reply language last.
 export function systemPrompt(mount: Mount, locale: string): string {
-  const language = locale === "zh" ? "简体中文" : "英文";
   const actions = (Object.keys(ACTION_EFFECT) as (keyof typeof ACTION_EFFECT)[])
     .map((action) => `- ${fillUiStrings(factLinkMarkdown(`action:${action}`), locale)}：${ACTION_EFFECT[action]}`)
     .join("\n");
@@ -62,32 +61,65 @@ ${actions}
 
 用户给的约束本身不合理时——太松、太紧、或者互相冲突——直接指出来并问清楚。
 
-关于具体镜头的事实和评价，只能来自工具返回的内容。规格只说工具返回的。实际表现和口碑有两个来源：lensReviews 查到的评测结论，和 showLensImages 读到的 MTF 图；谈锐度和边缘表现时两个都要看。转述评测结论时，每条结论紧跟着为它的每个来源写一个角标 [^](source:来源id)，来源id 逐字照抄工具返回的 id，角标不代替正文里的来源名。两个来源都没有就直说没有。问题的答案只能来自印象、实时信息或预测时（没有数据的维度上的排名、预测、个体差异、纯审美判断），说明 Atlens 的数据能回答什么、不能回答什么，再把问题改成数据答得了的。价格是历史采样，不是实时报价；你可以引用某支镜头的价格或两支之间的差价，但要说明这是参考价，并引导用户前往镜头详情页确认最新的售价。
-
-用用户最近一条消息所用的语言回复；从消息里看不出语言时（比如只有镜头型号），用${language}。`;
+关于具体镜头的事实和评价，只能来自工具返回的内容。规格只说工具返回的。实际表现和口碑有两个来源：lensReviews 查到的评测结论，和 showLensImages 读到的 MTF 图；谈锐度和边缘表现时两个都要看。转述评测结论时，每条结论紧跟着为它的每个来源写一个角标 [^](source:来源id)，来源id 逐字照抄工具返回的 id，角标不代替正文里的来源名。两个来源都没有就直说没有。问题的答案只能来自印象、实时信息或预测时（没有数据的维度上的排名、预测、个体差异、纯审美判断），说明 Atlens 的数据能回答什么、不能回答什么，再把问题改成数据答得了的。价格是历史采样，不是实时报价；你可以引用某支镜头的价格或两支之间的差价，但要说明这是参考价，并引导用户前往镜头详情页确认最新的售价。`;
 }
 
 /** Per-turn access state only; saved profile facts come from myGear. */
-export function gearPrompt(state: GearStatus["kind"], { declined, signInDeclined }: { declined: GearCardDecline | null; signInDeclined: boolean }): string {
-  const status = state === "guest" ? "用户未登录。" : state === "account" ? "用户已登录。" : "暂时无法读取用户器材。";
+export function gearPrompt(
+  state: GearStatus["kind"],
+  { declined, signInDeclined }: { declined: GearCardDecline | null; signInDeclined: boolean },
+  locale: string,
+): string {
+  if (locale === "zh") {
+    const status = state === "guest" ? "用户未登录。" : state === "account" ? "用户已登录。" : "暂时无法读取用户器材。";
+    const instruction = signInDeclined
+      ? "用户已取消登录，当前问题不要再要求登录或打开器材卡；用对话已提供的信息或一般建议继续，不编造账号器材。"
+      : declined
+        ? "用户这次跳过了器材填写，用对话已有信息或一般建议继续，不再要求填写或登录。"
+        : state === "guest"
+          ? "读取保存的器材或按已有器材推荐，交给 myGear 的登录卡；一般按需求推荐直接回答，不必索要登录或填写。"
+          : "具体器材由 myGear 读取，不要根据登录状态猜测档案内容。";
+    return `【器材访问状态】\n${status}${instruction}`;
+  }
+  const status =
+    state === "guest"
+      ? "The user is not signed in."
+      : state === "account"
+        ? "The user is signed in."
+        : "The user's saved gear is temporarily unavailable.";
   const instruction = signInDeclined
-    ? "用户已取消登录，当前问题不要再要求登录或打开器材卡；用对话已提供的信息或一般建议继续，不编造账号器材。"
+    ? "The user declined sign-in; do not request sign-in or open the gear card again for this question. Continue with the information already given or general advice, without inventing saved gear."
     : declined
-      ? "用户这次跳过了器材填写，用对话已有信息或一般建议继续，不再要求填写或登录。"
+      ? "The user skipped the gear editor for now; continue with the information already given or general advice, without asking for gear or sign-in again."
       : state === "guest"
-        ? "读取保存的器材或按已有器材推荐，交给 myGear 的登录卡；一般按需求推荐直接回答，不必索要登录或填写。"
-        : "具体器材由 myGear 读取，不要根据登录状态猜测档案内容。";
-  return `【器材访问状态】\n${status}${instruction}`;
+        ? "If saved gear must be read or used, leave sign-in to myGear's sign-in card; for general recommendations, answer directly without asking for sign-in or gear entry."
+        : "Read saved gear with myGear; do not guess profile contents from sign-in state.";
+  return `[Gear access]\n${status} ${instruction}`;
 }
 
 /**
  * The suggestion to look at other sites' reviews before deciding. Once links have been given for
  * some refs, the paragraph says so, so the same lenses are not offered again.
  */
-export function reviewSearchPrompt(offeredRefs: string[]): string {
-  const base = `【评测和样张】用户要在两三支镜头之间拍板时——问该选哪支、说准备买，或你给出了最终倾向——讲完取舍后，用一句自然的话建议他下决定前再看看这几支在其他平台的评测和样张，并把这句话里的说法写成链接 [文字](reviews:ref1,ref2)，ref 逐字照抄工具返回的，只放正在比较的这几支，最多 ${MAX_REVIEW_SEARCH_LENSES} 支。其他时候不提。`;
+export function reviewSearchPrompt(offeredRefs: string[], locale: string): string {
+  if (locale === "zh") {
+    const base = `【评测和样张】用户要在两三支镜头之间拍板时——问该选哪支、说准备买，或你给出了最终倾向——讲完取舍后，用一句自然的话建议他下决定前再看看这几支在其他平台的评测和样张，并把这句话里的说法写成链接 [文字](reviews:ref1,ref2)，ref 逐字照抄工具返回的，只放正在比较的这几支，最多 ${MAX_REVIEW_SEARCH_LENSES} 支。其他时候不提。`;
+    if (offeredRefs.length === 0) {
+      return base;
+    }
+    return `${base}这段对话里已经给过这些 ref 的评测链接：${offeredRefs.join("、")}。要拍板的镜头和这些相同的话，不要再给；其中出现了不在这个列表里的镜头时，才再给一次。`;
+  }
+  const base = `[Reviews and sample photos] When the user is choosing between two or three lenses to buy—asking which to pick, preparing to buy, or after you state a lean—after explaining the trade-offs, add one natural sentence suggesting they check outside reviews and sample photos before deciding, with the link formatted as [text](reviews:ref1,ref2) using exact refs from tools for only the lenses being compared (at most ${MAX_REVIEW_SEARCH_LENSES}). Do not mention this otherwise.`;
   if (offeredRefs.length === 0) {
     return base;
   }
-  return `${base}这段对话里已经给过这些 ref 的评测链接：${offeredRefs.join("、")}。要拍板的镜头和这些相同的话，不要再给；其中出现了不在这个列表里的镜头时，才再给一次。`;
+  return `${base} Review links have already been given in this conversation for these refs: ${offeredRefs.join(", ")}. Do not give them again for the same lenses; only offer another link if a new lens not in that list enters the final decision.`;
+}
+
+/** Final system instruction pinning reply language across prose and structured tool fields. */
+export function languagePrompt(locale: string): string {
+  if (locale === "zh") {
+    return "用用户最近一条消息所用的语言回复（包括正文、推荐卡理由、表格标题和选项卡）；从消息里看不出语言时（比如只有镜头型号），用简体中文。";
+  }
+  return "Reply in the exact language of the user's latest message across all user-facing text (prose, recommendation card reasons, table captions, and choice cards) — do not switch to Chinese unless the user wrote in Chinese. When the message has no clear language (such as lens model names only), use English.";
 }

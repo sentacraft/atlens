@@ -29,13 +29,23 @@ describe("offeredReviewRefs", () => {
 });
 
 describe("reviewSearchPrompt", () => {
-  it("always offers the link", () => {
-    expect(reviewSearchPrompt([])).toContain("reviews:ref1,ref2");
-    expect(reviewSearchPrompt(["abc", "def"])).toContain("reviews:ref1,ref2");
+  it("always offers the link in zh", () => {
+    expect(reviewSearchPrompt([], "zh")).toContain("reviews:ref1,ref2");
+    expect(reviewSearchPrompt(["abc", "def"], "zh")).toContain("reviews:ref1,ref2");
   });
 
-  it("lists the refs already offered", () => {
-    expect(reviewSearchPrompt([])).not.toContain("已经给过");
-    expect(reviewSearchPrompt(["abc", "def"])).toContain("abc、def");
+  it("lists the refs already offered in zh", () => {
+    expect(reviewSearchPrompt([], "zh")).not.toContain("已经给过");
+    expect(reviewSearchPrompt(["abc", "def"], "zh")).toContain("abc、def");
+  });
+
+  it("renders English review search prompts without CJK characters for non-zh locales", () => {
+    const fresh = reviewSearchPrompt([], "en");
+    const repeat = reviewSearchPrompt(["abc", "def"], "en");
+    expect(fresh).toContain("reviews:ref1,ref2");
+    expect(fresh).not.toContain("already been given");
+    expect(repeat).toContain("already been given");
+    expect(repeat).toContain("abc, def");
+    expect(fresh + repeat).not.toMatch(/[\u4e00-\u9fff]/);
   });
 });

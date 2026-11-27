@@ -17,7 +17,7 @@ import {
   agentModelLabel,
   missingAgentModelKey,
 } from "@/lib/ai/model";
-import { gearPrompt, reviewSearchPrompt, systemPrompt } from "@/lib/ai/system-prompt";
+import { gearPrompt, languagePrompt, reviewSearchPrompt, systemPrompt } from "@/lib/ai/system-prompt";
 import { offeredReviewRefs } from "@/lib/ai/review-search-offer";
 import { findAgentModelPreset, MODEL_PRESET_HEADER } from "@/lib/ai/model-presets";
 import { describeGear, EVAL_GEAR_HEADER, evalGear, type GearStatus, type GearSummary } from "@/lib/ai/gear-context";
@@ -28,7 +28,7 @@ import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
 import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval, signInDeclined } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
 import type { MtfChart } from "@/lib/ai/mtf-comparison";
-import { buildLensTools, countShownFigures, earlierMtfCharts, seedRecalledRefs } from "@/lib/ai/tools";
+import { buildLensTools, countShownFigures, earlierMtfCharts, seedRecalledRefs, shouldDisallowCjkToolCopy } from "@/lib/ai/tools";
 import { loadLensReviews } from "@/lib/lens/reviews-repository";
 import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
 import { checkIrisQuota, recordIrisTurn, type IrisQuotaUser } from "@/lib/ai/iris-quota";
@@ -148,6 +148,7 @@ export async function POST(req: NextRequest) {
   // Filled once the history is resolved below; validate needs the tools before that.
   const recalledRefs = new Set<string>();
   const figures: { next: number; mtfShown?: MtfChart[] } = { next: 1 };
+  const turnLanguage = { disallowCjk: false };
   const tools = withRepeatedFailureNotice(
     buildLensTools(
       mount,
@@ -165,6 +166,7 @@ export async function POST(req: NextRequest) {
       },
       recalledRefs,
       figures,
+      turnLanguage,
     ),
   );
   const validate = (messages: unknown) =>
@@ -228,13 +230,18 @@ export async function POST(req: NextRequest) {
   const gearDeclined = gearCardDecline(history);
   const declinedSignIn = signInDeclined(history);
   const choicesUsed = choicesCardUsed(history);
-  const reviewNudge = reviewSearchPrompt(offeredReviewRefs(history));
+  const reviewNudge = reviewSearchPrompt(offeredReviewRefs(history), locale);
   const activeTools = Object.keys(tools).filter((name) =>
     !(declinedSignIn && SIGN_IN_GATED_TOOL_NAMES.includes(name)) &&
     !(name === ASK_FOR_GEAR && (gearDeclined || declinedSignIn)) &&
     !(name === ASK_CHOICES && choicesUsed),
   ) as Array<keyof typeof tools>;
   const messageContext = traceMessageContext(history);
+  const latestUserText = (messageContext?.userMessage.parts ?? [])
+    .filter((part): part is { type: "text"; text: string } => part.type === "text")
+    .map((part) => part.text)
+    .join("\n");
+  turnLanguage.disallowCjk = shouldDisallowCjkToolCopy(locale, latestUserText);
   const analyticsConversationId = await anonymizeId(
     conversationId,
     process.env.ANALYTICS_ID_SECRET,
@@ -297,26 +304,35 @@ export async function POST(req: NextRequest) {
       { role: "system", content: systemPrompt(mount, locale) },
       {
         role: "system",
-        content: gearPrompt(gearAccess, { declined: gearDeclined, signInDeclined: declinedSignIn }),
+        content: gearPrompt(gearAccess, { declined: gearDeclined, signInDeclined: declinedSignIn }, locale),
       },
       { role: "system", content: reviewNudge },
+      { role: "system", content: languagePrompt(locale) },
     ],
     messages: modelMessages,
+    allowSystemInMessages: true,
     tools,
     activeTools,
     toolApproval: signInApproval(gearAccess === "account" || testFavorites !== undefined),
     stopWhen: stepCountIs(STEP_BUDGET),
     // req.signal only fires on Workers with the enable_request_signal compatibility flag.
     abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(STREAM_TIMEOUT_MS)]),
-    prepareStep: ({ stepNumber, steps }) => {
+    prepareStep: ({ stepNumber, steps, messages }) => {
+      const overrides: {
+        toolChoice?: "none";
+        activeTools?: typeof activeTools;
+        messages?: typeof messages;
+      } = {};
       if (stepNumber >= STEP_BUDGET - 1 || hasRepeatedToolFailure(steps)) {
-        return { toolChoice: "none" };
+        overrides.toolChoice = "none";
+      } else if (stepNumber >= 2 && !hasPresentedLenses(steps) && activeTools.includes(ASK_CHOICES)) {
+        // Avoid burning multiple research steps only to pause empty-handed on a choice card.
+        overrides.activeTools = activeTools.filter((name) => name !== ASK_CHOICES);
       }
-      // Avoid burning multiple research steps only to pause on a choice card.
-      if (stepNumber >= 2 && activeTools.includes(ASK_CHOICES)) {
-        return { activeTools: activeTools.filter((name) => name !== ASK_CHOICES) };
+      if (stepNumber > 0 && turnLanguage.disallowCjk) {
+        overrides.messages = [...messages, { role: "system", content: languagePrompt(locale) }];
       }
-      return undefined;
+      return Object.keys(overrides).length > 0 ? overrides : undefined;
     },
     onChunk: ({ chunk }) => traceCollector.recordChunk(chunk),
     onError: ({ error }) => markStreamError(error),
@@ -464,4 +480,16 @@ async function loadFavorites(
     return null;
   }
   return (await listUserFavorites(appDb, userId)).map((favorite) => favorite.lensId);
+}
+
+function hasPresentedLenses(
+  steps: ReadonlyArray<{ content: ReadonlyArray<{ type: string; toolName?: string }> }>,
+): boolean {
+  return steps.some((step) =>
+    step.content.some(
+      (part) =>
+        part.type === "tool-result" &&
+        (part.toolName === "recommendLenses" || part.toolName === "listLenses"),
+    ),
+  );
 }

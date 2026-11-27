@@ -12,7 +12,7 @@ const choiceGroupSchema = z.object({
     .array(z.string().trim().min(1).max(80))
     .min(2)
     .max(5)
-    .describe("Short choice label (ideally under 40 characters). The card adds its own free-text option."),
+    .describe("Short choice label in the reply language (ideally under 40 characters). The card adds its own free-text option."),
   multiple: z.boolean().nullish().describe("true when more than one answer can apply; default is pick one."),
 });
 

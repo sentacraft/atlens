@@ -278,6 +278,17 @@ const IMAGE_READING_OPTIONS = { deepseek: { imageDetail: "original" }, openai: {
 
 const MTF_READING = "Read a chart only from curves you can make out: match each legend entry to a visible curve by colour and line style, with its frequency, aperture and S/M, and say so when an entry matches no visible curve. Read values against the gridlines to about 0.05, each tied to its series. For the edge or corners, read the right end of the curve and any dip or rise before it.";
 
+const CJK_OR_KANA = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]/;
+const CJK_IDEOGRAPH = /[\u3400-\u4dbf\u4e00-\u9fff]/;
+
+/**
+ * Guards non-zh turns against drifting into Chinese inside structured tool copy unless the user
+ * themselves wrote in Chinese or Japanese.
+ */
+export function shouldDisallowCjkToolCopy(locale: string, latestUserText: string): boolean {
+  return locale !== "zh" && !CJK_OR_KANA.test(latestUserText);
+}
+
 export function buildLensTools(
   mount: Mount,
   locale: string,
@@ -287,6 +298,7 @@ export function buildLensTools(
   // Filled with the next figure number once the history is resolved, like recalledRefs.
   // `mtfShown` holds the MTF charts shown earlier in the conversation and in this request, oldest first.
   figures: { next: number; mtfShown?: MtfChart[] } = { next: 1 },
+  turnLanguage: { disallowCjk: boolean } = { disallowCjk: false },
 ) {
   const mountLabel = mount === "G" ? "Fujifilm GFX" : "Fujifilm X";
   const contextRefs = buildRefIndex(getLensesByMount(mount, locale));
@@ -609,6 +621,9 @@ export function buildLensTools(
           .max(6),
       }),
       execute: ({ picks }) => {
+        if (turnLanguage.disallowCjk && picks.some((pick) => CJK_IDEOGRAPH.test(pick.reason))) {
+          throw new Error("Write every recommendation reason in the user's language (not Chinese), then call recommendLenses again.");
+        }
         const { recommendations } = recommendLenses(mount, locale, picks, tBrand, recalledRefs);
         return markOwned(recommendations).then((marked) => ({ recommendations: marked }));
       },
@@ -645,6 +660,9 @@ export function buildLensTools(
           .describe("An optional short caption above the table, in the user's language."),
       }),
       execute: ({ refs, columns, caption }) => {
+        if (turnLanguage.disallowCjk && caption && CJK_IDEOGRAPH.test(caption)) {
+          throw new Error("Write the table caption in the user's language (not Chinese), then call listLenses again.");
+        }
         const table = listLenses(mount, locale, refs, columns, caption, tBrand, recalledRefs);
         return markOwned(table.lenses).then((lenses) => ({ ...table, lenses }));
       },
