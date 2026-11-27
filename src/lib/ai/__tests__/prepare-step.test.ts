@@ -87,22 +87,28 @@ describe("createPrepareStep", () => {
     expect(result?.messages?.at(-1)).toEqual({ role: "system", content: REMINDER });
   });
 
-  it("forces toolChoice none at stepBudget - 1 or after repeated tool failure", () => {
-    expect(prepareStep({ stepNumber: 7, steps: [], messages: MESSAGES })).toEqual({
-      toolChoice: "none",
-      messages: [...MESSAGES, { role: "system", content: REMINDER }],
-    });
+  it("forces toolChoice none with an explicit reason at stepBudget - 1 or after repeated tool failure", () => {
+    const budgetResult = prepareStep({ stepNumber: 7, steps: [], messages: MESSAGES });
+    expect(budgetResult?.toolChoice).toBe("none");
+    expect(budgetResult?.messages).toHaveLength(MESSAGES.length + 1);
+    const budgetNotice = budgetResult?.messages?.at(-1);
+    expect(budgetNotice?.role).toBe("system");
+    expect(budgetNotice?.content).toContain("maximum tool-call step limit");
+    expect(budgetNotice?.content).toContain("tools are now disabled");
+    expect(budgetNotice?.content).toContain(REMINDER);
 
     const repeatedError = { type: "tool-error", toolName: "queryLenses", input: { queries: [] } };
-    expect(
-      prepareStep({
-        stepNumber: 2,
-        steps: [{ content: [repeatedError] }, { content: [repeatedError] }],
-        messages: MESSAGES,
-      }),
-    ).toEqual({
-      toolChoice: "none",
-      messages: [...MESSAGES, { role: "system", content: REMINDER }],
+    const failureResult = prepareStep({
+      stepNumber: 2,
+      steps: [{ content: [repeatedError] }, { content: [repeatedError] }],
+      messages: MESSAGES,
     });
+    expect(failureResult?.toolChoice).toBe("none");
+    expect(failureResult?.messages).toHaveLength(MESSAGES.length + 1);
+    const failureNotice = failureResult?.messages?.at(-1);
+    expect(failureNotice?.role).toBe("system");
+    expect(failureNotice?.content).toContain("failed twice in a row");
+    expect(failureNotice?.content).toContain("tools are now disabled");
+    expect(failureNotice?.content).toContain(REMINDER);
   });
 });

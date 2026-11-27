@@ -322,3 +322,21 @@ describe("recallLenses · a sort with no value puts the lens in maybe", () => {
     expect(recall({ type: "prime", sortBy: "widest" }, ALL).maybe).toEqual([]);
   });
 });
+
+describe("recallLenses · truncation summary", () => {
+  it("attaches full-match summary only when matches exceed maxCount", () => {
+    const truncated = recall({ type: "prime" }, 5);
+    expect(truncated.matches).toHaveLength(5);
+    expect(truncated.totalMatched).toBeGreaterThan(5);
+    expect(truncated.summary).toBeDefined();
+    expect(truncated.summary?.primes).toBe(truncated.totalMatched);
+    expect(truncated.summary?.zooms).toBe(0);
+    expect(Object.values(truncated.summary?.brands ?? {}).reduce((a, b) => a + b, 0)).toBe(truncated.totalMatched);
+    expect(truncated.summary?.focalMinMm).not.toBeNull();
+    expect(truncated.summary?.focalMaxMm).not.toBeNull();
+
+    const exact = recall({ type: "prime" }, truncated.totalMatched);
+    expect(exact.matches).toHaveLength(truncated.totalMatched);
+    expect(exact.summary).toBeUndefined();
+  });
+});

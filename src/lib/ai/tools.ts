@@ -33,7 +33,8 @@ import { REVIEW_ASPECTS } from "@/lib/lens/reviews";
 import { prepareFeedback, prepareFeedbackInputSchema } from "@/lib/feedback/prepare-feedback";
 import type { LensReviews } from "@/lib/lens/reviews-repository";
 
-const RECALL_LIMIT = 20;
+const DEFAULT_RECALL_LIMIT = 20;
+const MAX_RECALL_LIMIT = 50;
 
 // A model fills an unset bound with 0, which no requirement ever means; the message tells it to retry with null.
 const bound = () => z.number().positive("A bound must be a positive number. Use null, not 0, for an unrestricted bound.");
@@ -126,6 +127,16 @@ const recallConstraintsSchema = z.object({
       "Which lenses lead the results. It orders them, it never excludes any, so the " +
         "cap keeps the ones this names. fastest = widest maximum aperture; " +
         "widestZoomRange = highest ratio of longest to shortest focal.",
+    ),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(MAX_RECALL_LIMIT)
+    .nullish()
+    .describe(
+      `Max lenses to return for this query (default ${DEFAULT_RECALL_LIMIT}, max ${MAX_RECALL_LIMIT}). ` +
+        `Raise above ${DEFAULT_RECALL_LIMIT} only when the user explicitly asks for a full list of a moderately sized set.`,
     ),
 });
 
@@ -239,9 +250,9 @@ const REVIEWS_NOTE =
 // Returned with every queryLenses result, so the reading rules arrive with the data they govern.
 const QUERY_LENSES_NOTE =
   "`maybe` holds lenses with no data on a constrained or sorted field: surface them, never drop them. " +
-  `Each query returns at most ${RECALL_LIMIT} lenses by your sort; totalMatched counts the matches beyond that, and ` +
-  "there is no paging. Lenses you put forward for the user to choose from go on cards or a table; prose alone " +
-  "does not show them.";
+  `Each query returns at most ${DEFAULT_RECALL_LIMIT} lenses by default (up to ${MAX_RECALL_LIMIT} via limit); ` +
+  "totalMatched counts the matches beyond that, and there is no paging. Lenses you put forward for the " +
+  "user to choose from go on cards or a table; prose alone does not show them.";
 
 // Returned with every queryBodies result, so the boundary arrives with the data it governs.
 const BODIES_NOTE =
@@ -327,20 +338,28 @@ export function buildLensTools(
           .describe("Constraint sets, each recalled separately; results come back in the same order."),
       }),
       execute: ({ queries }) => ({
-        results: queries.map((constraints) => {
-          const result = recallLenses(mount, locale, constraints, tBrand, RECALL_LIMIT);
+        results: queries.map(({ limit, ...constraints }) => {
+          const maxCount = Math.min(limit ?? DEFAULT_RECALL_LIMIT, MAX_RECALL_LIMIT);
+          const result = recallLenses(mount, locale, constraints, tBrand, maxCount);
           for (const lens of result.matches) {
             recalledRefs.add(lens.ref);
           }
           for (const { lens } of result.maybe) {
             recalledRefs.add(lens.ref);
           }
-          return result.totalMatched === 0 && result.totalMaybe === 0
-            ? {
-                ...result,
-                note: `No catalogue lenses meet these constraints in ${mountLabel}. Say so. Do not relax explicit requirements without the user's agreement. If the user appears to mean a different mount, confirm that instead of searching wider.`,
-              }
-            : result;
+          if (result.totalMatched === 0 && result.totalMaybe === 0) {
+            return {
+              ...result,
+              note: `No catalogue lenses meet these constraints in ${mountLabel}. Say so. Do not relax explicit requirements without the user's agreement. If the user appears to mean a different mount, confirm that instead of searching wider.`,
+            };
+          }
+          if (result.totalMatched > result.matches.length) {
+            return {
+              ...result,
+              note: `Results are truncated (${result.matches.length} of ${result.totalMatched} shown; max ${MAX_RECALL_LIMIT} per query). Do not split filters across extra calls to enumerate every lens. Report totalMatched and use summary to describe the full lineup, show representative picks or a table, and offer to narrow down or link to the browse page.`,
+            };
+          }
+          return result;
         }),
         note: QUERY_LENSES_NOTE,
         detailSpecsNote: RECALL_OMITTED_NOTE,
@@ -395,7 +414,7 @@ export function buildLensTools(
           throw new Error("The user is not signed in.");
         }
         const { lenses, otherMounts } = favoritesOnMount(ids, mount, locale);
-        const results = lenses.slice(0, RECALL_LIMIT).map((lens) => toRecalled(resolveLens(lens, locale, tBrand)));
+        const results = lenses.slice(0, DEFAULT_RECALL_LIMIT).map((lens) => toRecalled(resolveLens(lens, locale, tBrand)));
         for (const lens of results) {
           recalledRefs.add(lens.ref);
         }
