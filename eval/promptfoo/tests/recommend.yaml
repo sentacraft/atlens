@@ -1,0 +1,231 @@
+- description: smoke-35mm
+  metadata:
+    area: recommend
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "推荐几支富士 X 卡口等效 35mm 的定焦镜头"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript # cards are primes around 23mm native (35mm equivalent at 1.5x)
+      metric: programmatic
+      value: "context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.fmin === p.fmax && p.fmin >= 20 && p.fmin <= 27)"
+
+- description: astro-milky-way
+  metadata:
+    area: recommend
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "第一次拍银河，需要广角大光圈，机身 X-T5。"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript # at least one pick <= 24mm full-frame-equivalent (wide enough)
+      metric: programmatic
+      value: "context.metadata.picks.some((p) => p.fmin != null && Math.round(p.fmin * 1.5) <= 24)"
+    # Observed, not gated: this judge searches the live web, so its verdict moves
+    # with what the search returns that minute.
+    - type: assert-set
+      threshold: 0
+      assert:
+        - type: search-rubric
+          metric: recommendation-quality
+          provider: file://graders/quality-grader.yaml
+          value: >-
+            For Milky Way shooting, the picks should balance a wide enough field of
+            view (an arch of the Milky Way needs a wide angle) and not treat autofocus
+            as a hard gate (astro is manual-focus anyway); these are trade-off
+            dimensions, not a requirement to list any specific manual lens. Fail if
+            either is clearly out of balance.
+
+- description: vlog-selfie
+  metadata:
+    area: recommend
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "有没有适合拍 vlog 的镜头？但我听说富士相机对焦都不太好，可能更适合拍照，不适合拍视频，是这么回事吗？这种问题能通过选一个合适的镜头来解决吗？"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: llm-rubric # takes the autofocus claim head-on, then recommends for vlogging
+      metric: guard
+      value: >-
+        The user repeats a claim that Fujifilm autofocus is poor for video and asks whether
+        a lens can fix it. The reply should address that claim directly — neither waving it
+        away nor accepting it wholesale, and saying what a lens can and cannot change about
+        video autofocus. Recommending lenses is optional: asking what the user films first
+        is as good an answer, but any lenses it does put forward must suit vlogging (wide
+        enough to hold the camera at arm's length, light, autofocus). It fails if it ignores
+        the claim, answers it with a blanket statement in either direction, or recommends
+        lenses unsuited to vlogging.
+
+- description: travel-one-lens
+  metadata:
+    area: recommend
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "出门旅游带两三个定焦换来换去太麻烦了，想只带一支镜头走天下。"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: assert-set
+      threshold: 0
+      assert:
+        - type: search-rubric
+          metric: recommendation-quality
+          provider: file://graders/quality-grader.yaml
+          value: >-
+            A one-lens-for-everything pick should honestly spell out the core
+            trade-off — focal coverage vs image quality/aperture vs size and weight; if
+            it just piles on the largest zoom ratio without addressing the cost, it
+            fails.
+
+- description: reach-wildlife
+  metadata:
+    area: recommend
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "想拍远处的野生动物和鸟，镜头要够长、够得着，越远越好，机身 X-T5，预算不太在意。"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript # steered recall toward the long end (not a coversFocals filter)
+      metric: programmatic
+      value: 'context.metadata.queries.some((q) => q.input.sortBy === "longestReach")'
+    - type: javascript # at least one pick reaches >= 300mm native
+      metric: programmatic
+      value: "context.metadata.picks.some((p) => p.fmax != null && p.fmax >= 300)"
+    - type: assert-set
+      threshold: 0
+      assert:
+        - type: search-rubric
+          metric: recommendation-quality
+          provider: file://graders/quality-grader.yaml
+          value: >-
+            Under an ask for as much reach as possible, long-enough lenses should rank
+            first (not crowded out by wider ones), while acknowledging the real
+            trade-offs of long glass (weight/price/aperture); it fails if wider lenses
+            crowd out the reach, or if it mindlessly stacks only the single longest lens.
+
+- description: refine-budget
+  metadata:
+    area: recommend
+  vars:
+    mount: X
+    locale: zh
+    budgetCNY: 2000
+    dialog:
+      turns:
+        - "想要一支富士 X 卡口的人像镜头，虚化好一点。"
+        - "预算其实只有 2000 左右。"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript # turn 2 never restates the genre, so portrait-band picks prove "人像" carried
+      metric: programmatic
+      value: "context.metadata.picks.every((p) => p.fmin >= 30 && p.fmax <= 100)"
+
+# The request names its own undecided choice, so the turn has to pick a lane: ask, or
+# narrow and say so. Doing both buries the question under the cards that pre-empt it.
+- description: split-tradeoff
+  metadata:
+    area: recommend
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "主要拍户外半身人像，在 33mm 和 56mm 之间拿不准，机身 X-T4。"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: llm-rubric # asks or narrows, never both
+      metric: guard
+      value: >-
+        The user is undecided between two focal lengths. The reply must do one of two
+        things and not both: ask which way that choice goes (in text or on a [question card]) and name no lens at all;
+        or say which way it narrowed the request, so the user can correct it, and
+        offer lenses only from that side. Characterising what each focal length is
+        like is how the question gets asked and is not offering a lens — only naming
+        or showing particular lenses counts. It fails if it asks the user to decide
+        and also puts forward specific lenses from both sides.
+
+# Mount: a G-mount request recommends G-mount lenses (the default checks hold the mount).
+- description: gfx-landscape
+  metadata:
+    area: recommend
+  vars:
+    mount: G
+    locale: zh
+    dialog:
+      turns:
+        - "推荐几支适合拍风光的广角镜头，机身 GFX 100S II。"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript # cards include a wide GF lens (32mm native is about 25mm equivalent at 0.79x)
+      metric: programmatic
+      value: "context.metadata.picks.length > 0 && context.metadata.picks.some((p) => p.fmin != null && p.fmin <= 32)"
+
+# Cine: cinema lenses are recalled only when asked for, and then they are what gets recommended.
+- description: cine-short-film
+  metadata:
+    area: recommend
+  vars:
+    mount: X
+    locale: zh
+    wantsCine: true
+    dialog:
+      turns:
+        - "想拍短片，有没有适合拍视频的电影镜头，就是标 T 值的那种？"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript
+      metric: programmatic
+      value: 'context.metadata.queries.some((q) => q.input.usage === "cine") && context.metadata.picks.length > 0 && context.metadata.picks.every((p) => p.isCine === true)'
+
+# Real-world production query: colloquial fragment with body, mixed uses, and tight budget.
+- description: recommend-colloquial-xs20
+  metadata:
+    area: recommend
+  vars:
+    mount: X
+    locale: zh
+    budgetCNY: 4000
+    dialog:
+      turns:
+        - "xs20配什么头，平时扫街拍娃为主，预算4000以内"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript # specific body, genres, and budget should yield recommendations before any follow-up choice card
+      metric: programmatic
+      value: "context.metadata.picks.length > 0 && context.metadata.toolsCalled.includes('recommendLenses') && (context.metadata.toolsCalled.indexOf('askChoices') === -1 || context.metadata.toolsCalled.indexOf('recommendLenses') < context.metadata.toolsCalled.indexOf('askChoices'))"
+
+# Real-world gap: cross-mount question asking about a G-mount lens on an X-mount body.
+- description: recommend-cross-mount-gf-on-x
+  metadata:
+    area: recommend
+  vars:
+    mount: X
+    locale: zh
+    namesModels: true
+    dialog:
+      turns:
+        - "GFX 110mm F2 能在 X-T5 上用吗？想买来拍人像"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: llm-rubric
+      metric: guard
+      value: >-
+        GF 110mm F2 is a Fujifilm G-mount medium-format lens, whereas the user's X-T5 is
+        an X-mount APS-C body. The reply must make clear that GF lenses are G-mount and
+        cannot natively mount on an X-T5 (even if adapters are mentioned or it pivots to
+        X-mount portrait alternatives). It fails if it claims or implies the GF 110mm F2
+        mounts natively on X-T5.

@@ -1,0 +1,6 @@
+# This turn answers without recommending: an off-topic ask, a single-lens lookup, a
+# question about Iris herself. Not a general rule — a turn that asks instead of
+# recommending is fine anywhere, and only these cases can say a deck is wrong outright.
+type: javascript
+metric: programmatic
+value: "context.metadata.pickGroups.length === 0"

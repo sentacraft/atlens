@@ -1,0 +1,175 @@
+# Gear: asked to fill a gap, Iris starts from where the owned lenses stop.
+- description: gear-fill-wide
+  metadata:
+    area: gear
+  vars:
+    mount: X
+    locale: zh
+    gear:
+      bodies: [fujifilm-x-t5]
+      lenses: [fujifilm-xf-18-55mmf28-4-r-lm-ois-x, fujifilm-xf-56mmf12-r-wr-x]
+    dialog:
+      turns:
+        - "我想补一支更广的镜头，有什么建议？"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript # every card goes wider than the owned 18mm wide end
+      metric: programmatic
+      value: "context.metadata.picks.every((p) => p.fmin === null || p.fmin < 18)"
+    - type: llm-rubric
+      metric: gear
+      value: >-
+        The user's saved gear (not shown in the conversation) is an X-T5 with an XF
+        18-55mm and an XF 56mm. The reply should start from the widest focal length they
+        already cover (18mm, about 27mm equivalent) and suggest lenses wider than that.
+        It fails if it does not acknowledge what they already have.
+
+# Gear: a focal-gap question works from the owned lenses' equivalents, and gets them right.
+- description: gear-gap
+  metadata:
+    area: gear
+  vars:
+    mount: X
+    locale: zh
+    gear:
+      bodies: [fujifilm-x-t5]
+      lenses: [7artisans-4mm-f28-x, fujifilm-xf-18-55mmf28-4-r-lm-ois-x, fujifilm-xf-33mmf14-r-lm-wr-x, fujifilm-xf-70-300mmf4-56-r-lm-ois-wr-x]
+    dialog:
+      turns:
+        - "我已有的镜头还缺哪个焦段？"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: llm-rubric
+      metric: gear
+      value: >-
+        The user's saved gear (not shown in the conversation) is an X-T5 (APS-C, 1.5x crop)
+        with a 7Artisans 4mm F2.8 fisheye (about 6mm equivalent), an XF 18-55mm (about
+        27-84mm), an XF 33mm F1.4 (about 50mm) and an XF 70-300mm (about 105-450mm). What
+        is actually missing: a regular, non-fisheye wide angle below about 27mm equivalent,
+        a small step between about 84 and 105mm, and anything beyond about 450mm. The reply
+        should name the wide-angle gap. It fails if it states any owned lens's equivalent
+        focal length wrongly, or presents a range these lenses already cover as missing.
+
+# Gear: asked whether a lens duplicates owned ones, Iris weighs the overlap honestly.
+- description: gear-duplicate
+  metadata:
+    area: gear
+  vars:
+    mount: X
+    locale: zh
+    namesModels: true
+    gear:
+      bodies: [fujifilm-x-t5]
+      lenses: [fujifilm-xf-18-55mmf28-4-r-lm-ois-x, fujifilm-xf-33mmf14-r-lm-wr-x]
+    dialog:
+      turns:
+        - "我想买唯卓仕 AF 27mm F1.2 Pro，会不会和我手上的镜头重复？"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: llm-rubric
+      metric: gear
+      value: >-
+        The user's saved gear (not shown in the conversation) is an X-T5 with an XF 18-55mm
+        F2.8-4 and an XF 33mm F1.4. The Viltrox 27mm (about 41mm equivalent) sits inside the
+        18-55mm's range and close to the 33mm (about 50mm). The reply should say its focal
+        length overlaps what they own and what it still adds — mainly the f/1.2 aperture —
+        so the user can judge. It fails if it says there is no overlap, or states any of
+        these focal lengths or equivalents wrongly.
+
+# Gear: saved-gear-dependent advice starts with myGear and shared sign-in approval.
+- description: gear-unknown-guest
+  metadata:
+    area: gear
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "我下一支镜头该买什么？"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript # approval reads saved gear; it is not an edit request
+      metric: gear
+      value: "context.metadata.signInCardShown && !context.metadata.gearCardShown && context.metadata.toolsCalled.includes('myGear')"
+    - file://assertions/no-sign-in-wording.yaml
+    - type: llm-rubric
+      metric: gear
+      value: >-
+        Iris does not know what this guest owns. They declined the shared sign-in approval for reading their saved gear. The reply
+        must not assume a particular body or lens collection, request sign-in again,
+        or open a gear editor. It should continue from conversation facts or general advice. Iris only covers
+        Fujifilm X mount, so taking an X-mount body for granted is not an assumption.
+
+# Gear: a guest asking for recommendations by need is answered directly, not stopped at a card.
+- description: gear-guest-plain-recommend
+  metadata:
+    area: gear
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "推荐几支适合拍人像的定焦镜头"
+  assert:
+    - file://assertions/no-sign-in-wording.yaml
+    - file://assertions/card-quality.yaml
+    - type: javascript
+      metric: gear
+      value: "!context.metadata.signInCardShown && !context.metadata.gearCardShown && context.metadata.picks.length > 0"
+
+# Gear: a signed-in user with an empty profile gets askForGear when advice genuinely needs their gear.
+- description: gear-empty-account-next-lens
+  metadata:
+    area: gear
+  vars:
+    stopAtGearCard: true
+    mount: X
+    locale: zh
+    gear:
+      bodies: []
+      lenses: []
+    dialog:
+      turns:
+        - "我手头已经有机身和镜头了，想补一支不重复的镜头，该买什么？"
+  assert:
+    - type: javascript
+      metric: gear
+      value: "context.metadata.toolsCalled.includes('myGear') && context.metadata.gearCardShown && !context.metadata.signInCardShown"
+
+# Gear: an existing profile never disables an explicit edit.
+- description: gear-edit-existing-account
+  metadata:
+    area: gear
+  vars:
+    stopAtGearCard: true
+    mount: X
+    locale: zh
+    gear:
+      bodies: [fujifilm-x-t5]
+      lenses: [fujifilm-xf-18-55mmf28-4-r-lm-ois-x]
+    dialog:
+      turns:
+        - "帮我把新买的 XF 56mm F1.2 R WR 加进器材档案"
+  assert:
+    - type: javascript
+      metric: gear
+      value: "context.metadata.gearCardShown && !context.metadata.signInCardShown"
+
+# Gear: a later question reads the profile again instead of assuming old results are current.
+- description: gear-refresh-next-question
+  metadata:
+    area: gear
+  vars:
+    mount: X
+    locale: zh
+    gear:
+      bodies: [fujifilm-x-t5]
+      lenses: [fujifilm-xf-18-55mmf28-4-r-lm-ois-x]
+    dialog:
+      turns:
+        - "读一下我保存的器材"
+        - "我刚在器材页改过了，重新看一下我现在保存了什么"
+  assert:
+    - type: javascript
+      metric: gear
+      value: "context.metadata.toolsCalled.includes('myGear') && !context.metadata.gearCardShown && !context.metadata.signInCardShown"

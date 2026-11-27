@@ -1,0 +1,109 @@
+# Images: what Iris shows and reads from MTF charts and optical diagrams. `context.metadata.images`
+# lists the images the latest turn displayed and whether their pixels reached the model; the
+# judge sees the same as an `[images]` block, since it cannot see the pixels itself.
+- description: images-mtf-unconfirmed-aperture
+  metadata:
+    area: images
+  vars:
+    mount: X
+    locale: zh
+    namesModels: true
+    dialog:
+      turns:
+        - "XF 35mm F1.4 在 f/2 的 MTF 怎么样？"
+  assert:
+    - file://assertions/no-deck.yaml
+    - type: javascript # the MTF charts were shown and read
+      metric: images
+      value: "context.metadata.images.some((i) => i.lensId === 'fujifilm-xf-35mmf14-r-x' && i.role === 'mtf' && i.read)"
+    - type: javascript # the lens's maximum aperture is not a test-aperture filter
+      metric: images
+      value: "context.metadata.imageRequests.every((r) => r.apertureFNumber !== 1.4)"
+    - type: llm-rubric
+      metric: images
+      value: >-
+        The user asked about f/2, but these charts do not state the aperture they were
+        measured at. The reply must not present what it reads from them as the lens's
+        performance at f/2, and must make clear the charts' test aperture is not stated.
+        Describing the curves themselves is fine. It fails if it says or implies the charts
+        show f/2, or if it states f/2 performance as a reading of the charts.
+
+# Sharpness of two named lenses, without asking for charts: their MTF charts are shown and read
+# unprompted.
+- description: images-mtf-proactive
+  metadata:
+    area: images
+  vars:
+    mount: X
+    locale: zh
+    namesModels: true
+    dialog:
+      turns:
+        - "XF 16-55mm F2.8 和 XF 16-80mm F4 在广角端，边缘画质哪个更好？"
+  assert:
+    - type: javascript # both lenses' MTF charts were shown and read without being asked for
+      metric: images
+      value: "context.metadata.images.some((i) => i.role === 'mtf' && i.read && i.lensId.startsWith('fujifilm-xf-16-55mmf28')) && context.metadata.images.some((i) => i.role === 'mtf' && i.read && i.lensId === 'fujifilm-xf-16-80mmf4-r-ois-wr-x')"
+    - type: llm-rubric
+      metric: images
+      value: >-
+        The reply should draw on what the two lenses' wide-end MTF charts show about the
+        edges. Neither chart states its test aperture and the lenses open to different
+        apertures, so a leaning is fine only with that caveat; it fails if it calls the
+        conditions identical or confirmed. It also fails if it judges the edges on
+        reputation alone without referring to the charts.
+
+# Reading accuracy: a stated curve value is checked against the references measured from the chart.
+- description: images-mtf-reading
+  metadata:
+    area: images
+  vars:
+    mount: X
+    locale: zh
+    namesModels: true
+    mtfReferences: file://mtf-references.txt
+    dialog:
+      turns:
+        - "XF 35mm F1.4 R 的 MTF 图，45 线那张边缘的 S 和 M 大概多少？"
+  assert:
+    - type: javascript # the 45 lp/mm chart (image 003) of that lens was shown and read
+      metric: images
+      value: "context.metadata.images.some((i) => i.lensId === 'fujifilm-xf-35mmf14-r-x' && i.role === 'mtf' && i.read && /:image-003$/.test(i.imageRef))"
+    - type: llm-rubric
+      metric: images
+      value: >-
+        The user asks for the edge S and M values on the 45 lines/mm chart (image 003) of the
+        XF 35mm F1.4 R.
+        Reference readings (S = sagittal, M = meridional), measured from the chart pixels:
+        {{ mtfReferences }}
+        For image 003 the edge reference is S 0.3 and M 0.4. The reply must give an edge S
+        value and an edge M value, each within 0.1 of that reference and not swapped;
+        giving a value as a range is fine when the range contains the reference within 0.1.
+        It fails on a value off by more than 0.1, on S and M swapped, or on no values at all.
+
+# The second lens is shown in a later turn, so its comparability grade must cover the chart shown in the first.
+- description: images-mtf-compare-followup
+  metadata:
+    area: images
+  vars:
+    mount: X
+    locale: zh
+    namesModels: true
+    dialog:
+      turns:
+        - "给我看看 XF 16-80mm F4 广角端的 MTF 曲线"
+        - "那 XF 16-55mm F2.8 呢？哪个边缘更好？"
+  assert:
+    - type: javascript # the final turn's showLensImages grouped both lenses
+      metric: images
+      value: "context.metadata.mtfGroups.some((call) => ['fujifilm-xf-16-80mmf4-r-ois-wr-x', 'fujifilm-xf-16-55mmf28-r-lm-wr-x'].every((id) => call.groups.some((g) => g.lenses.some((l) => l.lensId === id))))"
+    - type: llm-rubric
+      metric: images
+      value: >-
+        The charts of the two lenses can be compared, but only with caveats: neither states
+        its test aperture, and the lenses open to different apertures (f/2.8 and f/4). The
+        reply may give a leaning on which lens has better edges, but must say the test
+        aperture is not stated and that the comparison assumes something such as both
+        charts being measured wide open (f/2.8 vs f/4). It fails if it says the charts share
+        identical or confirmed test conditions, if it gives an edge verdict with no such
+        caveat, or if it never refers to what the charts show at all.

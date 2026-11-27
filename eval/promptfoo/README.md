@@ -44,11 +44,13 @@ every LLM-graded assertion is a paid judge call. Run as little as answers the qu
   check is mechanical (a number in the reply, a tool called, a card's field); a judge call
   costs money on every run and can flip, so keep judges for what code cannot decide.
 - Judges are attached where they can fail, not run everywhere: the card standard
-  (`*card_quality`) only on cases whose reply can carry cards, and the two observed rubrics
-  (`*narration`, `*priced_prose`) on a fixed sample. A new case sets `metadata.area`, and
-  opts into `*card_quality` if its reply can recommend.
+  (`file://assertions/card-quality.yaml`) only on cases whose reply can recommend,
+  while `defaultTest.options.provider` supplies the default low-reasoning behavior judge and
+  `graders/quality-grader.yaml` supplies the web-searching quality judge for `search-rubric`.
 - A case that grades only whether the gear card showed sets `stopAtGearCard`, so it does not
-  pay for the recommendation after the card.
+  pay for the recommendation after the card. Cases without `choiceCardAnswer` stop at
+  `askChoices`; set `choiceCardAnswer: first` (or `skipped` / `{ picks: [...] }`) to answer
+  the card and verify the resumed recommendation.
 
 `provider.mjs` imports `src/lib/ai/lens-ref.ts` directly rather than restating the hash,
 so it needs the repo's pinned Node (see `.nvmrc`) for type stripping — a second copy of
@@ -69,21 +71,19 @@ development-only `x-askiris-model` header, so a run per preset compares models s
   through the AI SDK's `DefaultChatTransport` — the same transport `useChat` hands the
   browser, so the eval issues the request the real client builds rather than a second
   implementation of it — rebuilds the streamed assistant message with `readUIMessageStream`
-  (threading prior turns back in for multi-turn cases), and returns two things: the ordered
-  transcript (prose + recommendation cards, for the judge) and the structured tool-call
-  trace on `metadata` (for the deterministic checks). What remains bespoke is the reading of
-  a turn, not the moving of it: the domain mapping (a `recommendLenses` output _is_ a card
-  deck) is ours; everything else is the SDK's or promptfoo's.
-- **`promptfooconfig.yaml`** — the cases and their graders, two tiers:
+  (threading prior turns back in, and auto-answering `askForGear`, `askChoices`, or sign-in
+  approval cards when configured), and returns two things: the ordered transcript (prose +
+  recommendation cards, for the judge) and the structured tool-call trace on `metadata`
+  (both latest-turn fields and conversation-wide `all*` accumulators for deterministic checks).
+- **`promptfooconfig.yaml`** + **`tests/*.yaml`** + **`assertions/*.yaml`** + **`graders/quality-grader.yaml`** — modular
+  cases split by topic and graded across two tiers:
   - `javascript` assertions check invariants against the **tool-call trace** (did it sort by
     reach? do the picks stay in the focal band? is any pick over budget?). These read
     `context.metadata`; promptfoo's built-in assertions only grade output text, so
     trajectory checks have to be JS.
-  - `search-rubric` is the LLM judge **with live web search** — it audits the picks against
-    what the web actually recommends for the scenario (catching omissions our own data can't).
-    The shared `rubricPrompt` under `defaultTest.options` carries the full judge system prompt.
-- **Observed, not gated** — the web-searching judges read the live web, so their verdict
-  moves with what the search returns that minute. They are wrapped in an `assert-set` with
-  `threshold: 0`: the judge still runs and its reasoning still shows up in the results, but
-  it cannot fail the case. (`weight: 0` does **not** do this — promptfoo computes
+  - `defaultTest.options.provider` is the shared low-reasoning `gpt-6-luna` behavior judge;
+    `graders/quality-grader.yaml` adds live `web_search` for `search-rubric` checks.
+- **Observed, not gated** — the web-searching judges and efficiency budget check are wrapped in
+  an `assert-set` with `threshold: 0`: the check still runs and its reasoning shows up in the
+  results, but it cannot fail the case. (`weight: 0` does **not** do this — promptfoo computes
   `pass = !failedReason`, so a zero-weight assertion still fails the case.)

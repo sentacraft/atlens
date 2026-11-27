@@ -1,0 +1,67 @@
+# Vague first message: real visitors typed a need too thin to pick a lens from ("日本旅行",
+# "运动会适合") and left after Iris answered with a list of questions in text. It should ask on
+# the choice card.
+- description: vague-trip
+  metadata:
+    area: vague
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "日本旅行"
+  assert:
+    - type: javascript # the questions are on the card
+      metric: programmatic
+      value: "context.metadata.toolsCalled.includes('askChoices')"
+    - type: javascript # and not repeated in the text
+      metric: programmatic
+      value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length === 0"
+
+- description: vague-sports-day
+  metadata:
+    area: vague
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "运动会适合"
+  assert:
+    - type: javascript # the questions are on the card
+      metric: programmatic
+      value: "context.metadata.toolsCalled.includes('askChoices')"
+    - type: javascript # and not repeated in the text
+      metric: programmatic
+      value: "(output.split('[Iris]').pop().match(/[？?]/g) || []).length === 0"
+
+# Full askChoices completion loop: Iris shows askChoices once, user picks the first options,
+# and Iris resumes to present recommendations without popping a second choice card.
+- description: vague-choices-resume
+  metadata:
+    area: vague
+  vars:
+    mount: X
+    locale: zh
+    choiceCardAnswer: first
+    dialog:
+      turns:
+        - "日本旅行"
+  assert:
+    - file://assertions/card-quality.yaml
+    - type: javascript
+      metric: programmatic
+      value: "context.metadata.choiceCardShown === true && context.metadata.choiceCardCount === 1 && context.metadata.picks.length > 0"
+
+# A named trade-off is a different case: ask it, show no lenses (see the system prompt).
+- description: vague-tradeoff-still-asks
+  metadata:
+    area: vague
+  vars:
+    mount: X
+    locale: zh
+    dialog:
+      turns:
+        - "想开始扫街，不知道定焦还是变焦更适合"
+  assert:
+    - file://assertions/no-deck.yaml
