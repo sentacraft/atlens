@@ -392,6 +392,7 @@ export const EVENT_DOCS: EventDocs = {
         values: {
           favorite: { label: "Favorite", description: "Tried to save a favorite lens while signed out" },
           gear: { label: "Gear", description: "Tried to add a lens to their gear while signed out, on a lens page or from Iris" },
+          reviews: { label: "Reviews", description: "Tried to read all review findings on a lens page while signed out" },
           general: { label: "General", description: "A sign-in button not tied to an action; split by entry" },
         },
       },

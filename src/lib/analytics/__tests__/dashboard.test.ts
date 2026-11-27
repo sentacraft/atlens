@@ -502,4 +502,55 @@ describe("loadSessionSources", () => {
     expect(sources.byCountry.map((node) => [node.label, node.count])).toEqual([["China (CN)", 2], ["United States (US)", 1]]);
     expect(sources.byNetwork.map((node) => [node.label, node.count])).toEqual([["Other network", 2], ["Mobile network", 1]]);
   });
+
+  it("excludes bot traffic from dashboard metrics while keeping null ua_class rows and showing bots in session sources", async () => {
+    seed([
+      { ts: T0, event: "page_view", vid: "human", uaClass: "browser", country: "US", network: "other" },
+      { ts: T0 + MIN, event: "lens_view", vid: "human", path: "/en/lenses/x/a", uaClass: "browser", country: "US", network: "other" },
+      { ts: T0 + 2 * MIN, event: "askiris_turn", vid: "human", uaClass: null, props: { conversation_id: "c1", total_tokens: 10, input_tokens: 5, output_tokens: 5, cache_read_tokens: 0, step_count: 1, budget_hit: false, max_context_tokens: 100 } },
+      { ts: T0, event: "lens_view", vid: "legacy", path: "/en/lenses/x/b", origin: "ae_import", uaClass: null },
+      { ts: T0, event: "page_view", vid: "bot1", uaClass: "bot", country: "US", network: "datacenter" },
+      { ts: T0 + MIN, event: "lens_view", vid: "bot1", path: "/en/lenses/x/bot", uaClass: "bot", country: "US", network: "datacenter" },
+      { ts: T0 + 2 * MIN, event: "search", vid: "bot1", uaClass: "bot", props: { query: "xf", results_count: 0 } },
+    ]);
+
+    expect(await loadOverview(analytics.d1, WINDOW)).toEqual({
+      visitors: 2,
+      sessions: 2,
+      lensViews: 2,
+      searches: 0,
+      zeroResultSearches: 0,
+      purchaseClicks: 0,
+      irisTurns: 1,
+    });
+    expect((await countBy(analytics.d1, WINDOW, "lens_view", ["path"])).map((r) => [r.path, r.n]).sort()).toEqual([
+      ["/en/lenses/x/a", 1],
+      ["/en/lenses/x/b", 1],
+    ]);
+    expect((await loadSessionFunnel(analytics.d1, WINDOW)).map((step) => [step.label, step.count])).toEqual([
+      ["All sessions", 2],
+      ["Searched or filtered", 0],
+      ["Viewed a lens", 2],
+      ["Opened a comparison", 0],
+      ["Clicked through to a store", 0],
+    ]);
+
+    const sources = await loadSessionSources(analytics.d1, WINDOW);
+    expect(sources.sessions).toBe(2);
+    expect(sources.bySource[0].children.map((node) => [node.label, node.count]).sort()).toEqual([
+      ["Bot", 1],
+      ["Browser", 1],
+    ]);
+  });
+});
+
+describe("dashboard sign_in_open docs", () => {
+  it("labels reviews as a sign-in reason", async () => {
+    seed([
+      { ts: T0, event: "sign_in_open", vid: "a", props: { reason: "reviews" } },
+    ]);
+
+    const [opened] = await loadSignInFunnel(analytics.d1, WINDOW);
+    expect(opened.breakdown.map((node) => [node.label, node.count])).toEqual([["Reviews", 1]]);
+  });
 });

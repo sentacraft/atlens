@@ -38,7 +38,7 @@ export interface RequestAttributes {
 }
 
 const DATACENTER_ORG =
-  /amazon|aws|google cloud|google llc|microsoft|azure|digitalocean|ovh|hetzner|linode|akamai|oracle|alibaba|tencent cloud|vultr|cloud|hosting|data ?cent|server|vps/i;
+  /amazon|aws|\bgoogle\b(?!\s*fiber)|microsoft|azure|digitalocean|ovh|hetzner|linode|akamai|oracle|alibaba|tencent cloud|vultr|cloudflare|huawei cloud|bytedance|cloud|hosting|data ?cent|server|vps/i;
 const MOBILE_ORG = /mobile|wireless|cellular|\blte\b|\b5g\b/i;
 
 /** A coarse class from the network's organization name; the name itself is never stored. */

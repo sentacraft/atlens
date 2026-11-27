@@ -5,6 +5,12 @@ import type { EventName, EventProps, TrackPayload } from "@/lib/analytics/events
 import { readSource, stripSource, type LandingSource } from "@/lib/url/source";
 
 const ENDPOINT = "/api/track";
+const VID_READY_KEY = "atlens_vid_ready";
+
+let vidReady = false;
+let initializing = false;
+let pendingBodies: string[] = [];
+let pagehideAttached = false;
 
 export function track<E extends EventName>(event: E, props?: EventProps<E>): void {
   if (typeof window === "undefined") {
@@ -19,18 +25,117 @@ export function track<E extends EventName>(event: E, props?: EventProps<E>): voi
   };
   const body = JSON.stringify(payload);
 
+  if (isVidReady()) {
+    sendNow(body);
+    return;
+  }
+
+  if (initializing) {
+    queuePending(body);
+    return;
+  }
+
+  // Send the tab's first event via fetch so Set-Cookie applies atlens_vid before any concurrent sendBeacon fires.
+  sendInitial(body);
+}
+
+export function resetAnalyticsForTests(): void {
+  if (pagehideAttached && typeof window !== "undefined") {
+    window.removeEventListener("pagehide", flushPending);
+  }
+  vidReady = false;
+  initializing = false;
+  pendingBodies = [];
+  pagehideAttached = false;
+}
+
+function isVidReady(): boolean {
+  if (vidReady) {
+    return true;
+  }
+  try {
+    if (sessionStorage.getItem(VID_READY_KEY) === "1") {
+      vidReady = true;
+      return true;
+    }
+  } catch {
+  }
+  return false;
+}
+
+function markVidReady(): void {
+  vidReady = true;
+  try {
+    sessionStorage.setItem(VID_READY_KEY, "1");
+  } catch {
+  }
+}
+
+function sendInitial(body: string): void {
+  if (typeof fetch !== "function") {
+    markVidReady();
+    sendNow(body);
+    return;
+  }
+
+  initializing = true;
+  void (async () => {
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: "POST",
+        body,
+        headers: { "content-type": "application/json" },
+        keepalive: true,
+      });
+      if (res?.ok !== false) {
+        markVidReady();
+      }
+    } catch {
+    } finally {
+      initializing = false;
+      flushPending();
+    }
+  })();
+}
+
+function queuePending(body: string): void {
+  pendingBodies.push(body);
+  if (!pagehideAttached) {
+    pagehideAttached = true;
+    window.addEventListener("pagehide", flushPending, { once: true });
+  }
+}
+
+function flushPending(): void {
+  if (pagehideAttached) {
+    window.removeEventListener("pagehide", flushPending);
+    pagehideAttached = false;
+  }
+  if (pendingBodies.length === 0) {
+    return;
+  }
+  const bodies = pendingBodies;
+  pendingBodies = [];
+  for (const body of bodies) {
+    sendNow(body);
+  }
+}
+
+function sendNow(body: string): void {
   try {
     if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
       const blob = new Blob([body], { type: "application/json" });
       navigator.sendBeacon(ENDPOINT, blob);
       return;
     }
-    void fetch(ENDPOINT, {
-      method: "POST",
-      body,
-      headers: { "content-type": "application/json" },
-      keepalive: true,
-    }).catch(() => {});
+    if (typeof fetch === "function") {
+      void fetch(ENDPOINT, {
+        method: "POST",
+        body,
+        headers: { "content-type": "application/json" },
+        keepalive: true,
+      }).catch(() => {});
+    }
   } catch {
   }
 }
