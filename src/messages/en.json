@@ -282,6 +282,7 @@
     "placeholder": "Ask Iris",
     "send": "Send",
     "stop": "Stop",
+    "scrollToBottom": "Scroll to bottom",
     "gathering": "Searching lenses…",
     "composing": "Putting it together…",
     "lensImages": {

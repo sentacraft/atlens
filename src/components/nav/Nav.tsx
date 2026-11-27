@@ -151,15 +151,13 @@ export default function Nav() {
               }
             }}
             className={cn(
-              "relative mr-1.5 hidden h-8 items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 text-[13px] font-medium text-zinc-900 transition-colors sm:inline-flex",
+              "hidden h-9 items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 text-[13px] font-medium text-zinc-900 transition-colors sm:inline-flex",
               irisShown ? "border-zinc-400 bg-zinc-100" : "border-zinc-200 bg-white hover:bg-zinc-50",
             )}
           >
             <Iris config={IRIS_NAV} uid="nav-ask" size={15} />
             {t("askIris")}
-            <span className="absolute -top-2 -right-2.5 rounded bg-white ring-2 ring-white">
-              <AiTag />
-            </span>
+            <AiTag />
           </button>
           <NavMenu showGetApp={!isPwa} onFeedback={openFeedback} />
         </div>

@@ -84,7 +84,7 @@ export default function AskIrisEmptyState({
           disabled={disabled}
           placeholder={t("placeholder")}
           sendLabel={t("send")}
-          autoFocus
+          autoFocus={variant !== "sheet"}
         />
       </div>
 

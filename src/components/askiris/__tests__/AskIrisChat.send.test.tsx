@@ -444,4 +444,39 @@ describe("AskIrisChat send", () => {
     fireEvent.click(screen.getByRole("button", { name: "exitFullScreen" }));
     expect(expandedChange).toHaveBeenLastCalledWith(false);
   });
+
+  it("autofocuses the composer on desktop side panel but not on mobile sheet", () => {
+    captureChatBodies();
+    const { container, unmount } = renderChat(panel("/en/lenses/x/xf-56"));
+    expect(container.querySelector("form textarea")).toHaveFocus();
+    unmount();
+
+    const sheet = renderChat({ ...panel("/en/lenses/x/xf-56"), layout: "sheet" });
+    expect(sheet.container.querySelector("form textarea")).not.toHaveFocus();
+  });
+
+  it("shows a scroll-to-bottom button when scrolled above the bottom and smooth-scrolls on click", async () => {
+    captureChatBodies();
+    const scrollTo = vi.fn();
+    Element.prototype.scrollTo = scrollTo;
+
+    const { container } = renderChat();
+    fireEvent.click(screen.getByRole("button", { name: "Starter question" }));
+
+    await screen.findByRole("button", { name: "newChat" });
+    const scroller = screen.getByText("Starter question").closest("div.overflow-y-auto")!;
+    expect(screen.queryByRole("button", { name: "scrollToBottom" })).toBeNull();
+
+    Object.defineProperty(scroller, "scrollHeight", { configurable: true, value: 1000 });
+    Object.defineProperty(scroller, "clientHeight", { configurable: true, value: 400 });
+    Object.defineProperty(scroller, "scrollTop", { configurable: true, value: 0 });
+    fireEvent.scroll(scroller);
+
+    const button = await screen.findByRole("button", { name: "scrollToBottom" });
+    scrollTo.mockClear();
+    fireEvent.click(button);
+
+    expect(scrollTo).toHaveBeenCalledWith({ top: 1000, behavior: "smooth" });
+    expect(container.querySelector("form textarea")).not.toBeNull();
+  });
 });

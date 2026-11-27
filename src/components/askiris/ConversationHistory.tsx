@@ -80,7 +80,7 @@ export function ConversationHistoryView({ onBack, ...history }: HistoryProps & {
   const [pendingDelete, setPendingDelete] = useState<AskIrisConversationRecord | null>(null);
 
   return (
-    <section aria-labelledby={titleId} className="-mx-4 flex min-h-0 flex-1 flex-col">
+    <section aria-labelledby={titleId} className="animate-in fade-in-0 slide-in-from-left-3 -mx-4 flex min-h-0 flex-1 flex-col duration-150">
       <HistoryContent
         {...history}
         header={

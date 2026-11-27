@@ -54,9 +54,8 @@ export default function AskIrisComposer({
     >
       <div
         className={cn(
-          "border-input bg-background flex flex-1 items-end rounded-2xl border shadow-sm",
-          "focus-within:border-ring focus-within:ring-ring/40 transition-colors focus-within:ring-2",
-          lg ? "gap-3 px-3.5 py-3" : "gap-2 px-3 py-2",
+          "bg-background flex flex-1 items-end border border-zinc-300 shadow-[0_2px_10px_rgba(24,24,27,0.06)] transition-colors focus-within:border-zinc-500",
+          lg ? "gap-3 rounded-[28px] py-2 pr-2 pl-5" : "gap-2.5 rounded-[26px] py-[7px] pr-[7px] pl-[18px]",
         )}
       >
         <textarea
@@ -90,7 +89,7 @@ export default function AskIrisComposer({
             title={stopLabel}
             className={cn(
               "bg-primary text-primary-foreground grid shrink-0 place-items-center rounded-full transition",
-              lg ? "size-9" : "size-8",
+              lg ? "size-9" : "size-[34px]",
             )}
           >
             <Square className={cn("fill-current", lg ? "size-3.5" : "size-3")} />
@@ -102,7 +101,7 @@ export default function AskIrisComposer({
             aria-label={sendLabel}
             className={cn(
               "bg-primary text-primary-foreground grid shrink-0 place-items-center rounded-full transition disabled:opacity-40",
-              lg ? "size-9" : "size-8",
+              lg ? "size-9" : "size-[34px]",
             )}
           >
             <ArrowUp className={lg ? "size-5" : "size-4"} />
