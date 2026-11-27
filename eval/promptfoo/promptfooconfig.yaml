@@ -72,6 +72,9 @@ defaultTest:
     - type: javascript # a Chinese turn gets no English preamble or prose sentences
       metric: programmatic
       value: 'context.vars.locale !== "zh" || !output.split("[Iris]").slice(1).join("\n").split("\n").filter((l) => !/^(\[|- |\s+-\s)/.test(l)).some((l) => /\b(I''ll|I''d|Let me|Here are|Sure,|I can help|I need a bit)\b/.test(l))'
+    - type: javascript # raw model tool-call markup never leaks into prose
+      metric: programmatic
+      value: '!/DSML|<tool_call>|<function_calls>|<invoke\s+name=|<\|observation\|>/i.test(output)'
     # A recall bound of 0 matches no lens. A model that fills every parameter and has no way to
     # say "unset" writes 0, and the whole turn comes back empty; null is the unset value.
     - type: javascript
