@@ -175,9 +175,9 @@ defaultTest:
     - type: javascript # replied in the requested locale (\u4e00-\u9fff = any CJK ideograph)
       metric: programmatic
       value: 'context.vars.locale !== "zh" || /[\u4e00-\u9fff]/.test(output)'
-    - type: javascript # an English turn gets no Chinese back
+    - type: javascript # an English turn gets no Chinese back unless the user asked in Chinese
       metric: programmatic
-      value: 'context.vars.locale !== "en" || !/[\u4e00-\u9fff]/.test(output)'
+      value: 'context.vars.locale !== "en" || context.vars.expectsChinese === true || !/[\u4e00-\u9fff]/.test(output)'
     # A recall bound of 0 matches no lens. A model that fills every parameter and has no way to
     # say "unset" writes 0, and the whole turn comes back empty; null is the unset value.
     - type: javascript
@@ -597,6 +597,26 @@ tests:
           - "想开始扫街，不知道定焦还是变焦更适合"
     assert:
       - *no_deck
+
+  # Guard: a colloquial named-lens evaluation answers directly without blocking on askChoices.
+  - description: guard-named-lens-eval-no-choices
+    metadata:
+      area: guard
+    vars:
+      mount: X
+      locale: zh
+      namesModels: true
+      dialog:
+        turns:
+          - "富士16 2.8好吗"
+    assert:
+      - *no_deck
+      - type: javascript # named lens lookup never stalls on a choice card
+        metric: programmatic
+        value: "!context.metadata.toolsCalled.includes('askChoices')"
+      - type: javascript # looks up the named lens or its findings
+        metric: programmatic
+        value: "context.metadata.toolsCalled.some((t) => ['searchLensByName', 'lensDetails', 'lensReviews', 'showLensImages'].includes(t))"
 
   # Guard: picks land well under budget — say the budget isn't the constraint, re-orient.
   - description: guard-budget-clear
@@ -1793,6 +1813,25 @@ tests:
           photography with a reason. It fails if it only restates that they are different
           lenses, or declines to pick.
 
+  # Multi-step English comparison (macro + portrait + MTF/reviews): must not askChoices or leak Chinese.
+  - description: en-compare-macro-vs-portrait
+    metadata:
+      area: english
+    vars:
+      mount: X
+      locale: en
+      namesModels: true
+      dialog:
+        turns:
+          - "Compare having 80 mm macro for macro and portraiture both, with Fujinon XF 30 mm macro and 90 mm lens for portraiture"
+    assert:
+      - type: javascript # explicit comparison answers directly without a choice card
+        metric: english
+        value: "!context.metadata.toolsCalled.includes('askChoices')"
+      - type: javascript # covers all three compared lenses
+        metric: english
+        value: "['80mm', '30mm', '90mm'].every((f) => new RegExp(f, 'i').test(output))"
+
   - description: en-light-weather-resistant
     metadata:
       area: english
@@ -1839,6 +1878,7 @@ tests:
     vars:
       mount: X
       locale: en
+      expectsChinese: true
       dialog:
         turns:
           - "有哪些一镜走天下的镜头？"
