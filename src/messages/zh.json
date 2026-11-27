@@ -112,6 +112,7 @@
     "language": "语言",
     "menu": "菜单",
     "me": "我的",
+    "myFavorites": "我的收藏",
     "tabBar": "主导航",
     "signInHint": "收藏镜头、保存器材、同步对话"
   },
@@ -270,6 +271,9 @@
     "gearLimit": "器材数量已达上限。",
     "favoritesTitle": "收藏",
     "favoritesCount": "{count, number} 支镜头",
+    "localFavoritesCount": "{count, number} 支 · 仅保存在本机",
+    "localFavoritesNotice": "未登录时只存在本机，清浏览器数据会丢失。",
+    "signInToSave": "登录保存",
     "noFavorites": "还没有收藏。在镜头卡片或详情页点星标就能收藏。"
   },
   "AskIris": {
@@ -1218,6 +1222,8 @@
     "owned": "已拥有",
     "removeOwned": "从我的器材中移除",
     "favoriteAdded": "已加入收藏",
+    "favoriteAddedLocal": "已收藏在本机",
+    "favoritesSynced": "已将 {count, number} 支本机收藏同步到账号",
     "viewFavorites": "查看",
     "favoriteRemoved": "已取消收藏",
     "undo": "撤销",

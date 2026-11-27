@@ -112,6 +112,7 @@
     "language": "Language",
     "menu": "Menu",
     "me": "Profile",
+    "myFavorites": "My favorites",
     "tabBar": "Main",
     "signInHint": "Save lenses, gear, and chats"
   },
@@ -270,6 +271,9 @@
     "gearLimit": "You've reached the gear limit.",
     "favoritesTitle": "Favorites",
     "favoritesCount": "{count, plural, one {# lens} other {# lenses}}",
+    "localFavoritesCount": "{count, plural, one {# lens} other {# lenses}} · On this device only",
+    "localFavoritesNotice": "Saved on this device only. Clearing browser data removes them.",
+    "signInToSave": "Sign in to save",
     "noFavorites": "No favorites yet. Tap the star on a lens card or detail page."
   },
   "AskIris": {
@@ -1218,6 +1222,8 @@
     "owned": "Owned",
     "removeOwned": "Remove from my gear",
     "favoriteAdded": "Added to favorites",
+    "favoriteAddedLocal": "Saved on this device",
+    "favoritesSynced": "Synced {count, plural, one {# local favorite} other {# local favorites}} to your account",
     "viewFavorites": "View",
     "favoriteRemoved": "Removed from favorites",
     "undo": "Undo",

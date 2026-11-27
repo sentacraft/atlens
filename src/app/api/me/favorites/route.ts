@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { z } from "zod";
 import { getAccountUserId } from "@/lib/auth-session";
 import {
   addUserFavorite,
   FavoritesLimitError,
   listUserFavorites,
 } from "@/lib/me/favorites-repository";
+import { favoriteInputSchema } from "@/lib/me/favorites-schema";
 import { getLensById } from "@/lib/lens/data";
-
-const favoriteInputSchema = z.strictObject({ lensId: z.string().trim().min(1).max(200) });
 
 /** Lists the caller's favorite lenses, newest first. Accounts only; 401 for guests. */
 export async function GET(request: Request): Promise<NextResponse> {

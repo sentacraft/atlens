@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { SignInDialogProvider } from "@/context/SignInDialogProvider";
+import { addLocalFavorite, clearLocalFavorites } from "@/lib/me/local-favorites";
 import NavMenu from "../NavMenu";
 
 const session = vi.hoisted(() => ({ current: { data: null as unknown } }));
@@ -37,8 +38,29 @@ vi.mock("@/hooks/useTurnstile", () => ({
   useTurnstile: () => ({ container: () => {}, interactive: false, takeToken: () => turnstileToken.current }),
 }));
 
+function memoryStorage(): Storage {
+  const items = new Map<string, string>();
+  return {
+    get length() {
+      return items.size;
+    },
+    clear: () => items.clear(),
+    getItem: (key) => items.get(key) ?? null,
+    key: (index) => [...items.keys()][index] ?? null,
+    removeItem: (key) => void items.delete(key),
+    setItem: (key, value) => void items.set(key, String(value)),
+  };
+}
+
+beforeEach(() => {
+  vi.stubGlobal("localStorage", memoryStorage());
+  clearLocalFavorites();
+});
+
 afterEach(() => {
   cleanup();
+  clearLocalFavorites();
+  vi.unstubAllGlobals();
   vi.useRealTimers();
   vi.clearAllMocks();
   turnstileToken.current = Promise.resolve("turnstile-token");
@@ -64,7 +86,21 @@ describe("NavMenu", () => {
 
     const items = screen.getAllByRole("menuitem");
     expect(items[0]).toHaveTextContent("login");
+    expect(screen.queryByRole("menuitem", { name: /myFavorites/ })).toBeNull();
     expect(screen.queryByRole("menuitem", { name: "profile" })).toBeNull();
+  });
+
+  it("shows myFavorites with a count badge to a guest with local favorites", async () => {
+    session.current = { data: user(true) };
+    addLocalFavorite("xf-56");
+    addLocalFavorite("xf-23");
+
+    render(menu, { wrapper: SignInDialogProvider });
+    await openMenu();
+
+    const favItem = screen.getByRole("menuitem", { name: /myFavorites/ });
+    expect(favItem).toHaveAttribute("href", "/me#favorites");
+    expect(favItem).toHaveTextContent("2");
   });
 
   it("shows the account to a signed-in user, with sign-out last", async () => {

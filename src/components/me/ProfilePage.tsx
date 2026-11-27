@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
@@ -9,6 +9,11 @@ import { routing, type Locale } from "@/i18n/routing";
 import { accountUser, authClient } from "@/lib/auth-client";
 import { linkedProvidersQuery, updateDisplayName } from "@/lib/me/account-client";
 import { userFavoritesQuery } from "@/lib/me/favorites-client";
+import {
+  getLocalFavoritesServerSnapshot,
+  getLocalFavoritesSnapshot,
+  subscribeLocalFavorites,
+} from "@/lib/me/local-favorites";
 import { userGearQuery } from "@/lib/me/gear-client";
 import { useSwitchLocale } from "@/hooks/useSwitchLocale";
 import { patchUserSettings, userSettingsQuery } from "@/lib/me/settings-client";
@@ -51,10 +56,15 @@ const SECTION_CLS = "flex scroll-mt-[calc(var(--nav-height)+72px)] flex-col gap-
 const SECTION_TITLE_CLS = "font-heading text-xl font-bold text-zinc-900";
 const SECTION_SUB_CLS = "mt-0.5 text-[13px] leading-5 text-zinc-500 md:mt-1";
 
-/** `compareBar` shows only with the account, the one state with compare buttons (on favorites). */
+/** `compareBar` shows when favorites are rendered (signed-in users, or guests with local favorites). */
 export default function ProfilePage({ lenses, compareBar }: { lenses: LensSummary[]; compareBar: ReactNode }) {
   const { data: session, isPending } = authClient.useSession();
   const [hydrated, setHydrated] = useState(false);
+  const localIds = useSyncExternalStore(
+    subscribeLocalFavorites,
+    getLocalFavoritesSnapshot,
+    getLocalFavoritesServerSnapshot,
+  );
   useEffect(() => setHydrated(true), []);
 
   if (!hydrated || isPending) {
@@ -62,13 +72,49 @@ export default function ProfilePage({ lenses, compareBar }: { lenses: LensSummar
   }
   const user = accountUser(session);
   if (!user) {
-    return <SignInPrompt />;
+    if (localIds.length === 0) {
+      return <SignInPrompt />;
+    }
+    return (
+      <>
+        <GuestFavoritesProfile lenses={lenses} localCount={localIds.length} />
+        {compareBar}
+      </>
+    );
   }
   return (
     <>
       <Profile user={user} lenses={lenses} />
       {compareBar}
     </>
+  );
+}
+
+function GuestFavoritesProfile({ lenses, localCount }: { lenses: LensSummary[]; localCount: number }) {
+  const t = useTranslations("Profile");
+  const openSignIn = useSignInDialog();
+  return (
+    <div
+      className={`mx-auto flex w-full max-w-[960px] flex-col gap-5 pt-6 pb-[max(3rem,calc(var(--compare-bar-height,0px)+2rem))] md:pt-10 md:pb-[max(4rem,calc(var(--compare-bar-height,0px)+2rem))] ${PAGE_GUTTER_CLS}`}
+    >
+      <section id="favorites" className={SECTION_CLS}>
+        <div className="flex flex-wrap items-baseline gap-2.5">
+          <h1 className="font-heading text-2xl font-bold text-zinc-900">{t("favoritesTitle")}</h1>
+          <span className="text-[13px] text-zinc-500">{t("localFavoritesCount", { count: localCount })}</span>
+        </div>
+        <div className="flex flex-col gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+          <p className="text-[13px] leading-5 text-zinc-600">{t("localFavoritesNotice")}</p>
+          <button
+            type="button"
+            onClick={() => openSignIn("favorite")}
+            className={cn(ACTION_PRIMARY_CLS, "h-9 shrink-0 self-start rounded-lg px-4 text-[13px] font-medium sm:self-auto")}
+          >
+            {t("signInToSave")}
+          </button>
+        </div>
+        <FavoritesSection id="favorites-list" className="flex flex-col gap-4 md:gap-5" lenses={lenses} heading={() => null} />
+      </section>
+    </div>
   );
 }
 

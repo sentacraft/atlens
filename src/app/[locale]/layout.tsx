@@ -32,6 +32,7 @@ import AppToaster from "@/components/AppToaster";
 import RenameToast from "@/components/RenameToast";
 import QueryProvider from "@/components/providers/QueryProvider";
 import LocalePreferenceSync from "@/components/me/LocalePreferenceSync";
+import LocalFavoritesSync from "@/components/me/LocalFavoritesSync";
 import { fontClassName } from "../fonts";
 import "../globals.css";
 
@@ -139,6 +140,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <MountPreferenceProvider>
           <LocalePreferenceSync />
+          <LocalFavoritesSync />
           <CompareProvider>
           <SignInDialogProvider>
           <SupportDialogProvider>

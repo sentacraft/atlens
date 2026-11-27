@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -11,21 +11,32 @@ import {
   removeFavorite,
   userFavoritesQuery,
 } from "@/lib/me/favorites-client";
+import {
+  addLocalFavorite,
+  getLocalFavoritesServerSnapshot,
+  getLocalFavoritesSnapshot,
+  removeLocalFavorite,
+  subscribeLocalFavorites,
+} from "@/lib/me/local-favorites";
 import { useRouter } from "@/i18n/navigation";
-import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { profilePath } from "@/lib/url/routes";
 
-/** The signed-in user's favorite lens ids, newest first, whether they are still loading, and a toggle that asks guests to sign in. */
+/** Favorite lens ids (newest first) from the account when signed in or localStorage for guests. */
 export function useFavorites() {
   const t = useTranslations("LensActions");
   const tProfile = useTranslations("Profile");
   const { data: session } = authClient.useSession();
   const user = accountUser(session);
-  const openSignIn = useSignInDialog();
   const router = useRouter();
   const queryClient = useQueryClient();
   const query = userFavoritesQuery(user?.id ?? "");
-  const { data: lensIds = [], isPending } = useQuery({ ...query, enabled: Boolean(user) });
+  const { data: accountIds = [], isPending } = useQuery({ ...query, enabled: Boolean(user) });
+  const localIds = useSyncExternalStore(
+    subscribeLocalFavorites,
+    getLocalFavoritesSnapshot,
+    getLocalFavoritesServerSnapshot,
+  );
+  const lensIds = user ? accountIds : localIds;
   const ids = useMemo(() => new Set(lensIds), [lensIds]);
 
   const mutation = useMutation({
@@ -41,31 +52,78 @@ export function useFavorites() {
     },
     onError: (error, _variables, context) => {
       queryClient.setQueryData(query.queryKey, context?.previous);
-      toast.error(
-        error instanceof FavoritesRequestError && error.code === "favorites_limit_reached"
-          ? t("favoritesLimit")
-          : tProfile("saveError"),
-      );
+      if (error instanceof FavoritesRequestError && error.code === "favorites_limit_reached") {
+        toast.error(t("favoritesLimit"), {
+          id: "favorite-limit",
+          action: { label: t("viewFavorites"), onClick: () => router.push(profilePath("favorites")) },
+        });
+      } else {
+        toast.error(tProfile("saveError"));
+      }
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: query.queryKey }),
   });
 
+  function showAddedToast(lensId: string, key: "favoriteAdded" | "favoriteAddedLocal") {
+    toast(t(key), {
+      id: `favorite-${lensId}`,
+      action: { label: t("viewFavorites"), onClick: () => router.push(profilePath("favorites")) },
+    });
+  }
+
+  function showLimitToast() {
+    toast.error(t("favoritesLimit"), {
+      id: "favorite-limit",
+      action: { label: t("viewFavorites"), onClick: () => router.push(profilePath("favorites")) },
+    });
+  }
+
+  function toggleGuest(lensId: string) {
+    const favorite = !ids.has(lensId);
+    if (!favorite) {
+      removeLocalFavorite(lensId);
+      toast(t("favoriteRemoved"), {
+        id: `favorite-${lensId}`,
+        action: {
+          label: t("undo"),
+          onClick: () => {
+            const added = addLocalFavorite(lensId);
+            if (!added.ok) {
+              if (added.reason === "limit") {
+                showLimitToast();
+              } else {
+                toast.error(tProfile("saveError"));
+              }
+            }
+          },
+        },
+      });
+      return;
+    }
+    const result = addLocalFavorite(lensId);
+    if (!result.ok) {
+      if (result.reason === "limit") {
+        showLimitToast();
+      } else {
+        toast.error(tProfile("saveError"));
+      }
+      return;
+    }
+    showAddedToast(lensId, "favoriteAddedLocal");
+  }
+
   function toggle(lensId: string) {
     if (!user) {
-      openSignIn("favorite");
+      toggleGuest(lensId);
       return;
     }
     const favorite = !ids.has(lensId);
     mutation.mutate({ lensId, favorite });
-    const id = `favorite-${lensId}`;
     if (favorite) {
-      toast(t("favoriteAdded"), {
-        id,
-        action: { label: t("viewFavorites"), onClick: () => router.push(profilePath("favorites")) },
-      });
+      showAddedToast(lensId, "favoriteAdded");
     } else {
       toast(t("favoriteRemoved"), {
-        id,
+        id: `favorite-${lensId}`,
         action: { label: t("undo"), onClick: () => mutation.mutate({ lensId, favorite: true }) },
       });
     }

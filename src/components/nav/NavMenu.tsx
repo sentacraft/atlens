@@ -1,8 +1,9 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Menu } from "@base-ui/react/menu";
-import { Download, Flag, Heart, Info, Languages, LogIn, LogOut, Menu as MenuIcon, UserRound } from "lucide-react";
+import { Download, Flag, Heart, Info, Languages, LogIn, LogOut, Menu as MenuIcon, Star, UserRound } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
 import { useSwitchLocale } from "@/hooks/useSwitchLocale";
@@ -16,7 +17,12 @@ import { MenuPopup, MenuSeparator } from "@/components/ui/menu";
 import GitHubMark from "@/components/logos/GitHubMark";
 import { SITE } from "@/config/site";
 import { track } from "@/lib/analytics/analytics";
-import { ABOUT_PATH, GET_APP_PATH, PROFILE_PATH } from "@/lib/url/routes";
+import { ABOUT_PATH, GET_APP_PATH, PROFILE_PATH, profilePath } from "@/lib/url/routes";
+import {
+  getLocalFavoritesServerSnapshot,
+  getLocalFavoritesSnapshot,
+  subscribeLocalFavorites,
+} from "@/lib/me/local-favorites";
 
 function trackMenu(item: string) {
   track("nav_click", { item, place: "menu" });
@@ -32,6 +38,11 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
   const user = accountUser(session);
   const locale = useLocale() as Locale;
   const switchLocale = useSwitchLocale();
+  const localFavoritesCount = useSyncExternalStore(
+    subscribeLocalFavorites,
+    getLocalFavoritesSnapshot,
+    getLocalFavoritesServerSnapshot,
+  ).length;
 
   return (
     <Menu.Root
@@ -84,6 +95,21 @@ export default function NavMenu({ showGetApp, onFeedback }: { showGetApp: boolea
                     <span className="text-xs text-zinc-500">{tNav("signInHint")}</span>
                   </span>
                 </Menu.Item>
+                {localFavoritesCount > 0 && (
+                  <Menu.Item
+                    render={<Link href={profilePath("favorites")} />}
+                    onClick={() => trackMenu("favorites")}
+                    className={cn(MENU_ITEM_CLS, "justify-between")}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <Star className="h-4 w-4 shrink-0" />
+                      {tNav("myFavorites")}
+                    </span>
+                    <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 tabular-nums">
+                      {localFavoritesCount}
+                    </span>
+                  </Menu.Item>
+                )}
                 <MenuSeparator />
               </>
             )}

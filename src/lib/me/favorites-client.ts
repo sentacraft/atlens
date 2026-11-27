@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+import type { MergeFavoritesResult } from "@/lib/me/favorites-schema";
 
 const ENDPOINT = "/api/me/favorites";
 
@@ -45,4 +46,16 @@ export async function removeFavorite(lensId: string): Promise<void> {
   if (!response.ok) {
     throw new FavoritesRequestError(await errorCode(response));
   }
+}
+
+export async function mergeFavorites(lensIds: string[]): Promise<MergeFavoritesResult> {
+  const response = await fetch(`${ENDPOINT}/merge`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ lensIds }),
+  });
+  if (!response.ok) {
+    throw new FavoritesRequestError(await errorCode(response));
+  }
+  return (await response.json()) as MergeFavoritesResult;
 }
