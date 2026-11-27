@@ -3,7 +3,7 @@ import en from "@/messages/en.json";
 import zh from "@/messages/zh.json";
 import { systemPrompt } from "../system-prompt";
 import { convertToModelMessages, type UIMessage } from "ai";
-import { buildLensTools, countShownFigures, earlierMtfCharts, type ToolData, seedRecalledRefs, shouldDisallowCjkToolCopy } from "../tools";
+import { buildLensTools, countShownFigures, earlierMtfCharts, type ToolData, seedRecalledRefs } from "../tools";
 import { getLensesByMount } from "@/lib/lens/data";
 import { lensRef, sourceRef } from "../lens-ref";
 
@@ -838,37 +838,5 @@ describe("MTF grouping across calls and replies", () => {
     expect(reading.mtfGroups).toEqual(out.mtfGroups);
     expect(reading.mtfNote).toContain("mtfGroups");
     expect(reading).not.toHaveProperty("mtfComparison");
-  });
-});
-
-describe("non-zh CJK tool copy guard", () => {
-  const ref = lensRef("fujifilm-xf-35mmf14-r-x");
-
-  it("detects when non-zh turns should disallow CJK tool copy", () => {
-    expect(shouldDisallowCjkToolCopy("en", "Compare XF 30mm macro and 90mm")).toBe(true);
-    expect(shouldDisallowCjkToolCopy("en", "lenti rilasciate negli ultimi 3 anni")).toBe(true);
-    expect(shouldDisallowCjkToolCopy("en", "XF 35mm F1.4")).toBe(true);
-    expect(shouldDisallowCjkToolCopy("en", "有哪些一镜走天下的镜头？")).toBe(false);
-    expect(shouldDisallowCjkToolCopy("en", "富士 X マウントの単焦点")).toBe(false);
-    expect(shouldDisallowCjkToolCopy("zh", "XF 35mm F1.4")).toBe(false);
-  });
-
-  it("rejects Chinese reasons and captions when disallowCjk is true, while allowing English or disabled guard", async () => {
-    const guarded = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref]), { next: 1 }, { disallowCjk: true });
-    expect(() =>
-      run(guarded.recommendLenses, { picks: [{ ref, reason: "经典大光圈人文定焦" }] }),
-    ).toThrow(/not Chinese/);
-    expect(() =>
-      run(guarded.listLenses, { refs: [ref], caption: "镜头对比" }),
-    ).toThrow(/not Chinese/);
-
-    const okRec = await run(guarded.recommendLenses, { picks: [{ ref, reason: "Bright standard prime with classic rendering." }] });
-    expect(okRec.recommendations).toHaveLength(1);
-    const okList = await run(guarded.listLenses, { refs: [ref], caption: "Lens comparison" });
-    expect(okList.caption).toBe("Lens comparison");
-
-    const allowed = buildLensTools("X", "en", (brand) => brand, GUEST, new Set([ref]), { next: 1 }, { disallowCjk: false });
-    const zhRec = await run(allowed.recommendLenses, { picks: [{ ref, reason: "经典大光圈人文定焦" }] });
-    expect(zhRec.recommendations).toHaveLength(1);
   });
 });

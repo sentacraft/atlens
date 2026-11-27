@@ -571,13 +571,14 @@ describe("POST /api/chat locale instructions", () => {
     expect(systemContents.slice(1).join("\n")).not.toMatch(/[\u4e00-\u9fff]/);
   });
 
-  it("appends a trailing language anchor after tool calls only on non-CJK en turns", async () => {
+  it("appends a trailing language anchor after tool calls regardless of user message script", async () => {
     const toolStep = () =>
       modelStep([{ type: "tool-call", toolCallId: "g1", toolName: "readSpecGuide", input: "{}" }], "tool-calls");
 
     const enModel = new MockLanguageModelV4({ doStream: [toolStep(), textReply()] });
     mocks.getAgentModel.mockReturnValue(enModel);
     await settle(await POST(chatRequest({ id: "u-en", role: "user", parts: [{ type: "text", text: "Who runs this site?" }] })));
+    expect(enModel.doStreamCalls[0].prompt.at(-1)?.role).toBe("user");
     const enLastMsg = enModel.doStreamCalls[1].prompt.at(-1);
     expect(enLastMsg?.role).toBe("system");
     expect(enLastMsg?.content).toContain("do not switch to Chinese");
@@ -585,7 +586,9 @@ describe("POST /api/chat locale instructions", () => {
     const zhModel = new MockLanguageModelV4({ doStream: [toolStep(), textReply()] });
     mocks.getAgentModel.mockReturnValue(zhModel);
     await settle(await POST(chatRequest({ id: "u-zh", role: "user", parts: [{ type: "text", text: "有哪些一镜走天下的镜头？" }] })));
+    expect(zhModel.doStreamCalls[0].prompt.at(-1)?.role).toBe("user");
     const zhLastMsg = zhModel.doStreamCalls[1].prompt.at(-1);
-    expect(zhLastMsg?.role).not.toBe("system");
+    expect(zhLastMsg?.role).toBe("system");
+    expect(zhLastMsg?.content).toContain("do not switch to Chinese");
   });
 });

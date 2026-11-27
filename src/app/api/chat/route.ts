@@ -28,7 +28,7 @@ import { ASK_FOR_GEAR, gearCardDecline } from "@/lib/ai/gear-request";
 import { SIGN_IN_DECLINED, SIGN_IN_GATED_TOOL_NAMES, signInApproval, signInDeclined } from "@/lib/ai/sign-in-gate";
 import { listUserGear } from "@/lib/me/gear-repository";
 import type { MtfChart } from "@/lib/ai/mtf-comparison";
-import { buildLensTools, countShownFigures, earlierMtfCharts, seedRecalledRefs, shouldDisallowCjkToolCopy } from "@/lib/ai/tools";
+import { buildLensTools, countShownFigures, earlierMtfCharts, seedRecalledRefs } from "@/lib/ai/tools";
 import { loadLensReviews } from "@/lib/lens/reviews-repository";
 import { hasRepeatedToolFailure, withRepeatedFailureNotice } from "@/lib/ai/repeated-tool-failure";
 import { checkIrisQuota, recordIrisTurn, type IrisQuotaUser } from "@/lib/ai/iris-quota";
@@ -148,7 +148,6 @@ export async function POST(req: NextRequest) {
   // Filled once the history is resolved below; validate needs the tools before that.
   const recalledRefs = new Set<string>();
   const figures: { next: number; mtfShown?: MtfChart[] } = { next: 1 };
-  const turnLanguage = { disallowCjk: false };
   const tools = withRepeatedFailureNotice(
     buildLensTools(
       mount,
@@ -166,7 +165,6 @@ export async function POST(req: NextRequest) {
       },
       recalledRefs,
       figures,
-      turnLanguage,
     ),
   );
   const validate = (messages: unknown) =>
@@ -237,11 +235,6 @@ export async function POST(req: NextRequest) {
     !(name === ASK_CHOICES && choicesUsed),
   ) as Array<keyof typeof tools>;
   const messageContext = traceMessageContext(history);
-  const latestUserText = (messageContext?.userMessage.parts ?? [])
-    .filter((part): part is { type: "text"; text: string } => part.type === "text")
-    .map((part) => part.text)
-    .join("\n");
-  turnLanguage.disallowCjk = shouldDisallowCjkToolCopy(locale, latestUserText);
   const analyticsConversationId = await anonymizeId(
     conversationId,
     process.env.ANALYTICS_ID_SECRET,
@@ -329,7 +322,7 @@ export async function POST(req: NextRequest) {
         // Avoid burning multiple research steps only to pause empty-handed on a choice card.
         overrides.activeTools = activeTools.filter((name) => name !== ASK_CHOICES);
       }
-      if (stepNumber > 0 && turnLanguage.disallowCjk) {
+      if (stepNumber > 0) {
         overrides.messages = [...messages, { role: "system", content: languagePrompt(locale) }];
       }
       return Object.keys(overrides).length > 0 ? overrides : undefined;
