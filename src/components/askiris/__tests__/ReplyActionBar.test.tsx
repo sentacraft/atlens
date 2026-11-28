@@ -73,13 +73,36 @@ describe("ReplyActionBar", () => {
         </ChatLinkProvider>
       </NextIntlClientProvider>,
     );
-    expect(screen.getByRole("button", { name: "看评测与样片" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "看评测和样张" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "对比这 3 支" })).toBeInTheDocument();
+  });
+
+  it("disambiguates labels when multiple actions of the same kind appear in one reply", () => {
+    isDesktopViewport = true;
+    render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <ChatLinkProvider targets={{ lenses: LENSES, collections: [], brands: [] }}>
+          <ReplyActionBar
+            actions={[
+              { kind: "compare", refs: [REF_A, REF_B] },
+              { kind: "compare", refs: [REF_A, REF_C] },
+              { kind: "reviews", refs: [REF_A] },
+              { kind: "reviews", refs: [REF_B] },
+            ]}
+          />
+        </ChatLinkProvider>
+      </NextIntlClientProvider>,
+    );
+
+    expect(screen.getByRole("link", { name: "Compare 2 lenses: Viltrox AF 35mm F1.7 Air, Sigma 12mm F1.4 DC" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Compare 2 lenses: Viltrox AF 35mm F1.7 Air, Fujifilm XF 23mm F2 R WR" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reviews & samples: Viltrox AF 35mm F1.7 Air" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reviews & samples: Sigma 12mm F1.4 DC" })).toBeInTheDocument();
   });
 });
 
 describe("ReviewSearchChip responsive layouts", () => {
-  it("renders all lenses with compact inline platform pills on desktop (Option 1)", () => {
+  it("renders all lenses with compact inline platform pills on desktop", () => {
     isDesktopViewport = true;
     render(
       <NextIntlClientProvider locale="en" messages={en}>
@@ -104,37 +127,45 @@ describe("ReviewSearchChip responsive layouts", () => {
     expect(document.body.textContent).toContain("Sigma 12mm F1.4 DC");
   });
 
-  it("renders a lens card switcher with a single platform list on mobile (Option 3)", () => {
+  it("renders a lens card switcher with the active lens full name above a single platform list on mobile", () => {
     isDesktopViewport = false;
+    const apd = { id: "fujifilm-xf-56mm-f12-r-apd-x", mount: "X" as const, name: "Fujifilm XF 56mm F1.2 R APD", review: { en: "XF 56mm f1.2 APD", zh: "富士 XF 56mm F1.2 APD" } };
+    const wr = { id: "fujifilm-xf-56mm-f12-r-wr-x", mount: "X" as const, name: "Fujifilm XF 56mm F1.2 R WR", review: { en: "XF 56mm f1.2 WR", zh: "富士 XF 56mm F1.2 WR" } };
+
     render(
       <NextIntlClientProvider locale="zh" messages={zh as never}>
         <ReviewSearchChip
-          lenses={[LENSES[REF_A], LENSES[REF_B], LENSES[REF_C]]}
+          lenses={[apd, wr, LENSES[REF_C]]}
           className="btn"
           iconClassName="ico"
           iconPosition="leading"
         >
-          看评测与样片 (3)
+          看评测和样张（3）
         </ReviewSearchChip>
       </NextIntlClientProvider>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "看评测与样片 (3)" }));
-    const firstTab = screen.getByRole("button", { name: "Viltrox AF 35mm F1.7 Air" });
-    const secondTab = screen.getByRole("button", { name: "Sigma 12mm F1.4 DC" });
+    fireEvent.click(screen.getByRole("button", { name: "看评测和样张（3）" }));
+    const firstTab = screen.getByRole("button", { name: "Fujifilm XF 56mm F1.2 R APD" });
+    const secondTab = screen.getByRole("button", { name: "Fujifilm XF 56mm F1.2 R WR" });
     expect(firstTab).toHaveAttribute("aria-pressed", "true");
     expect(secondTab).toHaveAttribute("aria-pressed", "false");
+
+    const activeSection = screen.getByRole("region", { name: "Fujifilm XF 56mm F1.2 R APD" });
+    expect(activeSection.querySelector("p")?.textContent).toBe("Fujifilm XF 56mm F1.2 R APD");
 
     // Only one lens's 4 links render at a time.
     const initialLinks = [...document.body.querySelectorAll<HTMLAnchorElement>('a[target="_blank"]')];
     expect(initialLinks).toHaveLength(4);
-    expect(initialLinks[0].href).toContain(encodeURIComponent("唯卓仕 35mm F1.7"));
+    expect(initialLinks[0].href).toContain(encodeURIComponent("富士 XF 56mm F1.2 APD"));
 
     fireEvent.click(secondTab);
     expect(secondTab).toHaveAttribute("aria-pressed", "true");
+    const updatedSection = screen.getByRole("region", { name: "Fujifilm XF 56mm F1.2 R WR" });
+    expect(updatedSection.querySelector("p")?.textContent).toBe("Fujifilm XF 56mm F1.2 R WR");
     const updatedLinks = [...document.body.querySelectorAll<HTMLAnchorElement>('a[target="_blank"]')];
     expect(updatedLinks).toHaveLength(4);
-    expect(updatedLinks[0].href).toContain(encodeURIComponent("适马 12mm F1.4"));
+    expect(updatedLinks[0].href).toContain(encodeURIComponent("富士 XF 56mm F1.2 WR"));
   });
 
   it("omits the mobile lens switcher when only one lens is passed", () => {

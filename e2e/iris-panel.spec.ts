@@ -271,4 +271,30 @@ test.describe("Ask Iris panel empty state", { tag: "@local-only" }, () => {
     await toggle.click();
     await expect(hero).toHaveAttribute("data-animating", "true");
   });
+
+  test("extends the mobile sheet background to the viewport bottom when the keyboard inset rises", async ({ page }, testInfo) => {
+    testInfo.skip(testInfo.project.name !== "chromium", "Sets its own viewport");
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto("/en");
+    await irisToggle(page).click();
+
+    const sheet = page.getByRole("dialog", { name: "Iris" });
+    await expect(sheet).toBeVisible();
+
+    await page.evaluate(() => {
+      document.documentElement.style.setProperty("--tab-bar-height", "0px");
+      const irisPopup = document.querySelector<HTMLElement>("[data-iris]");
+      irisPopup?.style.setProperty("--drawer-keyboard-inset", "280px");
+    });
+
+    const metrics = await sheet.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return {
+        bottom: Math.round(rect.bottom),
+        paddingBottom: getComputedStyle(el).paddingBottom,
+      };
+    });
+    expect(metrics.bottom).toBe(812);
+    expect(metrics.paddingBottom).toBe("280px");
+  });
 });

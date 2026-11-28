@@ -8,6 +8,7 @@ import { CirclePlay, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import ReviewSearchLinks from "@/components/lens/ReviewSearchLinks";
 import { InlineChipContent } from "@/components/askiris/InlineChipContent";
+import { CARD_SELECTED_BORDER_CLS, COMPARE_CHIP_STATE_CLS, POPUP_SCROLL_CLS } from "@/config/ui-tokens";
 import { useBreakpoint } from "@/hooks/useViewport";
 import type { LensLinkTarget } from "@/lib/ai/lens-ref";
 import { track } from "@/lib/analytics/analytics";
@@ -24,13 +25,15 @@ export default function ReviewSearchChip({
   lenses,
   className,
   iconClassName,
-  iconPosition = "trailing",
+  iconPosition,
+  ariaLabel,
   children,
 }: {
   lenses: LensLinkTarget[];
   className: string;
   iconClassName: string;
-  iconPosition?: "leading" | "trailing";
+  iconPosition: "leading" | "trailing";
+  ariaLabel?: string;
   children?: ReactNode;
 }) {
   const t = useTranslations("AskIris.reviewSearch");
@@ -107,8 +110,8 @@ export default function ReviewSearchChip({
                 className={cn(
                   "flex flex-col items-center gap-1.5 rounded-xl border px-2 py-2.5 text-center transition-colors",
                   selected
-                    ? "border-zinc-900 bg-zinc-50 text-zinc-900 ring-1 ring-zinc-900"
-                    : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50",
+                    ? `${CARD_SELECTED_BORDER_CLS} bg-zinc-50 text-zinc-900 shadow-none`
+                    : `${COMPARE_CHIP_STATE_CLS.idle}`,
                 )}
               >
                 <span className="relative size-13 shrink-0 rounded-[10px] bg-zinc-100">
@@ -128,7 +131,10 @@ export default function ReviewSearchChip({
         </div>
       ) : null}
       {activeLens ? (
-        <section aria-label={activeLens.name}>
+        <section aria-label={activeLens.name} className="flex flex-col gap-2">
+          {lenses.length > 1 ? (
+            <p className="text-sm leading-snug font-semibold text-zinc-900">{activeLens.name}</p>
+          ) : null}
           <ReviewSearchLinks
             links={buildReviewSearchLinks({ names: activeLens.review, locale, reviewKeyword: keyword })}
             layout="list"
@@ -140,12 +146,20 @@ export default function ReviewSearchChip({
 
   return isDesktop ? (
     <Popover.Root open={open} onOpenChange={onOpenChange}>
-      <Popover.Trigger className={cn(className, "data-[popup-open]:border-zinc-900 data-[popup-open]:bg-zinc-900 data-[popup-open]:text-white [&[data-popup-open]>svg]:text-white")}>
+      <Popover.Trigger
+        aria-label={ariaLabel}
+        className={cn(className, "data-[popup-open]:border-zinc-900 data-[popup-open]:bg-zinc-900 data-[popup-open]:text-white [&[data-popup-open]_svg]:text-white")}
+      >
         {trigger}
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner side="top" align="start" sideOffset={8} collisionPadding={12}>
-          <Popover.Popup className="w-[23.75rem] max-w-[calc(100vw-24px)] origin-(--transform-origin) rounded-xl bg-white p-3.5 shadow-lg ring-1 ring-zinc-200 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+          <Popover.Popup
+            className={cn(
+              POPUP_SCROLL_CLS,
+              "max-h-[min(32rem,calc(100vh-3rem))] w-[26.5rem] max-w-[calc(100vw-24px)] origin-(--transform-origin) rounded-xl bg-white p-3.5 shadow-lg ring-1 ring-zinc-200 duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+            )}
+          >
             {desktopBody}
           </Popover.Popup>
         </Popover.Positioner>
@@ -153,7 +167,9 @@ export default function ReviewSearchChip({
     </Popover.Root>
   ) : (
     <Drawer.Root open={open} onOpenChange={onOpenChange} swipeDirection="down">
-      <Drawer.Trigger className={className}>{trigger}</Drawer.Trigger>
+      <Drawer.Trigger aria-label={ariaLabel} className={className}>
+        {trigger}
+      </Drawer.Trigger>
       <Drawer.Portal>
         <Drawer.Backdrop className="fixed inset-0 bg-black/40 duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
         <Drawer.Viewport>

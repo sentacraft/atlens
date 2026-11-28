@@ -32,7 +32,13 @@ import type { LensSummary } from "@/lib/lens/data";
 import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { usedCatalog } from "@/lib/askiris/catalog-source";
-import { extractReplyActions, type ReplyAction } from "@/lib/askiris/reply-actions";
+import {
+  canResolveReplyAction,
+  dedupeReplyActions,
+  extractReplyActions,
+  type ReplyAction,
+} from "@/lib/askiris/reply-actions";
+import { useChatLinkTargets } from "@/components/askiris/ChatLinkContext";
 import { messageCitations } from "@/lib/askiris/review-citations";
 
 function traceSummary(output: unknown): string {
@@ -251,6 +257,7 @@ export default function AskIrisThread({
   onExpand?: () => void;
 }) {
   const t = useTranslations("AskIris");
+  const targets = useChatLinkTargets();
   const activeKey = useHeldKey(activityKey(messages, busy, debug));
   const activity = activeKey ? t(activeKey) : null;
 
@@ -263,8 +270,10 @@ export default function AskIrisThread({
         const isLatest = message.id === messages[messages.length - 1]?.id;
         const isStreamingResponse = busy && isLatest;
         const awaitingUser = message.parts.some((part) => isToolUIPart(part) && isAwaitingUser(part));
-        const replyActions: ReplyAction[] = [];
-        const seenActionKeys = new Set<string>();
+        const rawActions: ReplyAction[] = [];
+        const canResolve = targets
+          ? (action: ReplyAction) => canResolveReplyAction(action, targets.lenses)
+          : undefined;
         const renderedParts = message.parts.map((part, i) => {
           const key = `${message.id}-${i}`;
           if (part.type === "text") {
@@ -278,14 +287,11 @@ export default function AskIrisThread({
                 </div>
               );
             }
-            const { markdown, actions } = extractReplyActions(part.text);
-            for (const action of actions) {
-              const actionKey = `${action.kind}:${action.refs.join(",")}`;
-              if (!seenActionKeys.has(actionKey)) {
-                seenActionKeys.add(actionKey);
-                replyActions.push(action);
-              }
-            }
+            const { markdown, actions } = extractReplyActions(part.text, {
+              canResolve,
+              streaming: isStreamingResponse,
+            });
+            rawActions.push(...actions);
             if (!markdown) {
               return null;
             }
@@ -302,6 +308,7 @@ export default function AskIrisThread({
           }
           return null;
         });
+        const replyActions = dedupeReplyActions(rawActions);
         return (
           <div
             key={message.id}

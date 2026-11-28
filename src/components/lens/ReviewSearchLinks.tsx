@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { ArrowUpRight } from "lucide-react";
 import PlatformMark from "@/components/logos/PlatformMark";
+import { REVIEW_SEARCH_PILL_CLS } from "@/config/ui-tokens";
 import type { ReviewSearchChannel, ReviewSearchLink } from "@/lib/lens/review-search";
 import { cn } from "@/lib/utils";
 
@@ -52,7 +53,7 @@ export default function ReviewSearchLinks({ links, layout }: { links: ReviewSear
               rel="noopener noreferrer"
               title={`${t(`channel.${link.channel}`)} · ${t(`kind.${link.kind}`)}`}
               aria-label={`${t(`channel.${link.channel}`)} · ${t(`kind.${link.kind}`)}`}
-              className="inline-flex h-7 items-center gap-1.5 rounded-[7px] border border-zinc-200 bg-white px-2 font-medium whitespace-nowrap text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
+              className={REVIEW_SEARCH_PILL_CLS}
             >
               <PlatformMark channel={link.channel} size={PILL_ICON_SIZE[link.channel]} className="shrink-0 text-black" />
               <span>{t(`channel.${link.channel}`)}</span>

@@ -1,11 +1,12 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { isValidElement, type ReactNode } from "react";
 import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 // CommonMark's flanking rules leave ** literal around CJK punctuation such as corner brackets; this relaxes them.
 import remarkCjkFriendly from "remark-cjk-friendly";
 import { ArrowUpRight, LogIn, MessageSquare } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import { useChatLinkTargets } from "@/components/askiris/ChatLinkContext";
@@ -16,18 +17,48 @@ import { SOURCE_MARKER_LABEL } from "@/lib/askiris/review-citations";
 import FeedbackTrigger from "@/components/feedback/FeedbackTrigger";
 import { useSignInDialog } from "@/context/SignInDialogProvider";
 import { useEffectiveMount } from "@/hooks/useMountParam";
-import { escapeLensLinkLabels, normalizeRefListLinks } from "@/lib/ai/lens-ref";
+import { escapeLensLinkLabels, normalizeRefListLinks, type LensLinkTarget } from "@/lib/ai/lens-ref";
 import { PAGE_LINKS, isChatLinkHref, parseChatLink, type ChatLink } from "@/lib/askiris/inline-links";
 import { mountHasCharts, mountHasCollections } from "@/lib/mount";
 import { buildComparePath } from "@/lib/url/compare";
 import { brandPath, chartPath, collectionPath, lensPath } from "@/lib/url/routes";
 import { IRIS_PROSE_CLS } from "@/config/ui-tokens";
 
-// True inline with box-decoration-clone lets long entity chips wrap cleanly across lines while
-// keeping surrounding punctuation attached instead of leaving ragged line-end whitespace.
+// Anchor (`<a>`) chips wrap inline with box-decoration-clone; native `<button>` triggers stay text-left.
 const CHIP_CLS =
-  "not-prose bg-muted text-foreground hover:bg-muted/70 mx-0.5 inline box-decoration-clone rounded-md px-1.5 py-0.5 text-[0.95em] font-medium no-underline transition-colors";
+  "not-prose bg-muted text-foreground hover:bg-muted/70 mx-0.5 inline box-decoration-clone rounded-md px-1.5 py-0.5 text-left text-[0.95em] font-medium no-underline transition-colors";
 const CHIP_ICON_CLS = "text-muted-foreground ml-1 inline-block size-3.5 align-[-2px]";
+
+function hasVisibleLabel(children: ReactNode): boolean {
+  if (children === null || children === undefined || typeof children === "boolean") {
+    return false;
+  }
+  if (typeof children === "string") {
+    return children.trim().length > 0;
+  }
+  if (Array.isArray(children)) {
+    return children.some(hasVisibleLabel);
+  }
+  if (isValidElement<{ children?: ReactNode }>(children)) {
+    return hasVisibleLabel(children.props.children);
+  }
+  return true;
+}
+
+function FallbackCompareChip({ href, count }: { href: string; count: number }) {
+  const t = useTranslations("AskIris.reviewSearch");
+  return <ChipLink href={href}>{t("compareAction", { count: String(count) })}</ChipLink>;
+}
+
+function FallbackReviewsChip({ lenses }: { lenses: LensLinkTarget[] }) {
+  const t = useTranslations("AskIris.reviewSearch");
+  const label = lenses.length === 1 ? t("triggerSingle") : t("triggerMulti", { count: String(lenses.length) });
+  return (
+    <ReviewSearchChip lenses={lenses} className={CHIP_CLS} iconClassName={CHIP_ICON_CLS} iconPosition="trailing">
+      {label}
+    </ReviewSearchChip>
+  );
+}
 
 // New tab: a same-tab navigation would discard the conversation.
 function ChipLink({ href, external, children }: { href: string; external?: boolean; children?: ReactNode }) {
@@ -96,8 +127,11 @@ function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNo
       if (known.length !== entries.length || new Set(known.map((entry) => entry.mount)).size !== 1) {
         return <>{children}</>;
       }
-      return (
-        <ChipLink href={buildComparePath(known[0].mount, known.map((entry) => entry.id))}>{children}</ChipLink>
+      const href = buildComparePath(known[0].mount, known.map((entry) => entry.id));
+      return hasVisibleLabel(children) ? (
+        <ChipLink href={href}>{children}</ChipLink>
+      ) : (
+        <FallbackCompareChip href={href} count={known.length} />
       );
     }
     case "reviews": {
@@ -106,10 +140,12 @@ function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNo
       if (known.length !== entries.length) {
         return <>{children}</>;
       }
-      return (
-        <ReviewSearchChip lenses={known} className={CHIP_CLS} iconClassName={CHIP_ICON_CLS}>
+      return hasVisibleLabel(children) ? (
+        <ReviewSearchChip lenses={known} className={CHIP_CLS} iconClassName={CHIP_ICON_CLS} iconPosition="trailing">
           {children}
         </ReviewSearchChip>
+      ) : (
+        <FallbackReviewsChip lenses={known} />
       );
     }
     case "source":

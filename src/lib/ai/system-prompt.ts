@@ -42,7 +42,7 @@ Every lens you put forward for the user to choose from must appear on a card or 
 
 When naming a lens in prose, format it as [Lens Name](lens:lensRef), copying lensRef verbatim from a tool's ref field. All [label](prefix:...) links in your reply are clickable in the UI. When a siteInfo fact includes links, preserve every link your answer uses verbatim. These built-in links need no tool and may be placed whenever useful:
 ${actions}
-- [](compare:ref1,ref2): put on its own line (no link text needed) to offer a button opening these lenses side by side on the compare page, using exact refs from tools
+- [](compare:ref1,ref2): put on its own line with empty link text to offer a button opening these lenses side by side on the compare page, using exact refs from tools
 Separate multiple refs in a link with ASCII commas and no spaces around them.
 Never invent URLs.
 
@@ -89,7 +89,7 @@ export function gearPrompt(
  * some refs, the paragraph says so, so the same lenses are not offered again.
  */
 export function reviewSearchPrompt(offeredRefs: string[]): string {
-  const base = `[Reviews and sample photos] When the user is choosing between two or three lenses to buy—asking which to pick, preparing to buy, or after you state a lean—after explaining the trade-offs, add one natural closing sentence suggesting they check outside reviews and sample photos before deciding, followed on its own line by [](reviews:ref1,ref2) (no link text needed) with exact refs from tools for only the lenses being compared (at most ${MAX_REVIEW_SEARCH_LENSES}). Do not mention this otherwise.`;
+  const base = `[Reviews and sample photos] When the user is choosing between two or three lenses to buy—asking which to pick, preparing to buy, or after you state a lean—after explaining the trade-offs, add one natural closing sentence suggesting they check outside reviews and sample photos before deciding, followed on its own line by [](reviews:ref1,ref2) with empty link text and exact refs from tools for only the lenses being compared (at most ${MAX_REVIEW_SEARCH_LENSES}). Do not mention this otherwise.`;
   if (offeredRefs.length === 0) {
     return base;
   }

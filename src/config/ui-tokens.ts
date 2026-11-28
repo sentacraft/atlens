@@ -61,6 +61,12 @@ export const COMPARE_CHIP_STATE_CLS = {
   idle: "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50",
 } as const;
 
+export const REPLY_ACTION_PILL_CLS =
+  `inline-flex h-8 max-w-full min-w-0 items-center gap-1.5 rounded-full border px-3 text-[13px] font-medium whitespace-nowrap no-underline transition-colors ${COMPARE_CHIP_STATE_CLS.idle} text-zinc-900`;
+
+export const REVIEW_SEARCH_PILL_CLS =
+  `inline-flex h-7 items-center gap-1.5 rounded-[7px] border px-2 font-medium whitespace-nowrap transition-colors hover:text-zinc-900 ${COMPARE_CHIP_STATE_CLS.idle}`;
+
 export const CARD_SELECTED_BORDER_CLS =
   "border-zinc-900 ring-1 ring-zinc-900 shadow-lg shadow-zinc-900/10";
 

@@ -242,6 +242,18 @@ describe("Markdown chat links", () => {
     ]);
   });
 
+  it("provides a fallback accessible label when an empty-label reviews or compare link renders inline", () => {
+    const container = render(
+      <NextIntlClientProvider locale="en" messages={en}>
+        <ChatLinkProvider targets={TARGETS}>
+          <Markdown>{`Check [](reviews:${REF},${OTHER}) or [](compare:${REF},${OTHER}).`}</Markdown>
+        </ChatLinkProvider>
+      </NextIntlClientProvider>,
+    ).container;
+    expect(container.querySelector("button")?.textContent).toBe("Reviews & samples (2)");
+    expect(container.querySelector("a")?.textContent).toBe("Compare 2 lenses");
+  });
+
   it("links a known collection on the current mount", () => {
     const link = renderLinks("[pancakes](collection:pancake)").querySelector("a");
     expect(link!.getAttribute("href")).toBe("/lenses/x/collections/pancake");
