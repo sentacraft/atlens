@@ -5,28 +5,32 @@ import type { ReviewSearchChannel, ReviewSearchLink } from "@/lib/lens/review-se
 import { cn } from "@/lib/utils";
 
 // The marks fill their square unevenly (Google's G fills it, Flickr's dots are under half as
-// tall); standing alone in a tile, equal boxes look unequal, so each gets its own size.
-const TILE_ICON_SIZE: Record<ReviewSearchChannel, number> = {
-  bilibili: 16,
-  youtube: 17,
-  bing: 16,
-  google: 13,
-  flickr: 20,
-  reddit: 14,
+// tall); standing in compact pills, each gets an optically balanced size.
+const PILL_ICON_SIZE: Record<ReviewSearchChannel, number> = {
+  bilibili: 13,
+  youtube: 14,
+  bing: 12,
+  google: 12,
+  flickr: 16,
+  reddit: 13,
 };
 
-/** One lens's searches on other sites: a bordered list of rows, or one row of compact tiles. */
-export default function ReviewSearchLinks({ links, layout }: { links: ReviewSearchLink[]; layout: "list" | "tiles" }) {
+/** One lens's searches on other sites: a bordered list of rows, or compact single-line pills. */
+export default function ReviewSearchLinks({ links, layout }: { links: ReviewSearchLink[]; layout: "list" | "pills" }) {
   const t = useTranslations("LensReviews");
   return (
     <ul
       className={cn(
-        "text-sm",
-        layout === "list" ? "overflow-hidden rounded-2xl border border-zinc-200" : "grid grid-cols-4 gap-1.5",
+        layout === "list"
+          ? "overflow-hidden rounded-2xl border border-zinc-200 text-sm"
+          : "flex flex-wrap gap-1.5 text-xs",
       )}
     >
       {links.map((link) => (
-        <li key={link.channel} className={cn("min-w-0", layout === "list" && "border-b border-zinc-100 last:border-0")}>
+        <li
+          key={link.channel}
+          className={cn("min-w-0", layout === "list" && "border-b border-zinc-100 last:border-0")}
+        >
           {layout === "list" ? (
             <a
               href={link.url}
@@ -48,12 +52,10 @@ export default function ReviewSearchLinks({ links, layout }: { links: ReviewSear
               rel="noopener noreferrer"
               title={`${t(`channel.${link.channel}`)} · ${t(`kind.${link.kind}`)}`}
               aria-label={`${t(`channel.${link.channel}`)} · ${t(`kind.${link.kind}`)}`}
-              className="flex min-h-13 flex-col items-center justify-center gap-1 rounded-[10px] bg-zinc-50 px-0.5 py-1.5 text-center text-xs leading-tight text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 max-sm:min-h-14"
+              className="inline-flex h-7 items-center gap-1.5 rounded-[7px] border border-zinc-200 bg-white px-2 font-medium whitespace-nowrap text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900"
             >
-              <span className="grid h-5 place-items-center" aria-hidden="true">
-                <PlatformMark channel={link.channel} size={TILE_ICON_SIZE[link.channel]} className="text-black" />
-              </span>
-              <span className="max-w-full truncate">{t(`channel.${link.channel}`)}</span>
+              <PlatformMark channel={link.channel} size={PILL_ICON_SIZE[link.channel]} className="shrink-0 text-black" />
+              <span>{t(`channel.${link.channel}`)}</span>
             </a>
           )}
         </li>

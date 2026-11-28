@@ -222,14 +222,24 @@ describe("Markdown chat links", () => {
     ).container;
     const trigger = container.querySelector("button")!;
     expect(trigger.textContent).toBe("some reviews");
+    expect(trigger).toHaveClass("inline", "box-decoration-clone");
+    expect(trigger.querySelector(".whitespace-nowrap")).not.toBeNull();
     fireEvent.click(trigger);
-    const searches = [...document.body.querySelectorAll<HTMLAnchorElement>('a[target="_blank"]')].map((a) => a.href);
-    expect(searches.filter((href) => href.includes("youtube.com"))).toEqual([
+    const firstSearches = [...document.body.querySelectorAll<HTMLAnchorElement>('a[target="_blank"]')].map((a) => a.href);
+    expect(firstSearches.filter((href) => href.includes("youtube.com"))).toEqual([
       "https://www.youtube.com/results?search_query=Viltrox%20AF%2035mm%20f1.7%20Air%20review",
-      "https://www.youtube.com/results?search_query=Sigma%2012mm%20f1.4%20review",
     ]);
     expect(document.body.textContent).toContain("Viltrox AF 35mm F1.7 Air");
     expect(document.body.textContent).toContain("Sigma 12mm F1.4 DC");
+    const secondLensButton = [...document.body.querySelectorAll<HTMLButtonElement>("button")].find((btn) =>
+      btn.textContent?.includes("Sigma 12mm F1.4 DC"),
+    );
+    expect(secondLensButton).toBeDefined();
+    fireEvent.click(secondLensButton!);
+    const secondSearches = [...document.body.querySelectorAll<HTMLAnchorElement>('a[target="_blank"]')].map((a) => a.href);
+    expect(secondSearches.filter((href) => href.includes("youtube.com"))).toEqual([
+      "https://www.youtube.com/results?search_query=Sigma%2012mm%20f1.4%20review",
+    ]);
   });
 
   it("links a known collection on the current mount", () => {

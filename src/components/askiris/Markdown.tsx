@@ -9,6 +9,7 @@ import { ArrowUpRight, LogIn, MessageSquare } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { track } from "@/lib/analytics/analytics";
 import { useChatLinkTargets } from "@/components/askiris/ChatLinkContext";
+import { InlineChipContent } from "@/components/askiris/InlineChipContent";
 import ReviewSearchChip from "@/components/askiris/ReviewSearchChip";
 import { SourceMarker } from "@/components/askiris/ReviewSources";
 import { SOURCE_MARKER_LABEL } from "@/lib/askiris/review-citations";
@@ -22,20 +23,15 @@ import { buildComparePath } from "@/lib/url/compare";
 import { brandPath, chartPath, collectionPath, lensPath } from "@/lib/url/routes";
 import { IRIS_PROSE_CLS } from "@/config/ui-tokens";
 
-// The icon trails the label: an inline-flex box takes its baseline from its first child, so a
-// leading icon drops the chip below the line's text.
+// True inline with box-decoration-clone lets long entity chips wrap cleanly across lines while
+// keeping surrounding punctuation attached instead of leaving ragged line-end whitespace.
 const CHIP_CLS =
-  "not-prose bg-muted text-foreground hover:bg-muted/70 mx-0.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 align-baseline text-[0.95em] font-medium no-underline transition-colors";
-const CHIP_ICON_CLS = "text-muted-foreground size-3.5 shrink-0";
+  "not-prose bg-muted text-foreground hover:bg-muted/70 mx-0.5 inline box-decoration-clone rounded-md px-1.5 py-0.5 text-[0.95em] font-medium no-underline transition-colors";
+const CHIP_ICON_CLS = "text-muted-foreground ml-1 inline-block size-3.5 align-[-2px]";
 
 // New tab: a same-tab navigation would discard the conversation.
 function ChipLink({ href, external, children }: { href: string; external?: boolean; children?: ReactNode }) {
-  const content = (
-    <>
-      {children}
-      <ArrowUpRight className={CHIP_ICON_CLS} aria-hidden />
-    </>
-  );
+  const content = <InlineChipContent icon={<ArrowUpRight className={CHIP_ICON_CLS} aria-hidden />}>{children}</InlineChipContent>;
   return external ? (
     <a href={href} target="_blank" rel="noopener noreferrer" className={CHIP_CLS}>
       {content}
@@ -51,8 +47,7 @@ function SignInChip({ children }: { children?: ReactNode }) {
   const openSignIn = useSignInDialog();
   return (
     <button type="button" onClick={() => openSignIn("iris_reply")} className={CHIP_CLS}>
-      {children}
-      <LogIn className={CHIP_ICON_CLS} aria-hidden />
+      <InlineChipContent icon={<LogIn className={CHIP_ICON_CLS} aria-hidden />}>{children}</InlineChipContent>
     </button>
   );
 }
@@ -90,8 +85,7 @@ function ChatLinkAnchor({ link, children }: { link: ChatLink; children?: ReactNo
     case "action":
       return link.action === "feedback" ? (
         <FeedbackTrigger type="general" className={CHIP_CLS}>
-          {children}
-          <MessageSquare className={CHIP_ICON_CLS} aria-hidden />
+          <InlineChipContent icon={<MessageSquare className={CHIP_ICON_CLS} aria-hidden />}>{children}</InlineChipContent>
         </FeedbackTrigger>
       ) : (
         <SignInChip>{children}</SignInChip>

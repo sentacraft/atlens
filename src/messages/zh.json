@@ -307,7 +307,10 @@
     "reviewSearch": {
       "title": "评测和样张",
       "subtitle": "在其他平台搜索，结果由各平台提供",
-      "close": "关闭"
+      "close": "关闭",
+      "triggerSingle": "看评测与样片",
+      "triggerMulti": "看评测与样片 ({count})",
+      "compareAction": "对比这 {count} 支"
     },
     "thinking": "思考中…",
     "starters": {

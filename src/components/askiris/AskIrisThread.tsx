@@ -13,6 +13,7 @@ import Iris from "@/components/iris/Iris";
 import AiTag from "@/components/iris/AiTag";
 import { IRIS_NAV } from "@/config/iris-config";
 import Markdown from "@/components/askiris/Markdown";
+import ReplyActionBar from "@/components/askiris/ReplyActionBar";
 import { CitationsProvider, SourceList } from "@/components/askiris/ReviewSources";
 import RecommendationDeck from "@/components/askiris/RecommendationDeck";
 import LensTable from "@/components/askiris/LensTable";
@@ -31,6 +32,7 @@ import type { LensSummary } from "@/lib/lens/data";
 import type { LensTableColumn, Recommendation, ResolvedLens } from "@/lib/ai/recall";
 import type { AskIrisUIMessage } from "@/lib/askiris/message-metadata";
 import { usedCatalog } from "@/lib/askiris/catalog-source";
+import { extractReplyActions, type ReplyAction } from "@/lib/askiris/reply-actions";
 import { messageCitations } from "@/lib/askiris/review-citations";
 
 function traceSummary(output: unknown): string {
@@ -261,6 +263,45 @@ export default function AskIrisThread({
         const isLatest = message.id === messages[messages.length - 1]?.id;
         const isStreamingResponse = busy && isLatest;
         const awaitingUser = message.parts.some((part) => isToolUIPart(part) && isAwaitingUser(part));
+        const replyActions: ReplyAction[] = [];
+        const seenActionKeys = new Set<string>();
+        const renderedParts = message.parts.map((part, i) => {
+          const key = `${message.id}-${i}`;
+          if (part.type === "text") {
+            if (isUser) {
+              return (
+                <div
+                  key={key}
+                  className="bg-primary text-primary-foreground max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap"
+                >
+                  {part.text}
+                </div>
+              );
+            }
+            const { markdown, actions } = extractReplyActions(part.text);
+            for (const action of actions) {
+              const actionKey = `${action.kind}:${action.refs.join(",")}`;
+              if (!seenActionKeys.has(actionKey)) {
+                seenActionKeys.add(actionKey);
+                replyActions.push(action);
+              }
+            }
+            if (!markdown) {
+              return null;
+            }
+            return (
+              <div key={key} className="text-foreground w-full px-1 text-sm">
+                <Markdown>{markdown}</Markdown>
+              </div>
+            );
+          }
+          if (isToolUIPart(part)) {
+            return (
+              <ToolPart key={key} part={part} debug={debug} cards={cards} latest={isLatest && !busy} onExpand={onExpand} />
+            );
+          }
+          return null;
+        });
         return (
           <div
             key={message.id}
@@ -279,30 +320,9 @@ export default function AskIrisThread({
                 ) : null}
               </div>
             )}
-            {message.parts.map((part, i) => {
-              const key = `${message.id}-${i}`;
-              if (part.type === "text") {
-                return isUser ? (
-                  <div
-                    key={key}
-                    className="bg-primary text-primary-foreground max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap"
-                  >
-                    {part.text}
-                  </div>
-                ) : (
-                  <div key={key} className="text-foreground w-full px-1 text-sm">
-                    <Markdown>{part.text}</Markdown>
-                  </div>
-                );
-              }
-              if (isToolUIPart(part)) {
-                return (
-                  <ToolPart key={key} part={part} debug={debug} cards={cards} latest={isLatest && !busy} onExpand={onExpand} />
-                );
-              }
-              return null;
-            })}
+            {renderedParts}
             </CitationsProvider>
+            {!isUser ? <ReplyActionBar actions={replyActions} /> : null}
             {citations && !isStreamingResponse ? <SourceList list={citations.list} catalog={usedCatalog(message)} /> : null}
             {!isUser && turnId && !isStreamingResponse && !awaitingUser ? (
               <ResponseFeedback responseMessageId={message.id} />

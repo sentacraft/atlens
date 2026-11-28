@@ -12,9 +12,9 @@ const LENS_LINK_RE = new RegExp(`\\]\\(${LENS_LINK_PREFIX}([^)\\s]+)\\)`, "g");
 
 // Judges see rendered links: shown raw, they fail replies for leaking refs.
 const LENS_LINK_DISPLAY_RE = new RegExp(`\\[([^\\]]+)\\]\\(${LENS_LINK_PREFIX}[^)\\s]+\\)`, "g");
-const COMPARE_LINK_RE = /\[([^\]]+)\]\(compare:([^)\s]+)\)/g;
+const COMPARE_LINK_RE = /\[([^\]]*)\]\(compare:([^)\s]+)\)/g;
 const SOURCE_LINK_RE = /\[([^\]]*)\]\(source:([^)\s]+)\)/g;
-const REVIEWS_LINK_RE = /\[([^\]]+)\]\(reviews:([^)\s]+)\)/g;
+const REVIEWS_LINK_RE = /\[([^\]]*)\]\(reviews:([^)\s]+)\)/g;
 
 const REF_TO_ID = new Map(
   ["lenses.json", "lenses-gfx.json"]
@@ -475,9 +475,11 @@ export default class AskIrisProvider {
     const fetchedSources = new Set(reviewsEver.flatMap((lens) => lens.sourceIds));
     const readable = transcript
       .replace(LENS_LINK_DISPLAY_RE, "$1")
-      .replace(COMPARE_LINK_RE, "$1 (compare page link)")
+      .replace(COMPARE_LINK_RE, (_, label) => (label ? `${label} (compare page link)` : "(compare page link)"))
       .replace(SOURCE_LINK_RE, "[source: $1]")
-      .replace(REVIEWS_LINK_RE, "$1 (link to review searches on other sites)");
+      .replace(REVIEWS_LINK_RE, (_, label) =>
+        label ? `${label} (link to review searches on other sites)` : "(link to review searches on other sites)",
+      );
     // Recalled refs only: five base36 chars collide with ordinary words.
     const bareRefs = [...recalledEver].filter((ref) => new RegExp(`\\b${ref}\\b`).test(readable));
     return {
