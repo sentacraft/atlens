@@ -81,8 +81,8 @@ export function tokenize(normalised: string): string[] {
 
 const BRAND_KEYS_LONGEST_FIRST = [...catalogBrandByKey.keys()].sort((a, b) => b.length - a.length);
 
-// "56f1.2" and "35mmf1.4" split like "56 f1.2"; "35mm1.4" like "35mm 1.4".
-const FOCAL_THEN_APERTURE = /^(\d+)(?:mm)?(f\d+(?:\.\d+)?)$/;
+// "18f", "56f1.2", and "35mmf1.4" split like "18 f", "56 f1.2"; "35mm1.4" like "35mm 1.4".
+const FOCAL_THEN_APERTURE = /^(\d+)(?:mm)?(f(?:\d+(?:\.\d+)?)?)$/;
 const FOCAL_MM_THEN_NUMBER = /^(\d+mm)(\d+(?:\.\d+)?)$/;
 
 // "xf35" splits like "xf 35", and so does a brand typed before digits ("7artisans12");
