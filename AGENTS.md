@@ -124,16 +124,26 @@ message or PR description, not in the source.
 
 ## Testing
 
-Every bug fix ships with a regression test. Write the failing test first, then fix the code.
-Tests live in a `__tests__/` directory beside the module under test. Choose the lightest layer
-that covers the bug:
+Not every PR needs a new test. Write a Vitest test only when it guards real logic, a real regression,
+or a security/contract boundary — never to mirror current code:
 
-| Bug type | Layer |
+- **Write one for**: bug fixes (write the failing regression test first); non-trivial pure logic
+  with edge cases (parsers, regexes, calculations, state transitions); and auth, ownership,
+  rate-limit, or shared-schema boundaries.
+- **Skip it for**: static config or lookup-table edits where logic did not change; thin UI glue
+  that only works by heavily mocking a third-party library or browser API; and change-detector
+  assertions pinning literal copy or hardcoded constants. Verify thin UI and CSS changes in a real
+  browser (desktop and 375px) instead of mocked jsdom tests.
+
+Tests live in a `__tests__/` directory beside the module under test. When a test is warranted,
+choose the lightest layer that covers it:
+
+| What is under test | Layer |
 |---|---|
-| Pure logic — utilities, transforms, calculations | Vitest |
-| Component rendering or hook behavior | Vitest + `@testing-library/react` + jsdom (`// @vitest-environment jsdom`) |
+| Pure logic — utilities, transforms, calculations, state transitions | Vitest |
+| Stateful component or hook logic that does not depend on mocking browser/third-party internals | Vitest + `@testing-library/react` + jsdom (`// @vitest-environment jsdom`) |
 | Layout, interaction, browser APIs — fixed positioning, scroll, ResizeObserver, viewport | Playwright (`e2e/`), `@local-only` unless it meets the cost rule below |
-| Pure CSS — color, spacing, font size, no conditional logic | No test required; verify with a screenshot |
+| Pure CSS, static config, or thin third-party UI wrappers | No unit test; verify with typecheck and desktop + 375px screenshots |
 
 The AskIris eval (`eval/promptfoo/`) calls paid models on every case. Follow the cost rules
 in its README before running it.
