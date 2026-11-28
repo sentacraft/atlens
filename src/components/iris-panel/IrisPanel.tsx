@@ -87,15 +87,14 @@ export default function IrisPanel({
       <Drawer.VirtualKeyboardProvider>
         <Drawer.Portal keepMounted>
           {/* No z-index, like every portaled popup (see Z): popups opened from the sheet, History among them, stack above it.
-              The viewport spans only the sheet, so it leaves the tab bar below it clickable. iOS leaves fixed
-              elements under the keyboard; the provider reports its height, and the sheet ends on top of it
-              while it is open, else on top of the tab bar. */}
-          <Drawer.Viewport className="fixed inset-x-0 top-0 bottom-[max(var(--drawer-keyboard-inset,0px),var(--tab-bar-height))]">
+              The opaque popup reaches down to --tab-bar-height (0 while the keyboard is up) and lifts its
+              chat with bottom padding so minor iOS visualViewport gaps behind a translucent keyboard reveal white, not the page behind. */}
+          <Drawer.Viewport className="fixed inset-x-0 top-0 bottom-[var(--tab-bar-height)]">
             <Drawer.Popup
               aria-label="Iris"
               data-iris=""
               className={cn(
-                "absolute inset-0 flex flex-col bg-white pt-[var(--safe-inset-top)] transform-none!",
+                "absolute inset-0 flex flex-col bg-white pt-[var(--safe-inset-top)] pb-[max(0px,calc(var(--drawer-keyboard-inset,0px)-var(--tab-bar-height)))] transform-none!",
                 // A drawer opened from the sheet (History) is nested and gets no backdrop of its own, so the sheet dims itself.
                 "after:pointer-events-none after:absolute after:inset-0 after:bg-zinc-950/40 after:opacity-0 after:transition-opacity after:duration-200 data-[nested-drawer-open]:after:opacity-100",
               )}

@@ -13,7 +13,7 @@ describe("offeredReviewRefs", () => {
   it("collects the refs of every review link, deduped in order of first appearance", () => {
     expect(
       offeredReviewRefs([
-        message("assistant", "Have a look at [some reviews](reviews:abc,def) first."),
+        message("assistant", "Check reviews.\n[](reviews:abc,def)"),
         message("assistant", "Then [these](reviews:def,ghi)."),
       ]),
     ).toEqual(["abc", "def", "ghi"]);
