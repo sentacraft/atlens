@@ -4,15 +4,13 @@ targets:
   - claude
   - codex
   - antigravity
+
 skills:
   - name: vercel-react-best-practices
     source: github.com/vercel-labs/agent-skills/skills/react-best-practices
-ignore:
-  - .DS_Store
-  - .git/
-  - __pycache__/
-audit:
-  block_threshold: CRITICAL
+  - name: impeccable
+    source: github.com/pbakaus/impeccable/.agents/skills/impeccable
+
 hooks:
   entries:
     claude-sessionstart:
@@ -108,3 +106,11 @@ hooks:
                     timeout: 10
                     type: command
                 matcher: edit_file|write_file|write_to_file|replace_file_content|multi_replace_file_content
+
+ignore:
+  - .DS_Store
+  - .git/
+  - __pycache__/
+
+audit:
+  block_threshold: CRITICAL
