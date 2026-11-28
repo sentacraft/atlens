@@ -7,7 +7,7 @@ Nothing changes until the cutover below. Merging this code does not alter a Clou
 ## How it works
 
 1. Cloudflare Workers Builds runs `pnpm run build:cf`, then the Preview command `pnpm run preview:publish`.
-2. The publisher applies the Preview D1 migrations, runs `wrangler preview`, and reads the fixed deployment URL from Wrangler's `WRANGLER_OUTPUT_FILE_PATH` record. It posts a `cloudflare/preview-deployment` commit status on the built SHA: `target_url` is the deployment URL, `description` is `deployment=<id> build=<uuid>`. It refuses to run on `main` or without `PREVIEW_STATUS_TOKEN`, and fails the build if the status is not accepted.
+2. The publisher applies the Preview D1 migrations, runs `wrangler preview`, and reads the fixed deployment URL from Wrangler's structured output record (`WRANGLER_OUTPUT_FILE_PATH` or `WRANGLER_OUTPUT_FILE_DIRECTORY`) without overriding the build runner's configured path. It posts a `cloudflare/preview-deployment` commit status on the built SHA: `target_url` is the deployment URL, `description` is `deployment=<id> build=<uuid>`. It refuses to run on `main` or without `PREVIEW_STATUS_TOKEN`, and fails the build if the status is not accepted.
 3. `.github/workflows/preview-smoke.yml` runs on that status. It accepts only this deployment's HTTPS address on the Preview domain and only the current head of a branch other than `main`, then probes every sitemap route and the SSG/dynamic cache behavior.
 4. It creates the **Cloudflare Preview smoke** check run on the SHA, already completed. It fails if the address was rejected, a probe failed, or the commit is no longer a branch head.
 
