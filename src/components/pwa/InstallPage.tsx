@@ -1,197 +1,164 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Share } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { ACTION_PRIMARY_CLS } from "@/config/ui-tokens";
 import { track } from "@/lib/analytics/analytics";
 import { browsePath } from "@/lib/url/routes";
+import { cn } from "@/lib/utils";
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+interface PwaInstallElement extends HTMLElement {
+  externalPromptEvent: Event | null;
+  styles: Record<string, string>;
+  showDialog: (forced?: boolean) => void;
+  updateComplete?: Promise<boolean>;
 }
 
-type Platform =
-  | "loading"       // initial — waiting for beforeinstallprompt or timeout
-  | "installed"     // already running as a standalone PWA
-  | "prompt"        // Chrome/Edge/Android — programmatic install available
-  | "ios"           // iOS — manual Add to Home Screen flow
-  | "macos-safari"  // macOS Safari — Share → Add to Dock
-  | "generic";      // everything else — show browser menu hint
+type InstallStatus = "loading" | "ready" | "installed";
 
-function detectSync(): Platform | null {
-  const standalone =
+const TINT_STYLES = { "--tint-color": "#18181b" };
+
+function isStandalone(): boolean {
+  return (
     window.matchMedia("(display-mode: standalone)").matches ||
-    (navigator as { standalone?: boolean }).standalone === true;
-  if (standalone) {
-    return "installed";
-  }
-
-  const ua = navigator.userAgent;
-  if (/iPad|iPhone|iPod/.test(ua)) {
-    return "ios";
-  }
-
-  // macOS Safari never fires beforeinstallprompt.
-  if (/Macintosh/.test(ua) && /Safari\//.test(ua) && !/Chrome|Edg\//.test(ua)) {
-    return "macos-safari";
-  }
-
-  return null; // unknown — wait for beforeinstallprompt
+    (navigator as { standalone?: boolean }).standalone === true
+  );
 }
-
-const IOS_STEPS = ["iosStep1", "iosStep2", "iosStep3"] as const;
-const MACOS_STEPS = ["macosStep1", "macosStep2", "macosStep3"] as const;
 
 export default function InstallPage() {
   const t = useTranslations("Install");
-  const [platform, setPlatform] = useState<Platform>("loading");
-  const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const [status, setStatus] = useState<InstallStatus>("loading");
+  const hostRef = useRef<HTMLDivElement>(null);
+  const elRef = useRef<PwaInstallElement | null>(null);
+  const earlyPromptRef = useRef<Event | null>(null);
+  const autoOpenedRef = useRef(false);
+  const trackedInstallRef = useRef(false);
 
   useEffect(() => {
-    const sync = detectSync();
-    if (sync) {
-      setPlatform(sync);
+    if (isStandalone()) {
+      setStatus("installed");
       return;
     }
 
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setPromptEvent(e as BeforeInstallPromptEvent);
-      setPlatform("prompt");
+    const onBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      earlyPromptRef.current = event;
+      if (elRef.current) {
+        elRef.current.externalPromptEvent = event;
+      }
     };
-    window.addEventListener("beforeinstallprompt", handler);
-
-    const timer = setTimeout(() => {
-      setPlatform((prev) => (prev === "loading" ? "generic" : prev));
-    }, 600);
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    setStatus("ready");
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-      clearTimeout(timer);
+      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
     };
   }, []);
 
-  async function handleInstall() {
-    if (!promptEvent) {
+  useEffect(() => {
+    if (status !== "ready") {
       return;
     }
-    await promptEvent.prompt();
-    const { outcome } = await promptEvent.userChoice;
-    if (outcome === "accepted") {
-      setPlatform("installed");
-      track("install_action");
-    }
-  }
 
-  if (platform === "loading") {
+    let cancelled = false;
+    let mountedEl: PwaInstallElement | null = null;
+    const onInstallSuccess = () => {
+      if (!trackedInstallRef.current) {
+        trackedInstallRef.current = true;
+        track("install_action");
+      }
+      setStatus("installed");
+    };
+
+    void (async () => {
+      await import("@khmyznikov/pwa-install");
+      if (cancelled || !hostRef.current) {
+        return;
+      }
+
+      const el = document.createElement("pwa-install") as PwaInstallElement;
+      el.setAttribute("manifest-url", "/manifest.webmanifest");
+      el.setAttribute("manual-apple", "");
+      el.setAttribute("manual-chrome", "");
+      el.setAttribute("styles", JSON.stringify(TINT_STYLES));
+      el.styles = TINT_STYLES;
+      if (earlyPromptRef.current) {
+        el.externalPromptEvent = earlyPromptRef.current;
+      }
+      el.addEventListener("pwa-install-success-event", onInstallSuccess);
+
+      mountedEl = el;
+      elRef.current = el;
+      hostRef.current.replaceChildren(el);
+
+      // Wait for Lit's connectedCallback/manifest init so manual-* flags do not hide our initial showDialog(true).
+      if (el.updateComplete) {
+        await el.updateComplete;
+      }
+      if (!cancelled && !autoOpenedRef.current) {
+        autoOpenedRef.current = true;
+        el.showDialog(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (mountedEl) {
+        mountedEl.removeEventListener("pwa-install-success-event", onInstallSuccess);
+        mountedEl.remove();
+      }
+      elRef.current = null;
+    };
+  }, [status]);
+
+  if (status === "loading") {
     return null;
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full px-6 py-16 text-center">
+    <div className="flex min-h-full flex-col items-center justify-center px-6 py-16 text-center">
       {/* eslint-disable-next-line @next/next/no-img-element -- PWA icon is a static asset, not an optimized image */}
       <img
         src="/icons/icon-192-white.png"
         alt="Atlens"
-        className="w-20 h-20 rounded-[22%] shadow-lg mb-8"
+        className="mb-8 h-20 w-20 rounded-[22%] shadow-lg"
       />
 
-      {platform === "installed" && (
+      {status === "installed" ? (
         <div className="max-w-xs">
           <h2 className="text-3xl font-bold tracking-tight text-zinc-800">
             {t("installedTitle")}
           </h2>
-          <p className="mt-3 text-zinc-500 text-sm">{t("installedBody")}</p>
+          <p className="mt-3 text-sm text-zinc-500">{t("installedBody")}</p>
           <Link
             href={browsePath("X")}
-            className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-800 text-zinc-50 font-medium text-sm hover:opacity-90 transition-opacity"
+            className={cn(
+              ACTION_PRIMARY_CLS,
+              "mt-8 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium",
+            )}
           >
             {t("openApp")} →
           </Link>
         </div>
-      )}
-
-      {platform === "prompt" && (
+      ) : (
         <div className="max-w-xs">
           <h2 className="text-3xl font-bold tracking-tight text-zinc-800">
             {t("promptTitle")}
           </h2>
-          <p className="mt-3 text-zinc-500 text-sm">{t("promptBody")}</p>
+          <p className="mt-3 text-sm text-zinc-500">{t("promptBody")}</p>
           <button
-            onClick={handleInstall}
-            className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-zinc-800 text-zinc-50 font-medium text-sm hover:opacity-90 transition-opacity"
+            type="button"
+            onClick={() => elRef.current?.showDialog(true)}
+            className={cn(
+              ACTION_PRIMARY_CLS,
+              "mt-8 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium",
+            )}
           >
             {t("installButton")}
           </button>
-        </div>
-      )}
-
-      {platform === "ios" && (
-        <div className="max-w-xs w-full">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-800">
-            {t("iosTitle")}
-          </h2>
-          <ol className="mt-6 space-y-3 text-left">
-            {IOS_STEPS.map((key, i) => (
-              <li
-                key={key}
-                className="flex items-start gap-4 bg-white rounded-xl px-4 py-3"
-              >
-                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 text-zinc-50 text-xs font-bold flex items-center justify-center">
-                  {i + 1}
-                </span>
-                <span className="text-sm leading-6 text-zinc-700">
-                  {t(key)}
-                  {i === 0 && (
-                    <Share
-                      className="inline-block w-4 h-4 ml-1.5 align-middle text-zinc-500"
-                      aria-hidden
-                    />
-                  )}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
-
-      {platform === "macos-safari" && (
-        <div className="max-w-xs w-full">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-800">
-            {t("macosTitle")}
-          </h2>
-          <ol className="mt-6 space-y-3 text-left">
-            {MACOS_STEPS.map((key, i) => (
-              <li
-                key={key}
-                className="flex items-start gap-4 bg-white rounded-xl px-4 py-3"
-              >
-                <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 text-zinc-50 text-xs font-bold flex items-center justify-center">
-                  {i + 1}
-                </span>
-                <span className="text-sm leading-6 text-zinc-700">
-                  {t(key)}
-                  {i === 0 && (
-                    <Share
-                      className="inline-block w-4 h-4 ml-1.5 align-middle text-zinc-500"
-                      aria-hidden
-                    />
-                  )}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
-
-      {platform === "generic" && (
-        <div className="max-w-xs">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-800">
-            {t("genericTitle")}
-          </h2>
-          <p className="mt-3 text-zinc-500 text-sm">{t("genericBody")}</p>
+          <p className="mt-4 text-xs leading-relaxed text-zinc-500">{t("genericBody")}</p>
+          <div ref={hostRef} />
         </div>
       )}
     </div>
