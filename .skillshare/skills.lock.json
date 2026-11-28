@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "impeccable": {
+      "source": "github.com/pbakaus/impeccable/.agents/skills/impeccable",
+      "commit": "2fc5e1459efbbf06d92c7306517c286bf12490cf",
+      "tree_hash": "235e068f9d3fc2402691a14e3e0f4b8ca4b070cb"
+    },
     "vercel-react-best-practices": {
       "source": "github.com/vercel-labs/agent-skills/skills/react-best-practices",
       "commit": "5a37a6329fbad3666c3207392a6a7c0110e92efb",
