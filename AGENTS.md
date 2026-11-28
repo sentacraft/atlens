@@ -144,6 +144,13 @@ desktop-only screenshot is not evidence that a UI change works.
 Text must fit in both locales: don't give a text container a fixed width that only the Chinese copy
 fits. A PR that reworks layout gets the `text-fit-check` label.
 
+### When a unit test is worth its cost
+
+Not every PR needs a new unit test. Write a Vitest test only when it guards real logic or a real regression rather than mirroring current code:
+
+- **Write one for**: non-trivial pure logic with edge cases (parsers, regexes, calculations, state transitions); bug fixes (regression test first); and security or contract boundaries (auth, ownership, rate limits, shared schemas).
+- **Skip it for**: static config or lookup-table edits where logic did not change; thin UI glue that only works by heavily mocking a third-party library or browser API; and change-detector assertions that pin literal copy or hardcoded constants. Verify thin UI changes in a real browser (desktop and 375px) instead of mocked jsdom tests.
+
 ### When a Playwright test is worth its cost
 
 The CI E2E suite is a budget, not a safety net for every change: keep the `e2e` job under about
