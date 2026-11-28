@@ -26,6 +26,7 @@ change the JSDoc, then run `node --experimental-strip-types scripts/api-docs.mts
 | `/api/me/favorites` | GET | Lists the caller's favorite lenses, newest first. Accounts only; 401 for guests. |
 | `/api/me/favorites` | POST | Adds a catalog lens to the caller's favorites; repeating it is a no-op. Accounts only; 400 for an unknown lens, 409 past 500 favorites. |
 | `/api/me/favorites/[lensId]` | DELETE | Removes a lens from the caller's favorites; always 204. Accounts only; 401 for guests. |
+| `/api/me/favorites/merge` | POST | Merges a guest's local favorites into the caller's account, ignoring unknown lens ids and capping at 500. Accounts only; 401 for guests, 400 for invalid input. |
 | `/api/me/gear` | GET | Lists the caller's bodies and lenses, oldest first. Accounts only; 401 for guests. |
 | `/api/me/gear` | POST | Adds a catalog body or lens, or a manual lens entry; re-adding a catalog item returns the existing one. Accounts only; 400 for an invalid entry or unknown catalog id, 409 past 200 items. |
 | `/api/me/gear/[gearId]` | DELETE | Removes one of the caller's gear items. Accounts only; 404 when missing or not the caller's. |

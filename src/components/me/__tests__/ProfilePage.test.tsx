@@ -2,17 +2,23 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { addLocalFavorite, clearLocalFavorites } from "@/lib/me/local-favorites";
 import ProfilePage from "../ProfilePage";
 
 const mocks = vi.hoisted(() => ({
   session: { data: null as unknown, isPending: false },
   replace: vi.fn(),
   setPreference: vi.fn(),
+  openSignIn: vi.fn(),
   toastError: vi.fn(),
 }));
 
 vi.mock("next-intl", () => ({
-  useTranslations: () => Object.assign((key: string) => key, { rich: (key: string) => key }),
+  useTranslations: () =>
+    Object.assign(
+      (key: string, values?: Record<string, unknown>) => (values ? `${key} ${JSON.stringify(values)}` : key),
+      { rich: (key: string) => key },
+    ),
   useLocale: () => "zh",
 }));
 vi.mock("@/i18n/navigation", () => ({
@@ -30,6 +36,7 @@ vi.mock("@/context/MountPreferenceProvider", () => ({
   useMountPreference: () => ({ setPreference: mocks.setPreference }),
 }));
 vi.mock("@/context/NavProvider", () => ({ useNav: () => ({ navHidden: false }) }));
+vi.mock("@/context/SignInDialogProvider", () => ({ useSignInDialog: () => mocks.openSignIn }));
 vi.mock("@/app/[locale]/not-found", () => ({ default: () => <p>not-found</p> }));
 vi.mock("@/components/auth/AuthDialog", () => ({ default: () => null }));
 vi.mock("@/components/auth/DeleteAccountDialog", () => ({ default: () => null }));
@@ -71,7 +78,23 @@ function renderPage() {
   );
 }
 
+function memoryStorage(): Storage {
+  const items = new Map<string, string>();
+  return {
+    get length() {
+      return items.size;
+    },
+    clear: () => items.clear(),
+    getItem: (key) => items.get(key) ?? null,
+    key: (index) => [...items.keys()][index] ?? null,
+    removeItem: (key) => void items.delete(key),
+    setItem: (key, value) => void items.set(key, String(value)),
+  };
+}
+
 beforeEach(() => {
+  vi.stubGlobal("localStorage", memoryStorage());
+  clearLocalFavorites();
   vi.stubGlobal("fetch", fetchMock);
   mocks.session = { data: null, isPending: false };
   document.cookie = "atlens_locale=; Max-Age=0; Path=/";
@@ -79,16 +102,31 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  clearLocalFavorites();
   vi.unstubAllGlobals();
   vi.clearAllMocks();
 });
 
 describe("ProfilePage", () => {
-  it("asks a signed-out visitor to sign in, with no compare bar since nothing there can be compared", () => {
+  it("asks a signed-out visitor with no local favorites to sign in, with no compare bar", () => {
     renderPage();
 
     expect(screen.getByRole("heading", { name: "signInTitle" })).toBeInTheDocument();
     expect(screen.queryByTestId("compare-bar")).toBeNull();
+  });
+
+  it("shows local favorites with the anti-loss prompt and compare bar for a guest who has saved lenses", () => {
+    addLocalFavorite("xf-56");
+    addLocalFavorite("xf-23");
+    renderPage();
+
+    expect(screen.getByRole("heading", { name: "favoritesTitle" })).toBeInTheDocument();
+    expect(screen.getByText('localFavoritesCount {"count":2}')).toBeInTheDocument();
+    expect(screen.getByText("localFavoritesNotice")).toBeInTheDocument();
+    expect(screen.getByTestId("compare-bar")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "signInToSave" }));
+    expect(mocks.openSignIn).toHaveBeenCalledWith("favorite");
   });
 
   it("shows the compare bar beside a signed-in visitor's favorites", () => {

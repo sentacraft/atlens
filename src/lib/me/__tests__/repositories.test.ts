@@ -6,6 +6,7 @@ import {
   FavoritesLimitError,
   listUserFavorites,
   MAX_FAVORITES,
+  mergeUserFavorites,
   removeUserFavorite,
 } from "../favorites-repository";
 import {
@@ -156,6 +157,30 @@ describe("user favorites", () => {
     await expect(addUserFavorite(db, { userId: "owner", lensId: "new" })).rejects.toBeInstanceOf(
       FavoritesLimitError,
     );
+  });
+
+  it("merges unique guest favorites in newest-first order and caps at MAX_FAVORITES", async () => {
+    await addUserFavorite(db, { userId: "owner", lensId: "existing", now: 10 });
+
+    await expect(
+      mergeUserFavorites(db, { userId: "owner", lensIds: ["new-1", "existing", "new-2", "new-1"], now: 100 }),
+    ).resolves.toEqual({ added: 2, skippedLimit: 0 });
+
+    await expect(listUserFavorites(db, "owner")).resolves.toEqual([
+      { lensId: "new-1", createdAt: 100 },
+      { lensId: "new-2", createdAt: 99 },
+      { lensId: "existing", createdAt: 10 },
+    ]);
+
+    const filler = Array.from({ length: MAX_FAVORITES - 3 }, (_, index) => `fill-${index}`);
+    await expect(mergeUserFavorites(db, { userId: "owner", lensIds: filler, now: 500 })).resolves.toEqual({
+      added: MAX_FAVORITES - 3,
+      skippedLimit: 0,
+    });
+    await expect(mergeUserFavorites(db, { userId: "owner", lensIds: ["overflow-1", "new-1", "overflow-2"] })).resolves.toEqual({
+      added: 0,
+      skippedLimit: 2,
+    });
   });
 });
 

@@ -13,6 +13,7 @@ vi.mock("@/lib/auth-session", () => ({
 const gearRoute = await import("../gear/route");
 const gearItemRoute = await import("../gear/[gearId]/route");
 const favoritesRoute = await import("../favorites/route");
+const favoritesMergeRoute = await import("../favorites/merge/route");
 const favoriteRoute = await import("../favorites/[lensId]/route");
 const settingsRoute = await import("../settings/route");
 
@@ -45,11 +46,12 @@ describe("/api/me without an account", () => {
       gearItemRoute.DELETE(get(), params),
       favoritesRoute.GET(get()),
       favoritesRoute.POST(json("POST", { lensId: LENS_ID })),
+      favoritesMergeRoute.POST(json("POST", { lensIds: [LENS_ID] })),
       favoriteRoute.DELETE(get(), params),
       settingsRoute.GET(get()),
       settingsRoute.PATCH(json("PATCH", { defaultMount: "G" })),
     ]);
-    expect(responses.map((r) => r.status)).toEqual(Array(8).fill(401));
+    expect(responses.map((r) => r.status)).toEqual(Array(9).fill(401));
   });
 });
 
@@ -121,6 +123,22 @@ describe("/api/me/favorites", () => {
     const response = await favoritesRoute.POST(json("POST", { lensId: "made-up" }));
 
     expect(response.status).toBe(400);
+  });
+});
+
+describe("/api/me/favorites/merge", () => {
+  it("merges known catalog lenses, ignores unknown ids, and rejects malformed bodies", async () => {
+    const response = await favoritesMergeRoute.POST(
+      json("POST", { lensIds: [LENS_ID, "made-up", LENS_ID] }),
+    );
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ added: 1, skippedLimit: 0 });
+    await expect((await favoritesRoute.GET(get())).json()).resolves.toMatchObject({
+      favorites: [{ lensId: LENS_ID }],
+    });
+
+    const malformed = await favoritesMergeRoute.POST(json("POST", { lensIds: [""] }));
+    expect(malformed.status).toBe(400);
   });
 });
 

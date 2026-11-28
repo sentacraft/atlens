@@ -1,6 +1,7 @@
 import "server-only";
+import { MAX_FAVORITES, type MergeFavoritesResult } from "@/lib/me/favorites-schema";
 
-export const MAX_FAVORITES = 500;
+export { MAX_FAVORITES };
 
 export class FavoritesLimitError extends Error {
   constructor() {
@@ -58,4 +59,37 @@ export async function removeUserFavorite(
     .prepare("DELETE FROM user_favorites WHERE user_id = ? AND lens_id = ?")
     .bind(input.userId, input.lensId)
     .run();
+}
+
+/** Merges newest-first guest favorites into the account without exceeding MAX_FAVORITES. */
+export async function mergeUserFavorites(
+  db: D1Database,
+  input: { userId: string; lensIds: string[]; now?: number },
+): Promise<MergeFavoritesResult> {
+  const uniqueIds = Array.from(new Set(input.lensIds));
+  if (uniqueIds.length === 0) {
+    return { added: 0, skippedLimit: 0 };
+  }
+  const { results } = await db
+    .prepare("SELECT lens_id FROM user_favorites WHERE user_id = ?")
+    .bind(input.userId)
+    .all<{ lens_id: string }>();
+  const existing = new Set(results.map((row) => row.lens_id));
+  const toAdd = uniqueIds.filter((id) => !existing.has(id));
+  if (toAdd.length === 0) {
+    return { added: 0, skippedLimit: 0 };
+  }
+  const remaining = Math.max(0, MAX_FAVORITES - existing.size);
+  const accepted = toAdd.slice(0, remaining);
+  const skippedLimit = toAdd.length - accepted.length;
+  const baseNow = input.now ?? Date.now();
+  for (let index = 0; index < accepted.length; index++) {
+    await db
+      .prepare(
+        "INSERT INTO user_favorites (user_id, lens_id, created_at) VALUES (?, ?, ?) ON CONFLICT (user_id, lens_id) DO NOTHING",
+      )
+      .bind(input.userId, accepted[index], baseNow - index)
+      .run();
+  }
+  return { added: accepted.length, skippedLimit };
 }

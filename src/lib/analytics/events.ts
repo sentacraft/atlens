@@ -489,6 +489,7 @@ export const EVENT_DOCS: EventDocs = {
           iris: { label: "Ask Iris", description: "The Ask Iris button, opening or closing the panel" },
           menu: { label: "Menu button", description: "Opened the header menu" },
           profile: { label: "Profile", description: "The profile page: in the menu for signed-in visitors, and the tab bar's Profile" },
+          favorites: { label: "Favorites", description: "My favorites in the menu for a guest with locally saved lenses" },
           sign_in: { label: "Sign in", description: "Sign in, for signed-out visitors" },
           about: { label: "About", description: "The about page" },
           support: { label: "Support", description: "The support dialog" },
