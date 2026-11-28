@@ -1143,15 +1143,6 @@
     "promptTitle": "安装 Atlens",
     "promptBody": "添加到你的设备，以后一键打开。",
     "installButton": "安装",
-    "iosTitle": "添加到主屏幕",
-    "iosStep1": "点击「分享」按钮",
-    "iosStep2": "向下滑动，点击「添加到主屏幕」",
-    "iosStep3": "点击右上角的「添加」",
-    "macosTitle": "添加到程序坞",
-    "macosStep1": "点击 Safari 工具栏中的「分享」按钮",
-    "macosStep2": "选择「添加到程序坞」",
-    "macosStep3": "点击「添加」确认",
-    "genericTitle": "添加到主屏幕",
     "genericBody": "打开浏览器菜单，选择「添加到主屏幕」或「安装应用」。"
   },
   "Pricing": {

@@ -1143,15 +1143,6 @@
     "promptTitle": "Install Atlens",
     "promptBody": "Add Atlens to your device for one-tap access.",
     "installButton": "Install",
-    "iosTitle": "Add to Home Screen",
-    "iosStep1": "Tap the Share button",
-    "iosStep2": "Scroll down and tap \"Add to Home Screen\"",
-    "iosStep3": "Tap \"Add\" in the top-right corner",
-    "macosTitle": "Add to Dock",
-    "macosStep1": "Click the Share button in the Safari toolbar",
-    "macosStep2": "Choose \"Add to Dock\"",
-    "macosStep3": "Click \"Add\" to confirm",
-    "genericTitle": "Add to Home Screen",
     "genericBody": "Open your browser menu and choose \"Add to Home Screen\" or \"Install app\"."
   },
   "Pricing": {
