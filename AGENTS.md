@@ -72,6 +72,9 @@ those buttons anywhere else.
 Designs have one editable source: private cloud Open Artifacts, accessed through the remote
 `artifact` MCP. Read their URIs from the tracked `.open-artifacts.json` at the project root.
 Keep credentials out of this mapping; each device authorizes independently. Never commit private design files.
+Keep pending review mockups on the canvas's permanent `review` inbox page laid out flat side-by-side
+under `title1` headers — do not hide variants or states behind right-panel `data-props` dropdowns, and do
+not add yellow sticky notes. Once reviewed, move approved boards to their formal feature page and rejected options to `Archive`.
 
 The design system mirrors the theme, fonts, `ui-tokens.ts` and the components listed in
 `scripts/hooks/ui-token-review.mjs`; a PR that changes how any of them looks says which part of the

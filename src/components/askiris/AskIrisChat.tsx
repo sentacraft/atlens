@@ -42,8 +42,8 @@ import {
   DialogPopup,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ACTION_OUTLINE_CLS, ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
-import { ArrowRight, History, Maximize2, Minimize2, Plus, X } from "lucide-react";
+import { ACTION_OUTLINE_CLS, ACTION_QUIET_CLS, ACTION_PRIMARY_CLS, FROSTED_OVERLAY_CHROME_CLS, ICON_CLOSE_BTN_CLS, ICON_NAV_BTN_CLS } from "@/config/ui-tokens";
+import { ArrowDown, ArrowRight, History, Maximize2, Minimize2, Plus, X } from "lucide-react";
 import AiTag from "@/components/iris/AiTag";
 import { ConversationHistoryPopover, ConversationHistoryView } from "@/components/askiris/ConversationHistory";
 import { useBreakpoint } from "@/hooks/useViewport";
@@ -297,6 +297,11 @@ export default function AskIrisChat({
     }
   }
 
+  function scrollToBottom() {
+    pinnedRef.current = true;
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }
+
   useEffect(() => {
     const el = scrollRef.current;
     if (el && pinnedRef.current) {
@@ -518,9 +523,22 @@ export default function AskIrisChat({
               canScrollDown ? "opacity-100" : "opacity-0",
             )}
           />
+          {canScrollDown && (
+            <button
+              type="button"
+              onClick={scrollToBottom}
+              aria-label={t("scrollToBottom")}
+              className={cn(
+                FROSTED_OVERLAY_CHROME_CLS,
+                "absolute bottom-3 left-1/2 z-10 inline-flex size-9 -translate-x-1/2 items-center justify-center rounded-full text-zinc-700 transition-colors hover:bg-white hover:text-zinc-900 active:bg-zinc-100 after:absolute after:-inset-1",
+              )}
+            >
+              <ArrowDown className="size-4" />
+            </button>
+          )}
         </div>
 
-        <div className="shrink-0 py-4">
+        <div className="shrink-0 pt-2 pb-3 sm:py-4">
           <AskIrisComposer
             size="md"
             value={input}
