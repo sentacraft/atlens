@@ -22,7 +22,12 @@ export function useSearchTelemetry({
   const pending = useRef<PendingSearch | null>(null);
 
   useEffect(() => {
-    if (!isOpen || isComposing) {
+    // iOS Pinyin inserts U+2006 (six-per-em space) between uncommitted syllables and WebKit
+    // sometimes drops or ends composition early, so treat U+2006 as still composing.
+    if (!isOpen || isComposing || query.includes("\u2006")) {
+      if (query.includes("\u2006")) {
+        pending.current = null;
+      }
       return;
     }
     const trimmed = query.trim();

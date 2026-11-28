@@ -206,6 +206,17 @@ describe("searchLenses — compound token expansion", () => {
     expect(searchLenses(lenses, "xf35f1.4")[0]?.id).toBe("fuji-xf35-14");
   });
 
+  it("trailing 'f' aperture prefix ('18f', '35f', '35mmf', 'xf35f', '18-50f') still matches", () => {
+    expect(searchLenses(lenses, "18f")[0]?.id).toBe("sigma-18-50-28");
+    expect(searchLenses(lenses, "18-50f")[0]?.id).toBe("sigma-18-50-28");
+    const ids35 = searchLenses(lenses, "35f").map((lens) => lens.id);
+    expect(ids35).toEqual(expect.arrayContaining(["fuji-xf35-14", "sigma-35-14"]));
+    expect(searchLenses(lenses, "35mmf").map((lens) => lens.id)).toEqual(
+      expect.arrayContaining(["fuji-xf35-14", "sigma-35-14"]),
+    );
+    expect(searchLenses(lenses, "xf35f")[0]?.id).toBe("fuji-xf35-14");
+  });
+
   it("'18-50f2.8' and a CJK brand before it hit the 18-50 F2.8 zoom", () => {
     expect(searchLenses(lenses, "18-50f2.8")[0]?.id).toBe("sigma-18-50-28");
     expect(searchLenses(lenses, "适马18-50f2.8")[0]?.id).toBe("sigma-18-50-28");
