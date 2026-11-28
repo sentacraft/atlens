@@ -7,21 +7,8 @@ const EPN_TOOL_ID = "10001";
 
 const MAX_PURCHASE_LINKS = 3;
 
-// Keyed by hostname. One Amazon tracking ID covers every Earn Globally storefront.
-const AMAZON_TAG = "atlens-20";
-
+// Keyed by hostname. Amazon links stay direct non-affiliate links.
 const AFFILIATE_PARAMS: Record<string, [string, string]> = {
-  // amazon.com.au and amazon.co.jp are not enrolled, so they stay non-affiliate.
-  "amazon.com": ["tag", AMAZON_TAG],
-  "amazon.ca": ["tag", AMAZON_TAG],
-  "amazon.co.uk": ["tag", AMAZON_TAG],
-  "amazon.de": ["tag", AMAZON_TAG],
-  "amazon.fr": ["tag", AMAZON_TAG],
-  "amazon.it": ["tag", AMAZON_TAG],
-  "amazon.es": ["tag", AMAZON_TAG],
-  "amazon.nl": ["tag", AMAZON_TAG],
-  "amazon.pl": ["tag", AMAZON_TAG],
-  "amazon.se": ["tag", AMAZON_TAG],
   "7artisans.store": ["ref", "omwzyqkn"],
   "ttartisan.store": ["ref", "idncwfkb"],
   "viltrox.com": ["ref", "owbtcyuk"],
@@ -53,7 +40,7 @@ const EBAY_MARKETS: Record<string, EbayMarket> = {
 const EBAY_DEFAULT_MARKET = EBAY_MARKETS.US;
 
 // Locale picks the market; GeoIP only picks the Amazon storefront for non-zh visitors.
-// Countries without an enrolled store route to an enrolled neighbour (AT→.de, IE→.co.uk, BE→.nl).
+// Countries without a dedicated storefront route to a nearby regional storefront (AT->.de, IE->.co.uk, BE->.nl).
 const AMAZON_MARKETS: Record<string, string> = {
   US: "amazon.com",
   CA: "amazon.ca",
